@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@
  *     Jesper Steen Moller  - bug 280555 - Add pluggable collation support
  *     Jesper Steen Moller  - bug 281938 - undefined context should raise error
  *     Jesper Steen Moller  - bug 262765 - use correct 'effective boolean value'
+ *     Jesper Steen Moller  - bug 312191 - instance of test fails with partial matches
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;

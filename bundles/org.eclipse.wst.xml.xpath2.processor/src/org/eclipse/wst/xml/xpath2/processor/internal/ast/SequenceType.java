@@ -79,4 +79,17 @@ public class SequenceType extends XPathNode {
 	public ItemType item_type() {
 		return _it;
 	}
+
+	public boolean isLengthValid(int length) {
+		switch (occurrence()) {
+		case EMPTY: return length == 0;
+		case NONE: return length == 1;
+		case QUESTION: return length <= 1;
+		case STAR: return true;
+		case PLUS: return length >= 1;
+		default:
+			assert false;
+			return false;
+		}
+	}
 }

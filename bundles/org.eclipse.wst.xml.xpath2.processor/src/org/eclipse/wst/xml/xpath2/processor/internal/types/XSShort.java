@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Mukul Gandhi - bug 277608 - implementation of xs:short data type
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -43,7 +44,6 @@ public class XSShort extends XSInt {
 	 * 
 	 * @return "xs:short" which is the datatype's full pathname
 	 */
-	@Override
 	public String string_type() {
 		return XS_SHORT;
 	}
@@ -53,7 +53,6 @@ public class XSShort extends XSInt {
 	 * 
 	 * @return "short" which is the datatype's name
 	 */
-	@Override
 	public String type_name() {
 		return "short";
 	}
@@ -67,7 +66,6 @@ public class XSShort extends XSInt {
 	 * @return New ResultSequence consisting of the 'short' supplied
 	 * @throws DynamicError
 	 */
-	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 

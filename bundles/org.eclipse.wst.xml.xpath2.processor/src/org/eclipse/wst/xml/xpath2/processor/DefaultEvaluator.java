@@ -15,6 +15,7 @@
  *     Jesper Steen Moller  - bug 281938 - undefined context should raise error
  *     Jesper Steen Moller  - bug 262765 - use correct 'effective boolean value'
  *     Jesper Steen Moller  - bug 312191 - instance of test fails with partial matches
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -1047,7 +1048,6 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 						type = 2;
 					else
 						assert false;
-
 				}
 
 				// make sure we got coherent types

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0
  *     David Carver (STAR) - bug 277792 - add built in types to static context. 
  *     Jesper Steen Moller - bug 297707 - Missing the empty-sequence() type
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -55,11 +56,11 @@ public class DefaultStaticContext implements StaticContext {
 		_cntxt_item_type = cntxtItemType;
 	}
 
-	public Map<String, List<Document>> get_collections() {
+	public Map get_collections() {
 		return _collections;
 	}
 
-	public void set_collections(Map<String, List<Document>> collections) {
+	public void set_collections(Map collections) {
 		_collections = collections;
 	}
 

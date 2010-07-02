@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,6 +8,7 @@
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0
  *     David Carver - bug 262765 - corrected implementation of XSUntypedAtomic 
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -45,7 +46,6 @@ public class XSUntypedAtomic extends CtrType {
 	 * 
 	 * @return "xs:untypedAtomic" which is the datatype's full pathname
 	 */
-	@Override
 	public String string_type() {
 		return XS_UNTYPED_ATOMIC;
 	}
@@ -56,12 +56,10 @@ public class XSUntypedAtomic extends CtrType {
 	 * 
 	 * @return String representation of the value of this untyped atomic node
 	 */
-	@Override
 	public String string_value() {
 		return _value;
 	}
 
-	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 
@@ -75,7 +73,6 @@ public class XSUntypedAtomic extends CtrType {
 		return rs;
 	}
 
-	@Override
 	public String type_name() {
 		return "untypedAtomic";
 	}

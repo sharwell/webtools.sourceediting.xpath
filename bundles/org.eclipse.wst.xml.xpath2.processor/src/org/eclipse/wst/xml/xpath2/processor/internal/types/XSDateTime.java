@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
  *     David Carver - bug 282223 - implementation of xs:duration.
  *                  - bug 262765 - additional tweak to convert 24:00:00 to 00:00:00
  *     David Carver - bug 280547 - fix dates for comparison 
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -66,7 +67,6 @@ Cloneable {
 	 * 
 	 * @return A copy of this date and time representation
 	 */
-	@Override
 	public Object clone() throws CloneNotSupportedException {
 		Calendar c = (Calendar) calendar().clone();
 		XSDuration t = tz();
@@ -89,7 +89,6 @@ Cloneable {
 	 * 
 	 * @return "dateTime" which is the dataype name
 	 */
-	@Override
 	public String type_name() {
 		return "dateTime";
 	}
@@ -492,7 +491,6 @@ Cloneable {
 	 * @return A new result sequence consisting of the date and time value
 	 *         supplied.
 	 */
-	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 
@@ -657,7 +655,6 @@ Cloneable {
 	 * 
 	 * @return String representation of the date and time stored
 	 */
-	@Override
 	public String string_value() {
 		String ret = "";
 
@@ -725,7 +722,6 @@ Cloneable {
 	 * 
 	 * @return "xs:dateTime" which is the datatype full pathname
 	 */
-	@Override
 	public String string_type() {
 		return XS_DATE_TIME;
 	}

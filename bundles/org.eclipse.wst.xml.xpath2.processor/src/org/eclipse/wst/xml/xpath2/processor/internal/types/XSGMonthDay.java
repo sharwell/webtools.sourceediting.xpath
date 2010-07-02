@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     David Carver (STAR) - bug 282223 - fix timezone adjustment creation.
  *                                        fixed casting issue.
  *     David Carver - bug 280547 - fix dates for comparison 
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -62,7 +63,6 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 * 
 	 * @return "gMonthDay" which is the datatype's name
 	 */
-	@Override
 	public String type_name() {
 		return "gMonthDay";
 	}
@@ -99,7 +99,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 
 			
 			String[] split = str.split("-");
-			startdate += split[2].replace("Z", "") + "-" + split[3].replace("Z", "").substring(0, 2);
+			startdate += split[2].replaceAll("Z", "") + "-" + split[3].replaceAll("Z", "").substring(0, 2);
 			
 			if (split.length > 4) {
 				String[] timesplit = split[4].split(":");
@@ -143,7 +143,6 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 * @return New ResultSequence consisting of the supplied month and day
 	 * @throws DynamicError
 	 */
-	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 
@@ -251,7 +250,6 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 * 
 	 * @return String representation of the stored month and day
 	 */
-	@Override
 	public String string_value() {
 		String ret = "--";
 
@@ -294,7 +292,6 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 * 
 	 * @return "xs:gMonthDay" which is the datatype's full pathname
 	 */
-	@Override
 	public String string_type() {
 		return XS_G_MONTH_DAY;
 	}

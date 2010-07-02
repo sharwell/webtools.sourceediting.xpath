@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,7 @@
  *     Jesper Moller - bug 275610 - Avoid big time and memory overhead for externals
  *     David Carver (STAR) - bug 281186 - implementation of fn:id and fn:idref
  *     David Carver (STAR) - bug 289304 - fixed schema awareness on elements
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -250,7 +251,8 @@ public abstract class NodeType extends AnyType {
 		} else if ("date".equals(typeName)) {
 			schemaTypeValue = XSDate.parse_date(string_value());
 		} else if ("boolean".equals(typeName)) {
-			schemaTypeValue = new XSBoolean(Boolean.valueOf(string_value()));
+			schemaTypeValue = new XSBoolean((Boolean.valueOf(string_value())).
+					                                  booleanValue());
 		} else if ("NOTATION".equals(typeName)) {
 			schemaTypeValue = new XSString(string_value());
 		}

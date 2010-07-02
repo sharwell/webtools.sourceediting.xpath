@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *     Jesper Moller - bug 280555 - Add pluggable collation support
  *     David Carver (STAR) - bug 262765 - fixed distinct-values comparison logic.
  *                           There is probably an easier way to do the comparison.
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
@@ -51,7 +52,6 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	@Override
 	public ResultSequence evaluate(Collection args) throws DynamicError {
 		return distinct_values(args, dynamic_context());
 	}

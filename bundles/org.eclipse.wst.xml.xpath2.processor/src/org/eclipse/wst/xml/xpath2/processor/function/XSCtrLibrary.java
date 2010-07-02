@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,6 +25,7 @@
  *     David Carver - bug 262765 - implementation of xs:untypedAtomic data type.
  *     Jesper Moller - bug 297707 - Missing the empty-sequence() type
  *     Mukul Gandhi - bug 309585 - implementation of xs:normalizedString data type
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.function;
@@ -55,11 +56,11 @@ public class XSCtrLibrary extends ConstructorFL {
 		add_type(new XSNotation());
 
 		add_abstract_type("anyAtomicType", new AnyAtomicType() {
-			@Override
+
 			public String string_type() {
 				return null;
 			}
-			@Override
+
 			public String string_value() {
 				return null;
 			}

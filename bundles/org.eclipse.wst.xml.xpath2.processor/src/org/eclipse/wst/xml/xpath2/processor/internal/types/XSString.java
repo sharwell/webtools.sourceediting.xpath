@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *     Mukul Gandhi - improved comparison of xs:string with other XDM types
  *  Jesper S Moller - bug 286061   correct handling of quoted string 
  *  Jesper S Moller - bug 280555 - Add pluggable collation support
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -55,7 +56,6 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "xs:string" which is the datatype's full pathname
 	 */
-	@Override
 	public String string_type() {
 		return XS_STRING;
 	}
@@ -65,7 +65,6 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "string" which is the datatype's name
 	 */
-	@Override
 	public String type_name() {
 		return "string";
 	}
@@ -76,7 +75,6 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return The String stored
 	 */
-	@Override
 	public String string_value() {
 		return _value;
 	}
@@ -100,7 +98,6 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @return New ResultSequence consisting of the supplied String
 	 * @throws DynamicError
 	 */
-	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 

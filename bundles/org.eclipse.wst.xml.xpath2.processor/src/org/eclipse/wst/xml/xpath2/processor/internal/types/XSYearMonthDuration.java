@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
  *     Mukul Gandhi - bug 279373 - improvements to multiply operation on xs:yearMonthDuration
  *                                 data type.
  *     David Carver - bug 282223 - implementation of xs:duration data type.
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -160,7 +161,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * 
 	 * @return "yearMonthDuration" which is the datatype's name
 	 */
-	@Override
 	public String type_name() {
 		return "yearMonthDuration";
 	}
@@ -174,7 +174,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @return New ResultSequence consisting of the time duration extracted
 	 * @throws DynamicError
 	 */
-	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 
@@ -219,7 +218,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @return True if this duration represents a backward passage through time.
 	 *         False otherwise
 	 */
-	@Override
 	public boolean negative() {
 		return _negative;
 	}
@@ -229,7 +227,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * 
 	 * @return String representation of the duration of time stored
 	 */
-	@Override
 	public String string_value() {
 		String strval = "";
 
@@ -257,7 +254,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * 
 	 * @return "xs:yearMonthDuration" which is the datatype's full pathname
 	 */
-	@Override
 	public String string_type() {
 		return XS_YEAR_MONTH_DURATION;
 	}
@@ -284,7 +280,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @return True if they both represent the duration of time. False otherwise
 	 * @throws DynamicError
 	 */
-	@Override
 	public boolean eq(AnyType arg, DynamicContext context) throws DynamicError {
 		if (arg instanceof XSDayTimeDuration) {
 			XSDayTimeDuration dayTimeDuration = (XSDayTimeDuration)arg;
@@ -307,7 +302,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 *         stored. False otherwise
 	 * @throws DynamicError
 	 */
-	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSYearMonthDuration val = (XSYearMonthDuration) NumericType
 				.get_single_type(arg, XSYearMonthDuration.class);
@@ -324,7 +318,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 *         stored. False otherwise
 	 * @throws DynamicError
 	 */
-	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSYearMonthDuration val = (XSYearMonthDuration) NumericType
 				.get_single_type(arg, XSYearMonthDuration.class);
@@ -446,7 +439,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 
 			double res = (double) monthValue() / md.monthValue();
 
-			return ResultSequenceFactory.create_new(new XSDecimal(BigDecimal.valueOf(res)));
+			return ResultSequenceFactory.create_new(new XSDecimal(new BigDecimal(res)));
 		} else {
 			DynamicError.throw_type_error();
 			return null; // unreach

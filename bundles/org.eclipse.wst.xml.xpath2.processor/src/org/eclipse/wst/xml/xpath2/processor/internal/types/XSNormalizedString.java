@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Mukul Gandhi - bug 309585 - implementation of xs:normalizedString data type
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -44,7 +45,6 @@ public class XSNormalizedString extends XSString {
 	 * 
 	 * @return "xs:normalizedString" which is the datatype's full pathname
 	 */
-	@Override
 	public String string_type() {
 		return XS_NORMALIZEDSTRING;
 	}
@@ -54,7 +54,6 @@ public class XSNormalizedString extends XSString {
 	 * 
 	 * @return "normalizedString" which is the datatype's name
 	 */
-	@Override
 	public String type_name() {
 		return "normalizedString";
 	}
@@ -68,7 +67,6 @@ public class XSNormalizedString extends XSString {
 	 * @return New ResultSequence consisting of the supplied String
 	 * @throws DynamicError
 	 */
-	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 

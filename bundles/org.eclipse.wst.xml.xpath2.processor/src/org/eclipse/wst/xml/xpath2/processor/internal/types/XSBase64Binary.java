@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Mukul Gandhi - bug 281046 - initial API and implementation 
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -49,7 +50,6 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 * 
 	 * @return "xs:base64Binary" which is the datatype's full pathname
 	 */
-	@Override
 	public String string_type() {
 		return XS_BASE64_BINARY;
 	}
@@ -59,7 +59,6 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 * 
 	 * @return "base64Binary" which is the datatype's name
 	 */
-	@Override
 	public String type_name() {
 		return "base64Binary";
 	}
@@ -70,7 +69,6 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 * 
 	 * @return The base64Binary stored
 	 */
-	@Override
 	public String string_value() {
 		return _value;
 	}
@@ -93,7 +91,6 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 * @return New ResultSequence representing base64Binary value 
 	 * @throws DynamicError
 	 */
-	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 

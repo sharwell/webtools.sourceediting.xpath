@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0
  *     Jesper Moller - bug 275610 - Avoid big time and memory overhead for externals
  *     David Carver  - bug 281186 - implementation of fn:id and fn:idref
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -40,7 +41,6 @@ public class CommentType extends NodeType {
 	 * 
 	 * @return "comment" which is the datatype's full pathname
 	 */
-	@Override
 	public String string_type() {
 		return COMMENT;
 	}
@@ -50,7 +50,6 @@ public class CommentType extends NodeType {
 	 * 
 	 * @return String representation of the comment being stored
 	 */
-	@Override
 	public String string_value() {
 		return _value.getNodeValue();
 	}
@@ -60,7 +59,6 @@ public class CommentType extends NodeType {
 	 * 
 	 * @return New ResultSequence consisting of the comment stored
 	 */
-	@Override
 	public ResultSequence typed_value() {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 
@@ -74,7 +72,6 @@ public class CommentType extends NodeType {
 	 * 
 	 * @return null
 	 */
-	@Override
 	public QName node_name() {
 		return null;
 	}
@@ -82,7 +79,6 @@ public class CommentType extends NodeType {
 	/**
 	 * @since 1.1
 	 */
-	@Override
 	public boolean isID() {
 		return false;
 	}
@@ -90,7 +86,6 @@ public class CommentType extends NodeType {
 	/**
 	 * @since 1.1
 	 */
-	@Override
 	public boolean isIDREF() {
 		return false;
 	}

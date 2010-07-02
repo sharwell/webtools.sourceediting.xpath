@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     Mukul Gandhi - bug274784 - improvements to xs:boolean data type implementation
  *     David Carver - bug 282223 - corrected casting to boolean.
+ *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -50,7 +51,6 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "xs:boolean", the full datatype pathname
 	 */
-	@Override
 	public String string_type() {
 		return XS_BOOLEAN;
 	}
@@ -60,7 +60,6 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "boolean", which is the datatype name.
 	 */
-	@Override
 	public String type_name() {
 		return "boolean";
 	}
@@ -70,7 +69,6 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return the String representation of the boolean value stored
 	 */
-	@Override
 	public String string_value() {
 		return "" + _value;
 	}
@@ -93,7 +91,6 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 * @return A new result sequence consisting of the boolean value supplied.
 	 */
-	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 

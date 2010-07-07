@@ -14,12 +14,12 @@
  *     David Carver (STAR) - bug 281186 - implementation of fn:id and fn:idref
  *     David Carver (STAR) - bug 289304 - fixed schema awareness on elements
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 318313 - improvements to computation of typed values of nodes,
+ *                                 when validated by XML Schema primitive types
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -219,45 +219,14 @@ public abstract class NodeType extends AnyType {
 	}
 
 	protected Object getTypedValueForPrimitiveType(XSTypeDefinition typeDef) {		
-		Object schemaTypeValue = null;
+		String strValue = string_value();
+		
 		if (typeDef == null) {
-			return new XSUntypedAtomic(string_value());
-		}
-		String typeName = typeDef.getName();
-		if ("date".equals(typeName)) {		
-		   schemaTypeValue = XSDate.parse_date(string_value());
-		}
-		else if ("int".equals(typeName)) {		
-		   schemaTypeValue = new XSInt(new BigInteger(string_value()));
-		}
-		else if ("long".equals(typeName)) {		
-		  schemaTypeValue = new XSLong(new BigInteger(string_value()));
-	    }
-		else if ("integer".equals(typeName)) {		
-		  schemaTypeValue = new XSInteger(new BigInteger(string_value()));
-		}
-		else if ("double".equals(typeName)) {		
-		  schemaTypeValue = new XSDouble(Double.parseDouble(string_value()));
-		}
-		else if ("float".equals(typeName)) {		
-		  schemaTypeValue = new XSFloat(Float.parseFloat(string_value()));
-	    }
-		else if ("decimal".equals(typeName)) {		
-		  schemaTypeValue = new XSDecimal(new BigDecimal(string_value()));
-		} else if ("dateTime".equals(typeName)) {
-		  schemaTypeValue = XSDateTime.parseDateTime(string_value());
-		} else if ("time".equals(typeName)) {
-			schemaTypeValue = XSTime.parse_time(string_value());
-		} else if ("date".equals(typeName)) {
-			schemaTypeValue = XSDate.parse_date(string_value());
-		} else if ("boolean".equals(typeName)) {
-			schemaTypeValue = new XSBoolean((Boolean.valueOf(string_value())).
-					                                  booleanValue());
-		} else if ("NOTATION".equals(typeName)) {
-			schemaTypeValue = new XSString(string_value());
+		   return new XSUntypedAtomic(strValue);
 		}
 		
-		return schemaTypeValue;
+		return SchemaTypeValueFactory.newSchemaTypeValue(typeDef.getName(), strValue);
+		
 	}
 	
 	public abstract boolean isID();

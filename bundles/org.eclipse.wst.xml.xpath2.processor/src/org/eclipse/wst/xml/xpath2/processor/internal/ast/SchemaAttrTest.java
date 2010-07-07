@@ -13,7 +13,8 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Support for Schema Attribute test.

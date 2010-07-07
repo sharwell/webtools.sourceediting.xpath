@@ -17,11 +17,17 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.StaticContext;
-import org.eclipse.wst.xml.xpath2.processor.internal.ast.*;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ItemType;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.KindTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.SequenceType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
 import org.w3c.dom.Node;
 
-import java.util.*;
+import java.util.Iterator;
 
 /**
  * represents a Sequence types used for matching expected arguments of functions
@@ -219,7 +225,7 @@ public class SeqType {
 						//throw new DynamicError(TypeError.invalid_type(null));
 						continue;
 					}
-					if (!lnode.isEqualNode(node)) {
+					if (!JAXP11Helper.isEqualNode(lnode,node)) {
 						//throw new DynamicError(TypeError.invalid_type(null));
 						continue;
 					}

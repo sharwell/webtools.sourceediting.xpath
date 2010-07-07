@@ -12,7 +12,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Support for Variable Reference. A QName preceded by a $-sign is a variable

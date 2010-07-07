@@ -12,7 +12,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 
 /**
  * The value of a string literal is an atomic value whose type is xs:string and

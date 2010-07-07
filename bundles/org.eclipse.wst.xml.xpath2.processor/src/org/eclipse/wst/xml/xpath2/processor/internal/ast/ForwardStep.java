@@ -12,7 +12,14 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.AttributeAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.ChildAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.DescendantAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.DescendantOrSelfAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.FollowingAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.FollowingSiblingAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.ForwardAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.SelfAxis;
 
 /**
  * Class for Forward stepping support for Step operations.

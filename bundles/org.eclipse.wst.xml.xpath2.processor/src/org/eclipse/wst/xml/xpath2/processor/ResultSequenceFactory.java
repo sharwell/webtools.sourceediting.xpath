@@ -12,7 +12,7 @@
 package org.eclipse.wst.xml.xpath2.processor;
 
 import org.eclipse.wst.xml.xpath2.processor.internal.DefaultRSFactory;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 
 /**
  * Result sequence factory

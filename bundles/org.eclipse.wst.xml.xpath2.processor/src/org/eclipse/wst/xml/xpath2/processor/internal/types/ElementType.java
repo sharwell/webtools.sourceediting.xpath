@@ -24,6 +24,7 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -216,7 +217,7 @@ public class ElementType extends NodeType {
 	}
 
 	protected boolean isElementType(String typeName) {
-		TypeInfo typeInfo = _value.getSchemaTypeInfo();
+		TypeInfo typeInfo = JAXP11Helper.getSchemaTypeInfo(_value);
 		return isType(typeInfo, typeName);
 	}
 

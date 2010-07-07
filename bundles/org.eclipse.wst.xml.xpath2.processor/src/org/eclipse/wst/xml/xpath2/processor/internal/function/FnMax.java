@@ -15,9 +15,6 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
@@ -29,6 +26,9 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.ComparableTypePromoter;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.TypePromoter;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Selects an item from the input sequence $arg whose value is greater than or

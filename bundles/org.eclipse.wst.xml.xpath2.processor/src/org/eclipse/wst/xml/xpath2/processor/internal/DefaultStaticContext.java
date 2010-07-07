@@ -14,15 +14,27 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
-import org.apache.xerces.xs.*;
+import org.apache.xerces.xs.ItemPSVI;
+import org.apache.xerces.xs.XSAttributeDeclaration;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModel;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.function.FnFunctionLibrary;
 import org.eclipse.wst.xml.xpath2.processor.function.XSCtrLibrary;
-import org.eclipse.wst.xml.xpath2.processor.internal.function.*;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
-import org.w3c.dom.Document;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.ConstructorFL;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.Function;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FunctionLibrary;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Default implementation of a static context as described by the XPath 2.0

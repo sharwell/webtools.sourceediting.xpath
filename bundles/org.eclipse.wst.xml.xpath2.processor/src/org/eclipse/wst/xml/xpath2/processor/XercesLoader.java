@@ -17,13 +17,19 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
-import java.io.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
-
-import org.xml.sax.*;
 
 /**
  * Xerces loader class. The loading is always namespace aware.
@@ -91,7 +97,7 @@ public class XercesLoader implements DOMLoader {
 				DOCUMENT_PSVI_IMPLEMENTATION);
 		
 		if (_schema != null) {
-		  factory.setSchema(_schema);
+		  JAXP11Helper.setSchema(factory, _schema);
 		}
 		else {
 		  factory.setValidating(_validating);	

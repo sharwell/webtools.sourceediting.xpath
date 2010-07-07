@@ -12,9 +12,10 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import java.util.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Class for Function Call support.

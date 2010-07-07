@@ -12,7 +12,8 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Class for parethesized expressions support.

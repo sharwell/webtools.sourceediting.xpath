@@ -11,9 +11,12 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
-import java.util.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 /**
  * Interface to the methods of range of result sequence

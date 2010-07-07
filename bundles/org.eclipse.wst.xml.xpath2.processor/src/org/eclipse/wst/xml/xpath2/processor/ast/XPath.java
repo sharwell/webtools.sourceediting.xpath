@@ -12,10 +12,11 @@
 
 package org.eclipse.wst.xml.xpath2.processor.ast;
 
-import java.util.*;
-
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathNode;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathVisitor;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Support for XPath.

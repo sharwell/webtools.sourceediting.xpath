@@ -17,10 +17,17 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.StaticContext;
-import org.eclipse.wst.xml.xpath2.processor.internal.*;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDate;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDateTime;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSTime;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
   * A special constructor function for constructing a xs:dateTime value from a xs:date

@@ -20,13 +20,10 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -35,6 +32,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 import org.w3c.dom.TypeInfo;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  * A representation of a Node datatype
@@ -165,7 +166,7 @@ public abstract class NodeType extends AnyType {
 	}
 
 	public static boolean same(NodeType a, NodeType b) {
-		return (a.node_value().isSameNode(b.node_value()));
+		return JAXP11Helper.isSameNode(a.node_value(), b.node_value());
 		// While compare_node(a, b) == 0 is tempting, it is also expensive
 	}
 
@@ -189,29 +190,29 @@ public abstract class NodeType extends AnyType {
 		Node nodeA = a.node_value();
 		Node nodeB = b.node_value();
 		
-		if (nodeA == nodeB || nodeA.isSameNode(nodeB)) return 0;
+		if (nodeA == nodeB || JAXP11Helper.isSameNode(nodeA, nodeB)) return 0;
 
 		Document docA = getDocument(nodeA);
 		Document docB = getDocument(nodeB);
 		
-		if (docA != docB && ! docA.isSameNode(docB)) {
+		if (docA != docB && ! JAXP11Helper.isSameNode(docA, docB)) {
 			return compareDocuments(docA, docB);
 		}
-		short relation = nodeA.compareDocumentPosition(nodeB);
-		if ((relation & Node.DOCUMENT_POSITION_PRECEDING) != 0) 
+		short relation = JAXP11Helper.compareDocumentPosition(nodeA, nodeB);
+		if ((relation & JAXP11Helper.DOCUMENT_POSITION_PRECEDING) != 0) 
 			  return 1;
-		if ((relation & Node.DOCUMENT_POSITION_FOLLOWING) != 0) 
+		if ((relation & JAXP11Helper.DOCUMENT_POSITION_FOLLOWING) != 0) 
 			  return -1;
 		throw new RuntimeException("Unexpected result from node comparison: " + relation);
 	}
 
 	private static int compareDocuments(Document docA, Document docB) {
 		// Arbitrary but fulfills the spec (provided documenURI is always set)
-		if (docB.getDocumentURI() == null && docA.getDocumentURI() == null) {
+		if (JAXP11Helper.getDocumentURI(docB) == null && JAXP11Helper.getDocumentURI(docA) == null) {
 			// Best guess
 			return 0; 
 		}
-		return docB.getDocumentURI().compareTo(docA.getDocumentURI());
+		return JAXP11Helper.getDocumentURI(docB).compareTo(JAXP11Helper.getDocumentURI(docA));
 	}
 
 	private static Document getDocument(Node nodeA) {

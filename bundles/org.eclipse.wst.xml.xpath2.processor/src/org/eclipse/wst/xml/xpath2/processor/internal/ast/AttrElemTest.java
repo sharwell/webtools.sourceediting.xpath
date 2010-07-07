@@ -12,7 +12,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
 import org.apache.xerces.xs.XSConstants;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Common base class for Attribute and Element tests.

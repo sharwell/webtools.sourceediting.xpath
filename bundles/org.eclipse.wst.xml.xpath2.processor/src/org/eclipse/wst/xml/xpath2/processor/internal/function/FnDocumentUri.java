@@ -17,10 +17,15 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-import org.eclipse.wst.xml.xpath2.processor.internal.*;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Returns the value of the document-uri property for $arg as defined by the
@@ -78,7 +83,7 @@ public class FnDocumentUri extends Function {
 		  return rs;
 
 		DocType dt = (DocType) nt;
-		String documentURI = dt.value().getDocumentURI();
+		String documentURI = JAXP11Helper.getDocumentURI(dt.value());
 		
 		if (documentURI != null) {
 			XSAnyURI docUri = new XSAnyURI(documentURI);

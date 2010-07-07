@@ -18,11 +18,16 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-import org.eclipse.wst.xml.xpath2.processor.internal.*;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
 import org.w3c.dom.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Returns the value of the base-uri property for $arg as defined by the
@@ -116,7 +121,7 @@ public class FnBaseUri extends Function {
 		  if (att instanceof NodeType) {
 			  NodeType node = (NodeType) att;
 			  Node domNode = node.node_value();
-			  String buri = domNode.getBaseURI();
+			  String buri = JAXP11Helper.getBaseURI(domNode);
 			  if (buri != null) {
 				  baseUri = new XSAnyURI(buri);
 			  } else {

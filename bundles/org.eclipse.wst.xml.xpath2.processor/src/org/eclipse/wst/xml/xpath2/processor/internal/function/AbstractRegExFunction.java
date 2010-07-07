@@ -11,10 +11,10 @@
  *******************************************************************************/
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 public abstract class AbstractRegExFunction extends Function {
 	protected static final String validflags = "smix";

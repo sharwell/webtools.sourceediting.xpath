@@ -13,6 +13,7 @@
 package org.eclipse.wst.xml.xpath2.processor;
 
 import org.w3c.dom.Document;
+
 import java.io.InputStream;
 
 /**

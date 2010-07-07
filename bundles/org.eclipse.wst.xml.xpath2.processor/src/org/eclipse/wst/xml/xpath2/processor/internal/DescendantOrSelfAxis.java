@@ -14,7 +14,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 
 /**
  * The descendant-or-self axis contains the context node and the descendants of

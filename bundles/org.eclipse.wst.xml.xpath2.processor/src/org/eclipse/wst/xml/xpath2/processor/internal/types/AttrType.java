@@ -23,7 +23,6 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
 import org.w3c.dom.Attr;
 import org.w3c.dom.TypeInfo;
 
@@ -139,7 +138,7 @@ public class AttrType extends NodeType {
 	}
 	
 	private boolean typeInfo(String typeName) {
-		TypeInfo typeInfo = JAXP11Helper.getSchemaTypeInfo(_value);
+		TypeInfo typeInfo = _value.getSchemaTypeInfo();
 		return isType(typeInfo, typeName);
 	}
 	

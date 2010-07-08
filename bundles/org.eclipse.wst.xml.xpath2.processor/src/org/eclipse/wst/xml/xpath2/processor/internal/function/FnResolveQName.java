@@ -17,16 +17,11 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.StaticContext;
-import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
-import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
+import org.eclipse.wst.xml.xpath2.processor.internal.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Returns an xs:QName value (that is, an expanded-QName) by taking an xs:string
@@ -96,14 +91,14 @@ public class FnResolveQName extends Function {
 		Element element = (Element) xselement.node_value();
 
 		if (qn.prefix() != null) {
-			String namespaceURI = JAXP11Helper.lookupNamespaceURI(element,qn.prefix());
+			String namespaceURI = element.lookupNamespaceURI(qn.prefix());
 			
 			if (namespaceURI == null) {
 				throw DynamicError.invalidPrefix();
 			}
 			qn.set_namespace(namespaceURI);
 		} else {
-			if (qn.local().equals(element.getLocalName()) && JAXP11Helper.isDefaultNamespace(element, element.getNamespaceURI())) {
+			if (qn.local().equals(element.getLocalName()) && element.isDefaultNamespace(element.getNamespaceURI())) {
 				qn.set_namespace(element.getNamespaceURI());
 			}
 		}

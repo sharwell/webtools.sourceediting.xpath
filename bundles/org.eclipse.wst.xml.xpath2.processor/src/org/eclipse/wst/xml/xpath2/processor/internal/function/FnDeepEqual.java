@@ -17,19 +17,11 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
-import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
-import org.w3c.dom.Node;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
 
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
+import org.w3c.dom.*;
 
 /**
  * The function assesses whether two sequences are deep-equal to each other. To
@@ -209,7 +201,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 		Node a = one.node_value();
 		Node b = two.node_value();
 		
-		if (JAXP11Helper.isEqualNode(a,b)) {
+		if (a.isEqualNode(b)) {
 			return true;
 		}
 

@@ -23,7 +23,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
-import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
@@ -121,7 +120,7 @@ public class FnBaseUri extends Function {
 		  if (att instanceof NodeType) {
 			  NodeType node = (NodeType) att;
 			  Node domNode = node.node_value();
-			  String buri = JAXP11Helper.getBaseURI(domNode);
+			  String buri = domNode.getBaseURI();
 			  if (buri != null) {
 				  baseUri = new XSAnyURI(buri);
 			  } else {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,17 +13,19 @@
  *     Jesper Moller - bug 275610 - Avoid big time and memory overhead for externals
  *     David Carver (STAR) - bug 281186 - implementation of fn:id and fn:idref
  *     David Carver (STAR) - bug 289304 - fixed schema awareness on elements
- *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *     Mukul Gandhi - bug 318313 - improvements to computation of typed values of nodes,
  *                                 when validated by XML Schema primitive types
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -32,10 +34,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 import org.w3c.dom.TypeInfo;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 /**
  * A representation of a Node datatype
@@ -166,7 +164,7 @@ public abstract class NodeType extends AnyType {
 	}
 
 	public static boolean same(NodeType a, NodeType b) {
-		return JAXP11Helper.isSameNode(a.node_value(), b.node_value());
+		return (a.node_value().isSameNode(b.node_value()));
 		// While compare_node(a, b) == 0 is tempting, it is also expensive
 	}
 
@@ -190,29 +188,29 @@ public abstract class NodeType extends AnyType {
 		Node nodeA = a.node_value();
 		Node nodeB = b.node_value();
 		
-		if (nodeA == nodeB || JAXP11Helper.isSameNode(nodeA, nodeB)) return 0;
+		if (nodeA == nodeB || nodeA.isSameNode(nodeB)) return 0;
 
 		Document docA = getDocument(nodeA);
 		Document docB = getDocument(nodeB);
 		
-		if (docA != docB && ! JAXP11Helper.isSameNode(docA, docB)) {
+		if (docA != docB && ! docA.isSameNode(docB)) {
 			return compareDocuments(docA, docB);
 		}
-		short relation = JAXP11Helper.compareDocumentPosition(nodeA, nodeB);
-		if ((relation & JAXP11Helper.DOCUMENT_POSITION_PRECEDING) != 0) 
+		short relation = nodeA.compareDocumentPosition(nodeB);
+		if ((relation & Node.DOCUMENT_POSITION_PRECEDING) != 0) 
 			  return 1;
-		if ((relation & JAXP11Helper.DOCUMENT_POSITION_FOLLOWING) != 0) 
+		if ((relation & Node.DOCUMENT_POSITION_FOLLOWING) != 0) 
 			  return -1;
 		throw new RuntimeException("Unexpected result from node comparison: " + relation);
 	}
 
 	private static int compareDocuments(Document docA, Document docB) {
 		// Arbitrary but fulfills the spec (provided documenURI is always set)
-		if (JAXP11Helper.getDocumentURI(docB) == null && JAXP11Helper.getDocumentURI(docA) == null) {
+		if (docB.getDocumentURI() == null && docA.getDocumentURI() == null) {
 			// Best guess
 			return 0; 
 		}
-		return JAXP11Helper.getDocumentURI(docB).compareTo(JAXP11Helper.getDocumentURI(docA));
+		return docB.getDocumentURI().compareTo(docA.getDocumentURI());
 	}
 
 	private static Document getDocument(Node nodeA) {

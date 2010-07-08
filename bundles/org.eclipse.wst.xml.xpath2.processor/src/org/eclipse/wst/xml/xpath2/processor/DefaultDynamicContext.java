@@ -19,31 +19,20 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
-import org.apache.xerces.xs.XSModel;
+import org.apache.xerces.xs.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.DefaultResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.internal.DefaultStaticContext;
 import org.eclipse.wst.xml.xpath2.processor.internal.Focus;
-import org.eclipse.wst.xml.xpath2.processor.internal.function.Function;
-import org.eclipse.wst.xml.xpath2.processor.internal.function.FunctionLibrary;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
-import org.eclipse.wst.xml.xpath2.processor.internal.utils.JAXP11Helper;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.util.*;
+
+import org.w3c.dom.*;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
 
 /**
  * The default implementation of a Dynamic Context.
@@ -231,7 +220,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 			loader.set_validating(false);
 
 			Document doc = loader.load(new URL(uri.toString()).openStream());
-			JAXP11Helper.setDocumentURI(doc, uri.toString());
+			doc.setDocumentURI(uri.toString());
 			return doc;
 		} catch (DOMLoaderException e) {
 			return null;

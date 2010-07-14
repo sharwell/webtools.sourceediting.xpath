@@ -21,5 +21,9 @@
    <includes
          id="org.eclipse.wst.xml.xpath2.processor.feature"
          version="0.0.0"/>
+   <includes
+         id="org.eclipse.wst.xml.xpath2.processor.feature.source"
+         version="0.0.0"/>
+
 
 </feature>

@@ -17,6 +17,12 @@
    <license url="%licenseURL">
       %license
    </license>
+ Missing required plug-in javax.xml_[1.3.4,2.0.0).
+ 2067 [build-xpath2-xpath2] [eclipse.buildScript]     Missing required plug-in org.apache.xml.resolver_[1.2.0,2.0.0).
+ 2068 [build-xpath2-xpath2] [eclipse.buildScript]     Missing required plug-in org.apache.xml.serializer_[2.7.1,3.0.0).
+
+
+
 
    <plugin
          id="java_cup.runtime"
@@ -24,6 +30,29 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="javax.xml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>   
+         
+   <plugin
+         id="org.apache.xml.resolver"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+    <plugin
+         id="org.apache.xml.serializer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+
 
    <plugin
          id="org.apache.xerces"

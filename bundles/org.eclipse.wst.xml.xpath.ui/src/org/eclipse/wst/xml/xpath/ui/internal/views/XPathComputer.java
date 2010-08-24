@@ -9,6 +9,7 @@
  *     Doug Satchwell (Chase Technology Ltd) - initial API and implementation
  *     David Carver (STAR) - bug 261428 - XPath View not respecting namespaces.
  *     Jesper Steen Moller - bug 313992 - XPath evaluation does not show atomics
+ *     Jesper Steen Moller - bug 313989 - Computation does not honour selection
  *******************************************************************************/
 package org.eclipse.wst.xml.xpath.ui.internal.views;
 
@@ -48,6 +49,8 @@ import org.eclipse.wst.xml.xpath2.processor.XPathParser;
 import org.eclipse.wst.xml.xpath2.processor.function.FnFunctionLibrary;
 import org.eclipse.wst.xml.xpath2.processor.function.XSCtrLibrary;
 import org.eclipse.wst.xml.xpath2.processor.internal.DefaultResultSequence;
+import org.eclipse.wst.xml.xpath2.processor.internal.Focus;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -269,7 +272,7 @@ public class XPathComputer {
 			 // Initializing the evaluator with DynamicContext and the name
 			 // of the XML document XPexample.xml as parameters.
 			 Evaluator eval = new DefaultEvaluator(dc, doc);
-			 
+			 dc.set_focus(new Focus(new DefaultResultSequence(NodeType.dom_to_xpath(node))));
 			 ResultSequence rs = eval.evaluate(xpath);
 			 
 			 this.nodeList = new NodeListImpl(rs);

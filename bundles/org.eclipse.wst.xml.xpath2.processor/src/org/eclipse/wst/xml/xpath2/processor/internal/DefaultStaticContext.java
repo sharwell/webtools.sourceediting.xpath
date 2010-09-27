@@ -10,6 +10,8 @@
  *     David Carver (STAR) - bug 277792 - add built in types to static context. 
  *     Jesper Steen Moller - bug 297707 - Missing the empty-sequence() type
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 325262 - providing ability to store an XPath2 sequence
+ *                                 into an user-defined variable.
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -19,6 +21,7 @@ import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.function.FnFunctionLibrary;
 import org.eclipse.wst.xml.xpath2.processor.function.XSCtrLibrary;
@@ -546,7 +549,7 @@ public class DefaultStaticContext implements StaticContext {
 	 *            variable name to add.
 	 */
 	public void add_variable(QName var) {
-		set_variable(var, null);
+		set_variable(var, (AnyType) null);
 	}
 
 	// overwrites, or creates
@@ -555,6 +558,16 @@ public class DefaultStaticContext implements StaticContext {
 
 		scope.put(var, val);
 	}
+	
+	/*
+	 * Set a XPath2 sequence into a variable.
+	 */
+	protected void set_variable(QName var, ResultSequence val) {
+		Map scope = current_scope();
+
+		scope.put(var, val);
+	}
+	
 
 	/**
 	 * Deletes a variable from current scope.
@@ -575,7 +588,7 @@ public class DefaultStaticContext implements StaticContext {
 	}
 
 	// return null if "not found"
-	protected AnyType get_var(QName var) {
+	protected Object get_var(QName var) {
 		// go through the stack in reverse order... reverse iterators
 		// would be nice here...
 
@@ -585,7 +598,7 @@ public class DefaultStaticContext implements StaticContext {
 
 			// gotcha
 			if (scope.containsKey(var)) {
-				return (AnyType) scope.get(var);
+				return scope.get(var);
 			}
 		}
 

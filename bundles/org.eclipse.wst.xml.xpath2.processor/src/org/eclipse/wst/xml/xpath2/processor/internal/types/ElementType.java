@@ -14,13 +14,14 @@
  *     David Carver (STAR) - bug 289304 - fix schema awarness of types on elements
  *     Jesper Moller - bug 297958 - Fix fn:nilled for elements
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 323900 - improving computing the typed value of element &
+ *                                 attribute nodes, where the schema type of nodes
+ *                                 are simple, with varieties 'list' and 'union'. 
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import org.apache.xerces.dom.PSVIElementNSImpl;
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -109,38 +110,34 @@ public class ElementType extends NodeType {
 	}
 
 	/**
-	 * Creates a new ResultSequence consisting of the element stored
+	 * Creates a new ResultSequence consisting of the typed value of an
+	 * element node.
 	 * 
-	 * @return New ResultSequence consisting of the element stored
+	 * @return New ResultSequence consisting of the typed-value sequence.
 	 */
 	public ResultSequence typed_value() {
+		
 		ResultSequence rs = ResultSequenceFactory.create_new();
 		
 		if (!(_value instanceof PSVIElementNSImpl)) {
 			rs.add(new XSUntypedAtomic(string_value()));
-			return rs;
 		}
+		else {
+		   PSVIElementNSImpl typeInfo = (PSVIElementNSImpl) _value;
 
-		PSVIElementNSImpl typeInfo = (PSVIElementNSImpl) _value;
-
-		XSTypeDefinition typeDef = typeInfo.getTypeDefinition();
-
-		if (typeDef != null) {
-			XSSimpleTypeDefinition simpType = null;
-			if (typeDef instanceof XSComplexTypeDefinition) {
-				XSComplexTypeDefinition complexTypeDefinition = (XSComplexTypeDefinition) typeDef;
-				simpType = complexTypeDefinition.getSimpleType();
-			} else {
-				simpType = (XSSimpleTypeDefinition) typeDef;
-			}
-			Object schemaTypeValue = getTypedValueForPrimitiveType(simpType);
-			if (schemaTypeValue != null) {
-				rs.add((AnyType) schemaTypeValue);
-			} else {
-				rs.add(new XSUntypedAtomic(string_value()));
-			}
-		} else {
-			rs.add(new XSUntypedAtomic(string_value()));
+		   // if the 'nilled' property of the node is 'false', attempt to
+		   // construct the typed-value as per the algorithm described in
+		   // XDM spec. if the 'nilled' property is 'true', the typed-value
+		   // is an empty sequence.
+		   if (!typeInfo.getNil()) {
+		      XSTypeDefinition typeDef = typeInfo.getTypeDefinition();		   
+		      if (typeDef != null) {
+		         rs = getXDMTypedValue(typeDef, typeInfo.getItemValueTypes());
+		      }
+		      else {
+			     rs.add(new XSUntypedAtomic(string_value()));  
+		      }
+		   }
 		}
 
 		return rs;

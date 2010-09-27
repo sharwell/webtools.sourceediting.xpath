@@ -15,24 +15,36 @@
  *     Jesper Moller- bug 275610 - Avoid big time and memory overhead for externals
  *     Jesper Moller- bug 280555 - Add pluggable collation support
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 325262 - providing ability to store an XPath2 sequence into
+ *                                 an user-defined variable.
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
 
-import org.apache.xerces.xs.*;
-import org.eclipse.wst.xml.xpath2.processor.internal.DefaultResultSequence;
-import org.eclipse.wst.xml.xpath2.processor.internal.DefaultStaticContext;
-import org.eclipse.wst.xml.xpath2.processor.internal.Focus;
-import org.eclipse.wst.xml.xpath2.processor.internal.function.*;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
-
-import java.util.*;
-
-import org.w3c.dom.*;
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
+
+import org.apache.xerces.xs.XSModel;
+import org.eclipse.wst.xml.xpath2.processor.internal.DefaultStaticContext;
+import org.eclipse.wst.xml.xpath2.processor.internal.Focus;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.Function;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FunctionLibrary;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * The default implementation of a Dynamic Context.
@@ -139,7 +151,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	 * 
 	 * @return an AnyType result from get_var(name) or return NULL
 	 */
-	public AnyType get_variable(QName name) {
+	public Object get_variable(QName name) {
 		// XXX: built-in variables
 		if ("fs".equals(name.prefix())) {
 			if (name.local().equals("dot"))
@@ -242,6 +254,14 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	 *            Variable value.
 	 */
 	public void set_variable(QName var, AnyType val) {
+		super.set_variable(var, val);
+	}
+	
+	
+	/*
+	 * Set a XPath2 sequence into a variable.
+	 */
+	public void set_variable(QName var, ResultSequence val) {
 		super.set_variable(var, val);
 	}
 

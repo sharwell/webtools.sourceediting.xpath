@@ -42,7 +42,7 @@ public class XSDecimal extends NumericType {
 	 * Initiates a representation of 0.0
 	 */
 	public XSDecimal() {
-		this(new BigDecimal(0));
+		this(BigDecimal.valueOf(0));
 	}
 
 	/**

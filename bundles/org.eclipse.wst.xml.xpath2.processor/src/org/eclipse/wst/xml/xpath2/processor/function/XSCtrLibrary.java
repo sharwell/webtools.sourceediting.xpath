@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,53 +25,13 @@
  *     David Carver - bug 262765 - implementation of xs:untypedAtomic data type.
  *     Jesper Moller - bug 297707 - Missing the empty-sequence() type
  *     Mukul Gandhi - bug 309585 - implementation of xs:normalizedString data type
- *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 334478 - implementation of xs:token data type
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.function;
 
 import org.eclipse.wst.xml.xpath2.processor.internal.function.ConstructorFL;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBase64Binary;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSByte;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDate;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDateTime;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSEntity;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSGDay;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSGMonth;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSGMonthDay;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSGYear;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSGYearMonth;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSHexBinary;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSID;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSIDREF;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInt;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSLong;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNCName;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNegativeInteger;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNonNegativeInteger;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNonPositiveInteger;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNormalizedString;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNotation;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSPositiveInteger;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSShort;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSTime;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUnsignedByte;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUnsignedInt;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUnsignedLong;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUnsignedShort;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.XSYearMonthDuration;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
 
 /**
  * XML Schema control library support.
@@ -91,16 +51,15 @@ public class XSCtrLibrary extends ConstructorFL {
 		// add types here
 		add_type(new XSString());
 		add_type(new XSNormalizedString());
+		add_type(new XSToken());
 		add_type(new XSBoolean());
 		add_type(new XSUntypedAtomic());
 		add_type(new XSNotation());
 
 		add_abstract_type("anyAtomicType", new AnyAtomicType() {
-
 			public String string_type() {
 				return null;
 			}
-
 			public String string_value() {
 				return null;
 			}

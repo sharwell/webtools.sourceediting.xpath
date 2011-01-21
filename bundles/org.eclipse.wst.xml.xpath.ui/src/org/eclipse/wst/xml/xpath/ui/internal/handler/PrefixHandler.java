@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009 Standards for Technology in Automotive Retail and others.
+ * Copyright (c) 2009-11 Standards for Technology in Automotive Retail and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     David Carver - initial API
+ *     Jesper Steen Møller - Bug 333685 - NPE thrown when no XML editor selected
  *******************************************************************************/
 package org.eclipse.wst.xml.xpath.ui.internal.handler;
 
@@ -48,6 +49,9 @@ public class PrefixHandler extends AbstractHandler implements IHandler {
 		XPathUIPlugin plugin = XPathUIPlugin.getDefault();
 		
 		IEditorPart activeEditor = HandlerUtil.getActiveEditor(event);
+		
+		// suppress an NPE in the log (shouldn't happen with the enabledWhen rule)
+		if (activeEditor == null) return null;
 		IFile file = (IFile) activeEditor.getEditorInput().getAdapter(
 				IFile.class);
 		IModelManager modelManager = StructuredModelManager.getModelManager();

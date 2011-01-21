@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,13 +7,14 @@
  *
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
+import java.util.ListIterator;
+
 import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 
 /**
@@ -28,14 +29,12 @@ public class SelfAxis extends ForwardAxis {
 	 *            is the node type
 	 * @param dc
 	 *            is the dynamic context
-	 * @return rs containing node
+	 * @destination The context node and its descendants.
 	 */
-	public ResultSequence iterate(NodeType node, DynamicContext dc) {
-		ResultSequence rs = ResultSequenceFactory.create_new();
+	protected void collect(NodeType node, DynamicContext dc,
+		ListIterator destination) {
 
-		rs.add(node);
-
-		return rs;
+		destination.add(node);
 	}
 
 }

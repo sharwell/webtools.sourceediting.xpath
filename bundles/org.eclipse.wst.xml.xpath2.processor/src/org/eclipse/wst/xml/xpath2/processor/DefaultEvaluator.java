@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,6 +18,7 @@
  *     Mukul Gandhi         - bug 280798 - PsychoPath support for JDK 1.4
  *     Mukul Gandhi         - bug 325262 - providing ability to store an XPath2 sequence 
  *                                         into an user-defined variable.
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -1076,8 +1077,7 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 
 		// XXX lame
 		if (node_types) {
-			rs = NodeType.eliminate_dups(rs);
-			rs = NodeType.sort_document_order(rs);
+			rs = NodeType.linearize(rs);
 		}
 
 		return rs;

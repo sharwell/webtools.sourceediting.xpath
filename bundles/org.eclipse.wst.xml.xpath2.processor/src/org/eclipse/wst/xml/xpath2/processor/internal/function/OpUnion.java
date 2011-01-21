@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     Jesper Steen Moeller - bug 285145 - implement full arity checking
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
@@ -19,10 +20,12 @@ import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.ResultSequenceUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.TreeSet;
 
 /**
  * Support for Union operation.
@@ -62,8 +65,6 @@ public class OpUnion extends Function {
 	 * @return Result of operation.
 	 */
 	public static ResultSequence op_union(Collection args) throws DynamicError {
-		ResultSequence rs = ResultSequenceFactory.create_new();
-
 		// convert arguments
 		Collection cargs = Function.convert_arguments(args, expected_args());
 
@@ -72,13 +73,10 @@ public class OpUnion extends Function {
 		ResultSequence one = (ResultSequence) iter.next();
 		ResultSequence two = (ResultSequence) iter.next();
 
-		// XXX i don't fink u've ever seen anything lamer than this
-		rs.concat(one);
-		rs.concat(two);
-		rs = NodeType.eliminate_dups(rs);
-		rs = NodeType.sort_document_order(rs);
-
-		return rs;
+		TreeSet all = new TreeSet(NodeType.NODE_COMPARATOR);
+		ResultSequenceUtil.copyToCollection(one.iterator(), all);
+		ResultSequenceUtil.copyToCollection(two.iterator(), all);
+		return ResultSequenceUtil.resultSequenceFromCollection(all);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -16,6 +17,7 @@ import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 
 import java.util.Iterator;
+import java.util.ListIterator;
 
 /**
  * The following-sibling axis contains the context node's following siblings,
@@ -37,7 +39,7 @@ public class FollowingSiblingAxis extends ForwardAxis {
 	public ResultSequence iterate(NodeType node, DynamicContext dc) {
 		// XXX check for attribute / namespace node... if so return
 		// empty sequence
-
+		
 		// get the parent
 		ParentAxis pa = new ParentAxis();
 		ResultSequence rs = pa.iterate(node, dc);
@@ -70,4 +72,8 @@ public class FollowingSiblingAxis extends ForwardAxis {
 		return rs;
 	}
 
+	protected void collect(NodeType node, DynamicContext dc,
+			ListIterator destination) {
+		// Not used, since super.iterate is never called
+	}
 }

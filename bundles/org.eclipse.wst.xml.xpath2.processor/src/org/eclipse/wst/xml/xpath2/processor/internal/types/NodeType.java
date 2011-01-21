@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,13 +18,13 @@
  *     Mukul Gandhi - bug 323900 - improving computing the typed value of element &
  *                                 attribute nodes, where the schema type of nodes
  *                                 are simple, with varieties 'list' and 'union'.                                 
+ *     Jesper Moller - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 import org.apache.xerces.impl.dv.InvalidDatatypeValueException;
 import org.apache.xerces.impl.dv.ValidatedInfo;
@@ -36,9 +36,10 @@ import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.eclipse.wst.xml.xpath2.processor.PsychoPathTypeHelper;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-import org.eclipse.wst.xml.xpath2.processor.PsychoPathTypeHelper;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.ResultSequenceUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -56,7 +57,13 @@ public abstract class NodeType extends AnyType {
 	protected static final String SCHEMA_TYPE_IDREF = "IDREF";
 	protected static final String SCHEMA_TYPE_ID = "ID";
 	private Node _node;
-		
+
+	public static final Comparator NODE_COMPARATOR = new Comparator() {
+		public int compare(Object o1, Object o2) {
+			return compare_node((NodeType)o1, (NodeType)o2);
+		}
+	};
+	
 	/**
 	 * Initialises according to the supplied parameters
 	 * 
@@ -132,49 +139,10 @@ public abstract class NodeType extends AnyType {
 		return null;
 	}
 
-	public static ResultSequence eliminate_dups(ResultSequence rs) {
-		Hashtable added = new Hashtable(rs.size());
-
-		for (Iterator i = rs.iterator(); i.hasNext();) {
-			NodeType node = (NodeType) i.next();
-			Node n = node.node_value();
-
-			if (added.containsKey(n))
-				i.remove();
-			else
-				added.put(n, Boolean.TRUE);
-		}
-		return rs;
-	}
-
-	public static ResultSequence sort_document_order(ResultSequence rs) {
-		ArrayList res = new ArrayList(rs.size());
-
-		for (Iterator i = rs.iterator(); i.hasNext();) {
-			NodeType node = (NodeType) i.next();
-			boolean added = false;
-
-			for (int j = 0; j < res.size(); j++) {
-				NodeType x = (NodeType) res.get(j);
-
-				if (before(node, x)) {
-					res.add(j, node);
-					added = true;
-					break;
-				}
-			}
-			if (!added)
-				res.add(node);
-		}
-
-		rs = ResultSequenceFactory.create_new();
-		for (Iterator i = res.iterator(); i.hasNext();) {
-			NodeType node = (NodeType) i.next();
-
-			rs.add(node);
-		}
-
-		return rs;
+	public static ResultSequence linearize(ResultSequence rs) {
+		TreeSet all = new TreeSet(NODE_COMPARATOR);
+		ResultSequenceUtil.copyToCollection(rs.iterator(), all);
+		return ResultSequenceUtil.resultSequenceFromCollection(all);
 	}
 
 	public static boolean same(NodeType a, NodeType b) {
@@ -207,7 +175,7 @@ public abstract class NodeType extends AnyType {
 		Document docA = getDocument(nodeA);
 		Document docB = getDocument(nodeB);
 		
-		if (docA != docB && ! docA.isSameNode(docB)) {
+		if (docA != docB) {
 			return compareDocuments(docA, docB);
 		}
 		short relation = nodeA.compareDocumentPosition(nodeB);
@@ -218,13 +186,24 @@ public abstract class NodeType extends AnyType {
 		throw new RuntimeException("Unexpected result from node comparison: " + relation);
 	}
 
+	/**
+	 * Compare two documents (node ordering wise). Uses information from the DOM itself if applicable,
+	 * otherwise uses document URI, or if they are identical, compare by hash code.
+	 * 
+	 * @param docA First document
+	 * @param docB Second document
+	 * @return negative, zero, or positive like {@link Comparable#compareTo(Object)}
+	 */
 	private static int compareDocuments(Document docA, Document docB) {
+		if (docA.isSameNode(docB)) return 0; // Object alias for same underlying node (proxy?)
+		
 		// Arbitrary but fulfills the spec (provided documenURI is always set)
-		if (docB.getDocumentURI() == null && docA.getDocumentURI() == null) {
-			// Best guess
-			return 0; 
+		if (docA.getDocumentURI() != null && docB.getDocumentURI() != null) {
+			int difference = docB.getDocumentURI().compareTo(docA.getDocumentURI());
+			if (difference != 0) return difference;
 		}
-		return docB.getDocumentURI().compareTo(docA.getDocumentURI());
+		// Last resort
+		return docA.hashCode() - docB.hashCode();
 	}
 
 	private static Document getDocument(Node nodeA) {
@@ -406,6 +385,14 @@ public abstract class NodeType extends AnyType {
 			} 
 		}
 		return false;
+	}
+	
+	public boolean equals(Object obj) {
+		return obj instanceof NodeType && same(this, (NodeType)obj);
+	}
+	
+	public int hashCode() {
+		return _node.hashCode();
 	}
 	
 }

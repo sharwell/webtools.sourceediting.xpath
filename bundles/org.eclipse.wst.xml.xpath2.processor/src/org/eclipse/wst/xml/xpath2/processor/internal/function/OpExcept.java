@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,20 +9,23 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     Jesper Steen Moeller - bug 285145 - implement full arity checking
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
-import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.TreeSet;
+
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
+import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.ResultSequenceUtil;
 
 /**
  * Support for Except operation on node types.
@@ -62,8 +65,6 @@ public class OpExcept extends Function {
 	 * @return Result of operation.
 	 */
 	public static ResultSequence op_except(Collection args) throws DynamicError {
-		ResultSequence rs = ResultSequenceFactory.create_new();
-
 		// convert arguments
 		Collection cargs = Function.convert_arguments(args, expected_args());
 
@@ -71,29 +72,12 @@ public class OpExcept extends Function {
 		Iterator iter = cargs.iterator();
 		ResultSequence one = (ResultSequence) iter.next();
 		ResultSequence two = (ResultSequence) iter.next();
+		
+		TreeSet all = new TreeSet(NodeType.NODE_COMPARATOR);
+		for (ListIterator itOne = one.iterator(); itOne.hasNext(); ) all.add(itOne.next());
+		for (ListIterator itTwo = two.iterator(); itTwo.hasNext(); ) all.remove(itTwo.next());
 
-		// XXX lame
-		for (Iterator i = one.iterator(); i.hasNext();) {
-			NodeType node = (NodeType) i.next();
-			boolean found = false;
-
-			// death
-			for (Iterator j = two.iterator(); j.hasNext();) {
-				NodeType node2 = (NodeType) j.next();
-
-				if (node.node_value() == node2.node_value()) {
-					found = true;
-					break;
-				}
-
-			}
-			if (!found)
-				rs.add(node);
-		}
-		rs = NodeType.eliminate_dups(rs);
-		rs = NodeType.sort_document_order(rs);
-
-		return rs;
+		return ResultSequenceUtil.resultSequenceFromCollection(all);
 	}
 
 	/**

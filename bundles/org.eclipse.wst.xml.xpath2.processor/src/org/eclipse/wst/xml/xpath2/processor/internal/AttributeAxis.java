@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,9 +9,13 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     Jesper Moller - bug 275610 - Avoid big time and memory overhead for externals
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
+
+
+import java.util.ListIterator;
 
 import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
@@ -35,28 +39,25 @@ public class AttributeAxis extends ForwardAxis {
 	 *            is the type of node.
 	 * @param dc
 	 *            is the dynamic context.
-	 * @return The attibutes of the context node.
+	 * @destination The context node and its descendants.
 	 */
-	public ResultSequence iterate(NodeType node, DynamicContext dc) {
-		ResultSequence rs = ResultSequenceFactory.create_new();
+	protected void collect(NodeType node, DynamicContext dc,
+		ListIterator destination) {
 
 		// only elements have attributes
 		if (!(node instanceof ElementType))
-			return rs;
-
+			return;
+	
 		// get attributes
 		ElementType elem = (ElementType) node;
 		NamedNodeMap attrs = elem.value().getAttributes();
-
+		
 		// add attributes
 		for (int i = 0; i < attrs.getLength(); i++) {
 			Attr attr = (Attr) attrs.item(i);
 
-			rs.add(NodeType.dom_to_xpath(attr));
+			destination.add(NodeType.dom_to_xpath(attr));
 		}
-
-		return rs;
-
 	}
 
 	/**

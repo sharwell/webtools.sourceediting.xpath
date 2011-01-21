@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -18,7 +19,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
  * An axis that only ever contains the context node or nodes that are after the
  * context node in document order is a forward axis.
  */
-public abstract class ForwardAxis implements Axis {
+public abstract class ForwardAxis extends AbstractAxis {
 
 	/**
 	 * Return the new Element Type

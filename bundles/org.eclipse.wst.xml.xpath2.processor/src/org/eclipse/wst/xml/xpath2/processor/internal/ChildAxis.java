@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,9 +9,13 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0
  *     David Carver (STAR) - bug 262765 - Was not handling xml loaded dynamically in variables. 
  *     Jesper Moller - bug 275610 - Avoid big time and memory overhead for externals
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
+
+
+import java.util.ListIterator;
 
 import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
@@ -34,12 +38,11 @@ public class ChildAxis extends ForwardAxis {
 	 *            is the type of node.
 	 * @param dc
 	 *            is the dynamic context.
-	 * @return The context node's children.
+	 * @destination The context node and its descendants.
 	 */
-	public ResultSequence iterate(NodeType node, DynamicContext dc) {
-		ResultSequence rs = ResultSequenceFactory.create_new();
+	protected void collect(NodeType node, DynamicContext dc,
+		ListIterator destination) {
 		NodeList nl = null;
-		
 
 		// only document and element nodes have children
 		if (node instanceof DocType) {
@@ -59,11 +62,9 @@ public class ChildAxis extends ForwardAxis {
 					n = NodeType.dom_to_xpath(dnode);
 				}
 
-				rs.add(n);
+				destination.add(n);
 			}
 		}
-
-		return rs;
 	}
 
 }

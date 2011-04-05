@@ -265,15 +265,14 @@ public abstract class NodeType extends AnyType {
 	
 	
     /*
-     * Helper method to construct typed value of an XDM node.
+     * Get the XDM typed value for schema "simple content model". 
      */
 	private ResultSequence getTypedValueForSimpleContent(XSSimpleTypeDefinition simpType, ShortList itemValueTypes) {
 		
 		ResultSequence rs = ResultSequenceFactory.create_new();
 		
 		if (simpType.getVariety() == XSSimpleTypeDefinition.VARIETY_ATOMIC) {
-		   AnyType schemaTypeValue = SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathTypeHelper.getXSDTypeShortCode(simpType), 
-				                                                               string_value());
+		   AnyType schemaTypeValue = SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathTypeHelper.getXSDTypeShortCode(simpType), string_value());
 		   if (schemaTypeValue != null) {
 				rs.add(schemaTypeValue);
 		   } else {
@@ -305,8 +304,7 @@ public abstract class NodeType extends AnyType {
 			for (int listItemIdx = 0; listItemIdx < listItemsStrValues.length; listItemIdx++) {
 			   // add an atomic typed value (whose type is the "item  type" of the list, and "string value" is the "string 
 			   // value of the list item") to the "result sequence".
-		       rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathTypeHelper.getXSDTypeShortCode(itemType), 
-		                                                        listItemsStrValues[listItemIdx]));
+		       rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathTypeHelper.getXSDTypeShortCode(itemType), listItemsStrValues[listItemIdx]));
 			}
 		}
 		else if (itemType.getVariety() == XSSimpleTypeDefinition.VARIETY_UNION) {

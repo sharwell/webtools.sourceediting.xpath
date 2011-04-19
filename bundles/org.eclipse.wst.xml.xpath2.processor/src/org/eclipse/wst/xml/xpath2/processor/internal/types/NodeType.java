@@ -15,10 +15,10 @@
  *     David Carver (STAR) - bug 289304 - fixed schema awareness on elements
  *     Mukul Gandhi - bug 318313 - improvements to computation of typed values of nodes,
  *                                 when validated by XML Schema primitive types
- *     Mukul Gandhi - bug 323900 - improving computing the typed value of element &
- *                                 attribute nodes, where the schema type of nodes
+ *     Mukul Gandhi - bug 323900 - improving computing the typed value of element & attribute nodes, where the schema type of nodes
  *                                 are simple, with varieties 'list' and 'union'.                                 
  *     Jesper Moller - bug 316988 - Removed O(n^2) performance for large results
+ *     Mukul Gandhi  - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -26,11 +26,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 import java.util.Comparator;
 import java.util.TreeSet;
 
-import org.apache.xerces.impl.dv.InvalidDatatypeValueException;
-import org.apache.xerces.impl.dv.ValidatedInfo;
-import org.apache.xerces.impl.dv.ValidationContext;
 import org.apache.xerces.impl.dv.XSSimpleType;
-import org.apache.xerces.impl.validation.ValidationState;
 import org.apache.xerces.xs.ShortList;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSObjectList;
@@ -329,8 +325,7 @@ public abstract class NodeType extends AnyType {
 		// check member types in order, to find that which one can successfully validate the string value.
 		for (int memTypeIdx = 0; memTypeIdx < memberTypes.getLength(); memTypeIdx++) {
 		   XSSimpleType memSimpleType = (XSSimpleType) memberTypes.item(memTypeIdx);
-		   if (isValueValidForSimpleType(string_value(), memSimpleType)) {
-			  
+		   if (PsychoPathTypeHelper.isValueValidForSimpleType(string_value(), memSimpleType)) {			  
 			   rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathTypeHelper.getXSDTypeShortCode(memSimpleType), string_value()));
 			   // no more memberTypes need to be checked
 			   break; 
@@ -338,30 +333,6 @@ public abstract class NodeType extends AnyType {
 		}
 		
 	} // getTypedValueForVarietyUnion
-	
-	
-	/*
-	 * Determine if a "string value" is valid for a given simpleType definition. This is a helped method for other methods.
-	 */
-	private boolean isValueValidForSimpleType (String value, XSSimpleType simplType) {
-		
-		boolean isValueValid = true;
-		
-		try {
-			ValidatedInfo validatedInfo = new ValidatedInfo();
-			ValidationContext validationState = new ValidationState();
-     		
-			// attempt to validate the value with the simpleType
-			simplType.validate(value, validationState, validatedInfo);
-	    } 
-		catch(InvalidDatatypeValueException ex){
-			isValueValid = false;
-	    }
-		
-		return isValueValid;
-		
-	} // isValueValidForASimpleType
-	
 	
 	public abstract boolean isID();
 	

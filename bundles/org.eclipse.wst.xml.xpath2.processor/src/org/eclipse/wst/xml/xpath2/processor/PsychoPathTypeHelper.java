@@ -8,17 +8,22 @@
  * Contributors:
  *     Mukul Gandhi - initial API and implementation
  *     Mukul Gandhi - bug 323900 - improving computing the typed value of element and attribute nodes, where the 
- *                                 schema type of nodes are simple, with varieties 'list' and 'union'. 
+ *                                 schema type of nodes are simple, with varieties 'list' and 'union'.
+ *     Mukul Gandhi - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types 
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
 
+import org.apache.xerces.impl.dv.InvalidDatatypeValueException;
+import org.apache.xerces.impl.dv.ValidatedInfo;
+import org.apache.xerces.impl.dv.ValidationContext;
+import org.apache.xerces.impl.dv.XSSimpleType;
+import org.apache.xerces.impl.validation.ValidationState;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 
 /*
- * An PsychoPath Engine helper class providing useful module implementations for commonly 
- * performed "XML schema" evaluation tasks.  
+ * An PsychoPath Engine helper class providing common method implementations for performing XML schema evaluation tasks.  
  */
 public class PsychoPathTypeHelper {
 	
@@ -46,5 +51,27 @@ public class PsychoPathTypeHelper {
 		return (typeCode != -100) ? typeCode : ((XSSimpleTypeDefinition) typeDef).getBuiltInKind();
 		
 	} // getXSDTypeShortCode
+	
+	
+	/*
+	 * Determine if a "string value" is valid for a given simpleType definition.
+	 */
+	public static boolean isValueValidForSimpleType(String value, XSSimpleType simplType) {
+		
+		boolean isValueValid = true;
+		
+		try {
+			ValidatedInfo validatedInfo = new ValidatedInfo();
+			ValidationContext validationState = new ValidationState();     		
+			// attempt to validate the value with the simpleType
+			simplType.validate(value, validationState, validatedInfo);
+	    } 
+		catch(InvalidDatatypeValueException ex){
+			isValueValid = false;
+	    }
+		
+		return isValueValid;
+		
+	} // isValueValidForASimpleType
 
 }

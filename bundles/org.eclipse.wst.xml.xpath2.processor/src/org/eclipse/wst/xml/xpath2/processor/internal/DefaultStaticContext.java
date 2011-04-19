@@ -10,8 +10,8 @@
  *     David Carver (STAR) - bug 277792 - add built in types to static context. 
  *     Jesper Steen Moller - bug 297707 - Missing the empty-sequence() type
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
- *     Mukul Gandhi - bug 325262 - providing ability to store an XPath2 sequence
- *                                 into an user-defined variable.
+ *     Mukul Gandhi - bug 325262 - providing ability to store an XPath2 sequence into an user-defined variable
+ *     Mukul Gandhi - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types                                 
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -310,6 +310,18 @@ public class DefaultStaticContext implements StaticContext {
 	 */
 	public boolean expand_elem_type_qname(QName name) {
 		return expand_qname(name, default_namespace());
+	}
+	
+	/**
+	 * Returns a top-level simple or complex type definition, from the XSModel instance.
+	 * A null value is returned, if no such type definition exists.
+	 * 
+	 * @param qname
+	 *            type name.
+	 * @return the schema type definition.
+	 */
+	public XSTypeDefinition getInScopeTypeDefinition(QName qname) {
+		return _schema.getTypeDefinition(qname.local(), qname.namespace());
 	}
 
 	/**

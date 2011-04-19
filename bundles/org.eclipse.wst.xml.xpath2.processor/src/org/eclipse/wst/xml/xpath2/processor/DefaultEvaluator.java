@@ -16,17 +16,21 @@
  *     Jesper Steen Moller  - bug 262765 - use correct 'effective boolean value'
  *     Jesper Steen Moller  - bug 312191 - instance of test fails with partial matches
  *     Mukul Gandhi         - bug 280798 - PsychoPath support for JDK 1.4
- *     Mukul Gandhi         - bug 325262 - providing ability to store an XPath2 sequence 
- *                                         into an user-defined variable.
+ *     Mukul Gandhi         - bug 325262 - providing ability to store an XPath2 sequence into an user-defined variable
  *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
+ *     Mukul Gandhi         - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
 
+import org.apache.xerces.impl.dv.XSSimpleType;
 import org.apache.xerces.xs.ItemPSVI;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.Axis;
+import org.eclipse.wst.xml.xpath2.processor.internal.DefaultStaticContext;
 import org.eclipse.wst.xml.xpath2.processor.internal.DescendantOrSelfAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.Focus;
 import org.eclipse.wst.xml.xpath2.processor.internal.ForwardAxis;
@@ -898,9 +902,7 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 	public Object visit(CastableExpr cexp) {
 		boolean castable = false;
 		try {
-			CastExpr ce = new CastExpr((Expr) cexp.left(), (SingleType) cexp
-					.right());
-
+			CastExpr ce = new CastExpr((Expr) cexp.left(), (SingleType) cexp.right());
 			visit(ce);
 			castable = true;
 		} catch (Throwable t) {
@@ -942,25 +944,34 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 		AnyAtomicType aat = (AnyAtomicType) at;
 
 		QName type = st.type();
-
-		// check if constructor exists
-		// try {
-		if (!_dc.function_exists(type, 1))
-			report_error(TypeError.invalid_type(null));
-		/*
-		 * } catch(StaticNsNameError err) {
-		 * report_error(TypeError.invalid_type(null)); }
-		 */
-		// prepare args from function
-		Collection args = new ArrayList();
-		args.add(ResultSequenceFactory.create_new(aat));
-
-		try {
-			return _dc.evaluate_function(type, args);
-		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+		
+		if (_dc.function_exists(type, 1)) {
+			// check if constructor exists
+			// prepare args from function
+			Collection args = new ArrayList();
+			args.add(ResultSequenceFactory.create_new(aat));
+			try {
+				return _dc.evaluate_function(type, args);
+			} catch (DynamicError err) {				
+				report_error(err);
+				return null; // unreach
+			}
 		}
+		else {
+			// check castable with other in-scope "use defined" simple types
+			XSTypeDefinition inScopeTypeDefn = ((DefaultStaticContext) _dc).getInScopeTypeDefinition(type);
+			if (inScopeTypeDefn == null || inScopeTypeDefn instanceof XSComplexTypeDefinition || 
+				  ((XSSimpleTypeDefinition) inScopeTypeDefn).getVariety() != XSSimpleTypeDefinition.VARIETY_ATOMIC) {
+				throw new DummyError(1);
+			}
+			else if (PsychoPathTypeHelper.isValueValidForSimpleType(at.string_value(), (XSSimpleType) inScopeTypeDefn)) {
+				return Boolean.valueOf(true);
+			}
+			else {
+				throw new DummyError(0);
+			}
+		}
+		
 	}
 
 	/**

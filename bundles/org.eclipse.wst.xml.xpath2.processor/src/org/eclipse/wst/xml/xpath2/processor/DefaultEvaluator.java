@@ -19,6 +19,7 @@
  *     Mukul Gandhi         - bug 325262 - providing ability to store an XPath2 sequence into an user-defined variable
  *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *     Mukul Gandhi         - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
+ *     Mukul Gandhi         - bug 353373 - the reverse axes behavior doesn't work correctly
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -180,6 +181,9 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 	// previous parameter is not saved... so use with care! [remember...
 	// this thing is highly recursive]
 	private Object _param;
+	
+	// temporary variable to track if a reverse step is currently been processed 
+	private boolean fIsReverseStep = false;
 
 	static class Pair {
 		public Object _one;
@@ -1266,6 +1270,7 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 	 */
 	// XXX unify with top
 	public Object visit(ReverseStep e) {
+		fIsReverseStep = true;
 		// get context node
 		AnyType ci = _dc.context_item();
 
@@ -1971,6 +1976,10 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 								.int_value()).intValue();
 
 						if (pos <= focus.last() && pos > 0) {
+							if (fIsReverseStep == true) {
+								pos = focus.last() - pos + 1;
+								fIsReverseStep = false; // reset
+							}
 							focus.set_position(pos);
 							rs.add(focus.context_item());
 						}

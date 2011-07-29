@@ -6,7 +6,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
+ *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0
+ *     Mukul Gandhi  - bug 353373 - the reverse axes behavior doesn't work correctly
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -23,7 +24,6 @@ import java.util.Iterator;
  * tree in which the context node is found
  */
 public class PrecedingAxis extends ReverseAxis {
-	// XXX DOCUMENT ORDER.... dunno
 
 	/**
 	 * returns preceding nodes of the context node
@@ -45,27 +45,36 @@ public class PrecedingAxis extends ReverseAxis {
 			parent = (NodeType) rs.get(0);
 
 		// get the preceding siblings of this node, and add them
-		PrecedingSiblingAxis psa = new PrecedingSiblingAxis();
-		rs = psa.iterate(node, dc);
-		result.concat(rs);
-
-		// for each sibling, get all its descendants
-		DescendantAxis da = new DescendantAxis();
-		for (Iterator i = rs.iterator(); i.hasNext();) {
-			ResultSequence desc = da.iterate((NodeType) i.next(), dc);
-
-			// add all descendants to the result
-			result.concat(desc);
-		}
-
-		// if we got a parent, we gotta repeat the story for the parent
-		// and add the results
 		if (parent != null) {
+			PrecedingSiblingAxis psa = new PrecedingSiblingAxis();
+			rs = psa.iterate(parent, dc);
+			
+			// for each sibling, get all its descendants
+			DescendantAxis da = new DescendantAxis();
+			for (Iterator i = rs.iterator(); i.hasNext();) {
+				// add firstly this node to the result
+				NodeType precedingNodeTmp = (NodeType) i.next();
+				result.add(precedingNodeTmp);
+				// get descendants of this node, and add them to the result
+				ResultSequence desc = da.iterate(precedingNodeTmp, dc);
+				result.concat(desc);
+			}
+			
+			// add preceding siblings of original context node & their descendants to the result
+			rs = psa.iterate(node, dc);
+			for (Iterator i = rs.iterator(); i.hasNext();) {
+				NodeType precedingNodeTmp = (NodeType) i.next();
+				result.add(precedingNodeTmp);
+				ResultSequence desc = da.iterate(precedingNodeTmp, dc);
+				result.concat(desc);
+			}
+			
+			// we gotta repeat the story for the parent and add the results
 			rs = iterate(parent, dc);
-
 			rs.concat(result);
 			result = rs;
 		}
+		
 		return result;
 	}
 }

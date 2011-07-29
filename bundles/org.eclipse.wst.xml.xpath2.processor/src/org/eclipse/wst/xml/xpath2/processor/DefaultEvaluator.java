@@ -19,7 +19,7 @@
  *     Mukul Gandhi         - bug 325262 - providing ability to store an XPath2 sequence into an user-defined variable
  *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *     Mukul Gandhi         - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
- *     Mukul Gandhi         - bug 353373 - the reverse axes behavior doesn't work correctly
+ *     Mukul Gandhi         - bug 353373 - "preceding" & "following" axes behavior is erroneous
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;

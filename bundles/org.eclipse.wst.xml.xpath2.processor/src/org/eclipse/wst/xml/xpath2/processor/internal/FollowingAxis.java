@@ -8,6 +8,7 @@
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
+ *     Mukul Gandhi  - bug 353373 - "preceding" & "following" axes behavior is erroneous
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -39,9 +40,6 @@ public class FollowingAxis extends ForwardAxis {
 	public ResultSequence iterate(NodeType node, DynamicContext dc) {
 		ResultSequence result = ResultSequenceFactory.create_new();
 
-		// XXX should be root... not parent!!! read the spec.... BUG BUG
-		// BUG LAME LAME....
-
 		// get the parent
 		NodeType parent = null;
 		ParentAxis pa = new ParentAxis();
@@ -49,26 +47,24 @@ public class FollowingAxis extends ForwardAxis {
 		if (rs.size() == 1)
 			parent = (NodeType) rs.get(0);
 
-		// get the following siblings of this node, and add them
+		DescendantAxis da = new DescendantAxis();
+
+		// get the following siblings & their descendants for this node and add them
 		FollowingSiblingAxis fsa = new FollowingSiblingAxis();
 		rs = fsa.iterate(node, dc);
-		result.concat(rs);
-
-		// for each sibling, get all its descendants
-		DescendantAxis da = new DescendantAxis();
 		for (Iterator i = rs.iterator(); i.hasNext();) {
-			ResultSequence desc = da.iterate((NodeType) i.next(), dc);
-
-			// add all descendants to the result
+			NodeType followingSiblingTemp = (NodeType) i.next();
+			result.add(followingSiblingTemp);
+			ResultSequence desc = da.iterate(followingSiblingTemp, dc);
 			result.concat(desc);
 		}
 
-		// if we got a parent, we gotta repeat the story for the parent
-		// and add the results
+		// if we got a parent, we gotta repeat the story for the parent and add the results
 		if (parent != null) {
 			rs = iterate(parent, dc);
 			result.concat(rs);
 		}
+
 		return result;
 	}
 	

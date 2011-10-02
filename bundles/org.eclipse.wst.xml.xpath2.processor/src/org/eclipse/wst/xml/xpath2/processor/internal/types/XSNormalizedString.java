@@ -80,8 +80,9 @@ public class XSNormalizedString extends XSString {
 			// invalid input
 			DynamicError.throw_type_error();
 		}
-		
-		rs.add(new XSNormalizedString(srcString));
+		else {
+			rs.add(new XSNormalizedString(srcString));	
+		}
 
 		return rs;
 	}

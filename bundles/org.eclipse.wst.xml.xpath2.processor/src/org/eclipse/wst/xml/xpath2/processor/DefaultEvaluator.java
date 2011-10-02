@@ -968,7 +968,7 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 				  ((XSSimpleTypeDefinition) inScopeTypeDefn).getVariety() != XSSimpleTypeDefinition.VARIETY_ATOMIC) {
 				throw new DummyError(1);
 			}
-			else if (PsychoPathTypeHelper.isValueValidForSimpleType(at.string_value(), (XSSimpleType) inScopeTypeDefn)) {
+			else if (PsychoPathXPath20TypeHelper.isValueValidForSimpleType(at.string_value(), (XSSimpleType) inScopeTypeDefn)) {
 				return Boolean.valueOf(true);
 			}
 			else {

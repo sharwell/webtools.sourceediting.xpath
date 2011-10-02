@@ -79,8 +79,9 @@ public class XSToken extends XSNormalizedString {
 			// invalid input
 			DynamicError.throw_type_error();
 		}
-		
-		rs.add(new XSToken(srcString));
+		else {
+			rs.add(new XSToken(srcString));
+		}
 
 		return rs;
 	}
@@ -94,8 +95,7 @@ public class XSToken extends XSNormalizedString {
 		
 		// satisfies constraints of xs:normalizedString and additionally must satisfy the condition,
 		// the string must not have leading or trailing spaces and that have no internal sequences of two or more spaces.
-		if (!super.isSatisfiesConstraints(srcString) || srcString.startsWith(" ") || 
-			 srcString.endsWith(" ") || srcString.indexOf("  ") != -1) {
+		if (!super.isSatisfiesConstraints(srcString) || srcString.startsWith(" ") || srcString.endsWith(" ") || srcString.indexOf("  ") != -1) {
 			isToken = false;
 		}
 		

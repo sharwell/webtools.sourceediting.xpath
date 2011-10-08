@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.apache.xerces.xs.XSConstants;
-import org.eclipse.wst.xml.xpath2.processor.PsychoPathXPath20TypeHelper;
+import org.eclipse.wst.xml.xpath2.processor.PsychoPathXPathTypeHelper;
 
 /**
  * A factory class implementation, to construct PsychoPath schema type representation corresponding 
@@ -114,11 +114,11 @@ public class SchemaTypeValueFactory {
 			return XSDuration.parseDTDuration(strValue);
 		}
 		
-		if (typeDef == PsychoPathXPath20TypeHelper.DAYTIMEDURATION_DT) {       
+		if (typeDef == PsychoPathXPathTypeHelper.DAYTIMEDURATION_DT) {       
 			return XSDayTimeDuration.parseDTDuration(strValue);
 		}
 		
-		if (typeDef == PsychoPathXPath20TypeHelper.YEARMONTHDURATION_DT) {       
+		if (typeDef == PsychoPathXPathTypeHelper.YEARMONTHDURATION_DT) {       
 			return XSYearMonthDuration.parseYMDuration(strValue);
 		}
 		// end of, duration types

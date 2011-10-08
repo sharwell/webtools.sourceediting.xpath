@@ -14,17 +14,19 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
+import org.apache.xerces.impl.Constants;
 import org.apache.xerces.impl.dv.InvalidDatatypeValueException;
 import org.apache.xerces.impl.dv.ValidatedInfo;
 import org.apache.xerces.impl.dv.XSSimpleType;
+import org.apache.xerces.impl.dv.xs.TypeValidatorHelper;
 import org.apache.xerces.impl.validation.ValidationState;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 
 /*
- * An PsychoPath Engine helper class providing common method implementations for performing XML schema evaluation tasks.  
+ * An PsychoPath XPath Engine helper class, providing common method implementations for performing XML Schema evaluation tasks.  
  */
-public class PsychoPathXPath20TypeHelper {
+public class PsychoPathXPathTypeHelper {
 	
 	// PsychoPath engine specific constants to support new built-in types, introduced in XML Schema 1.1.
 	public static short DAYTIMEDURATION_DT = -100;
@@ -62,7 +64,7 @@ public class PsychoPathXPath20TypeHelper {
 		try {
 			ValidatedInfo validatedInfo = new ValidatedInfo();
 	        ValidationState validationState = new ValidationState();
-	        //validationState.setTypeValidatorHelper(TypeValidatorHelper.getInstance(Constants.SCHEMA_VERSION_1_1));    		
+	        validationState.setTypeValidatorHelper(TypeValidatorHelper.getInstance(Constants.SCHEMA_VERSION_1_1));    		
 			// attempt to validate the value with the simpleType
 			simplType.validate(value, validationState, validatedInfo);
 	    } 
@@ -74,4 +76,4 @@ public class PsychoPathXPath20TypeHelper {
 		
 	} // isValueValidForASimpleType
 
-} // class PsychoPathXPath20TypeHelper
+} // class PsychoPathXPathTypeHelper

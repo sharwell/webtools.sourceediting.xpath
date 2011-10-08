@@ -10,6 +10,7 @@
  *     Jesper Moller- bug 281159 - debugging convenience toString method 
  *     David Carver (STAR) - bug 288886 - add unit tests and fix fn:resolve-qname function
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi	- bug 360306 - improvements to "resolve-QName" function and xs:QName type implementation
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -270,10 +271,10 @@ public class QName extends CtrType implements CmpEq {
 		QName arg = (QName) obj;
 
 		// if they aren't expanded... we can't compare them
-		if (!_expanded || !arg.expanded()) {
+		/*if (!_expanded || !arg.expanded()) {
 			assert false; // XXX not stricly necessary
 			return false;
-		}
+		} */
 
 		// two cases: null == null, or .equals(other)
 		String argn = arg.namespace();
@@ -334,6 +335,10 @@ public class QName extends CtrType implements CmpEq {
 	 */
 	public boolean eq(AnyType arg, DynamicContext context) throws DynamicError {
 		QName val = (QName) NumericType.get_single_type(arg, QName.class);
+		String nsUri = context.resolve_prefix(val._prefix);
+		if (nsUri != null) {
+		   val._namespace = nsUri;
+		}
 		return equals(val);
 	}
 	

@@ -32,7 +32,7 @@ import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
-import org.eclipse.wst.xml.xpath2.processor.PsychoPathXPath20TypeHelper;
+import org.eclipse.wst.xml.xpath2.processor.PsychoPathXPathTypeHelper;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.ResultSequenceUtil;
@@ -213,7 +213,7 @@ public abstract class NodeType extends AnyType {
 		   return new XSUntypedAtomic(strValue);
 		}
 		
-		return SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPath20TypeHelper.getXSDTypeShortCode(typeDef), strValue);
+		return SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPathTypeHelper.getXSDTypeShortCode(typeDef), strValue);
 		
 	} // getTypedValueForPrimitiveType 
 
@@ -268,7 +268,7 @@ public abstract class NodeType extends AnyType {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 		
 		if (simpType.getVariety() == XSSimpleTypeDefinition.VARIETY_ATOMIC) {
-		   AnyType schemaTypeValue = SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPath20TypeHelper.getXSDTypeShortCode(simpType), string_value());
+		   AnyType schemaTypeValue = SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPathTypeHelper.getXSDTypeShortCode(simpType), string_value());
 		   if (schemaTypeValue != null) {
 				rs.add(schemaTypeValue);
 		   } else {
@@ -300,7 +300,7 @@ public abstract class NodeType extends AnyType {
 			for (int listItemIdx = 0; listItemIdx < listItemsStrValues.length; listItemIdx++) {
 			   // add an atomic typed value (whose type is the "item  type" of the list, and "string value" is the "string 
 			   // value of the list item") to the "result sequence".
-		       rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPath20TypeHelper.getXSDTypeShortCode(itemType), listItemsStrValues[listItemIdx]));
+		       rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPathTypeHelper.getXSDTypeShortCode(itemType), listItemsStrValues[listItemIdx]));
 			}
 		}
 		else if (itemType.getVariety() == XSSimpleTypeDefinition.VARIETY_UNION) {
@@ -325,8 +325,8 @@ public abstract class NodeType extends AnyType {
 		// check member types in order, to find that which one can successfully validate the string value.
 		for (int memTypeIdx = 0; memTypeIdx < memberTypes.getLength(); memTypeIdx++) {
 		   XSSimpleType memSimpleType = (XSSimpleType) memberTypes.item(memTypeIdx);
-		   if (PsychoPathXPath20TypeHelper.isValueValidForSimpleType(string_value(), memSimpleType)) {			  
-			   rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPath20TypeHelper.getXSDTypeShortCode(memSimpleType), string_value()));
+		   if (PsychoPathXPathTypeHelper.isValueValidForSimpleType(string_value(), memSimpleType)) {			  
+			   rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPathTypeHelper.getXSDTypeShortCode(memSimpleType), string_value()));
 			   // no more memberTypes need to be checked
 			   break; 
 		   }

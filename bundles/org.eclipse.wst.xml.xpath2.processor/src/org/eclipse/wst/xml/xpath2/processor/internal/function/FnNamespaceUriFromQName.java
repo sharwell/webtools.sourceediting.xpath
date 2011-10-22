@@ -8,10 +8,12 @@
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 361721 - fixes to fn:namespace-uri-from-QName function
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -47,7 +49,7 @@ public class FnNamespaceUriFromQName extends Function {
 	 * @return Result of evaluation.
 	 */
 	public ResultSequence evaluate(Collection args) throws DynamicError {
-		return namespace(args);
+		return namespace(args, dynamic_context());
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class FnNamespaceUriFromQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:namespace-uri-from-QName operation.
 	 */
-	public static ResultSequence namespace(Collection args) throws DynamicError {
+	public static ResultSequence namespace(Collection args, DynamicContext d_context) throws DynamicError {
 
 		Collection cargs = Function.convert_arguments(args, expected_args());
 
@@ -72,11 +74,25 @@ public class FnNamespaceUriFromQName extends Function {
 			return rs;
 
 		QName qname = (QName) arg1.first();
+		qname = QName.parse_QName(qname.string_value());
 
 		String ns = qname.namespace();
 
-		if (ns == null)
-			ns = "";
+		if (ns == null) {
+		   // attempt to find namespace name of QName value, by looking into the dynamic context
+		   String prefix = qname.prefix();
+		   if (prefix != null && !"".equals(prefix)) {
+			  ns = d_context.resolve_prefix(prefix);
+		   }
+		   else {
+			  ns = d_context.default_namespace();  
+		   }
+		}
+		
+		if (ns == null) {
+		   ns = "";
+		}
+		
 		rs.add(new XSAnyURI(ns));
 
 		return rs;

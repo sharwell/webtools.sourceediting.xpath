@@ -157,10 +157,12 @@ public class FnCollection extends Function {
 	private static ResultSequence getCollection(String uri, DynamicContext dc) {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 		Map collectionMap = dc.get_collections();
-		List docList = (List)collectionMap.get(uri);
-		for (int i = 0; i < docList.size(); i++) {
-			Document doc = (Document)docList.get(i);
-			rs.add(new DocType(doc));
+		if (collectionMap != null) {
+			List docList = (List)collectionMap.get(uri);
+			for (int i = 0; i < docList.size(); i++) {
+				Document doc = (Document)docList.get(i);
+				rs.add(new DocType(doc));
+			}
 		}
 		return rs;
 		

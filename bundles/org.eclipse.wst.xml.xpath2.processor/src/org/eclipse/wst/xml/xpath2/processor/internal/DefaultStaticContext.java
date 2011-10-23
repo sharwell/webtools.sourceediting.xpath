@@ -11,10 +11,16 @@
  *     Jesper Steen Moller - bug 297707 - Missing the empty-sequence() type
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *     Mukul Gandhi - bug 325262 - providing ability to store an XPath2 sequence into an user-defined variable
- *     Mukul Gandhi - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types                                 
+ *     Mukul Gandhi - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
+ *     Mukul Gandhi - bug 361748 - ability of "instance of" checks to work on sequence types having types xs:untypedAtomic and xs:untyped                                  
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Stack;
 
 import org.apache.xerces.xs.ItemPSVI;
 import org.apache.xerces.xs.XSAttributeDeclaration;
@@ -30,14 +36,11 @@ import org.eclipse.wst.xml.xpath2.processor.internal.function.Function;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FunctionLibrary;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AttrType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Stack;
 
 /**
  * Default implementation of a static context as described by the XPath 2.0
@@ -459,27 +462,37 @@ public class DefaultStaticContext implements StaticContext {
 	 *            name of expected type
 	 * @return true if a derivation exists
 	 */
-	// XXX fix this
 	public boolean derives_from(NodeType at, QName et) {
+		
+		boolean isDerivedFrom = false;		
+
 		ItemPSVI psvi = (ItemPSVI) at.node_value();
 		XSTypeDefinition td = psvi.getTypeDefinition();
-
-		short method = 0;
-
-		// XXX
-		if (!et.expanded()) {
-			String pre = et.prefix();
-
-			if (pre != null) {
-				if (prefix_exists(pre)) {
-					et.set_namespace(resolve_prefix(pre));
+		if (td != null) {
+			short method = 0;
+			if (et.namespace() == null) {
+				String pre = et.prefix();
+				if (pre != null) {
+					if (prefix_exists(pre)) {
+						et.set_namespace(resolve_prefix(pre));
+					} else
+						assert false;
 				} else
-					assert false;
-			} else
-				et.set_namespace(default_namespace());
+					et.set_namespace(default_namespace());
+			}
+
+			isDerivedFrom = td.derivedFrom(et.namespace(), et.local(), method);
+		}
+		else {
+			// check the case for XDM types "untypedAtomic" and "untyped"
+			if ((at instanceof AttrType && "untypedAtomic".equals(et.local())) ||
+				(at instanceof ElementType && "untyped".equals(et.local()))) {
+				isDerivedFrom = true;
+			}
 		}
 
-		return td.derivedFrom(et.namespace(), et.local(), method);
+		return isDerivedFrom;
+		
 	}
 
 	/**

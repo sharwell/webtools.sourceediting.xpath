@@ -74,7 +74,9 @@ public class FnNamespaceUriFromQName extends Function {
 			return rs;
 
 		QName qname = (QName) arg1.first();
-		qname = QName.parse_QName(qname.string_value());
+		if (qname.namespace() == null) {
+		   qname = QName.parse_QName(qname.string_value());
+		}
 
 		String ns = qname.namespace();
 

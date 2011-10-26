@@ -20,6 +20,7 @@
  *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *     Mukul Gandhi         - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
  *     Mukul Gandhi         - bug 353373 - "preceding" & "following" axes behavior is erroneous
+ *     Mukul Gandhi         - bug 362026 - "instance of" must not atomize the LHS before the comparison check
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;

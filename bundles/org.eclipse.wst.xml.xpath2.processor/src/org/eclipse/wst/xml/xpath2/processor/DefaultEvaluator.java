@@ -1599,10 +1599,12 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 			AnyType item = (AnyType) i.next();
 			
 			if (item instanceof NodeType) {
-				NodeType node = ((NodeType)item);
+				/*NodeType node = ((NodeType)item);
 				if (node.node_value() instanceof ItemPSVI) {
 					if (_dc.derives_from(node , qname)) continue;
-				}
+				} */
+				i.remove();
+				continue;
 				// fall through => non-match
 			} else {
 				// atomic of some sort

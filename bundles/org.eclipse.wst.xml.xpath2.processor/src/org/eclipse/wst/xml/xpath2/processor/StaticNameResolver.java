@@ -462,6 +462,11 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 */
 	public Object visit(CastExpr cexp) {
 		printBinExpr("CAST", cexp);
+		// check if the "target type" (RHS) is an atomic type, and exists in in-scope schema types
+		QName type = ((SingleType) cexp.right()).type();
+		if (!_sc.function_exists(type, 1)) {			
+			report_error(new StaticTypeNameError(null));
+		}
 		return null;
 	}
 

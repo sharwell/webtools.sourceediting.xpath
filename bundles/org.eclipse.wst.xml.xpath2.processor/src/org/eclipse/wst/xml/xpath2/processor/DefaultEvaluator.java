@@ -1579,9 +1579,8 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 		case ItemType.QNAME:
 
 			// try {
-			if (!_dc.type_defined(e.qname()))
-				report_error(new StaticTypeNameError("Type not defined: "
-						+ e.qname().string()));
+			if (!_dc.type_defined(e.qname()) && !_dc.function_exists(e.qname(), 1))
+				report_error(new StaticTypeNameError("Type not defined: " + e.qname().string()));
 			
 			ResultSequence arg = (ResultSequence) ((Pair) _param)._two;
 			item_test(arg, e.qname());

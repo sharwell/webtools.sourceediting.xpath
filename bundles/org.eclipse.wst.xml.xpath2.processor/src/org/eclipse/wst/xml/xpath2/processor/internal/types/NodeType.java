@@ -225,7 +225,8 @@ public abstract class NodeType extends AnyType {
 		
 		ResultSequence rs = ResultSequenceFactory.create_new();
 		
-		if ("anySimpleType".equals(typeDef.getName()) || 
+		if ("anyType".equals(typeDef.getName()) ||
+			"anySimpleType".equals(typeDef.getName()) || 
 		    "anyAtomicType".equals(typeDef.getName())) {
 			rs.add(new XSUntypedAtomic(string_value()));
 		}

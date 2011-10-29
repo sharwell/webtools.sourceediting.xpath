@@ -425,7 +425,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 * @return null.
 	 */
 	public Object visit(InstOfExpr ioexp) {
-		printBinExpr("INSTANCEOF", ioexp);
+		printBinExpr("INSTANCEOF", ioexp);	
 		return null;
 	}
 
@@ -727,9 +727,9 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 			if (!_sc.expand_elem_type_qname(type))
 				report_bad_prefix(type.prefix());
 
-			if (!_sc.type_defined(e.qname()))
-				report_error(new StaticTypeNameError("Type not defined: "
-						+ e.qname().string()));
+			if (!_sc.type_defined(type) && !_sc.function_exists(type, 1)) {		
+			    report_error(new StaticTypeNameError("Type not defined: " + type.string()));
+			}
 			break;
 
 		case ItemType.KINDTEST:

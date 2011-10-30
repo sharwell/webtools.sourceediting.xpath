@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.xml.XMLConstants;
+
 import org.apache.xerces.xs.ItemPSVI;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -480,8 +482,17 @@ public class DefaultStaticContext implements StaticContext {
 				} else
 					et.set_namespace(default_namespace());
 			}
-
-			isDerivedFrom = td.derivedFrom(et.namespace(), et.local(), method);
+            if (XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(et.namespace()) && "anyType".equals(et.local()) ||
+            	td.getName().equals("anyType") && "anyType".equals(et.local())) {
+            	isDerivedFrom = true;
+            }
+            else if ((td.getName().equals("anyType") && !"anyType".equals(et.local())) ||
+            		(!"anyType".equals(et.local()) && !type_defined(et) && !function_exists(et, 1))) {
+            	isDerivedFrom = false;
+            }
+            else {
+            	isDerivedFrom = td.derivedFrom(et.namespace(), et.local(), method);
+            }
 		}
 		else {
 			// check the case for XDM types "untypedAtomic" and "untyped"

@@ -21,12 +21,19 @@
  *     Mukul Gandhi         - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
  *     Mukul Gandhi         - bug 353373 - "preceding" & "following" axes behavior is erroneous
  *     Mukul Gandhi         - bug 362026 - "instance of" must not atomize the LHS before the comparison check
+ *     Mukul Gandhi         - bug 362446 - providing API to have non document node as root node of an XDM tree
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.xerces.impl.dv.XSSimpleType;
-import org.apache.xerces.xs.ItemPSVI;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
@@ -135,13 +142,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
 /**
  * Default evaluator interface
  */
@@ -213,6 +213,44 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 		if (doc != null) rs.add(new DocType(doc));
 
 		_dc.set_focus(new Focus(rs));
+
+		_param = null;
+
+		_g_coll = new ArrayList();
+		_g_xsint = new XSInteger();
+	}
+	
+	/**
+	 * set parameters
+	 * 
+	 * @param dc
+	 *            is the dynamic context.
+	 * @param doc
+	 *            is the document.
+	 * @param rootNode
+	 *            possibly a non document node as root node of XDM tree.
+	 */
+	public DefaultEvaluator(DynamicContext dc, Document doc, Node rootNode) {
+		_dc = dc;
+		_err = null;
+
+		// initialize context item with root of document
+		ResultSequence rs = ResultSequenceFactory.create_new();		
+		if (rootNode != null && rootNode.getOwnerDocument() == doc) {			
+			_dc.setRootNode(rootNode);
+			// only "document node" and "element node" are currently supported as root nodes
+			if (rootNode.getNodeType() == Node.DOCUMENT_NODE) {
+				rs.add(new DocType((Document) rootNode));				
+			}
+			else if (rootNode.getNodeType() == Node.ELEMENT_NODE) {
+				rs.add(new ElementType((Element) rootNode));
+			}
+			_dc.set_focus(new Focus(rs));
+		}
+		else {
+			if (doc != null) rs.add(new DocType(doc));
+		   _dc.set_focus(new Focus(rs));
+		}
 
 		_param = null;
 
@@ -1258,6 +1296,9 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 		// do the name test
 		_param = arg;
 		ResultSequence rs = (ResultSequence) e.node_test().accept(this);
+		if (_dc.getRootNode() != null) {
+		   rs = removeInvalidNodesFromResultSet(rs, _dc.getRootNode() );
+		}
 
 		return rs;
 	}
@@ -1285,9 +1326,12 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 
 		// short for "gimme da parent"
 		if (e.axis() == ReverseStep.DOTDOT) {
-			axis = new ParentAxis();
-
-			return kind_test(axis.iterate(cn, _dc), NodeType.class);
+			axis = new ParentAxis();			
+			ResultSequence nodes = kind_test(axis.iterate(cn, _dc), NodeType.class);
+			if (_dc.getRootNode() != null) {
+			   nodes = removeInvalidNodesFromResultSet(nodes, _dc.getRootNode());
+			}
+			return nodes;
 		}
 
 		assert axis != null;
@@ -1299,9 +1343,37 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 		// do the name test
 		_param = arg;
 		ResultSequence rs = (ResultSequence) e.node_test().accept(this);
-
+		if (_dc.getRootNode() != null) {
+		   rs = removeInvalidNodesFromResultSet(rs, _dc.getRootNode());
+		}
 		return rs;
 	}
+
+	/*
+	 * Remove invalid nodes from result set (for e.g if any of result nodes are outside of input XDM tree).
+	 * Return a ResultSequence after removing invalid nodes. 
+	 */
+	private ResultSequence removeInvalidNodesFromResultSet(ResultSequence resultNodes, Node rootNode) {
+		
+		ResultSequence validResultNodes = ResultSequenceFactory.create_new();
+			
+		for (Iterator iter = resultNodes.iterator(); iter.hasNext();) {
+			AnyType resultNode = (AnyType)iter.next();
+			Node resultNodeVal = null;
+			if (resultNode instanceof DocType) {
+				resultNodeVal = ((DocType)resultNode).node_value();
+			}
+			else if (resultNode instanceof ElementType) {
+				resultNodeVal = ((ElementType)resultNode).node_value();
+			}
+			if (!(resultNodeVal != null && (rootNode.compareDocumentPosition(resultNodeVal) == (Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING)))) {
+				validResultNodes.add(resultNode);
+			}
+		}
+		
+		return validResultNodes;
+		
+	} // removeInvalidNodesFromResultSet
 
 	// XXX this routine sux
 	private boolean name_test(NodeType node, QName name, String type) {

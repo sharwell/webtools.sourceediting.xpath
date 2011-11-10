@@ -206,7 +206,7 @@ public abstract class NodeType extends AnyType {
 		return nodeA instanceof Document ? (Document)nodeA : nodeA.getOwnerDocument();
 	}
 
-	protected Object getTypedValueForPrimitiveType(XSTypeDefinition typeDef) {		
+	protected AnyType getTypedValueForPrimitiveType(XSTypeDefinition typeDef) {		
 		String strValue = string_value();
 		
 		if (typeDef == null) {

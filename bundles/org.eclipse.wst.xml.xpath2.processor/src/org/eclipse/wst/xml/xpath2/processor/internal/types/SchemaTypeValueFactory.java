@@ -35,8 +35,8 @@ public class SchemaTypeValueFactory {
 		}
 		
 		if (typeDef == XSConstants.BOOLEAN_DT) {
-			String newStrValue = ("1".equals(strValue) || "true".equals(strValue)) ? "true" : "false";
-			return new XSBoolean(Boolean.valueOf(newStrValue).booleanValue());
+			String normalizedBooleanStrValue = ("1".equals(strValue) || "true".equals(strValue)) ? "true" : "false";
+			return new XSBoolean(Boolean.valueOf(normalizedBooleanStrValue).booleanValue());
 		}
 		
 		if (typeDef == XSConstants.DATE_DT) {       
@@ -196,6 +196,14 @@ public class SchemaTypeValueFactory {
 		if (typeDef == XSConstants.TIME_DT) {
 			return XSTime.parse_time(strValue);
 		}  
+		
+		if (typeDef == XSConstants.BASE64BINARY_DT) {
+			return new XSBase64Binary(strValue);
+		}
+		
+		if (typeDef == XSConstants.HEXBINARY_DT) {
+			return new XSHexBinary(strValue);
+		} 
 		
 	    // create a XSString value, as fallback option 
 		return new XSString(strValue);

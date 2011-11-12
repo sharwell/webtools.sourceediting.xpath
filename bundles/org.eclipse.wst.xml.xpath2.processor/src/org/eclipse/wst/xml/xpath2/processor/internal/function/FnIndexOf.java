@@ -141,23 +141,24 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 				if (boolat.eq(at, dynamicContext)) {
  				   rs.add(new XSInteger(BigInteger.valueOf(index)));
 				}
-			} else 
-			
-			if (isNumeric(cmptype, at)) {
+			} else if (isNumeric(cmptype, at)) {
 				NumericType numericat = (NumericType) at;
 				if (numericat.eq(cmptype, dynamicContext)) {
 					rs.add(new XSInteger(BigInteger.valueOf(index)));
 				}
-			} else
-			
-			if (isDuration(cmptype, at)) {
+			} else if (isDuration(cmptype, at)) {
 				XSDuration durat = (XSDuration) at;
 				if (durat.eq(cmptype, dynamicContext)) {
 					rs.add(new XSInteger(BigInteger.valueOf(index)));
 				}
-			} else
-			
-			if (needsStringComparison(cmptype, at)) {
+			} 
+			else if (at instanceof QName && cmptype instanceof QName) {
+				QName qname = (QName)at;
+				if (qname.eq(cmptype, dynamicContext)) {
+					rs.add(new XSInteger(BigInteger.valueOf(index)));
+				}
+			}
+			else if (needsStringComparison(cmptype, at)) {
 				XSString xstr1 = new XSString(cmptype.string_value());
 				XSString itemStr = new XSString(at.string_value());
 				if (FnCompare.compare_string(collationUri, xstr1, itemStr, dynamicContext).equals(BigInteger.ZERO)) {

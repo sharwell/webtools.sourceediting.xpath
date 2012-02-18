@@ -195,7 +195,7 @@ public class QName extends CtrType implements CmpEq {
 	 * @return Full pathname including namespace
 	 */
 	public String expanded_name() {
-		assert _expanded;
+		// assert _expanded;
 		// if(!_expanded)
 		// return null;
 
@@ -233,7 +233,7 @@ public class QName extends CtrType implements CmpEq {
 	 * @return Namespace that this node belongs in
 	 */
 	public String namespace() {
-		assert _expanded;
+		// assert _expanded;
 		return _namespace;
 	}
 
@@ -309,7 +309,7 @@ public class QName extends CtrType implements CmpEq {
 		int local = 4;
 		int result = 0;
 
-		assert expanded();
+		// assert expanded();
 
 		if (_namespace != null)
 			namespace = _namespace.hashCode();

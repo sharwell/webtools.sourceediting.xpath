@@ -13,9 +13,22 @@
  *                  - bug 262765 - additional tweak to convert 24:00:00 to 00:00:00
  *     David Carver - bug 280547 - fix dates for comparison 
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 380326 - result of addition of xs:dateTime and xs:dayTimeDuration values is erroneous sometimes
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -26,15 +39,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathMinus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathPlus;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * A representation of a date and time (and optional timezone)
@@ -63,6 +67,15 @@ Cloneable {
 		_tz = tz;
 
 		if (tz == null)
+			_timezoned = false;
+		else
+			_timezoned = true;
+	}
+	
+	public XSDateTime(Calendar cal) {
+		_calendar = cal;
+
+		if (_tz == null)
 			_timezoned = false;
 		else
 			_timezoned = true;
@@ -162,7 +175,8 @@ Cloneable {
 
 					if (uyl == 4) {
 						if (uy.compareTo("0000") == 0)
-							return null;
+						   return null;
+						
 					} else if (uy.charAt(0) == '0')
 						return null;
 
@@ -955,16 +969,30 @@ Cloneable {
 
 				XSDateTime res = (XSDateTime) clone();
 
-				try {
-					XMLGregorianCalendar xmlCal = DatatypeFactory.newInstance()
-							.newXMLGregorianCalendar(
-									(GregorianCalendar) calendar());
-					Duration dtduration = DatatypeFactory.newInstance()
-							.newDuration(val.string_value());
-					xmlCal.add(dtduration);
-					res = new XSDateTime(xmlCal.toGregorianCalendar(), res.tz());
+				try {					
+					String secondStr = Double.toString(second());
+					int second = Integer.parseInt(secondStr.substring(0, secondStr.indexOf('.')));
+					BigDecimal fractionalSecond = BigDecimal.valueOf(Long.parseLong(secondStr.substring(secondStr.indexOf('.') + 1)));
+					XMLGregorianCalendar xmlCal = DatatypeFactory.newInstance().newXMLGregorianCalendar(BigInteger.valueOf(year()), month(), day(), hour(), minute(), second, fractionalSecond, 0);
+					if (timezoned()) {
+						int timezoneOffset = tz().hours() * 60 + tz().minutes();
+						if (tz().negative()) {
+							timezoneOffset = -1 * timezoneOffset;
+						}
+						xmlCal.setTimezone(timezoneOffset);	
+					}
+					else {
+						xmlCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+					}
+					Duration dtDuration = DatatypeFactory.newInstance().newDurationDayTime(val.string_value());
+					xmlCal.add(dtDuration);
+					if (xmlCal.getYear() == 0) {
+						// the year "0000" is not allowed by XSD
+						xmlCal.setYear(-1);
+					}
+					res = XSDateTime.parseDateTime(xmlCal.toString());
 				} catch (DatatypeConfigurationException ex) {
-
+                   // NO-OP
 				}
 
 				return ResultSequenceFactory.create_new(res);

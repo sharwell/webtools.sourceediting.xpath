@@ -986,9 +986,9 @@ Cloneable {
 					}
 					Duration dtDuration = DatatypeFactory.newInstance().newDurationDayTime(val.string_value());
 					xmlCal.add(dtDuration);
-					if (xmlCal.getYear() == 0) {
-						// the year "0000" is not allowed by XSD
-						xmlCal.setYear(-1);
+					if (xmlCal.getYear() <= 0) {
+						// the year "0000" is not allowed by XSD. therefore adjust the year value.
+						xmlCal.setYear(xmlCal.getYear() - 1);
 					}
 					res = XSDateTime.parseDateTime(xmlCal.toString());
 				} catch (DatatypeConfigurationException ex) {

@@ -52,7 +52,10 @@ Cloneable {
 	private Calendar _calendar;
 	private boolean _timezoned;
 	private XSDuration _tz;
-
+	
+    private int ADD_OPN = 0;
+    private int SUBTRACT_OPN = 1;
+    
 	/**
 	 * Initiates a new representation of a supplied date and time
 	 * 
@@ -870,8 +873,9 @@ Cloneable {
 		}
 
 		if (at instanceof XSDayTimeDuration) {
-			return minusXSDayTimeDuration(at);
+			return addOrSubtractXSDayTimeDuration(at, SUBTRACT_OPN);
 		}
+		
 		return null; // unreach
 
 	}
@@ -897,29 +901,47 @@ Cloneable {
 		return null;
 	}
 
-	private ResultSequence minusXSDayTimeDuration(AnyType at) {
+	private ResultSequence addOrSubtractXSDayTimeDuration(AnyType at, int arithmeticMode) {
 		XSDuration val = (XSDuration) at;
+		
+		XSDateTime res = null;
 
 		try {
-			XSDateTime res = (XSDateTime) clone();
-
-			try {
-				XMLGregorianCalendar xmlCal = DatatypeFactory
-						.newInstance()
-						.newXMLGregorianCalendar((GregorianCalendar) calendar());
-				Duration dtduration = DatatypeFactory.newInstance()
-						.newDuration(val.string_value());
-				xmlCal.add(dtduration.negate());
-				res = new XSDateTime(xmlCal.toGregorianCalendar(), res.tz());
-			} catch (DatatypeConfigurationException ex) {
-
+			res = (XSDateTime) clone();
+			
+			String secondStr = Double.toString(second());
+			int second = Integer.parseInt(secondStr.substring(0, secondStr.indexOf('.')));
+			BigDecimal fractionalSecond = new BigDecimal(secondStr.substring(secondStr.indexOf('.')));
+			XMLGregorianCalendar xmlCal = DatatypeFactory.newInstance().newXMLGregorianCalendar(BigInteger.valueOf(year()), month(), day(), hour(), minute(), second, fractionalSecond, 0);
+			if (timezoned()) {
+				int timezoneOffset = tz().hours() * 60 + tz().minutes();
+				if (tz().negative()) {
+					timezoneOffset = -1 * timezoneOffset;
+				}
+				xmlCal.setTimezone(timezoneOffset);	
 			}
-
-			return ResultSequenceFactory.create_new(res);
-		} catch (CloneNotSupportedException ex) {
-
+			else {
+				xmlCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
+			}
+			Duration dtDuration = DatatypeFactory.newInstance().newDurationDayTime(val.string_value());
+			if (arithmeticMode == SUBTRACT_OPN) {
+			   xmlCal.add(dtDuration.negate());
+			}
+			else {
+			   xmlCal.add(dtDuration);
+			}
+			if (xmlCal.getYear() <= 0) {
+				// the year "0000" is not allowed by XSD. therefore adjust the year value.
+				xmlCal.setYear(xmlCal.getYear() - 1);
+			}
+			res = XSDateTime.parseDateTime(xmlCal.toString());
+		} catch (DatatypeConfigurationException ex) {
+           // NO-OP
+		} catch (CloneNotSupportedException e) {
+		   // NO-OP
 		}
-		return null;
+
+		return ResultSequenceFactory.create_new(res);
 	}
 
 	private ResultSequence minusXSYearMonthDuration(AnyType at) {
@@ -965,37 +987,7 @@ Cloneable {
 				res.calendar().add(Calendar.MONTH, val.monthValue());
 				return ResultSequenceFactory.create_new(res);
 			} else if (at instanceof XSDayTimeDuration) {
-				XSDuration val = (XSDuration) at;
-
-				XSDateTime res = (XSDateTime) clone();
-
-				try {					
-					String secondStr = Double.toString(second());
-					int second = Integer.parseInt(secondStr.substring(0, secondStr.indexOf('.')));
-					BigDecimal fractionalSecond = BigDecimal.valueOf(Long.parseLong(secondStr.substring(secondStr.indexOf('.') + 1)));
-					XMLGregorianCalendar xmlCal = DatatypeFactory.newInstance().newXMLGregorianCalendar(BigInteger.valueOf(year()), month(), day(), hour(), minute(), second, fractionalSecond, 0);
-					if (timezoned()) {
-						int timezoneOffset = tz().hours() * 60 + tz().minutes();
-						if (tz().negative()) {
-							timezoneOffset = -1 * timezoneOffset;
-						}
-						xmlCal.setTimezone(timezoneOffset);	
-					}
-					else {
-						xmlCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
-					}
-					Duration dtDuration = DatatypeFactory.newInstance().newDurationDayTime(val.string_value());
-					xmlCal.add(dtDuration);
-					if (xmlCal.getYear() <= 0) {
-						// the year "0000" is not allowed by XSD. therefore adjust the year value.
-						xmlCal.setYear(xmlCal.getYear() - 1);
-					}
-					res = XSDateTime.parseDateTime(xmlCal.toString());
-				} catch (DatatypeConfigurationException ex) {
-                   // NO-OP
-				}
-
-				return ResultSequenceFactory.create_new(res);
+				return addOrSubtractXSDayTimeDuration(at, ADD_OPN);
 			} else {
 				DynamicError.throw_type_error();
 				return null; // unreach

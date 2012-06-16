@@ -516,11 +516,25 @@ Cloneable {
 	 */
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
-
+		
 		if (arg.empty())
 			return rs;
 
-		AnyType aat = arg.first();
+		AnyType aatAnyType = arg.first();
+		AnyAtomicType aat = null; 
+		if (aatAnyType instanceof NodeType) {
+		   aat =  (AnyAtomicType)((NodeType)aatAnyType).typed_value().first(); 	
+		}
+		else {
+		   aat = (AnyAtomicType)aatAnyType; 
+		}
+		
+		if (aat instanceof NumericType || aat instanceof XSDuration
+				|| aat instanceof XSTime || isGDataType(aat)
+				|| aat instanceof XSBoolean || aat instanceof XSBase64Binary
+				|| aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
+			throw DynamicError.invalidType();
+		}
 
 		if (!isCastable(aat)) {
 			throw DynamicError.cant_cast(null);
@@ -530,14 +544,14 @@ Cloneable {
 
 		if (dt == null)
 			throw DynamicError.cant_cast(null);
-
+		
 		rs.add(dt);
 
 		return rs;
 	}
 
-	private boolean isCastable(AnyType aat) {
-		if (aat instanceof XSString || aat instanceof XSUntypedAtomic || aat instanceof NodeType) {
+	private boolean isCastable(AnyAtomicType aat) {
+		if (aat instanceof XSString || aat instanceof XSUntypedAtomic) {
 			return true;
 		}
 
@@ -552,7 +566,7 @@ Cloneable {
 		return false;
 	}
 
-	private CalendarType castDateTime(AnyType aat) {
+	private CalendarType castDateTime(AnyAtomicType aat) {
 		if (aat instanceof XSDate) {
 			XSDate date = (XSDate) aat;
 			return new XSDateTime(date.calendar(), date.tz());

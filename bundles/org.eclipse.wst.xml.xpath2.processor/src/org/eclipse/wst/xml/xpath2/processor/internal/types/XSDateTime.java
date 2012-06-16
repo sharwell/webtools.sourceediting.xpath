@@ -520,13 +520,7 @@ Cloneable {
 		if (arg.empty())
 			return rs;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration
-				|| aat instanceof XSTime || isGDataType(aat)
-				|| aat instanceof XSBoolean || aat instanceof XSBase64Binary
-				|| aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
-			throw DynamicError.invalidType();
-		}
+		AnyType aat = arg.first();
 
 		if (!isCastable(aat)) {
 			throw DynamicError.cant_cast(null);
@@ -542,8 +536,8 @@ Cloneable {
 		return rs;
 	}
 
-	private boolean isCastable(AnyAtomicType aat) {
-		if (aat instanceof XSString || aat instanceof XSUntypedAtomic) {
+	private boolean isCastable(AnyType aat) {
+		if (aat instanceof XSString || aat instanceof XSUntypedAtomic || aat instanceof NodeType) {
 			return true;
 		}
 
@@ -558,7 +552,7 @@ Cloneable {
 		return false;
 	}
 
-	private CalendarType castDateTime(AnyAtomicType aat) {
+	private CalendarType castDateTime(AnyType aat) {
 		if (aat instanceof XSDate) {
 			XSDate date = (XSDate) aat;
 			return new XSDateTime(date.calendar(), date.tz());

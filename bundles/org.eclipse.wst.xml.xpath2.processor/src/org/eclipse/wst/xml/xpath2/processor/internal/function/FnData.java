@@ -11,10 +11,12 @@
  *                                 for attribute/element nodes 
  *     Jesper Steen Moeller - bug 285145 - implement full arity checking
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 393904 - improvements to computing typed value of element nodes
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
@@ -49,7 +51,7 @@ public class FnData extends Function {
 	 *            argument expressions.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args) {
+	public ResultSequence evaluate(Collection args) throws DynamicError {
 		// 1 argument only!
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
@@ -65,7 +67,7 @@ public class FnData extends Function {
 	 *            input expression.
 	 * @return Result of operation.
 	 */
-	public static ResultSequence atomize(ResultSequence arg) {
+	public static ResultSequence atomize(ResultSequence arg) throws DynamicError {
 
 		ResultSequence rs = ResultSequenceFactory.create_new();
 
@@ -92,7 +94,7 @@ public class FnData extends Function {
 	 * @param arg
 	 *            input expression.
 	 */
-	public static void fast_atomize(ResultSequence arg) {
+	public static void fast_atomize(ResultSequence arg) throws DynamicError {
 		for (ListIterator i = arg.iterator(); i.hasNext();) {
 			AnyType at = (AnyType) i.next();
 
@@ -117,7 +119,7 @@ public class FnData extends Function {
 	 *            input expression.
 	 * @return Result of operation.
 	 */
-	public static AnyType atomize(AnyType arg) {
+	public static AnyType atomize(AnyType arg) throws DynamicError {
 		if (arg instanceof AnyAtomicType)
 			return arg;
 		else if (arg instanceof NodeType) {

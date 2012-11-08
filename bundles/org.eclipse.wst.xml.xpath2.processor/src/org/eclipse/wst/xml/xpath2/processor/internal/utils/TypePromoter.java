@@ -9,6 +9,7 @@
  *     Jesper Steen Moller - initial API and implementation
  *     Jesper Steen Moller - bug 281028 - avg/min/max/sum work
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 393904 - improvements to computing typed value of element nodes
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.utils;
@@ -82,7 +83,7 @@ public abstract class TypePromoter {
 		this.targetType = class1;
 	}
 
-	public AnyAtomicType atomize(AnyType at) {
+	public AnyAtomicType atomize(AnyType at) throws DynamicError {
 		if (at instanceof NodeType) {
 			return (AnyAtomicType)((NodeType)at).typed_value().first();
 		}

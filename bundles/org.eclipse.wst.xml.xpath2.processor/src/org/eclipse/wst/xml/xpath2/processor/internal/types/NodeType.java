@@ -19,6 +19,7 @@
  *                                 are simple, with varieties 'list' and 'union'.                                 
  *     Jesper Moller - bug 316988 - Removed O(n^2) performance for large results
  *     Mukul Gandhi  - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
+ *     Mukul Gandhi	 - bug 393904 - improvements to computing typed value of element nodes
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -32,6 +33,7 @@ import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.PsychoPathXPathTypeHelper;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -88,7 +90,7 @@ public abstract class NodeType extends AnyType {
 	 * 
 	 * @return Actual node being represented
 	 */
-	public abstract ResultSequence typed_value();
+	public abstract ResultSequence typed_value() throws DynamicError;
 
 	/**
 	 * Retrieves the name of the node
@@ -219,9 +221,9 @@ public abstract class NodeType extends AnyType {
 
 	
 	/*
-	 * Construct the "typed value" from a "string value", given the simpleType of the node.
+	 * Construct the "typed value" of a node.
      */
-	protected ResultSequence getXDMTypedValue(XSTypeDefinition typeDef, ShortList itemValTypes) {
+	protected ResultSequence getXDMTypedValue(XSTypeDefinition typeDef, ShortList itemValTypes) throws DynamicError {
 		
 		ResultSequence rs = ResultSequenceFactory.create_new();
 		
@@ -231,28 +233,23 @@ public abstract class NodeType extends AnyType {
 			rs.add(new XSUntypedAtomic(string_value()));
 		}
 		else {
-			XSSimpleTypeDefinition simpType = null;
-			ResultSequence rsSimpleContent = null;
-
 			if (typeDef instanceof XSComplexTypeDefinition) {
 				XSComplexTypeDefinition complexTypeDefinition = (XSComplexTypeDefinition) typeDef;
-				simpType = complexTypeDefinition.getSimpleType();
-				if (simpType != null) {
-					// element has a complexType with a simple content
-					rsSimpleContent = getTypedValueForSimpleContent(simpType, itemValTypes);
+				if (complexTypeDefinition.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_SIMPLE) {
+					// complexType with simple content
+					rs = getTypedValueForSimpleContent(complexTypeDefinition.getSimpleType(), itemValTypes);
 				}
-				else {
-					// element has a complexType with complex content
+				else if (complexTypeDefinition.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_MIXED) {
+					// complexType with mixed content
 					rs.add(new XSUntypedAtomic(string_value()));
+				}
+				else if (complexTypeDefinition.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_ELEMENT) {
+					// complexType with element-only content. the node will have no typed value (to raise an error)
+					throw DynamicError.no_typedvalue_for_node(null);
 				}
 			} else {
 				// element has a simpleType
-				simpType = (XSSimpleTypeDefinition) typeDef;
-				rsSimpleContent = getTypedValueForSimpleContent(simpType, itemValTypes);
-			}
-
-			if (rsSimpleContent != null) {
-				rs =  rsSimpleContent;
+				rs = getTypedValueForSimpleContent((XSSimpleTypeDefinition) typeDef, itemValTypes);
 			}
 		}
 			

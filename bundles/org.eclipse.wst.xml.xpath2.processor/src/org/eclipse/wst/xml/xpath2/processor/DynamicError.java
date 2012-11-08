@@ -15,7 +15,8 @@
  *     Jesper Steen Moller  - bug 280555 - Add pluggable collation support
  *     Jesper Steen Moller  - bug 262765 - Add FORG0006
  *     Jesper Steen Moller  - bug 290337 - Revisit use of ICU
- *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi 		- bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi			- bug 393904 - improvements to computing typed value of element nodes
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -308,7 +309,19 @@ public class DynamicError extends XPathException {
 	 * @return the make_error
 	 */
 	public static DynamicError not_cmp(String msg) {
-		return make_error("FOTY0012", "Items not comparable", msg);
+		// using the error code "not currently used" from the XPath 2.0 spec. revisit
+		return make_error("XPDY0021", "Items not comparable", msg);
+	}
+	
+	/**
+	 * Returns the error message when, during atomization a node doesn't have a typed value
+	 * 
+	 * @param msg
+	 *            is the message
+	 * @return the make_error
+	 */
+	public static DynamicError no_typedvalue_for_node(String msg) {
+		return make_error("FOTY0012", "the node has no typed value", msg);
 	}
 
 	/**

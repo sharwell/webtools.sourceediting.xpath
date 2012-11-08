@@ -22,6 +22,7 @@
  *     Mukul Gandhi         - bug 353373 - "preceding" & "following" axes behavior is erroneous
  *     Mukul Gandhi         - bug 362026 - "instance of" must not atomize the LHS before the comparison check
  *     Mukul Gandhi         - bug 362446 - providing API to have non document node as root node of an XDM tree
+ *     Mukul Gandhi			- bug 393904 - improvements to computing typed value of element nodes
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -967,7 +968,13 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 		ResultSequence rs = (ResultSequence) cexp.left().accept(this);
 		SingleType st = (SingleType) cexp.right();
 
-		rs = FnData.atomize(rs);
+		try {
+		   rs = FnData.atomize(rs);
+		}
+		catch (DynamicError err) {
+		   report_error(err);
+		   return null; // unreach
+		}
 
 		if (rs.size() > 1)
 			report_error(TypeError.invalid_type(null));

@@ -14,15 +14,17 @@
  *     Jesper Moller- bug 275610 - Avoid big time and memory overhead for externals
  *     David Carver (STAR) - bug 289304 - fixe schema awarness of types on attributes
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
- *      Mukul Gandhi - bug 323900 - improving computing the typed value of element &
+ *     Mukul Gandhi - bug 323900 - improving computing the typed value of element &
  *                                  attribute nodes, where the schema type of nodes
- *                                  are simple, with varieties 'list' and 'union'.  
+ *                                  are simple, with varieties 'list' and 'union'.
+ *	   Mukul Gandhi	- bug 393904 - improvements to computing typed value of element nodes                                    
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import org.apache.xerces.dom.PSVIAttrNSImpl;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.w3c.dom.Attr;
@@ -79,7 +81,7 @@ public class AttrType extends NodeType {
 	 * 
 	 * @return New ResultSequence consisting of the typed-value sequence.
 	 */
-	public ResultSequence typed_value() {
+	public ResultSequence typed_value() throws DynamicError {
 		ResultSequence rs = ResultSequenceFactory.create_new();
 
 		if (!(_value instanceof PSVIAttrNSImpl)) {

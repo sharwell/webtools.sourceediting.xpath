@@ -318,6 +318,10 @@ public class XSInteger extends XSDecimal {
 	 * @see org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal#gt(org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType)
 	 */
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
+		if (!(arg instanceof NumericType)) {
+			throw DynamicError.invalidType();
+		}
+		
 		AnyType carg = convertArg(arg);
         XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
         
@@ -338,6 +342,10 @@ public class XSInteger extends XSDecimal {
 	 * @see org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal#lt(org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType)
 	 */
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
+		if (!(arg instanceof NumericType)) {
+			throw DynamicError.invalidType();
+		}
+		
 		AnyType carg = convertArg(arg);
         XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
         

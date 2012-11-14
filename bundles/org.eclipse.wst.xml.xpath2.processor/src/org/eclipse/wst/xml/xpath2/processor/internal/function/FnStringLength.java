@@ -91,7 +91,7 @@ public class FnStringLength extends Function {
 
 		if (cargs.isEmpty()) {
 		  // support for arity = 0
-		  return getResultSetForArityZero(d_context);
+		  arg1 = getResultSetForArityZero(d_context);
 		}
 		else {
 		  arg1 = (ResultSequence) cargs.iterator().next();

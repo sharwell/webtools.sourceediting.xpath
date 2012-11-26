@@ -265,6 +265,13 @@ public class XSDouble extends NumericType {
 			return false;
 		}
 		
+		// 0 = -0
+		boolean isThatValueZero = d.zero() || d.negativeZero();
+		boolean isThisValueZero = zero() || negativeZero();
+		if (isThatValueZero && isThisValueZero) {
+			return true;
+		}
+		
 		Double thatvalue = new Double(d.double_value());
 		Double thisvalue = new Double(double_value());
 		

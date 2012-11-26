@@ -106,8 +106,8 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 	 */
 	protected static boolean contains(ResultSequence rs, AnyAtomicType item,
 			DynamicContext context, String collationURI) throws DynamicError {
-		if (!(item instanceof CmpEq))
-			return false;
+		/*if (!(item instanceof CmpEq))
+			return false; */
 
 		return hasValue(rs, item, context, collationURI);
 	}

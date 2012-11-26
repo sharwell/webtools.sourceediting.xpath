@@ -151,12 +151,21 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 * @return Result of fn:deep-equal operation.
 	 */
 	public static boolean deep_equal(AnyAtomicType one, AnyAtomicType two, DynamicContext context, String collationURI) {
-		if (!(one instanceof CmpEq))
+		/*if (!(one instanceof CmpEq))
 			return false;
 		if (!(two instanceof CmpEq))
-			return false;
-
-		CmpEq a = (CmpEq) one;
+			return false; */
+		
+		boolean isUntypedAtomic = false;
+		if (one instanceof XSUntypedAtomic || two instanceof XSUntypedAtomic) {
+			isUntypedAtomic = true;
+		}
+		
+		if (!isUntypedAtomic) {
+			if (!(one instanceof CmpEq || two instanceof CmpEq)) {
+				return false;
+			}
+		}
 
 		try {
 			if (isNumeric(one, two)) {
@@ -170,9 +179,13 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 					}
 				}
 			}
-
-			if (a.eq(two, context))
-				return true;
+			
+			if (!(one instanceof XSUntypedAtomic) && one instanceof CmpEq) {
+				CmpEq a = (CmpEq) one;
+				if (a.eq(two, context)) {
+					return true;
+				}
+			}
 			
 			if (needsStringComparison(one, two)) {
 				XSString xstr1 = new XSString(one.string_value());

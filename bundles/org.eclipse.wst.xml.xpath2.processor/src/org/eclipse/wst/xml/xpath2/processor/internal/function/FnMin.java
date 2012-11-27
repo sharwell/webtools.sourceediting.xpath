@@ -74,22 +74,21 @@ public class FnMin extends Function {
 		if (arg.empty())
 			return ResultSequenceFactory.create_new();
 
-		CmpLt max = null;
-
+		CmpLt min = null;
 		TypePromoter tp = new ComparableTypePromoter();
 		tp.considerSequence(arg);
 
-		for (Iterator i = arg.iterator(); i.hasNext();) {
-			AnyAtomicType conv = tp.promote((AnyType) i.next());
+		for (Iterator iter = arg.iterator(); iter.hasNext();) {
+			AnyAtomicType conv = convertInputItem(tp, (AnyType) iter.next());
 			
 			if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
 				return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
 			}
-			if (max == null || ((CmpLt)conv).lt((AnyType)max, context)) {
-				max = (CmpLt)conv;
+			if (min == null || ((CmpLt)conv).lt((AnyType)min, context)) {
+				min = (CmpLt)conv;
 			}
 		}
-		return ResultSequenceFactory.create_new((AnyType) max);
+		return ResultSequenceFactory.create_new((AnyType) min);
 	}
 
 }

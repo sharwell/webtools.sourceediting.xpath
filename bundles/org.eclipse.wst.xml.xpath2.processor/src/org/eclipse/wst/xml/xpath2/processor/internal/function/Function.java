@@ -31,6 +31,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.TypePromoter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -327,5 +328,36 @@ public abstract class Function {
 	public boolean is_vararg() {
 		return _min_arity != _max_arity;
 	}
+	
+	/*
+	 * Support for F&O "Aggregate Functions".
+	 * 
+	 * An input item in the sequence is converted according to following rules:
+	 * 1) Values of type xs:untypedAtomic are cast to xs:double
+	 * 2) Numeric values are converted to their least common type reachable by a combination of type promotion and subtype substitution
+	 * 3) Values of type xs:anyURI are cast to xs:string
+	 * 
+	 * Eg: see XPath 2.0 F&O spec, sections "15.4.3 fn:max & 15.4.4 fn:min"
+	 */
+	protected static AnyAtomicType convertInputItem(TypePromoter tp, AnyType seqItem) throws DynamicError {
+		
+		AnyAtomicType convertedItem = null;
+		
+		if (seqItem instanceof NumericType) {			
+			convertedItem = tp.promote(seqItem);
+		}
+		else if (seqItem instanceof XSUntypedAtomic) {
+			convertedItem = new XSDouble(seqItem.string_value());
+		}
+		else if (seqItem instanceof XSAnyURI) {
+			convertedItem = new XSString(seqItem.string_value());
+		}
+		else if (seqItem instanceof AnyAtomicType){
+		   convertedItem = (AnyAtomicType)seqItem;
+		}
+		
+		return convertedItem;
+		
+	} // convertInputItem
 
 }

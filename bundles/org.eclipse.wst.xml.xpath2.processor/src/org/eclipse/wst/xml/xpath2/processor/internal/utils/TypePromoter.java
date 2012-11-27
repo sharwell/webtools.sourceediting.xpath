@@ -48,18 +48,31 @@ public abstract class TypePromoter {
 		
 	public void considerType(Class typeToConsider) throws DynamicError {
 		Class baseType = substitute(typeToConsider);
+		String typeStrName = getTypeNameStr(typeToConsider);
 		
 		if (baseType == null) {
-			throw DynamicError.argument_type_error(typeToConsider);
+			throw DynamicError.argument_type_error(typeStrName);
 		}
 		
 		if (targetType == null) {
 			targetType = baseType;
 		} else {
 			if (! checkCombination(baseType)) {
-				throw DynamicError.argument_type_error(typeToConsider);
+				throw DynamicError.argument_type_error(typeStrName);
 			}
 		}
+	}
+
+	private String getTypeNameStr(Class typeClass) {
+		String typeStrName = "";
+		try {
+			typeStrName = ((AnyType)typeClass.newInstance()).string_type();
+		} catch (InstantiationException e) {
+		   // no op
+		} catch (IllegalAccessException e) {
+		   // no op	
+		}
+		return typeStrName;
 	}
 	
 	public void considerTypes(Collection typesToConsider) throws DynamicError {		

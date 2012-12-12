@@ -25,6 +25,8 @@ import org.eclipse.wst.xml.xpath2.processor.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AttrType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
@@ -341,7 +343,11 @@ public abstract class Function {
 	 */
 	protected static AnyAtomicType convertInputItem(TypePromoter tp, AnyType seqItem) throws DynamicError {
 		
-		AnyAtomicType convertedItem = null;
+		AnyAtomicType convertedItem = null;		
+		
+		if (seqItem instanceof ElementType || seqItem instanceof AttrType) {
+		   seqItem = FnData.atomize(seqItem);
+		}
 		
 		if (seqItem instanceof NumericType) {			
 			convertedItem = tp.promote(seqItem);

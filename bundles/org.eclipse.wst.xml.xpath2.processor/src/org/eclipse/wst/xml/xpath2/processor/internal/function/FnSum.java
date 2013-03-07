@@ -14,6 +14,10 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -22,14 +26,11 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.ScalarTypePromoter;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.TypePromoter;
-
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Returns a value obtained by adding together the values in $arg. If the
@@ -88,23 +89,47 @@ public class FnSum extends Function {
 		if (arg.empty())
 			return ResultSequenceFactory.create_new(zero);
 
-		MathPlus total = null;
-
-		TypePromoter tp = new ScalarTypePromoter();
-		tp.considerSequence(arg);
-
-		for (Iterator i = arg.iterator(); i.hasNext();) {
-			AnyAtomicType conv = tp.promote((AnyType) i.next());
-			
-			if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
-				return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
-			}
-			if (total == null) {
-				total = (MathPlus)conv; 
-			} else {
-				total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+		MathPlus total = null; 
+		
+		if (isAllItemsDerivedFromDuration(arg)){
+			for (Iterator i = arg.iterator(); i.hasNext();) {
+				AnyAtomicType conv = (AnyAtomicType)FnData.atomize((AnyType) i.next());
+				if (total == null) {
+					total = (MathPlus)conv; 
+				} else {
+					total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+				}
 			}
 		}
+		else {
+			TypePromoter tp = new ScalarTypePromoter();
+			tp.considerSequence(arg);
+			for (Iterator i = arg.iterator(); i.hasNext();) {
+				AnyAtomicType conv = tp.promote((AnyType) i.next());
+				
+				if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
+					return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
+				}
+				if (total == null) {
+					total = (MathPlus)conv; 
+				} else {
+					total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+				}
+			}
+		}
+
+		
 		return ResultSequenceFactory.create_new((AnyType) total);
+	}
+	
+	private static boolean isAllItemsDerivedFromDuration(ResultSequence arg) throws DynamicError {
+		boolean itemsDerivedFromDuration = true;
+		for (Iterator i = arg.iterator(); i.hasNext();) {
+			if (!(FnData.atomize((AnyType) i.next()) instanceof XSDuration)) {
+				itemsDerivedFromDuration = false;
+				break;
+			}
+		}
+		return itemsDerivedFromDuration;
 	}
 }

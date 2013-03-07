@@ -49,7 +49,7 @@ public class PsychoPathXPathTypeHelper {
 			typeCode = YEARMONTHDURATION_DT; 
 		}
 		
-		return (typeCode != -100) ? typeCode : ((XSSimpleTypeDefinition) typeDef).getBuiltInKind();
+		return ("dayTimeDuration".equals(typeDef.getName()) || "yearMonthDuration".equals(typeDef.getName())) ? typeCode : ((XSSimpleTypeDefinition) typeDef).getBuiltInKind();
 		
 	} // getXSDTypeShortCode
 	

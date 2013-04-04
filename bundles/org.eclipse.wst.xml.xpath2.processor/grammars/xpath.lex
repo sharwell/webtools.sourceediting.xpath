@@ -1,5 +1,5 @@
 // *******************************************************************************
-// * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+// * Copyright (c) 2005, 2013 Andrea Bittau, University College London, and others
 // * All rights reserved. This program and the accompanying materials
 // * are made available under the terms of the Eclipse Public License v1.0
 // * which accompanies this distribution, and is available at
@@ -12,6 +12,7 @@
 // *     Jesper S Moller - bug 286061   correct handling of quoted string 
 // *     Jesper Moller - bug 297707 - Missing the empty-sequence() type
 // *     Jesper Moller - bug 388504 - XPath scanner does not detect non-ASCII names
+// *     Jesper S Moller - bug 398606 - XPath3 grammar for concatenation
 // *******************************************************************************/
 
 
@@ -82,6 +83,7 @@ NCName		= ( {Letter} | "_") ( {NCNameChar} )*
 "\-"	{ return symbol(XpathSym.MINUS); }
 "\*"	{ return symbol(XpathSym.STAR); }
 "\|"	{ return symbol(XpathSym.PIPE); }
+"\|\|"	{ return symbol(XpathSym.PIPEPIPE); }
 
 "="	{ return symbol(XpathSym.EQUALS); }
 "!="	{ return symbol(XpathSym.NOTEQUALS); }

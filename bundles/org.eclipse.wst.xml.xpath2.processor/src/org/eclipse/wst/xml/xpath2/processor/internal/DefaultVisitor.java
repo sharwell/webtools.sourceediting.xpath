@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Jesper Steen Moller  - bug 338494 - But without dependency on magic constants 
+ *     Jesper S Moller - bug 398606 - XPath3 - concatenation
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -24,6 +25,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ast.CastableExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.CmpExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.CntxItemExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.CommentTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ConcatExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.DecimalLiteral;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.DivExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.DocumentTest;
@@ -260,6 +262,17 @@ public class DefaultVisitor implements XPathVisitor {
 	 * @return a new function.
 	 */
 	public Object visit(UnionExpr ex) {
+		ex.left().accept(this);
+		ex.right().accept(this);
+		return null;
+	}
+
+	/**
+	 * @param ex
+	 *            is the concatenation expression.
+	 * @return a new function.
+	 */
+	public Object visit(ConcatExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
 		return null;

@@ -1,5 +1,5 @@
 // *******************************************************************************
-// * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+// * Copyright (c) 2005, 2013 Andrea Bittau, University College London, and others
 // * All rights reserved. This program and the accompanying materials
 // * are made available under the terms of the Eclipse Public License v1.0
 // * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@
 // *     David Carver (STAR) - bug 262765 - Fixed Wildcard and NCName issue. 
 // *     Jesper S Moller - bug 297707 - Missing the empty-sequence() type
 // *     Jesper S Moller - bug 311480 - fix problem with name matching on keywords 
-// *     Jesper S Moller - bug XXXXXX - XPath3 grammar 
+// *     Jesper S Moller - bug 398606 - XPath3 grammar for concatenation
 // *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -252,13 +252,18 @@ AndExpr           ::= ComparisonExpr:n {: RESULT = n; :}
 		    	{: RESULT = new AndExpr(l, r); :}
 		    ;
 
-ComparisonExpr    ::= RangeExpr:n {: RESULT = n; :}
-                    | RangeExpr:l ValueComp:t RangeExpr:r
+ComparisonExpr    ::= ConcatExpr:n {: RESULT = n; :}
+                    | ConcatExpr:l ValueComp:t ConcatExpr:r
 			{: RESULT = new CmpExpr(l, r, t.intValue()); :}
-                    | RangeExpr:l GeneralComp:t RangeExpr:r
+                    | ConcatExpr:l GeneralComp:t ConcatExpr:r
 			{: RESULT = new CmpExpr(l, r, t.intValue()); :}
-                    | RangeExpr:l NodeComp:t RangeExpr:r
+                    | ConcatExpr:l NodeComp:t ConcatExpr:r
 			{: RESULT = new CmpExpr(l, r, t.intValue()); :}
+		    ;
+
+ConcatExpr         ::= RangeExpr:n {: RESULT = n; :}
+		    | RangeExpr:l PIPEPIPE RangeExpr:r
+		    	{: RESULT = new ConcatExpr(l, r); :}	
 		    ;
 
 RangeExpr         ::= AdditiveExpr:n {: RESULT = n; :}

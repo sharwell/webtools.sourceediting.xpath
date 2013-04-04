@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2013 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
+ *     Jesper S Moller - bug 398606 - XPath3 - concatenation
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -31,6 +32,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ast.CastableExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.CmpExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.CntxItemExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.CommentTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ConcatExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.DecimalLiteral;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.DivExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.DocumentTest;
@@ -574,7 +576,18 @@ public class Normalizer implements XPathVisitor {
 		return make_function(new QName("op", "union",
 				OpFunctionLibrary.XPATH_OP_NS), args);
 	}
-
+	
+	/**
+	 * @param unex
+	 *            is the union expression.
+	 * @return a new function.
+	 */
+	public Object visit(ConcatExpr unex) {
+		Collection args = normalize_bin_args(unex);
+		return make_function(new QName("fn", "concat",
+				FnFunctionLibrary.XPATH_FUNCTIONS_NS), args);
+	}
+	
 	/**
 	 * @param pipex
 	 *            is the pipe expression.

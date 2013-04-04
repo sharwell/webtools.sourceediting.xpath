@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2009 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2013 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
+ *     Jesper S Moller - bug 398606 - XPath3 - concatenation
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
@@ -96,6 +97,11 @@ public interface XPathVisitor {
 	 * Visit UnionExpr.
 	 */
 	public Object visit(UnionExpr unex);
+
+	/**
+	 * Visit ConcatExpr.
+	 */
+	public Object visit(ConcatExpr concatex);
 
 	/**
 	 * Visit PipeExpr.

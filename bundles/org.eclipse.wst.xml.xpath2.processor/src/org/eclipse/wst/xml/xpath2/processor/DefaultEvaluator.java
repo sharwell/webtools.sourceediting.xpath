@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2013 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,6 +19,7 @@
  *                                         an user-defined variable.
  *     Jesper Steen Moller  - bug 340933 - Migrate to new XPath2 API
  *     Jesper Steen Moller - bug 343804 - Updated API information
+ *     Jesper S Moller - bug 398606 - XPath3 - concatenation
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -63,6 +64,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ast.CastableExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.CmpExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.CntxItemExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.CommentTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ConcatExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.DecimalLiteral;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.DivExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.DocumentTest;
@@ -110,6 +112,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathNode;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathVisitor;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.ConstructorFL;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnBoolean;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnConcat;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnRoot;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FsDiv;
@@ -908,6 +911,23 @@ public class DefaultEvaluator implements XPathVisitor, Evaluator {
 		}
 	}
 
+	/**
+	 * visit sequence type.
+	 * 
+	 * @param e
+	 *            is the sequence type.
+	 * @return null
+	 */
+	public Object visit(ConcatExpr e) {
+		try {
+			Collection args = do_bin_args(e);
+			return FnConcat.concat(args);
+		} catch (DynamicError err) {
+			report_error(err);
+			return null; // unreach
+		}
+	}
+	
 	/**
 	 * visit pipe expression
 	 * 

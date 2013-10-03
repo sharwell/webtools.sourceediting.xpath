@@ -14,7 +14,7 @@
  *                               - fix fn:avg casting issues and divide by zero issues.
  *     Jesper Moller - bug 281028 - fix promotion rules for fn:avg
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
- *    Lukasz Wycisk - bug 361060 - Aggregations with nil=ÕtrueÕ throw exceptions.
+ *    Lukasz Wycisk - bug 361060 - Aggregations with nil=â€™trueâ€™ throw exceptions.
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;

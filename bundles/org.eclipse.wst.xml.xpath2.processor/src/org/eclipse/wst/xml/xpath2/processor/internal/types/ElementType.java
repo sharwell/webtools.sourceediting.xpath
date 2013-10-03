@@ -17,7 +17,7 @@
  *     Mukul Gandhi - bug 323900 - improving computing the typed value of element &
  *                                 attribute nodes, where the schema type of nodes
  *                                 are simple, with varieties 'list' and 'union'.
- *     Lukasz Wycisk - bug 361659 - ElemntType typed value in case of nil=ÕtrueÕ                              
+ *     Lukasz Wycisk - bug 361659 - ElemntType typed value in case of nil=â€™trueâ€™
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;

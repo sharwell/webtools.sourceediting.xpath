@@ -1103,6 +1103,7 @@ class XPathFlex implements java_cup.runtime.Scanner {
           { commentLevel++; // int overflow =P
 			  yybegin(COMMENT);
           }
+          break;
         case 119: break;
         case 83: 
           { return symbol(XpathSym.DOCUMENT_NODE);
@@ -1139,6 +1140,7 @@ class XPathFlex implements java_cup.runtime.Scanner {
         case 47: 
           { commentLevel++;
           }
+          break;
         case 128: break;
         case 37: 
           { return symbol(XpathSym.IF);
@@ -1205,6 +1207,7 @@ class XPathFlex implements java_cup.runtime.Scanner {
 			  if(commentLevel == 0)
 		          	yybegin(YYINITIAL);
           }
+          break;
         case 144: break;
         case 44: 
           { return symbol(XpathSym.OF);
@@ -1297,6 +1300,7 @@ class XPathFlex implements java_cup.runtime.Scanner {
         case 2: 
           { /* ignore */
           }
+          break;
         case 167: break;
         case 10: 
           { return symbol(XpathSym.LBRACKET);

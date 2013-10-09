@@ -16,6 +16,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
 /** CUP v0.10k generated parser.
   * @version Thu Apr 04 11:19:53 CEST 2013
   */
+@SuppressWarnings({"all", "rawtypes", "unchecked"})
 public class XPathCup extends java_cup.runtime.lr_parser {
 
   /** Default constructor. */
@@ -3240,6 +3241,7 @@ public void report_error(String message, Object info) {
 }
 
 /** Cup generated class to encapsulate user supplied action code.*/
+@SuppressWarnings({"all", "rawtypes", "unchecked", "cast"})
 class CUP$XPathCup$actions {
   private final XPathCup parser;
 

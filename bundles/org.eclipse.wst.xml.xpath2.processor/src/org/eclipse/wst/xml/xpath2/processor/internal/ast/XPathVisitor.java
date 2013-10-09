@@ -16,254 +16,254 @@ import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 /**
  * Visitor class for XPath expressions.
  */
-public interface XPathVisitor {
+public interface XPathVisitor<T> {
 	/**
 	 * Visit XPath.
 	 */
-	public Object visit(XPath xp);
+	public T visit(XPath xp);
 
 	/**
 	 * Visit ForExpr.
 	 */
-	public Object visit(ForExpr fex);
+	public T visit(ForExpr fex);
 
 	/**
 	 * Visit QuantifiedExpr.
 	 */
-	public Object visit(QuantifiedExpr qex);
+	public T visit(QuantifiedExpr qex);
 
 	/**
 	 * Visit IfExpr.
 	 */
-	public Object visit(IfExpr ifex);
+	public T visit(IfExpr ifex);
 
 	/**
 	 * Visit OrExpr.
 	 */
-	public Object visit(OrExpr orex);
+	public T visit(OrExpr orex);
 
 	/**
 	 * Visit AndExpr.
 	 */
-	public Object visit(AndExpr andex);
+	public T visit(AndExpr andex);
 
 	/**
 	 * Visit CmpExpr.
 	 */
-	public Object visit(CmpExpr cmpex);
+	public T visit(CmpExpr cmpex);
 
 	/**
 	 * Visit RangeExpr.
 	 */
-	public Object visit(RangeExpr rex);
+	public T visit(RangeExpr rex);
 
 	/**
 	 * Visit AddExpr.
 	 */
-	public Object visit(AddExpr addex);
+	public T visit(AddExpr addex);
 
 	/**
 	 * Visit SubExpr.
 	 */
-	public Object visit(SubExpr subex);
+	public T visit(SubExpr subex);
 
 	/**
 	 * Visit MulExpr.
 	 */
-	public Object visit(MulExpr mulex);
+	public T visit(MulExpr mulex);
 
 	/**
 	 * Visit DivExpr.
 	 */
-	public Object visit(DivExpr mulex);
+	public T visit(DivExpr mulex);
 
 	/**
 	 * Visit IDivExpr.
 	 */
-	public Object visit(IDivExpr mulex);
+	public T visit(IDivExpr mulex);
 
 	/**
 	 * Visit ModExpr.
 	 */
-	public Object visit(ModExpr mulex);
+	public T visit(ModExpr mulex);
 
 	/**
 	 * Visit UnionExpr.
 	 */
-	public Object visit(UnionExpr unex);
+	public T visit(UnionExpr unex);
 
 	/**
 	 * Visit PipeExpr.
 	 */
-	public Object visit(PipeExpr pipex);
+	public T visit(PipeExpr pipex);
 
 	/**
 	 * Visit IntersectExpr.
 	 */
-	public Object visit(IntersectExpr iexpr);
+	public T visit(IntersectExpr iexpr);
 
 	/**
 	 * Visit ExceptExpr.
 	 */
-	public Object visit(ExceptExpr eexpr);
+	public T visit(ExceptExpr eexpr);
 
 	/**
 	 * Visit InstOfExpr.
 	 */
-	public Object visit(InstOfExpr ioexp);
+	public T visit(InstOfExpr ioexp);
 
 	/**
 	 * Visit TreatAsExpr.
 	 */
-	public Object visit(TreatAsExpr taexp);
+	public T visit(TreatAsExpr taexp);
 
 	/**
 	 * Visit CastableExpr.
 	 */
-	public Object visit(CastableExpr cexp);
+	public T visit(CastableExpr cexp);
 
 	/**
 	 * Visit CastExpr.
 	 */
-	public Object visit(CastExpr cexp);
+	public T visit(CastExpr cexp);
 
 	/**
 	 * Visit MinusExpr.
 	 */
-	public Object visit(MinusExpr e);
+	public T visit(MinusExpr e);
 
 	/**
 	 * Visit PlusExpr.
 	 */
-	public Object visit(PlusExpr e);
+	public T visit(PlusExpr e);
 
 	/**
 	 * Visit XPathExpr.
 	 */
-	public Object visit(XPathExpr e);
+	public T visit(XPathExpr e);
 
 	/**
 	 * Visit ForwardStep.
 	 */
-	public Object visit(ForwardStep e);
+	public T visit(ForwardStep e);
 
 	/**
 	 * Visit ReverseStep.
 	 */
-	public Object visit(ReverseStep e);
+	public T visit(ReverseStep e);
 
 	/**
 	 * Visit NameTest.
 	 */
-	public Object visit(NameTest e);
+	public T visit(NameTest e);
 
 	/**
 	 * Visit VarRef.
 	 */
-	public Object visit(VarRef e);
+	public T visit(VarRef e);
 
 	/**
 	 * Visit StringLiteral.
 	 */
-	public Object visit(StringLiteral e);
+	public T visit(StringLiteral e);
 
 	/**
 	 * Visit IntegerLiteral.
 	 */
-	public Object visit(IntegerLiteral e);
+	public T visit(IntegerLiteral e);
 
 	/**
 	 * Visit DoubleLiteral.
 	 */
-	public Object visit(DoubleLiteral e);
+	public T visit(DoubleLiteral e);
 
 	/**
 	 * Visit DecimalLiteral.
 	 */
-	public Object visit(DecimalLiteral e);
+	public T visit(DecimalLiteral e);
 
 	/**
 	 * Visit ParExpr.
 	 */
-	public Object visit(ParExpr e);
+	public T visit(ParExpr e);
 
 	/**
 	 * Visit CntxItemExpr.
 	 */
-	public Object visit(CntxItemExpr e);
+	public T visit(CntxItemExpr e);
 
 	/**
 	 * Visit FunctionCall.
 	 */
-	public Object visit(FunctionCall e);
+	public T visit(FunctionCall e);
 
 	/**
 	 * Visit SingleType.
 	 */
-	public Object visit(SingleType e);
+	public T visit(SingleType e);
 
 	/**
 	 * Visit SequenceType.
 	 */
-	public Object visit(SequenceType e);
+	public T visit(SequenceType e);
 
 	/**
 	 * Visit ItemType.
 	 */
-	public Object visit(ItemType e);
+	public T visit(ItemType e);
 
 	/**
 	 * Visit AnyKindTest.
 	 */
-	public Object visit(AnyKindTest e);
+	public T visit(AnyKindTest e);
 
 	/**
 	 * Visit DocumentTest.
 	 */
-	public Object visit(DocumentTest e);
+	public T visit(DocumentTest e);
 
 	/**
 	 * Visit TextTest.
 	 */
-	public Object visit(TextTest e);
+	public T visit(TextTest e);
 
 	/**
 	 * Visit CommentTest.
 	 */
-	public Object visit(CommentTest e);
+	public T visit(CommentTest e);
 
 	/**
 	 * Visit PITest.
 	 */
-	public Object visit(PITest e);
+	public T visit(PITest e);
 
 	/**
 	 * Visit AttributeTest.
 	 */
-	public Object visit(AttributeTest e);
+	public T visit(AttributeTest e);
 
 	/**
 	 * Visit SchemaAttrTest.
 	 */
-	public Object visit(SchemaAttrTest e);
+	public T visit(SchemaAttrTest e);
 
 	/**
 	 * Visit ElementTest.
 	 */
-	public Object visit(ElementTest e);
+	public T visit(ElementTest e);
 
 	/**
 	 * Visit SchemElemTest.
 	 */
-	public Object visit(SchemaElemTest e);
+	public T visit(SchemaElemTest e);
 
 	/**
 	 * Visit AxisStep.
 	 */
-	public Object visit(AxisStep e);
+	public T visit(AxisStep e);
 
 	/**
 	 * Visit FilterExpr.
 	 */
-	public Object visit(FilterExpr e);
+	public T visit(FilterExpr e);
 }

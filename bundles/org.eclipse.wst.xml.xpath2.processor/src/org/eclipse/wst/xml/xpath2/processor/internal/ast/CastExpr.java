@@ -52,7 +52,7 @@ public class CastExpr extends BinExpr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
-	public Object accept(XPathVisitor v) {
+	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}
 }

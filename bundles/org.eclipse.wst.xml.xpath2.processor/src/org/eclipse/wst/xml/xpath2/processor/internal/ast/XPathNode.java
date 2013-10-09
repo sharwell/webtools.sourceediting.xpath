@@ -18,5 +18,5 @@ public abstract class XPathNode {
 	/**
 	 * Support for Visitor interface.
 	 */
-	public abstract Object accept(XPathVisitor v);
+	public abstract <T> T accept(XPathVisitor<T> v);
 }

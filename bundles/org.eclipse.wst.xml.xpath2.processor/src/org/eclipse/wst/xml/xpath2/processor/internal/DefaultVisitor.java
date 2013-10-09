@@ -374,7 +374,9 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 * @return e
 	 */
 	public Object visit(ReverseStep e) {
-		e.node_test().accept(this);
+		if (e.node_test() != null) {
+			e.node_test().accept(this);
+		}
 		return null;
 	}
 

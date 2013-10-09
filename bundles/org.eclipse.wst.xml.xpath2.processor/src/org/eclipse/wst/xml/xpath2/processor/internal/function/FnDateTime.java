@@ -36,7 +36,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSTime;
   * ref: Section 5.2 of the F&O spec, http://www.w3.org/TR/xpath-functions/.
  */
 public class FnDateTime extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnDateTime.
@@ -54,7 +54,7 @@ public class FnDateTime extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return dateTime(args, ec.getStaticContext());
 	}
 
@@ -69,15 +69,15 @@ public class FnDateTime extends Function {
 	 *             Dynamic error.
 	 * @return Result of the fn:dateTime operation.
 	 */
-	public static ResultSequence dateTime(Collection args, StaticContext sc)
+	public static ResultSequence dateTime(Collection<ResultSequence> args, StaticContext sc)
 			throws DynamicError {
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get args
-		Iterator argiter = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argiter.next();
-		ResultSequence arg2 = (ResultSequence) argiter.next();
+		Iterator<ResultSequence> argiter = cargs.iterator();
+		ResultSequence arg1 = argiter.next();
+		ResultSequence arg2 = argiter.next();
 
 		// if either of the parameter is an empty sequence, the result
 		// is an empty sequence
@@ -119,9 +119,9 @@ public class FnDateTime extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new XSDate(), SeqType.OCC_QMARK));
 			_expected_args.add(new SeqType(new XSTime(), SeqType.OCC_QMARK));
 		}

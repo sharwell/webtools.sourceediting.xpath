@@ -47,7 +47,7 @@ public class FnInsertBefore extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return insert_before(args);
 	}
 
@@ -60,7 +60,7 @@ public class FnInsertBefore extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:insert-before operation.
 	 */
-	public static ResultSequence insert_before(Collection args)
+	public static ResultSequence insert_before(Collection<ResultSequence> args)
 			throws DynamicError {
 
 		assert args.size() == 3;
@@ -68,10 +68,10 @@ public class FnInsertBefore extends Function {
 		ResultBuffer rs = new ResultBuffer();
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence target = (ResultSequence) citer.next();
-		ResultSequence arg2 = (ResultSequence) citer.next();
-		ResultSequence inserts = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence target = citer.next();
+		ResultSequence arg2 = citer.next();
+		ResultSequence inserts = citer.next();
 
 		// sanity chex
 		if (arg2.size() != 1)
@@ -98,7 +98,7 @@ public class FnInsertBefore extends Function {
 
 		int curpos = 1;
 
-		for (Iterator i = target.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = target.iterator(); i.hasNext();) {
 			at = (AnyType) i.next();
 
 			if (curpos == position)

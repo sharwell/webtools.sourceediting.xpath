@@ -84,7 +84,7 @@ public class AttrType extends NodeType {
 		TypeDefinition typeDef = getType();
 
 		if (typeDef != null) {
-			List/*<Short>*/ types = typeDef.getSimpleTypes(_value);
+			List<Short> types = typeDef.getSimpleTypes(_value);
  		    return getXDMTypedValue(typeDef, types);
 		}
 		else {

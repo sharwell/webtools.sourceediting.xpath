@@ -91,7 +91,7 @@ public class StaticContextAdapter implements
 					return dc.default_collation_name();
 				}
 				
-				public Comparator getCollation(String name) {
+				public Comparator<String> getCollation(String name) {
 					return dc.get_collation(name);
 				}
 			};
@@ -103,7 +103,7 @@ public class StaticContextAdapter implements
 				return null;
 			}
 			
-			public Comparator getCollation(String name) {
+			public Comparator<String> getCollation(String name) {
 				return null;
 			}
 		};

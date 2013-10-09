@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -43,7 +44,7 @@ public class FnUnordered extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return unordered(args);
 	}
 
@@ -56,26 +57,26 @@ public class FnUnordered extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:unordered operation.
 	 */
-	public static ResultSequence unordered(Collection args) throws DynamicError {
+	public static ResultSequence unordered(Collection<ResultSequence> args) throws DynamicError {
 
 		assert args.size() == 1;
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence arg = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence arg = citer.next();
 
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
 		// XXX lame
-		ArrayList tmp = new ArrayList();
-		for (Iterator i = arg.iterator(); i.hasNext();)
+		ArrayList<Item> tmp = new ArrayList<Item>();
+		for (Iterator<Item> i = arg.iterator(); i.hasNext();)
 			tmp.add(i.next());
 
 		Collections.shuffle(tmp);
 
 		ResultBuffer rb = new ResultBuffer();
-		for (Iterator i = tmp.iterator(); i.hasNext();)
+		for (Iterator<Item> i = tmp.iterator(); i.hasNext();)
 			rb.add((AnyType) i.next());
 
 		return rb.getSequence();

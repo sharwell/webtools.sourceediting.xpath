@@ -25,7 +25,7 @@ import org.eclipse.wst.xml.xpath2.api.FunctionLibrary;
  */
 public class FunctionLibraryImpl implements FunctionLibrary {
 	private String _namespace;
-	private Map _functions;
+	private Map<String, Function> _functions;
 
 	/**
 	 * Constructor for FunctionLibrary.
@@ -35,7 +35,7 @@ public class FunctionLibraryImpl implements FunctionLibrary {
 	 */
 	public FunctionLibraryImpl(String ns) {
 		_namespace = ns;
-		_functions = new HashMap();
+		_functions = new HashMap<String, Function>();
 	}
 
 	/**
@@ -79,13 +79,13 @@ public class FunctionLibraryImpl implements FunctionLibrary {
 	public org.eclipse.wst.xml.xpath2.api.Function resolveFunction(
 			String localName, int arity) {
 
-		Function f = (Function) _functions.get(signature(localName, arity));
+		Function f = _functions.get(signature(localName, arity));
 
 		if (f != null || arity == -1)
 			return f;
 
 		// see if we got a varg one
-		f = (Function) _functions.get(signature(localName, -1));
+		f = _functions.get(signature(localName, -1));
 
 		// nope
 		if (f == null)

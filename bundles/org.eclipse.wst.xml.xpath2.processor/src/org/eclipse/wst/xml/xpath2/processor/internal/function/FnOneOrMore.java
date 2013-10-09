@@ -40,7 +40,7 @@ public class FnOneOrMore extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return one_or_more(args);
 	}
 
@@ -53,14 +53,14 @@ public class FnOneOrMore extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:one-or-more operation.
 	 */
-	public static ResultSequence one_or_more(Collection args)
+	public static ResultSequence one_or_more(Collection<ResultSequence> args)
 			throws DynamicError {
 
 		assert args.size() == 1;
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence arg = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence arg = citer.next();
 
 		if (arg.empty())
 			throw DynamicError.empty_seq(null);

@@ -44,7 +44,7 @@ public class AnyKindTest extends KindTest {
 		return false;
 	}
 
-	public Class getXDMClassType() {
+	public Class<? extends NodeType> getXDMClassType() {
 		return NodeType.class;
 	}
 	

@@ -59,7 +59,7 @@ public class SchemaElemTest extends KindTest {
 		return false;
 	}
 
-	public Class getXDMClassType() {
+	public Class<? extends NodeType> getXDMClassType() {
 		// TODO Auto-generated method stub
 		return null;
 	}

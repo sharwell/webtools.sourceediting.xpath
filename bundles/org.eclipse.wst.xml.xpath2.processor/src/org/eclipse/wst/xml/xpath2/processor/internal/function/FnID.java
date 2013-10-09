@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -41,7 +42,7 @@ import org.w3c.dom.NodeList;
  * or more of the IDREF values supplied in $arg .
  */
 public class FnID extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 	
 	/**
 	 * Constructor for FnInsertBefore.
@@ -59,7 +60,7 @@ public class FnID extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return id(args, ec);
 	}
 
@@ -72,20 +73,20 @@ public class FnID extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:insert-before operation.
 	 */
-	public static ResultSequence id(Collection args, EvaluationContext context) throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+	public static ResultSequence id(Collection<ResultSequence> args, EvaluationContext context) throws DynamicError {
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		ResultBuffer rs = new ResultBuffer();
 		
-		Iterator argIt = cargs.iterator();
-		ResultSequence idrefRS = (ResultSequence) argIt.next();
+		Iterator<ResultSequence> argIt = cargs.iterator();
+		ResultSequence idrefRS = argIt.next();
 		String[] idrefst = idrefRS.first().getStringValue().split(" ");
 
-		ArrayList idrefs = createIDRefs(idrefst);
+		ArrayList<XSIDREF> idrefs = createIDRefs(idrefst);
 		ResultSequence nodeArg = null;
 		NodeType nodeType = null;
 		if (argIt.hasNext()) {
-			nodeArg = (ResultSequence) argIt.next();
+			nodeArg = argIt.next();
 			nodeType = (NodeType)nodeArg.first();
 		} else {
 			if (context.getContextItem() == null) {
@@ -118,8 +119,8 @@ public class FnID extends Function {
 		return rs.getSequence();
 	}
 	
-	private static ArrayList createIDRefs(String[] idReftokens) {
-		ArrayList xsidRef = new ArrayList();
+	private static ArrayList<XSIDREF> createIDRefs(String[] idReftokens) {
+		ArrayList<XSIDREF> xsidRef = new ArrayList<XSIDREF>();
 		for (int i = 0; i < idReftokens.length; i++) {
 			XSIDREF idref = new XSIDREF(idReftokens[i]);
 			xsidRef.add(idref);
@@ -127,7 +128,7 @@ public class FnID extends Function {
 		return xsidRef;
 	}
 	
-	private static void processChildNodes(Node node, List idrefs, ResultBuffer rs, EvaluationContext context) {
+	private static void processChildNodes(Node node, List<XSIDREF> idrefs, ResultBuffer rs, EvaluationContext context) {
 		if (!node.hasChildNodes()) {
 			return;
 		}
@@ -149,7 +150,7 @@ public class FnID extends Function {
 
 	}
 	
-	private static void processAttributes(Node node, List idrefs, ResultBuffer rs, EvaluationContext context) {
+	private static void processAttributes(Node node, List<XSIDREF> idrefs, ResultBuffer rs, EvaluationContext context) {
 		if (!node.hasAttributes()) {
 			return;
 		}
@@ -169,9 +170,9 @@ public class FnID extends Function {
 		}
 	}
 	
-	private static boolean hasIDREF(List idrefs, Node node) {
+	private static boolean hasIDREF(List<XSIDREF> idrefs, Node node) {
 		for (int i = 0; i < idrefs.size(); i++) {
-			XSIDREF idref = (XSIDREF) idrefs.get(i);
+			XSIDREF idref = idrefs.get(i);
 			if (idref.getStringValue().equals(node.getNodeValue())) {
 				return true;
 			}
@@ -180,7 +181,7 @@ public class FnID extends Function {
 	}
 	
 	private static boolean isDuplicate(Node node, ResultBuffer rs) {
-		Iterator it = rs.iterator();
+		Iterator<Item> it = rs.iterator();
 		while (it.hasNext()) {
 			if (it.next().equals(node)) {
 				return true;
@@ -194,9 +195,9 @@ public class FnID extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_STAR);
 			_expected_args.add(arg);
 			_expected_args.add(new SeqType(SeqType.OCC_NONE));

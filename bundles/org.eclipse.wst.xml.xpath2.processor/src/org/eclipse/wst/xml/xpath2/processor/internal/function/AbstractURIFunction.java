@@ -31,7 +31,7 @@ public abstract class AbstractURIFunction extends Function {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 	
-	static Collection _expected_args = null;
+	static Collection<SeqType> _expected_args = null;
 
 	protected static boolean needs_escape(byte x, boolean escape_delimiters, boolean escape_space) {
 		
@@ -91,7 +91,7 @@ public abstract class AbstractURIFunction extends Function {
 	 *             Dynamic error.
 	 * @return The result of applying the URI escaping rules to the arguments.
 	 */
-	public static ResultSequence escape_uri(Collection args, boolean escape) throws DynamicError {
+	public static ResultSequence escape_uri(Collection<ResultSequence> args, boolean escape) throws DynamicError {
 		return escape_uri(args, escape, true);
 	}
 
@@ -105,11 +105,11 @@ public abstract class AbstractURIFunction extends Function {
 	 *             Dynamic error.
 	 * @return The result of applying the URI escaping rules to the arguments.
 	 */
-	public static ResultSequence escape_uri(Collection args, boolean escape_delimiters, boolean escape_space) throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+	public static ResultSequence escape_uri(Collection<ResultSequence> args, boolean escape_delimiters, boolean escape_space) throws DynamicError {
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 	
-		Iterator argi = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argi.next();
+		Iterator<ResultSequence> argi = cargs.iterator();
+		ResultSequence arg1 = argi.next();
 	
 		if (arg1.empty()) {
 			return new XSString("");
@@ -139,9 +139,9 @@ public abstract class AbstractURIFunction extends Function {
 	 * 
 	 * @return The expected arguments.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_QMARK));
 		}
 	

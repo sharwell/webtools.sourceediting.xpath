@@ -30,7 +30,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
  * sequence, returns the empty sequence.
  */
 public class FnMinutesFromDateTime extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnMinutesFromDateTime.
@@ -48,7 +48,7 @@ public class FnMinutesFromDateTime extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return minutes_from_date_time(args);
 	}
 
@@ -61,11 +61,11 @@ public class FnMinutesFromDateTime extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:minutes-from-dateTime operation.
 	 */
-	public static ResultSequence minutes_from_date_time(Collection args)
+	public static ResultSequence minutes_from_date_time(Collection<ResultSequence> args)
 			throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
-		ResultSequence arg1 = (ResultSequence) cargs.iterator().next();
+		ResultSequence arg1 = cargs.iterator().next();
 
 		if (arg1.empty()) {
 			return ResultBuffer.EMPTY;
@@ -83,9 +83,9 @@ public class FnMinutesFromDateTime extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args
 					.add(new SeqType(new XSDateTime(), SeqType.OCC_QMARK));
 		}

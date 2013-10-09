@@ -46,7 +46,7 @@ public class FnTrace extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return trace(args);
 	}
 
@@ -59,16 +59,16 @@ public class FnTrace extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:trace operation.
 	 */
-	public static ResultSequence trace(Collection args) throws DynamicError {
+	public static ResultSequence trace(Collection<ResultSequence> args) throws DynamicError {
 
 		// sanity check args
 		if (args.size() != 2)
 			DynamicError.throw_type_error();
 
-		Iterator argsi = args.iterator();
+		Iterator<ResultSequence> argsi = args.iterator();
 
-		ResultSequence arg1 = (ResultSequence) argsi.next();
-		ResultSequence arg2 = (ResultSequence) argsi.next();
+		ResultSequence arg1 = argsi.next();
+		ResultSequence arg2 = argsi.next();
 
 		if (arg2.size() != 1)
 			DynamicError.throw_type_error();
@@ -81,7 +81,7 @@ public class FnTrace extends Function {
 
 		int index = 1;
 
-		for (Iterator i = arg1.iterator(); i.hasNext(); index++) {
+		for (Iterator<Item> i = arg1.iterator(); i.hasNext(); index++) {
 			at = (AnyType) i.next();
 
 			System.out.println(label.value() + " [" + index + "] "

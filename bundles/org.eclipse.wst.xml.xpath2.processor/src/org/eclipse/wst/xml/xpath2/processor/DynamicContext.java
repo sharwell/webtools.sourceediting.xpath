@@ -104,7 +104,7 @@ public interface DynamicContext extends StaticContext {
 	 *             dynamic error.
 	 * @return result of the function evaluation.
 	 */
-	public ResultSequence evaluate_function(QName name, Collection args)
+	public ResultSequence evaluate_function(QName name, Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args)
 			throws DynamicError;
 
 	/**
@@ -171,7 +171,7 @@ public interface DynamicContext extends StaticContext {
 	 * @return A Jaa collator, or null, if no such Collator exists 
 	 * @since 1.1
 	 */
-	public Comparator get_collation(String uri); 
+	public Comparator<String> get_collation(String uri); 
 	
 	/**
 	 * Returns the current default collator

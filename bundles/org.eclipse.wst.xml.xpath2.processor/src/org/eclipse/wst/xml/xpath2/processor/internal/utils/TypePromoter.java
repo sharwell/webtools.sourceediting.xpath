@@ -28,7 +28,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
  * Generic type promoter for handling subtype substitution and type promotions for functions and operators.
  */
 public abstract class TypePromoter {
-	private Class targetType = null;
+	private Class<? extends AnyType> targetType = null;
 
 	abstract public AnyAtomicType doPromote(AnyAtomicType value) throws DynamicError;	
 
@@ -48,12 +48,12 @@ public abstract class TypePromoter {
 	 * @param typeToConsider The 
 	 * @return The supertype to treat it as (i.e. if a xs:nonNegativeInteger is treated as xs:number)
 	 */
-	abstract protected Class substitute(Class typeToConsider);	
+	abstract protected Class<? extends AnyType> substitute(Class<? extends AnyType> typeToConsider);	
 
-	abstract protected boolean checkCombination(Class newType);
+	abstract protected boolean checkCombination(Class<? extends AnyType> newType);
 		
-	public void considerType(Class typeToConsider) throws DynamicError {
-		Class baseType = substitute(typeToConsider);
+	public void considerType(Class<? extends AnyType> typeToConsider) throws DynamicError {
+		Class<? extends AnyType> baseType = substitute(typeToConsider);
 		
 		if (baseType == null) {
 			throw DynamicError.argument_type_error(typeToConsider);
@@ -68,9 +68,9 @@ public abstract class TypePromoter {
 		}
 	}
 	
-	public void considerTypes(Collection typesToConsider) throws DynamicError {		
-		for (Iterator iter = typesToConsider.iterator(); iter.hasNext();) {
-			considerType((Class)iter.next());	
+	public void considerTypes(Collection<? extends Class<? extends AnyType>> typesToConsider) throws DynamicError {		
+		for (Iterator<? extends Class<? extends AnyType>> iter = typesToConsider.iterator(); iter.hasNext();) {
+			considerType(iter.next());	
 		}
 	}
 	
@@ -81,11 +81,11 @@ public abstract class TypePromoter {
 		}
 	}
 	
-	public Class getTargetType() {
+	public Class<? extends AnyType> getTargetType() {
 		return targetType;
 	}
 	
-	protected void setTargetType(Class class1) {
+	protected void setTargetType(Class<? extends AnyType> class1) {
 		this.targetType = class1;
 	}
 

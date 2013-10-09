@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
@@ -35,7 +37,7 @@ import com.ibm.icu.text.UTF16;
  * not a legal XML character, an error is raised [err:FOCH0001].
  */
 public class FnCodepointsToString extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 	
     /**
      * The maximum value of a Unicode code point.
@@ -64,7 +66,7 @@ public class FnCodepointsToString extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return codepoints_to_string(args);
 	}
 
@@ -77,18 +79,18 @@ public class FnCodepointsToString extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:codepoints-to-string operation.
 	 */
-	public static ResultSequence codepoints_to_string(Collection args)
+	public static ResultSequence codepoints_to_string(Collection<ResultSequence> args)
 			throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
-		ResultSequence arg1 = (ResultSequence) cargs.iterator().next();
+		ResultSequence arg1 = cargs.iterator().next();
 		if (arg1.empty()) {
 			return new XSString("");
 		}
 
 		int[] codePointArray = new int[arg1.size()];
 		int codePointIndex = 0;
-		for (Iterator i = arg1.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = arg1.iterator(); i.hasNext();) {
 			XSInteger code = (XSInteger) i.next();
 			
 			int codepoint = code.int_value().intValue();
@@ -114,9 +116,9 @@ public class FnCodepointsToString extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new XSInteger(), SeqType.OCC_STAR));
 		}
 

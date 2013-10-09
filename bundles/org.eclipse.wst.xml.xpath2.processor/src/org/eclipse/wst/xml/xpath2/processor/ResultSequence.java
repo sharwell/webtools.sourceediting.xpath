@@ -45,7 +45,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 	/**
 	 * List Iterator.
 	 */
-	public abstract ListIterator iterator();
+	public abstract ListIterator<Item> iterator();
 
 	/**
 	 * get item in index i
@@ -104,7 +104,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 		int num = 1;
 
 		StringBuffer buf = new StringBuffer();
-		for (Iterator i = iterator(); i.hasNext();) {
+		for (Iterator<Item> i = iterator(); i.hasNext();) {
 			AnyType elem = (AnyType) i.next();
 
 			buf.append(num + ") ");

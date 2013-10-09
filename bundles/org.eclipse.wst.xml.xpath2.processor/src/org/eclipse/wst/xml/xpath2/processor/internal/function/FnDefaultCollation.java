@@ -48,7 +48,7 @@ public class FnDefaultCollation extends Function {
 		super(new QName("default-collation"), 0);
 	}
 
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 		return new XSString(ec.getDynamicContext().getCollationProvider().getDefaultCollation());
 	}

@@ -51,8 +51,8 @@ public class FnRoundHalfToEven extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
-		ResultSequence argument = (ResultSequence) args.iterator().next();
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+		ResultSequence argument = args.iterator().next();
 		if (args.size() == 2) {
 			return fn_round_half_to_even(args);
 		}
@@ -81,15 +81,15 @@ public class FnRoundHalfToEven extends Function {
 		return nt.round_half_to_even();
 	}
 	
-	public static ResultSequence fn_round_half_to_even(Collection args) throws DynamicError {
+	public static ResultSequence fn_round_half_to_even(Collection<ResultSequence> args) throws DynamicError {
 		
 		if (args.size() > 2 || args.size() <= 1) {
 			throw new DynamicError(TypeError.invalid_type(null));
 		}
 		
-		Iterator argIt = args.iterator();
-		ResultSequence rsArg1 =  (ResultSequence) argIt.next();
-		ResultSequence rsPrecision = (ResultSequence) argIt.next();
+		Iterator<ResultSequence> argIt = args.iterator();
+		ResultSequence rsArg1 =  argIt.next();
+		ResultSequence rsPrecision = argIt.next();
 		
 		NumericType nt = FnAbs.get_single_numeric_arg(rsArg1);
 

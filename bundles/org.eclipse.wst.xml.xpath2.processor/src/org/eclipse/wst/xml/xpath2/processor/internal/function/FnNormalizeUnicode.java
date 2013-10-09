@@ -45,7 +45,7 @@ import com.ibm.icu.text.Normalizer;
  * 
  */
 public class FnNormalizeUnicode extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 	private static W3CNormalizer normalizer = null;
 
 	/**
@@ -67,7 +67,7 @@ public class FnNormalizeUnicode extends Function {
 	 */
 	static class ICUNormalizer implements W3CNormalizer {
 		
-		private Map modeMap = new HashMap();
+		private Map<String, Normalizer.Mode> modeMap = new HashMap<String, Normalizer.Mode>();
 		{
 			// Can't handle "FULLY-NORMALIZED" yet
 			
@@ -79,7 +79,7 @@ public class FnNormalizeUnicode extends Function {
 		
 		public String normalize(String argument, String normalizationForm)
 				throws DynamicError {
-			Normalizer.Mode mode = (Normalizer.Mode)modeMap.get(normalizationForm);
+			Normalizer.Mode mode = modeMap.get(normalizationForm);
 			if (mode != null) {
 				return Normalizer.normalize(argument, mode);
 			} else {
@@ -143,7 +143,7 @@ public class FnNormalizeUnicode extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the space in the arguments being normalized.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return normalize_unicode(args, ec.getDynamicContext());
 	}
 
@@ -156,19 +156,19 @@ public class FnNormalizeUnicode extends Function {
 	 *             Dynamic error.
 	 * @return The result of normalizing the space in the arguments.
 	 */
-	public static ResultSequence normalize_unicode(Collection args, DynamicContext d_context)
+	public static ResultSequence normalize_unicode(Collection<ResultSequence> args, DynamicContext d_context)
 			throws DynamicError {
 		assert args.size() >= 1 && args.size() <= 2;
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 		
-		Iterator cargsIterator = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) cargsIterator.next();
+		Iterator<ResultSequence> cargsIterator = cargs.iterator();
+		ResultSequence arg1 = cargsIterator.next();
 
 
 		String normalizationType = "NFC";
 		if (cargsIterator.hasNext()) {
-			ResultSequence arg2 = (ResultSequence)cargsIterator.next();
+			ResultSequence arg2 = cargsIterator.next();
 			// Trim and convert to upper as per the spec
 			if (arg2.empty()) {
 				normalizationType = "";
@@ -233,9 +233,9 @@ public class FnNormalizeUnicode extends Function {
 	 * 
 	 * @return The expected arguments.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_QMARK));
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_NONE));
 		}

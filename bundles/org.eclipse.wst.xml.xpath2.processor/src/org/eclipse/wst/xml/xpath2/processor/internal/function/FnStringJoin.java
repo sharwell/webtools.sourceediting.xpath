@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
@@ -44,7 +45,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * </p>
  */
 public class FnStringJoin extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnStringJoin
@@ -62,7 +63,7 @@ public class FnStringJoin extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the joining of the arguments.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return string_join(args);
 	}
 
@@ -75,19 +76,19 @@ public class FnStringJoin extends Function {
 	 *             Dynamic error.
 	 * @return The result of the arguments being joined together.
 	 */
-	public static ResultSequence string_join(Collection args)
+	public static ResultSequence string_join(Collection<ResultSequence> args)
 			throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
-		Iterator argi = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argi.next();
-		ResultSequence arg2 = (ResultSequence) argi.next();
+		Iterator<ResultSequence> argi = cargs.iterator();
+		ResultSequence arg1 = argi.next();
+		ResultSequence arg2 = argi.next();
 
 		String result = "";
 		String separator = ((XSString) arg2.first()).value();
 
 		StringBuffer buf = new StringBuffer();
-		for (Iterator i = arg1.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = arg1.iterator(); i.hasNext();) {
 			XSString item = (XSString) i.next();
 			buf.append(item.value());
 			
@@ -104,9 +105,9 @@ public class FnStringJoin extends Function {
 	 * 
 	 * @return The expected arguments.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_STAR));
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_NONE));
 		}

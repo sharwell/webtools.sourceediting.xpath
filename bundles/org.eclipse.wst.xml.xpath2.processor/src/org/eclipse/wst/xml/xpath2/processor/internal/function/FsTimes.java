@@ -39,7 +39,7 @@ public class FsTimes extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_times(args);
@@ -54,7 +54,7 @@ public class FsTimes extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_times(Collection args) throws DynamicError {
+	public static ResultSequence fs_times(Collection<ResultSequence> args) throws DynamicError {
 		return FsPlus.do_math_op(args, MathTimes.class, "times");
 	}
 }

@@ -40,7 +40,7 @@ public class FsLt extends Function {
 	 *            argument expressions.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_lt_value(args, ec.getDynamicContext());
@@ -57,7 +57,7 @@ public class FsLt extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_lt_value(Collection args, DynamicContext dc) {
+	public static ResultSequence fs_lt_value(Collection<ResultSequence> args, DynamicContext dc) {
 		return FsEq.do_cmp_value_op(args, CmpLt.class, "lt", dc);
 	}
 
@@ -72,7 +72,7 @@ public class FsLt extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_lt_general(Collection args, DynamicContext dc)
+	public static ResultSequence fs_lt_general(Collection<ResultSequence> args, DynamicContext dc)
 			throws DynamicError {
 		return FsEq.do_cmp_general_op(args, FsLt.class, "fs_lt_value", dc);
 	}

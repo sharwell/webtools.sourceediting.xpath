@@ -58,7 +58,7 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return distinct_values(args, ec.getDynamicContext());
 	}
 
@@ -71,16 +71,16 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of fn:distinct-values operation.
 	 */
-	public static ResultSequence distinct_values(Collection args, DynamicContext context) throws DynamicError {
+	public static ResultSequence distinct_values(Collection<ResultSequence> args, DynamicContext context) throws DynamicError {
 
 		ResultBuffer rs = new ResultBuffer();
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence arg1 = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence arg1 = citer.next();
 		ResultSequence arg2 = ResultBuffer.EMPTY;
 		if (citer.hasNext()) {
-			arg2 = (ResultSequence) citer.next();
+			arg2 = citer.next();
 		}
 		
 		String collationURI = context.getCollationProvider().getDefaultCollation();
@@ -89,8 +89,8 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 			collationURI = collation.getStringValue();
 		}
 
-		for (Iterator iter = arg1.iterator(); iter.hasNext();) {
-			AnyAtomicType atomizedItem = (AnyAtomicType) FnData.atomize((Item) iter.next());
+		for (Iterator<Item> iter = arg1.iterator(); iter.hasNext();) {
+			AnyAtomicType atomizedItem = (AnyAtomicType) FnData.atomize(iter.next());
 			if (!contains(rs, atomizedItem, context, collationURI))
 				rs.add(atomizedItem);
 		}

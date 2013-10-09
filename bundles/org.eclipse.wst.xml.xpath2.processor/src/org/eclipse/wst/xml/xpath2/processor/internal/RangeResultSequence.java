@@ -17,6 +17,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 import java.math.BigInteger;
 import java.util.*;
 
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.typesystem.ItemType;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -78,7 +79,7 @@ public class RangeResultSequence extends ResultSequence {
 	 * 
 	 * @return tail
 	 */
-	public ListIterator iterator() {
+	public ListIterator<Item> iterator() {
 		// XXX life is getting hard...
 		if (_size != 0) {
 			ResultSequence newtail = ResultSequenceFactory.create_new();

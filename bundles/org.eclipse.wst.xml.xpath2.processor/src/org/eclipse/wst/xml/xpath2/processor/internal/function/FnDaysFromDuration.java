@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -33,7 +34,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
  * $arg is the empty sequence, returns the empty sequence.
  */
 public class FnDaysFromDuration extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnDaysFromDuration.
@@ -51,7 +52,7 @@ public class FnDaysFromDuration extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return days_from_duration(args);
 	}
 
@@ -64,11 +65,11 @@ public class FnDaysFromDuration extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:days-from-duration operation.
 	 */
-	public static ResultSequence days_from_duration(Collection args)
+	public static ResultSequence days_from_duration(Collection<ResultSequence> args)
 			throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
-		ResultSequence arg1 = (ResultSequence) cargs.iterator().next();
+		ResultSequence arg1 = cargs.iterator().next();
 
 		if (arg1.empty()) {
 			return ResultBuffer.EMPTY;
@@ -89,9 +90,9 @@ public class FnDaysFromDuration extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new XSDuration(),
 					SeqType.OCC_QMARK));
 		}

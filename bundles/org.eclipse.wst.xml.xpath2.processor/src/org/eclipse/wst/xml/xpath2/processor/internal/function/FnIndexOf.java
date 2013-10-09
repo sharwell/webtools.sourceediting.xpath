@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -41,7 +42,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  */
 public class FnIndexOf extends AbstractCollationEqualFunction {
 	
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 	
 	/**
 	 * Constructor for FnIndexOf.
@@ -59,7 +60,7 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return index_of(args, ec.getDynamicContext());
 	}
 
@@ -97,13 +98,13 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of fn:index-of operation.
 	 */
-	public static ResultSequence index_of(Collection args, DynamicContext dc) {
+	public static ResultSequence index_of(Collection<ResultSequence> args, DynamicContext dc) {
 		Function.convert_arguments(args, expected_args());
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence arg1 = (ResultSequence) citer.next();
-		ResultSequence arg2 = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence arg1 = citer.next();
+		ResultSequence arg2 = citer.next();
 		
 		if (arg1.empty()) {
 			return ResultBuffer.EMPTY;
@@ -115,7 +116,7 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 		
 		String collationUri = dc.getCollationProvider().getDefaultCollation();
 		if (citer.hasNext()) {
-			ResultSequence arg3 = (ResultSequence) citer.next();
+			ResultSequence arg3 = citer.next();
 			if (!arg3.empty()) {
 				XSString collation = (XSString) arg3.first();
 				collationUri = collation.getStringValue();
@@ -129,7 +130,7 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 
 		int index = 1;
 
-		for (Iterator i = arg1.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = arg1.iterator(); i.hasNext();) {
 			AnyType cmptype = (AnyType) i.next();
 			get_comparable(cmptype);
 
@@ -183,9 +184,9 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(AnyType.class, SeqType.OCC_STAR);
 			_expected_args.add(arg);
 			_expected_args.add(new SeqType(AnyAtomicType.class, SeqType.OCC_NONE));

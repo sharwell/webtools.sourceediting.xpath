@@ -16,6 +16,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -63,7 +64,7 @@ public class FnConcat extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the concatenation of the arguments.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return concat(args);
 	}
 
@@ -76,7 +77,7 @@ public class FnConcat extends Function {
 	 *             Dynamic error.
 	 * @return The result of the concatenation of the arguments.
 	 */
-	public static ResultSequence concat(Collection args) throws DynamicError {
+	public static ResultSequence concat(Collection<ResultSequence> args) throws DynamicError {
 
 		// sanity check
 		if (args.size() < 2)
@@ -88,8 +89,8 @@ public class FnConcat extends Function {
 
 		// go through args
 		StringBuffer buf = new StringBuffer();
-		for (Iterator argi = args.iterator(); argi.hasNext();) {
-			ResultSequence arg = (ResultSequence) argi.next();
+		for (Iterator<ResultSequence> argi = args.iterator(); argi.hasNext();) {
+			ResultSequence arg = argi.next();
 
 			int size = arg.size();
 

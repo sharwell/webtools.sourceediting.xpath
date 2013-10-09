@@ -52,7 +52,7 @@ public class FnReverse extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the reversal of the arguments.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return reverse(args);
 	}
 
@@ -65,13 +65,13 @@ public class FnReverse extends Function {
 	 *             Dynamic error.
 	 * @return The result of the reversal of the arguments.
 	 */
-	public static ResultSequence reverse(Collection args) throws DynamicError {
+	public static ResultSequence reverse(Collection<ResultSequence> args) throws DynamicError {
 
 		assert args.size() == 1;
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence arg = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence arg = citer.next();
 
 		if (arg.size() <= 1)
 			return arg;

@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -58,7 +59,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return deep_equal(args, ec);
 	}
 
@@ -73,17 +74,17 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of fn:deep-equal operation.
 	 */
-	public static ResultSequence deep_equal(Collection args, EvaluationContext context)
+	public static ResultSequence deep_equal(Collection<ResultSequence> args, EvaluationContext context)
 			throws DynamicError {
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence arg1 = (ResultSequence) citer.next();
-		ResultSequence arg2 = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence arg1 = citer.next();
+		ResultSequence arg2 = citer.next();
 		ResultSequence arg3 = null;
 		String collationURI = context.getStaticContext().getCollationProvider().getDefaultCollation();
 		if (citer.hasNext()) {
-			arg3 = (ResultSequence) citer.next();
+			arg3 = citer.next();
 			if (!arg3.empty()) {
 				collationURI = arg3.first().getStringValue();
 			}
@@ -112,8 +113,8 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 		if (one.size() != two.size())
 			return false;
 
-		Iterator onei = one.iterator();
-		Iterator twoi = two.iterator();
+		Iterator<Item> onei = one.iterator();
+		Iterator<Item> twoi = two.iterator();
 
 		while (onei.hasNext()) {
 			AnyType a = (AnyType) onei.next();

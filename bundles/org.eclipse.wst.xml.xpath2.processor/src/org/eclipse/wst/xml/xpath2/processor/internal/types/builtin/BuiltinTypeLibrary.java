@@ -139,7 +139,7 @@ public class BuiltinTypeLibrary {
 			return null;
 		}
 		
-		private Map/*<String, BuiltinTypeDefinition>*/ builtinTypes = new HashMap/*<String, BuiltinTypeDefinition>*/();
+		private Map<String, BuiltinTypeDefinition> builtinTypes = new HashMap<String, BuiltinTypeDefinition>();
 		{
 			addType(XS_ANYTYPE);
 			addType(XS_UNTYPED);

@@ -42,7 +42,7 @@ public class FsGt extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_gt_value(args, ec.getDynamicContext());
@@ -59,7 +59,7 @@ public class FsGt extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_gt_value(Collection args, DynamicContext dynamic)
+	public static ResultSequence fs_gt_value(Collection<ResultSequence> args, DynamicContext dynamic)
 			throws DynamicError {
 		return FsEq.do_cmp_value_op(args, CmpGt.class, "gt", dynamic);
 	}
@@ -75,7 +75,7 @@ public class FsGt extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_gt_general(Collection args, DynamicContext dc)
+	public static ResultSequence fs_gt_general(Collection<ResultSequence> args, DynamicContext dc)
 			throws DynamicError {
 		return FsEq.do_cmp_general_op(args, FsGt.class, "fs_gt_value", dc);
 	}

@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -40,7 +41,7 @@ import org.w3c.dom.NodeList;
  * 
  */
 public class FnIDREF extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 	
 	/**
 	 * Constructor for FnInsertBefore.
@@ -58,7 +59,7 @@ public class FnIDREF extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return idref(args, ec);
 	}
 
@@ -72,20 +73,20 @@ public class FnIDREF extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:insert-before operation.
 	 */
-	public static ResultSequence idref(Collection args, EvaluationContext ec) throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+	public static ResultSequence idref(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		ResultBuffer rs = new ResultBuffer();
 		
-		Iterator argIt = cargs.iterator();
-		ResultSequence idrefRS = (ResultSequence) argIt.next();
+		Iterator<ResultSequence> argIt = cargs.iterator();
+		ResultSequence idrefRS = argIt.next();
 		String[] idst = idrefRS.first().getStringValue().split(" ");
 
-		ArrayList ids = createIDs(idst);
+		ArrayList<XSID> ids = createIDs(idst);
 		ResultSequence nodeArg = null;
 		NodeType nodeType = null;
 		if (argIt.hasNext()) {
-			nodeArg = (ResultSequence) argIt.next();
+			nodeArg = argIt.next();
 			nodeType = (NodeType)nodeArg.first();
 		} else {
 			if (ec.getContextItem() == null) {
@@ -118,8 +119,8 @@ public class FnIDREF extends Function {
 		return rs.getSequence();
 	}
 	
-	private static ArrayList createIDs(String[] idtokens) {
-		ArrayList xsid = new ArrayList();
+	private static ArrayList<XSID> createIDs(String[] idtokens) {
+		ArrayList<XSID> xsid = new ArrayList<XSID>();
 		for (int i = 0; i < idtokens.length; i++) {
 			XSID id = new XSID(idtokens[i]);
 			xsid.add(id);
@@ -127,7 +128,7 @@ public class FnIDREF extends Function {
 		return xsid;
 	}
 	
-	private static ResultBuffer processChildNodes(Node node, List ids, ResultBuffer rs, EvaluationContext ec) {
+	private static ResultBuffer processChildNodes(Node node, List<XSID> ids, ResultBuffer rs, EvaluationContext ec) {
 		if (!node.hasChildNodes()) {
 			return rs;
 		}
@@ -151,7 +152,7 @@ public class FnIDREF extends Function {
 
 	}
 	
-	private static ResultBuffer processAttributes(Node node, List idrefs, ResultBuffer rs, EvaluationContext ec) {
+	private static ResultBuffer processAttributes(Node node, List<XSID> idrefs, ResultBuffer rs, EvaluationContext ec) {
 		if (!node.hasAttributes()) {
 			return rs;
 		}
@@ -172,9 +173,9 @@ public class FnIDREF extends Function {
 		return rs;
 	}
 	
-	private static boolean hasID(List ids, Node node) {
+	private static boolean hasID(List<XSID> ids, Node node) {
 		for (int i = 0; i < ids.size(); i++) {
-			XSID idref = (XSID) ids.get(i);
+			XSID idref = ids.get(i);
 			if (idref.getStringValue().equals(node.getNodeValue())) {
 				return true;
 			}
@@ -183,7 +184,7 @@ public class FnIDREF extends Function {
 	}
 	
 	private static boolean isDuplicate(Node node, ResultBuffer rs) {
-		Iterator it = rs.iterator();
+		Iterator<Item> it = rs.iterator();
 		while (it.hasNext()) {
 			if (it.next().equals(node)) {
 				return true;
@@ -197,9 +198,9 @@ public class FnIDREF extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_STAR);
 			_expected_args.add(arg);
 			_expected_args.add(new SeqType(SeqType.OCC_NONE));

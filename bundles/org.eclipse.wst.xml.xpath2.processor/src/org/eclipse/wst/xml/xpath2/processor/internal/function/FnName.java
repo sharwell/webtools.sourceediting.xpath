@@ -33,7 +33,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * string, or has the lexical form of an xs:QName.
  */
 public class FnName extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnName.
@@ -51,7 +51,7 @@ public class FnName extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return name(args, ec);
 	}
 
@@ -66,9 +66,9 @@ public class FnName extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:name operation.
 	 */
-	public static ResultSequence name(Collection args, EvaluationContext ec) throws DynamicError {
+	public static ResultSequence name(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get arg
 		ResultSequence arg1 = null;
@@ -80,7 +80,7 @@ public class FnName extends Function {
 				arg1 = ResultBuffer.wrap(ec.getContextItem());
 			}
 		} else {
-			arg1 = (ResultSequence) cargs.iterator().next();
+			arg1 = cargs.iterator().next();
 		}
 		
 		if (arg1.empty()) {
@@ -103,9 +103,9 @@ public class FnName extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 		}

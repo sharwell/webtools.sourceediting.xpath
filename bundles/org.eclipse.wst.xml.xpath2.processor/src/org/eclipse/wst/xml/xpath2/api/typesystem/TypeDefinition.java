@@ -41,10 +41,10 @@ public interface TypeDefinition {
                                String name,
                                short derivationMethod);
 	
-    public Class getNativeType();
+    public Class<?> getNativeType();
     
-    List/*<Short>*/ getSimpleTypes(Attr attr);
+    List<Short> getSimpleTypes(Attr attr);
 
-	  List/*<Short>*/ getSimpleTypes(Element attr);
+	  List<Short> getSimpleTypes(Element attr);
     
 }

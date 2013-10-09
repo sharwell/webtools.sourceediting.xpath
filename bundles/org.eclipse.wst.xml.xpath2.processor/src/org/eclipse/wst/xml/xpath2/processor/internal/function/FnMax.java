@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -55,7 +56,7 @@ public class FnMax extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return max(args, ec.getDynamicContext());
 	}
 
@@ -70,7 +71,7 @@ public class FnMax extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:max operation.
 	 */
-	public static ResultSequence max(Collection args, DynamicContext dynamicContext) throws DynamicError {
+	public static ResultSequence max(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
 
 		ResultSequence arg = get_arg(args, CmpGt.class);
 		if (arg.empty())
@@ -81,7 +82,7 @@ public class FnMax extends Function {
 		TypePromoter tp = new ComparableTypePromoter();
 		tp.considerSequence(arg);
 
-		for (Iterator i = arg.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = arg.iterator(); i.hasNext();) {
 			AnyAtomicType conv = tp.promote((AnyType) i.next());
 			
 			if( conv != null ){
@@ -108,11 +109,11 @@ public class FnMax extends Function {
 	 *             Dynamic error.
 	 * @return Result of operation.
 	 */
-	public static ResultSequence get_arg(Collection args, Class op)
+	public static ResultSequence get_arg(Collection<ResultSequence> args, Class<?> op)
 			throws DynamicError {
 		assert args.size() == 1;
 
-		ResultSequence arg = (ResultSequence) args.iterator().next();
+		ResultSequence arg = args.iterator().next();
 
 		return arg;
 	}

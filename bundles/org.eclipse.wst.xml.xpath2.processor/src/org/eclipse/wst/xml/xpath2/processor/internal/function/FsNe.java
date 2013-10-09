@@ -41,7 +41,7 @@ public class FsNe extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, DynamicContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, DynamicContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_ne_value(args, ec);
@@ -58,7 +58,7 @@ public class FsNe extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_ne_value(Collection args, DynamicContext context)
+	public static ResultSequence fs_ne_value(Collection<ResultSequence> args, DynamicContext context)
 			throws DynamicError {
 		return FnNot.fn_not(FsEq.fs_eq_value(args, context));
 	}
@@ -74,7 +74,7 @@ public class FsNe extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_ne_general(Collection args, DynamicContext ec)
+	public static ResultSequence fs_ne_general(Collection<ResultSequence> args, DynamicContext ec)
 			throws DynamicError {
 		return FsEq.do_cmp_general_op(args, FsNe.class, "fs_ne_value", ec);
 	}

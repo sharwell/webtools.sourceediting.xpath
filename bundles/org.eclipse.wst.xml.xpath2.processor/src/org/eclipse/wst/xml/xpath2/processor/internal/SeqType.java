@@ -17,6 +17,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -52,7 +53,7 @@ public class SeqType {
 
 	private transient AnyType anytype = null;
 	private transient int occ;
-	private transient Class typeClass = null;
+	private transient Class<? extends AnyType> typeClass = null;
 	private transient QName nodeName = null;
 	private transient boolean wild = false;
 
@@ -91,7 +92,7 @@ public class SeqType {
 	 * @param occ
 	 *            is an integer in the sequence.
 	 */
-	public SeqType(Class type_class, int occ) {
+	public SeqType(Class<? extends AnyType> type_class, int occ) {
 		this((AnyType) null, occ);
 
 		this.typeClass = type_class;
@@ -146,7 +147,7 @@ public class SeqType {
 	private AnyAtomicType make_atomic(StaticContext sc, QName qname) {
 		String ns = qname.namespace();
 
-		Map functionLibraries = sc.getFunctionLibraries();
+		Map<String, org.eclipse.wst.xml.xpath2.api.FunctionLibrary> functionLibraries = sc.getFunctionLibraries();
 		if (!functionLibraries.containsKey(ns))
 			return null;
 
@@ -226,7 +227,7 @@ public class SeqType {
 
 		int arg_count = 0;
 
-		for (Iterator i = args.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = args.iterator(); i.hasNext();) {
 			AnyType arg = (AnyType) i.next();
 
 			// make sure all args are the same type as expected type

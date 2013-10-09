@@ -195,7 +195,7 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(Collection args)
+	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args)
 			throws DynamicError {
 		throw new UnsupportedOperationException();
 	}
@@ -227,7 +227,7 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 			org.eclipse.wst.xml.xpath2.api.ResultSequence rs = FnData.atomize(arg);
 
 			// cast untyped to expected type
-			for (Iterator i = rs.iterator(); i.hasNext();) {
+			for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
 				AnyType item = (AnyType) i.next();
 				
 				if (item instanceof XSUntypedAtomic) {
@@ -283,19 +283,19 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 	 *             Dynamic error.
 	 * @return Converted arguments.
 	 */
-	public static Collection convert_arguments(Collection args,
-			Collection expected) throws DynamicError {
-		Collection result = new ArrayList();
+	public static Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> convert_arguments(Collection<? extends org.eclipse.wst.xml.xpath2.api.ResultSequence> args,
+			Collection<? extends SeqType> expected) throws DynamicError {
+		Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> result = new ArrayList<org.eclipse.wst.xml.xpath2.api.ResultSequence>();
 
 		assert args.size() <= expected.size();
 
-		Iterator argi = args.iterator();
-		Iterator expi = expected.iterator();
+		Iterator<? extends org.eclipse.wst.xml.xpath2.api.ResultSequence> argi = args.iterator();
+		Iterator<? extends SeqType> expi = expected.iterator();
 
 		// convert all arguments
 		while (argi.hasNext()) {
-			result.add(convert_argument((org.eclipse.wst.xml.xpath2.api.ResultSequence) argi.next(),
-					(SeqType) expi.next()));
+			result.add(convert_argument(argi.next(),
+					expi.next()));
 		}
 
 		return result;
@@ -352,12 +352,12 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 		return "argument_"  + index;
 	}
 
-	public TypeDefinition computeReturnType(Collection args,
+	public TypeDefinition computeReturnType(Collection<TypeDefinition> args,
 			org.eclipse.wst.xml.xpath2.api.StaticContext sc) {
 		return BuiltinTypeLibrary.XS_UNTYPED;
 	}
 
-	public org.eclipse.wst.xml.xpath2.api.ResultSequence evaluate(Collection/*<ResultSequence>*/ args,
+	public org.eclipse.wst.xml.xpath2.api.ResultSequence evaluate(Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args,
 			EvaluationContext evaluationContext) {
 		
 		org.eclipse.wst.xml.xpath2.processor.ResultSequence result = evaluate(args);

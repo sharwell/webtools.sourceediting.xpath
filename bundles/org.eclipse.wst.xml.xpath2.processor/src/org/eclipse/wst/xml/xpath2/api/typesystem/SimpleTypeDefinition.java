@@ -67,7 +67,7 @@ public interface SimpleTypeDefinition extends TypeDefinition {
      * non-empty sequence of simple type definitions) is available, 
      * otherwise an empty <code>XSObjectList</code>. 
      */
-    public List/*<SimpleTypeDefinition>*/ getMemberTypes();
+    public List<SimpleTypeDefinition> getMemberTypes();
 
     /**
      * [facets]: all facets defined on this type. The value is a bit 

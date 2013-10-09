@@ -27,5 +27,5 @@ public interface CollationProvider {
 	 * @param name A URI designating the collation to use
 	 * @return The collation to use, or null if no such collation exists by this provider
 	 */
-	Comparator get_collation(String name);
+	Comparator<String> get_collation(String name);
 }

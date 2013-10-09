@@ -60,7 +60,7 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_eq_value(args, ec.getDynamicContext());
@@ -75,19 +75,19 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of conversion.
 	 */
-	private static Collection value_convert_args(Collection args)
+	private static Collection<Item> value_convert_args(Collection<ResultSequence> args)
 			throws DynamicError {
-		Collection result = new ArrayList(args.size());
+		Collection<Item> result = new ArrayList<Item>(args.size());
 
 		// atomize arguments
-		for (Iterator i = args.iterator(); i.hasNext();) {
-			ResultSequence rs = (ResultSequence) i.next();
+		for (Iterator<ResultSequence> i = args.iterator(); i.hasNext();) {
+			ResultSequence rs = i.next();
 
 			//FnData.fast_atomize(rs);
 			rs = FnData.atomize(rs);
 
 			if (rs.empty())
-				return new ArrayList();
+				return new ArrayList<Item>();
 
 			if (rs.size() > 1)
 				throw new DynamicError(TypeError.invalid_type(null));
@@ -112,7 +112,7 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of conversion.
 	 */
-	public static ResultSequence fs_eq_value(Collection args, DynamicContext context)
+	public static ResultSequence fs_eq_value(Collection<ResultSequence> args, DynamicContext context)
 			throws DynamicError {
 		return do_cmp_value_op(args, CmpEq.class, "eq", context);
 	}
@@ -212,7 +212,7 @@ public class FsEq extends Function {
 		ResultSequence one = ResultSequenceFactory.create_new(a);
 		ResultSequence two = ResultSequenceFactory.create_new(b);
 
-		Collection args = new ArrayList();
+		Collection<ResultSequence> args = new ArrayList<ResultSequence>();
 		args.add(one);
 		args.add(two);
 
@@ -246,7 +246,7 @@ public class FsEq extends Function {
 	 *         Dynamic context 
 	 * @return Result of general equality operation.
 	 */
-	public static ResultSequence fs_eq_general(Collection args, DynamicContext dc)
+	public static ResultSequence fs_eq_general(Collection<ResultSequence> args, DynamicContext dc)
 			{
 		return do_cmp_general_op(args, FsEq.class, "fs_eq_value", dc);
 	}
@@ -265,7 +265,7 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence do_cmp_general_op(Collection args, Class type,
+	public static ResultSequence do_cmp_general_op(Collection<ResultSequence> args, Class<?> type,
 			String mname, DynamicContext dc) throws DynamicError {
 
 		// do the voodoo
@@ -284,10 +284,10 @@ public class FsEq extends Function {
 		if (args.size() != 2)
 			DynamicError.throw_type_error();
 
-		Iterator argiter = args.iterator();
+		Iterator<ResultSequence> argiter = args.iterator();
 
-		org.eclipse.wst.xml.xpath2.api.ResultSequence one = (org.eclipse.wst.xml.xpath2.api.ResultSequence) argiter.next();
-		org.eclipse.wst.xml.xpath2.api.ResultSequence two = (org.eclipse.wst.xml.xpath2.api.ResultSequence) argiter.next();
+		ResultSequence one = argiter.next();
+		ResultSequence two = argiter.next();
 
 		// XXX ?
 		if (one.empty() || two.empty())
@@ -298,9 +298,9 @@ public class FsEq extends Function {
 		two = FnData.atomize(two);
 
 		// we gotta find a pair that satisfied the condition
-		for (Iterator i = one.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = one.iterator(); i.hasNext();) {
 			AnyType a = (AnyType) i.next();
-			for (Iterator j = two.iterator(); j.hasNext();) {
+			for (Iterator<Item> j = two.iterator(); j.hasNext();) {
 				AnyType b = (AnyType) j.next();
 
 				if (do_general_pair(a, b, comparator, dc))
@@ -328,20 +328,20 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence do_cmp_value_op(Collection args, Class type,
+	public static ResultSequence do_cmp_value_op(Collection<ResultSequence> args, Class<?> type,
 			String mname, DynamicContext context) throws DynamicError {
 
 		// sanity check args + convert em
 		if (args.size() != 2)
 			DynamicError.throw_type_error();
 
-		Collection cargs = value_convert_args(args);
+		Collection<Item> cargs = value_convert_args(args);
 
 		if (cargs.size() == 0)
 			return ResultBuffer.EMPTY;
 
 		// make sure arugments are comparable by equality
-		Iterator argi = cargs.iterator();
+		Iterator<Item> argi = cargs.iterator();
 		Item arg = ((ResultSequence) argi.next()).first();
 		ResultSequence arg2 = (ResultSequence) argi.next();
 
@@ -352,7 +352,7 @@ public class FsEq extends Function {
 			DynamicError.throw_type_error();
 
 		try {
-			Class margsdef[] = { AnyType.class, DynamicContext.class };
+			Class<?>[] margsdef = { AnyType.class, DynamicContext.class };
 			Method method = null;
 
 			method = type.getMethod(mname, margsdef);

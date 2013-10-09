@@ -30,7 +30,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
  * Support for To operation.
  */
 public class OpTo extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for OpTo.
@@ -48,7 +48,7 @@ public class OpTo extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		assert args.size() == 2;
 
 		// Iterator i = args.iterator();
@@ -66,15 +66,15 @@ public class OpTo extends Function {
 	 *             Dynamic error.
 	 * @return Result of operation.
 	 */
-	public static ResultSequence op_to(Collection args) throws DynamicError {
+	public static ResultSequence op_to(Collection<ResultSequence> args) throws DynamicError {
 		// convert arguments
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get arguments
-		Iterator iter = cargs.iterator();
-		ResultSequence r = (ResultSequence) iter.next();
+		Iterator<ResultSequence> iter = cargs.iterator();
+		ResultSequence r = iter.next();
 		int one = ((XSInteger) r.first()).int_value().intValue();
-		r = (ResultSequence) iter.next();
+		r = iter.next();
 		if (r.first() == null) {
 			return ResultBuffer.EMPTY;
 		}
@@ -100,9 +100,9 @@ public class OpTo extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 
 			SeqType st = new SeqType(new XSInteger());
 

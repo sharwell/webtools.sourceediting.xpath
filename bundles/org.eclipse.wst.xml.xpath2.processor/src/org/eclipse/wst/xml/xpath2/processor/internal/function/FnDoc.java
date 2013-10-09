@@ -42,7 +42,7 @@ import org.w3c.dom.Document;
  * raised [err:FODC0005].
  */
 public class FnDoc extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnDoc.
@@ -60,7 +60,7 @@ public class FnDoc extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return doc(args, ec);
 	}
 
@@ -75,13 +75,13 @@ public class FnDoc extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:doc operation.
 	 */
-	public static ResultSequence doc(Collection args, EvaluationContext ec)
+	public static ResultSequence doc(Collection<ResultSequence> args, EvaluationContext ec)
 			throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get args
-		Iterator argiter = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argiter.next();
+		Iterator<ResultSequence> argiter = cargs.iterator();
+		ResultSequence arg1 = argiter.next();
 
 		if (arg1.empty())
 			return ResultSequenceFactory.create_new();
@@ -105,9 +105,9 @@ public class FnDoc extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 		}

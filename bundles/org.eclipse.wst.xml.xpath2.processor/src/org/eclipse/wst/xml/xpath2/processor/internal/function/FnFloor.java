@@ -48,11 +48,11 @@ public class FnFloor extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		// 1 argument only!
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		ResultSequence argument = (ResultSequence) args.iterator().next();
+		ResultSequence argument = args.iterator().next();
 
 		return fn_floor(argument);
 	}

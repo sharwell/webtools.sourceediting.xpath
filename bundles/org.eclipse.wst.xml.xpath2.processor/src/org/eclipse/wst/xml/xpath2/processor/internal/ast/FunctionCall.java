@@ -22,7 +22,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  */
 public class FunctionCall extends PrimaryExpr {
 	private QName _name;
-	private Collection _args;
+	private Collection<Expr> _args;
 	private Function _function;
 
 	/**
@@ -33,7 +33,7 @@ public class FunctionCall extends PrimaryExpr {
 	 * @param args
 	 *            Collection of arguments.
 	 */
-	public FunctionCall(QName name, Collection args) {
+	public FunctionCall(QName name, Collection<Expr> args) {
 		_name = name;
 		_args = args;
 	}
@@ -69,7 +69,7 @@ public class FunctionCall extends PrimaryExpr {
 	 * 
 	 * @return Result of Iterator operation.
 	 */
-	public Iterator iterator() {
+	public Iterator<Expr> iterator() {
 		return _args.iterator();
 	}
 

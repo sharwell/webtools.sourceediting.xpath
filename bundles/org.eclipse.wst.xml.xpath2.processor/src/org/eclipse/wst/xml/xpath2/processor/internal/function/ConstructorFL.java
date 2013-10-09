@@ -22,7 +22,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  */
 public class ConstructorFL extends FunctionLibrary {
 
-	private Hashtable _types;
+	private Hashtable<QName, AnyAtomicType> _types;
 
 	/**
 	 * Constructor for ConstructorFL.
@@ -33,7 +33,7 @@ public class ConstructorFL extends FunctionLibrary {
 	public ConstructorFL(String ns) {
 		super(ns);
 
-		_types = new Hashtable();
+		_types = new Hashtable<QName, AnyAtomicType>();
 	}
 
 	/**
@@ -72,6 +72,6 @@ public class ConstructorFL extends FunctionLibrary {
 	 * @return type of input variable.
 	 */
 	public AnyAtomicType atomic_type(QName name) {
-		return (AnyAtomicType) _types.get(name);
+		return _types.get(name);
 	}
 }

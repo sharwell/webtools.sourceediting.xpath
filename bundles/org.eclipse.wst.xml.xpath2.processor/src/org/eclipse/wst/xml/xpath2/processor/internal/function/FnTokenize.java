@@ -33,7 +33,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * are not returned.
  */
 public class FnTokenize extends AbstractRegExFunction {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnTokenize.
@@ -51,7 +51,7 @@ public class FnTokenize extends AbstractRegExFunction {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return tokenize(args);
 	}
 
@@ -64,26 +64,26 @@ public class FnTokenize extends AbstractRegExFunction {
 	 *             Dynamic error.
 	 * @return Result of fn:tokenize operation.
 	 */
-	public static ResultSequence tokenize(Collection args) throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+	public static ResultSequence tokenize(Collection<ResultSequence> args) throws DynamicError {
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		ResultBuffer rs = new ResultBuffer();
 
 		// get args
-		Iterator argiter = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argiter.next();
+		Iterator<ResultSequence> argiter = cargs.iterator();
+		ResultSequence arg1 = argiter.next();
 		String str1 = "";
 		if (!arg1.empty()) {
 			str1 = ((XSString) arg1.first()).value();
 		}
 
-		ResultSequence arg2 = (ResultSequence) argiter.next();
+		ResultSequence arg2 = argiter.next();
 		String pattern = ((XSString) arg2.first()).value();
 		String flags = null;
 
 		if (argiter.hasNext()) {
 			ResultSequence flagRS = null;
-			flagRS = (ResultSequence) argiter.next();
+			flagRS = argiter.next();
 			flags = flagRS.first().getStringValue();
 			if (validflags.indexOf(flags) == -1 && flags.length() > 0 ) {
 				throw DynamicError.regex_flags_error(null);
@@ -91,10 +91,10 @@ public class FnTokenize extends AbstractRegExFunction {
 		}
 
 		try {
-			ArrayList ret = tokenize(pattern, flags, str1);
+			ArrayList<String> ret = tokenize(pattern, flags, str1);
 
-			for (Iterator retIter = ret.iterator(); retIter.hasNext();) {
-			   rs.add(new XSString((String)retIter.next()));	
+			for (Iterator<String> retIter = ret.iterator(); retIter.hasNext();) {
+			   rs.add(new XSString(retIter.next()));	
 			}
 			
 		} catch (PatternSyntaxException err) {
@@ -104,9 +104,9 @@ public class FnTokenize extends AbstractRegExFunction {
 		return rs.getSequence();
 	}
 	
-	private static ArrayList tokenize(String pattern, String flags, String src) throws DynamicError {
+	private static ArrayList<String> tokenize(String pattern, String flags, String src) throws DynamicError {
 		Matcher matcher = regex(pattern, flags, src);
-		ArrayList tokens = new ArrayList();
+		ArrayList<String> tokens = new ArrayList<String>();
 		int startpos = 0;
 		int endpos = src.length();
 		while (matcher.find()) {
@@ -130,9 +130,9 @@ public class FnTokenize extends AbstractRegExFunction {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_NONE));

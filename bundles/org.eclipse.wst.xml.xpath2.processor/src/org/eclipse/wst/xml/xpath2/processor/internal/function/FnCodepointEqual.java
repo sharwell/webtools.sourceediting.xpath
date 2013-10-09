@@ -52,7 +52,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  */
 public class FnCodepointEqual extends Function {
 	
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor of FnCodepointEqual.
@@ -70,7 +70,7 @@ public class FnCodepointEqual extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the comparison of the arguments.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return codepoint_equals(args, ec.getDynamicContext());
 	}
 
@@ -85,16 +85,16 @@ public class FnCodepointEqual extends Function {
 	 *             Dynamic error.
 	 * @return The result of the comparison of the arguments.
 	 */
-	public static ResultSequence codepoint_equals(Collection args, DynamicContext dynamicContext) throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+	public static ResultSequence codepoint_equals(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		ResultBuffer rs = new ResultBuffer();
 
-		Iterator argiter = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argiter.next();
+		Iterator<ResultSequence> argiter = cargs.iterator();
+		ResultSequence arg1 = argiter.next();
 		XSString xstr1 = arg1.empty() ? null : (XSString) arg1.first();
 
-		ResultSequence arg2 = (ResultSequence) argiter.next();
+		ResultSequence arg2 = argiter.next();
 		XSString xstr2 = arg2.empty() ? null : (XSString) arg2.first();
 
 		// This delegates to FnCompare
@@ -109,9 +109,9 @@ public class FnCodepointEqual extends Function {
 	 * 
 	 * @return The expected arguments.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 			_expected_args.add(arg);

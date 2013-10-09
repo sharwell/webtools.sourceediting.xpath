@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -55,7 +56,7 @@ public class FnMin extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return min(args, ec.getDynamicContext());
 	}
 
@@ -70,7 +71,7 @@ public class FnMin extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:min operation.
 	 */
-	public static ResultSequence min(Collection args, DynamicContext context) throws DynamicError {
+	public static ResultSequence min(Collection<ResultSequence> args, DynamicContext context) throws DynamicError {
 
 		ResultSequence arg = FnMax.get_arg(args, CmpLt.class);
 		if (arg.empty())
@@ -81,7 +82,7 @@ public class FnMin extends Function {
 		TypePromoter tp = new ComparableTypePromoter();
 		tp.considerSequence(arg);
 
-		for (Iterator i = arg.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = arg.iterator(); i.hasNext();) {
 			AnyAtomicType conv = tp.promote((AnyType) i.next());
 			
 			if( conv != null ){

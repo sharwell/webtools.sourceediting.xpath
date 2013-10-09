@@ -43,7 +43,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
  * returned.
  */
 public class FnResolveURI extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnBaseUri.
@@ -61,7 +61,7 @@ public class FnResolveURI extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return resolveURI(args, ec);
 	}
 
@@ -76,18 +76,18 @@ public class FnResolveURI extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:resolve-uri operation.
 	 */
-	public static ResultSequence resolveURI(Collection args,
+	public static ResultSequence resolveURI(Collection<ResultSequence> args,
 			EvaluationContext ec) throws DynamicError {
 		if (ec.getStaticContext().getBaseUri() == null) {
 			throw DynamicError.noBaseURI();
 		}
 		
-		Collection cargs = args;
-		Iterator argit = cargs.iterator();
-		ResultSequence relativeRS = (ResultSequence) argit.next();
+		Collection<ResultSequence> cargs = args;
+		Iterator<ResultSequence> argit = cargs.iterator();
+		ResultSequence relativeRS = argit.next();
 		ResultSequence baseUriRS = null;
 		if (argit.hasNext()) {
-			baseUriRS = (ResultSequence) argit.next();
+			baseUriRS = argit.next();
 		}
 
 		if (relativeRS.empty()) {
@@ -124,9 +124,9 @@ public class FnResolveURI extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(SeqType.OCC_QMARK));
 			_expected_args.add(new SeqType(SeqType.OCC_NONE));
 		}

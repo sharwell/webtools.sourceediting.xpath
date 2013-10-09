@@ -43,7 +43,7 @@ public class ComplexXercesTypeDefinition extends XercesTypeDefinition implements
 		return complexTypeDefinition.getProhibitedSubstitutions();
 	}
 
-	public Class getNativeType() {
+	public Class<?> getNativeType() {
 		return NodeList.class;
 	}
 

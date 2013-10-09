@@ -37,7 +37,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
  * <code>xs:dateTime</code> with a timezone.
  */
 public class FnAdjustDateTimeToTimeZone extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 	private static final XSDayTimeDuration minDuration = new XSDayTimeDuration(
 			0, 14, 0, 0, true);
 	private static final XSDayTimeDuration maxDuration = new XSDayTimeDuration(
@@ -59,7 +59,7 @@ public class FnAdjustDateTimeToTimeZone extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return adjustdateTime(args, ec.getDynamicContext());
 	}
 
@@ -74,20 +74,20 @@ public class FnAdjustDateTimeToTimeZone extends Function {
 	 *             Dynamic error.
 	 * @return Result of the fn:dateTime operation.
 	 */
-	public static ResultSequence adjustdateTime(Collection args,
+	public static ResultSequence adjustdateTime(Collection<ResultSequence> args,
 			org.eclipse.wst.xml.xpath2.api.DynamicContext dynamicContext) throws DynamicError {
 
-		Collection cargs = Function.convert_arguments(args, expectedArgs());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expectedArgs());
 
 		// get args
-		Iterator argiter = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argiter.next();
+		Iterator<ResultSequence> argiter = cargs.iterator();
+		ResultSequence arg1 = argiter.next();
 		if (arg1.empty()) {
 			return ResultBuffer.EMPTY;
 		}
 		ResultSequence arg2 = null;
 		if (argiter.hasNext()) {
-			arg2 = (ResultSequence) argiter.next();
+			arg2 = argiter.next();
 		}
 		XSDateTime dateTime = (XSDateTime) arg1.item(0);
 		XSDayTimeDuration timezone = null;
@@ -126,9 +126,9 @@ public class FnAdjustDateTimeToTimeZone extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expectedArgs() {
+	public synchronized static Collection<SeqType> expectedArgs() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args
 					.add(new SeqType(new XSDateTime(), SeqType.OCC_QMARK));
 			_expected_args.add(new SeqType(new XSDayTimeDuration(),

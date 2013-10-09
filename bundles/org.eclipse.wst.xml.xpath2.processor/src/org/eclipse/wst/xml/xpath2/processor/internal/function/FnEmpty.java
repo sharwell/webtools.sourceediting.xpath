@@ -42,7 +42,7 @@ public class FnEmpty extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return empty(args);
 	}
 
@@ -55,13 +55,13 @@ public class FnEmpty extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:empty operation.
 	 */
-	public static ResultSequence empty(Collection args) throws DynamicError {
+	public static ResultSequence empty(Collection<ResultSequence> args) throws DynamicError {
 
 		assert args.size() == 1;
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence arg1 = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence arg1 = citer.next();
 
 		return XSBoolean.valueOf(arg1.empty());
 	}

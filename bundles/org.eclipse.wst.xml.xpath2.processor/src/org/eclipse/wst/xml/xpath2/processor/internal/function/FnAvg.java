@@ -23,6 +23,8 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -57,7 +59,7 @@ public class FnAvg extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return avg(args);
 	}
 
@@ -70,9 +72,9 @@ public class FnAvg extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:avg operation.
 	 */
-	public static ResultSequence avg(Collection args) throws DynamicError {
+	public static ResultSequence avg(Collection<ResultSequence> args) throws DynamicError {
 
-		ResultSequence arg = (ResultSequence)args.iterator().next();
+		ResultSequence arg = args.iterator().next();
 
 		if (arg.empty())
 			return ResultSequenceFactory.create_new();
@@ -84,7 +86,7 @@ public class FnAvg extends Function {
 		TypePromoter tp = new ScalarTypePromoter();
 		tp.considerSequence(arg);
 
-		for (Iterator i = arg.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = arg.iterator(); i.hasNext();) {
 			++elems;
 			AnyAtomicType conv = tp.promote((AnyType) i.next());
 			if( conv != null ){

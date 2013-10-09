@@ -15,6 +15,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.utils;
 
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
@@ -23,7 +24,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
 
 public class NumericTypePromoter extends TypePromoter {
 
-	protected boolean checkCombination(Class newType) {
+	protected boolean checkCombination(Class<? extends AnyType> newType) {
 		// Note: Double or float will override everything
 		if (newType == XSDouble.class || getTargetType() == XSDouble.class) {
 			setTargetType(XSDouble.class);
@@ -52,7 +53,7 @@ public class NumericTypePromoter extends TypePromoter {
 		return null;
 	}
 
-	protected Class substitute(Class typeToConsider) {
+	protected Class<? extends AnyType> substitute(Class<? extends AnyType> typeToConsider) {
 		if (typeToConsider == XSUntypedAtomic.class) return XSDouble.class;
 		if (isDerivedFrom(typeToConsider, XSFloat.class)) return XSFloat.class;
 		if (isDerivedFrom(typeToConsider, XSDouble.class)) return XSDouble.class;
@@ -61,7 +62,7 @@ public class NumericTypePromoter extends TypePromoter {
 		return null;
 	}
 
-	private boolean isDerivedFrom(Class typeToConsider, Class superType) {
+	private boolean isDerivedFrom(Class<? extends AnyType> typeToConsider, Class<? extends AnyType> superType) {
 		return superType.isAssignableFrom(typeToConsider);
 	}
 	

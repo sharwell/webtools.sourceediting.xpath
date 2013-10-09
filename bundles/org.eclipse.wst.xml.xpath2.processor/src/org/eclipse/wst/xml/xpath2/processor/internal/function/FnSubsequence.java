@@ -52,7 +52,7 @@ public class FnSubsequence extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return subsequence(args);
 	}
 
@@ -65,20 +65,20 @@ public class FnSubsequence extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:subsequence operation.
 	 */
-	public static ResultSequence subsequence(Collection args) throws DynamicError {		
+	public static ResultSequence subsequence(Collection<ResultSequence> args) throws DynamicError {		
 		ResultBuffer rs = new ResultBuffer();
 
 		// get args
-		Iterator citer = args.iterator();
+		Iterator<ResultSequence> citer = args.iterator();
 		
-		ResultSequence seq = (ResultSequence) citer.next();		
+		ResultSequence seq = citer.next();		
 		if (seq.empty())
 			return ResultBuffer.EMPTY;
 		
-		ResultSequence startLoc = (ResultSequence) citer.next();
+		ResultSequence startLoc = citer.next();
 		ResultSequence length = null; 		
 		if (citer.hasNext()) {
-			length = (ResultSequence) citer.next(); 
+			length = citer.next(); 
 		}
 
 		Item at = startLoc.first();
@@ -127,7 +127,7 @@ public class FnSubsequence extends Function {
 		int pos = 1; // index running parallel to the iterator
 		int addedItems = 0;
 		if (effectiveNoItems > 0) {
-			for (Iterator seqIter = seq.iterator(); seqIter.hasNext();) {
+			for (Iterator<Item> seqIter = seq.iterator(); seqIter.hasNext();) {
 				at = (AnyType) seqIter.next();
 				if (start <= pos && addedItems < effectiveNoItems) {				
 					rs.add(at);

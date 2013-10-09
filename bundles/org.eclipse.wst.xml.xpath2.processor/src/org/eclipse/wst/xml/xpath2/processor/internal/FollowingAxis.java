@@ -13,6 +13,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.w3c.dom.Node;
@@ -54,7 +55,7 @@ public class FollowingAxis extends ForwardAxis {
 
 		// for each sibling, get all its descendants
 		DescendantAxis da = new DescendantAxis();
-		for (Iterator i = siblingBuffer.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = siblingBuffer.iterator(); i.hasNext();) {
 			result.add((NodeType)i);
 			da.iterate((NodeType) i.next(), result, null);
 		}

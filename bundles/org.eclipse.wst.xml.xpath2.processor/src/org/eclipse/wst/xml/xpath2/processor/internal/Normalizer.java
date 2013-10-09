@@ -85,7 +85,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  * Normalizer that uses XPathVisitor.
  */
 // XXX currently not supported anymore!
-public class Normalizer implements XPathVisitor {
+public class Normalizer implements XPathVisitor<XPathNode> {
 
 	private StaticContext _sc;
 
@@ -106,11 +106,11 @@ public class Normalizer implements XPathVisitor {
 	 *            is the xpath expression.
 	 * @return the xpath expressions.
 	 */
-	public Object visit(XPath xp) {
-		Collection exprs = new ArrayList();
+	public XPathNode visit(XPath xp) {
+		Collection<Expr> exprs = new ArrayList<Expr>();
 
-		for (Iterator i = xp.iterator(); i.hasNext();) {
-			Expr e = (Expr) i.next();
+		for (Iterator<Expr> i = xp.iterator(); i.hasNext();) {
+			Expr e = i.next();
 
 			Expr n = (Expr) e.accept(this);
 
@@ -120,9 +120,9 @@ public class Normalizer implements XPathVisitor {
 		return new XPath(exprs);
 	}
 
-	private void printVarExprPairs(Iterator i) {
+	private void printVarExprPairs(Iterator<VarExprPair> i) {
 		while (i.hasNext()) {
-			VarExprPair pair = (VarExprPair) i.next();
+			VarExprPair pair = i.next();
 
 			QName var = pair.varname();
 			Expr e = pair.expr();
@@ -133,12 +133,12 @@ public class Normalizer implements XPathVisitor {
 
 	// does a for and a quantified expression
 	// takes the iterator for var expr paris
-	private void doForExpr(Iterator iter, Expr expr) {
-		Collection vars = new ArrayList();
+	private void doForExpr(Iterator<VarExprPair> iter, Expr expr) {
+		Collection<QName> vars = new ArrayList<QName>();
 
 		// go through expression and cache variables
 		while (iter.hasNext()) {
-			VarExprPair pair = (VarExprPair) iter.next();
+			VarExprPair pair = iter.next();
 
 			QName var = pair.varname();
 			Expr e = pair.expr();
@@ -165,8 +165,8 @@ public class Normalizer implements XPathVisitor {
 		}
 
 		// add variables to scope
-		for (Iterator i = vars.iterator(); i.hasNext();) {
-			QName var = (QName) i.next();
+		for (Iterator<QName> i = vars.iterator(); i.hasNext();) {
+			QName var = i.next();
 		}
 
 		// do the bounded expression
@@ -181,17 +181,17 @@ public class Normalizer implements XPathVisitor {
 	 *            is the For expression.
 	 * @return fex expression.
 	 */
-	public Object visit(ForExpr fex) {
+	public XPathNode visit(ForExpr fex) {
 		ForExpr last = fex;
 		Expr ret = fex.expr();
 		int depth = 0;
 
-		for (Iterator i = fex.iterator(); i.hasNext();) {
-			VarExprPair ve = (VarExprPair) i.next();
+		for (Iterator<VarExprPair> i = fex.iterator(); i.hasNext();) {
+			VarExprPair ve = i.next();
 
 			// ok we got nested fors...
 			if (depth > 0) {
-				Collection pairs = new ArrayList();
+				Collection<VarExprPair> pairs = new ArrayList<VarExprPair>();
 				pairs.add(ve);
 
 				ForExpr fe = new ForExpr(pairs, ret);
@@ -220,17 +220,17 @@ public class Normalizer implements XPathVisitor {
 	 * @return qex expression.
 	 */
 	// XXX: code duplication
-	public Object visit(QuantifiedExpr qex) {
+	public XPathNode visit(QuantifiedExpr qex) {
 		QuantifiedExpr last = qex;
 		Expr ret = qex.expr();
 		int depth = 0;
 
-		for (Iterator i = qex.iterator(); i.hasNext();) {
-			VarExprPair ve = (VarExprPair) i.next();
+		for (Iterator<VarExprPair> i = qex.iterator(); i.hasNext();) {
+			VarExprPair ve = i.next();
 
 			// ok we got nested fors...
 			if (depth > 0) {
-				Collection pairs = new ArrayList();
+				Collection<VarExprPair> pairs = new ArrayList<VarExprPair>();
 				pairs.add(ve);
 
 				QuantifiedExpr qe = new QuantifiedExpr(qex.type(), pairs, ret);
@@ -253,9 +253,9 @@ public class Normalizer implements XPathVisitor {
 
 	}
 
-	private void printExprs(Iterator i) {
+	private void printExprs(Iterator<Expr> i) {
 		while (i.hasNext()) {
-			Expr e = (Expr) i.next();
+			Expr e = i.next();
 
 			e.accept(this);
 		}
@@ -267,7 +267,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the 'if' expression.
 	 * @return ifex expression.
 	 */
-	public Object visit(IfExpr ifex) {
+	public XPathNode visit(IfExpr ifex) {
 
 		printExprs(ifex.iterator());
 
@@ -290,17 +290,17 @@ public class Normalizer implements XPathVisitor {
 	}
 
 	private BinExpr make_logic_expr(BinExpr e) {
-		Collection normalized = normalize_bin_args(e);
+		Collection<Expr> normalized = normalize_bin_args(e);
 
-		XPathNode nor_arr[] = new XPathNode[2];
+		Expr nor_arr[] = new Expr[2];
 		int j = 0;
 
-		for (Iterator i = normalized.iterator(); i.hasNext();) {
-			nor_arr[j] = (XPathNode) i.next();
+		for (Iterator<Expr> i = normalized.iterator(); i.hasNext();) {
+			nor_arr[j] = i.next();
 			j++;
 		}
 
-		Collection args = new ArrayList();
+		Collection<Expr> args = new ArrayList<Expr>();
 		args.add(nor_arr[0]);
 		e.set_left(make_function(new QName("fn", "boolean",
 				FnFunctionLibrary.XPATH_FUNCTIONS_NS), args));
@@ -318,7 +318,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the 'or' expression.
 	 * @return make logic expr(orex).
 	 */
-	public Object visit(OrExpr orex) {
+	public XPathNode visit(OrExpr orex) {
 		return make_logic_expr(orex);
 	}
 
@@ -327,7 +327,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the 'and' expression.
 	 * @return make logic expr(andex).
 	 */
-	public Object visit(AndExpr andex) {
+	public XPathNode visit(AndExpr andex) {
 		return make_logic_expr(andex);
 	}
 
@@ -336,7 +336,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the compare expression.
 	 * @return cmpex.
 	 */
-	public Object visit(CmpExpr cmpex) {
+	public XPathNode visit(CmpExpr cmpex) {
 		switch (cmpex.type()) {
 		case CmpExpr.EQ:
 			return make_CmpOp(cmpex, new QName("fs", "eq",
@@ -380,11 +380,11 @@ public class Normalizer implements XPathVisitor {
 		return cmpex;
 	}
 
-	private Collection normalize_bin_args(BinExpr e) {
-		Collection args = new ArrayList();
+	private Collection<Expr> normalize_bin_args(BinExpr e) {
+		Collection<Expr> args = new ArrayList<Expr>();
 
-		XPathNode left = (XPathNode) e.left().accept(this);
-		XPathNode right = (XPathNode) e.right().accept(this);
+		Expr left = (Expr)e.left().accept(this);
+		Expr right = (Expr)e.right().accept(this);
 
 		args.add(left);
 		args.add(right);
@@ -397,14 +397,14 @@ public class Normalizer implements XPathVisitor {
 	 *            is the range expression.
 	 * @return a new function.
 	 */
-	public Object visit(RangeExpr rex) {
-		Collection args = normalize_bin_args(rex);
+	public XPathNode visit(RangeExpr rex) {
+		Collection<Expr> args = normalize_bin_args(rex);
 		return make_function(new QName("op", "to",
 				OpFunctionLibrary.XPATH_OP_NS), args);
 	}
 
 	private XPathExpr make_xpathexpr(PrimaryExpr pex) {
-		FilterExpr fe = new FilterExpr(pex, new ArrayList());
+		FilterExpr fe = new FilterExpr(pex, new ArrayList<Collection<Expr>>());
 		return new XPathExpr(0, fe);
 	}
 
@@ -419,7 +419,7 @@ public class Normalizer implements XPathVisitor {
 	}
 
 	private XPathExpr make_convert_operand(XPathExpr arg1, XPathExpr arg2) {
-		Collection args = new ArrayList();
+		Collection<Expr> args = new ArrayList<Expr>();
 		args.add(arg1);
 		args.add(arg2);
 
@@ -437,16 +437,16 @@ public class Normalizer implements XPathVisitor {
 	// )
 	private XPathExpr make_convert_binop(BinExpr e, XPathExpr convarg,
 			QName name) {
-		Collection args = normalize_bin_args(e);
+		Collection<Expr> args = normalize_bin_args(e);
 		XPathExpr args_arr[] = new XPathExpr[2];
 		int j = 0;
 
-		for (Iterator i = args.iterator(); i.hasNext();) {
+		for (Iterator<Expr> i = args.iterator(); i.hasNext();) {
 			args_arr[j] = (XPathExpr) i.next();
 			j++;
 		}
 
-		Collection argsfname = new ArrayList();
+		Collection<Expr> argsfname = new ArrayList<Expr>();
 		for (j = 0; j < 2; j++) {
 			XPathExpr arg = make_convert_operand(args_arr[j], convarg);
 			argsfname.add(arg);
@@ -470,7 +470,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the add expression.
 	 * @return a new function.
 	 */
-	public Object visit(AddExpr addex) {
+	public XPathNode visit(AddExpr addex) {
 		return make_ArithOp(addex, new QName("fs", "plus",
 				OpFunctionLibrary.XPATH_OP_NS));
 	}
@@ -480,7 +480,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the sub expression.
 	 * @return a new function.
 	 */
-	public Object visit(SubExpr subex) {
+	public XPathNode visit(SubExpr subex) {
 		return make_ArithOp(subex, new QName("fs", "minus",
 				OpFunctionLibrary.XPATH_OP_NS));
 	}
@@ -490,7 +490,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the multiply expression.
 	 * @return a new function.
 	 */
-	public Object visit(MulExpr mulex) {
+	public XPathNode visit(MulExpr mulex) {
 		return make_ArithOp(mulex, new QName("fs", "times",
 				OpFunctionLibrary.XPATH_OP_NS));
 	}
@@ -500,7 +500,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the division expression.
 	 * @return a new function.
 	 */
-	public Object visit(DivExpr mulex) {
+	public XPathNode visit(DivExpr mulex) {
 		return make_ArithOp(mulex, new QName("fs", "div",
 				OpFunctionLibrary.XPATH_OP_NS));
 	}
@@ -512,7 +512,7 @@ public class Normalizer implements XPathVisitor {
 	 * @return a new function.
 	 */
 	// XXX: integer cast!
-	public Object visit(IDivExpr mulex) {
+	public XPathNode visit(IDivExpr mulex) {
 		return make_ArithOp(mulex, new QName("fs", "idiv",
 				OpFunctionLibrary.XPATH_OP_NS));
 	}
@@ -522,7 +522,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the mod expression.
 	 * @return a new function.
 	 */
-	public Object visit(ModExpr mulex) {
+	public XPathNode visit(ModExpr mulex) {
 		return make_ArithOp(mulex, new QName("fs", "mod",
 				OpFunctionLibrary.XPATH_OP_NS));
 	}
@@ -532,8 +532,8 @@ public class Normalizer implements XPathVisitor {
 	 *            is the union expression.
 	 * @return a new function.
 	 */
-	public Object visit(UnionExpr unex) {
-		Collection args = normalize_bin_args(unex);
+	public XPathNode visit(UnionExpr unex) {
+		Collection<Expr> args = normalize_bin_args(unex);
 		return make_function(new QName("op", "union",
 				OpFunctionLibrary.XPATH_OP_NS), args);
 	}
@@ -543,8 +543,8 @@ public class Normalizer implements XPathVisitor {
 	 *            is the pipe expression.
 	 * @return a new function.
 	 */
-	public Object visit(PipeExpr pipex) {
-		Collection args = normalize_bin_args(pipex);
+	public XPathNode visit(PipeExpr pipex) {
+		Collection<Expr> args = normalize_bin_args(pipex);
 		return make_function(new QName("op", "union",
 				OpFunctionLibrary.XPATH_OP_NS), args);
 	}
@@ -554,8 +554,8 @@ public class Normalizer implements XPathVisitor {
 	 *            is the intersect expression.
 	 * @return a new function.
 	 */
-	public Object visit(IntersectExpr iexpr) {
-		Collection args = normalize_bin_args(iexpr);
+	public XPathNode visit(IntersectExpr iexpr) {
+		Collection<Expr> args = normalize_bin_args(iexpr);
 		return make_function(new QName("op", "intersect",
 				OpFunctionLibrary.XPATH_OP_NS), args);
 	}
@@ -565,8 +565,8 @@ public class Normalizer implements XPathVisitor {
 	 *            is the except expression.
 	 * @return a new function.
 	 */
-	public Object visit(ExceptExpr eexpr) {
-		Collection args = normalize_bin_args(eexpr);
+	public XPathNode visit(ExceptExpr eexpr) {
+		Collection<Expr> args = normalize_bin_args(eexpr);
 		return make_function(new QName("op", "except",
 				OpFunctionLibrary.XPATH_OP_NS), args);
 	}
@@ -576,7 +576,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the instance of expression.
 	 * @return a ioexp.
 	 */
-	public Object visit(InstOfExpr ioexp) {
+	public XPathNode visit(InstOfExpr ioexp) {
 		printBinExpr("INSTANCEOF", ioexp);
 		return ioexp;
 	}
@@ -586,7 +586,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the treat as expression.
 	 * @return a taexp.
 	 */
-	public Object visit(TreatAsExpr taexp) {
+	public XPathNode visit(TreatAsExpr taexp) {
 		printBinExpr("TREATAS", taexp);
 		return taexp;
 	}
@@ -596,7 +596,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the castable expression.
 	 * @return cexp.
 	 */
-	public Object visit(CastableExpr cexp) {
+	public XPathNode visit(CastableExpr cexp) {
 		printBinExpr("CASTABLE", cexp);
 		return cexp;
 	}
@@ -606,7 +606,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the cast expression.
 	 * @return cexp.
 	 */
-	public Object visit(CastExpr cexp) {
+	public XPathNode visit(CastExpr cexp) {
 		printBinExpr("CAST", cexp);
 		return cexp;
 	}
@@ -627,7 +627,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the minus expression.
 	 * @return new sub expression
 	 */
-	public Object visit(MinusExpr e) {
+	public XPathNode visit(MinusExpr e) {
 		SubExpr se = new SubExpr(make_int_lit(0), e.arg());
 		return se.accept(this);
 	}
@@ -637,16 +637,16 @@ public class Normalizer implements XPathVisitor {
 	 *            is the plus expression.
 	 * @return new add expression
 	 */
-	public Object visit(PlusExpr e) {
+	public XPathNode visit(PlusExpr e) {
 		AddExpr ae = new AddExpr(make_int_lit(0), e.arg());
 
 		return ae.accept(this);
 	}
 
-	private XPathExpr make_function(QName name, Collection args) {
+	private XPathExpr make_function(QName name, Collection<Expr> args) {
 
 		FunctionCall fc = new FunctionCall(name, args);
-		FilterExpr fe = new FilterExpr(fc, new ArrayList());
+		FilterExpr fe = new FilterExpr(fc, new ArrayList<Collection<Expr>>());
 		return new XPathExpr(0, fe);
 
 	}
@@ -655,11 +655,11 @@ public class Normalizer implements XPathVisitor {
 
 		// self::node()
 		Step self_node = new ForwardStep(ForwardStep.SELF, new AnyKindTest());
-		StepExpr self_node_expr = new AxisStep(self_node, new ArrayList());
+		StepExpr self_node_expr = new AxisStep(self_node, new ArrayList<Collection<Expr>>());
 		XPathExpr self_node_xpath = new XPathExpr(0, self_node_expr);
 
 		// fn:root(self::node())
-		Collection args = new ArrayList();
+		Collection<Expr> args = new ArrayList<Expr>();
 		args.add(self_node_xpath);
 		XPathExpr xpe = make_function(new QName("fn", "root",
 				FnFunctionLibrary.XPATH_FUNCTIONS_NS), args);
@@ -670,7 +670,7 @@ public class Normalizer implements XPathVisitor {
 	private XPathExpr make_descendant_or_self() {
 		Step desc_self_node = new ForwardStep(ForwardStep.DESCENDANT_OR_SELF,
 				new AnyKindTest());
-		StepExpr se = new AxisStep(desc_self_node, new ArrayList());
+		StepExpr se = new AxisStep(desc_self_node, new ArrayList<Collection<Expr>>());
 
 		return new XPathExpr(0, se);
 	}
@@ -680,7 +680,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the xpath expression.
 	 * @return result.
 	 */
-	public Object visit(XPathExpr e) {
+	public XPathNode visit(XPathExpr e) {
 		XPathExpr xp = e;
 		int depth = 0; // indicates how many / we traversed
 		XPathExpr result = e;
@@ -749,7 +749,7 @@ public class Normalizer implements XPathVisitor {
 	 * @return e
 	 */
 	// XXX: normalzie!
-	public Object visit(ForwardStep e) {
+	public XPathNode visit(ForwardStep e) {
 		int axis = e.axis();
 
 		switch (axis) {
@@ -773,7 +773,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the reverse step.
 	 * @return e
 	 */
-	public Object visit(ReverseStep e) {
+	public XPathNode visit(ReverseStep e) {
 
 		if (e.axis() == ReverseStep.DOTDOT) {
 			NodeTest nt = new AnyKindTest();
@@ -794,7 +794,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the Name test.
 	 * @return e
 	 */
-	public Object visit(NameTest e) {
+	public XPathNode visit(NameTest e) {
 
 		String prefix = e.name().prefix();
 
@@ -811,7 +811,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the veriable reference.
 	 * @return e
 	 */
-	public Object visit(VarRef e) {
+	public XPathNode visit(VarRef e) {
 		return e;
 	}
 
@@ -820,7 +820,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the string literal.
 	 * @return e
 	 */
-	public Object visit(StringLiteral e) {
+	public XPathNode visit(StringLiteral e) {
 		return e;
 	}
 
@@ -829,7 +829,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the integer literal.
 	 * @return e
 	 */
-	public Object visit(IntegerLiteral e) {
+	public XPathNode visit(IntegerLiteral e) {
 		return e;
 	}
 
@@ -838,7 +838,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the double literal.
 	 * @return e
 	 */
-	public Object visit(DoubleLiteral e) {
+	public XPathNode visit(DoubleLiteral e) {
 		return e;
 	}
 
@@ -847,7 +847,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the decimal literal.
 	 * @return e
 	 */
-	public Object visit(DecimalLiteral e) {
+	public XPathNode visit(DecimalLiteral e) {
 		return e;
 	}
 
@@ -856,7 +856,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the par expression.
 	 * @return e
 	 */
-	public Object visit(ParExpr e) {
+	public XPathNode visit(ParExpr e) {
 		printExprs(e.iterator());
 		return e;
 	}
@@ -866,7 +866,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the Cntx Item Expression.
 	 * @return new function
 	 */
-	public Object visit(CntxItemExpr e) {
+	public XPathNode visit(CntxItemExpr e) {
 		return new VarRef(new QName("fs", "dot"));
 	}
 
@@ -876,7 +876,7 @@ public class Normalizer implements XPathVisitor {
 	 * @return e
 	 */
 	// XXX: how do we normalize ?
-	public Object visit(FunctionCall e) {
+	public XPathNode visit(FunctionCall e) {
 
 		printExprs(e.iterator());
 		return e;
@@ -887,7 +887,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the single type.
 	 * @return e
 	 */
-	public Object visit(SingleType e) {
+	public XPathNode visit(SingleType e) {
 		return e;
 	}
 
@@ -896,7 +896,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the sequence type.
 	 * @return e
 	 */
-	public Object visit(SequenceType e) {
+	public XPathNode visit(SequenceType e) {
 		ItemType it = e.item_type();
 
 		if (it != null)
@@ -910,7 +910,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the item type.
 	 * @return e
 	 */
-	public Object visit(ItemType e) {
+	public XPathNode visit(ItemType e) {
 
 		switch (e.type()) {
 		case ItemType.ITEM:
@@ -931,7 +931,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the any kind test.
 	 * @return e
 	 */
-	public Object visit(AnyKindTest e) {
+	public XPathNode visit(AnyKindTest e) {
 		return e;
 	}
 
@@ -940,7 +940,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the document test.
 	 * @return e
 	 */
-	public Object visit(DocumentTest e) {
+	public XPathNode visit(DocumentTest e) {
 
 		switch (e.type()) {
 		case DocumentTest.ELEMENT:
@@ -959,7 +959,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the text test.
 	 * @return e
 	 */
-	public Object visit(TextTest e) {
+	public XPathNode visit(TextTest e) {
 		return e;
 	}
 
@@ -968,7 +968,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the common test.
 	 * @return e
 	 */
-	public Object visit(CommentTest e) {
+	public XPathNode visit(CommentTest e) {
 		return e;
 	}
 
@@ -977,7 +977,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the PI test.
 	 * @return e
 	 */
-	public Object visit(PITest e) {
+	public XPathNode visit(PITest e) {
 		String arg = e.arg();
 		if (arg == null)
 			arg = "";
@@ -991,7 +991,7 @@ public class Normalizer implements XPathVisitor {
 	 * @return e
 	 */
 	// XXX NO CHECK ?
-	public Object visit(AttributeTest e) {
+	public XPathNode visit(AttributeTest e) {
 
 		return e;
 	}
@@ -1001,7 +1001,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the schema attribute test.
 	 * @return e
 	 */
-	public Object visit(SchemaAttrTest e) {
+	public XPathNode visit(SchemaAttrTest e) {
 		return e;
 	}
 
@@ -1011,7 +1011,7 @@ public class Normalizer implements XPathVisitor {
 	 * @return e
 	 */
 	// XXX NO SEMANTIC CHECK?!
-	public Object visit(ElementTest e) {
+	public XPathNode visit(ElementTest e) {
 
 		return e;
 	}
@@ -1021,13 +1021,13 @@ public class Normalizer implements XPathVisitor {
 	 *            is the schema element test.
 	 * @return e
 	 */
-	public Object visit(SchemaElemTest e) {
+	public XPathNode visit(SchemaElemTest e) {
 		return e;
 	}
 
-	private void printCollExprs(Iterator i) {
+	private void printCollExprs(Iterator<Collection<Expr>> i) {
 		while (i.hasNext()) {
-			Collection exprs = (Collection) i.next();
+			Collection<Expr> exprs = i.next();
 
 			printExprs(exprs.iterator());
 		}
@@ -1038,7 +1038,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the axis step.
 	 * @return e
 	 */
-	public Object visit(AxisStep e) {
+	public XPathNode visit(AxisStep e) {
 
 		Step s = (Step) e.step().accept(this);
 		e.set_step(s);
@@ -1052,7 +1052,7 @@ public class Normalizer implements XPathVisitor {
 	 *            is the filter expression.
 	 * @return e
 	 */
-	public Object visit(FilterExpr e) {
+	public XPathNode visit(FilterExpr e) {
 		PrimaryExpr pe = (PrimaryExpr) e.primary().accept(this);
 		e.set_primary(pe);
 

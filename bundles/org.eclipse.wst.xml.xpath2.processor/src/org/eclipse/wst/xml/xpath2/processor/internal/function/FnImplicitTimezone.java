@@ -47,7 +47,7 @@ public class FnImplicitTimezone extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return implicit_timezone(args, ec.getDynamicContext());
 	}
 
@@ -62,7 +62,7 @@ public class FnImplicitTimezone extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:implicit-timezone operation.
 	 */
-	public static ResultSequence implicit_timezone(Collection args,
+	public static ResultSequence implicit_timezone(Collection<ResultSequence> args,
 			DynamicContext dc) throws DynamicError {
 		assert args.size() == 0;
 

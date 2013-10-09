@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.typesystem.ItemType;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
@@ -30,7 +31,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
  */
 public class DefaultResultSequence extends ResultSequence {
 
-	private List _seq;
+	private List<Item> _seq;
 
 	/**
 	 * Constructor.
@@ -38,7 +39,7 @@ public class DefaultResultSequence extends ResultSequence {
 	 * an empty array is created
 	 */
 	public DefaultResultSequence() {
-		_seq = new ArrayList();
+		_seq = new ArrayList<Item>();
 	}
 
 	/**
@@ -64,14 +65,14 @@ public class DefaultResultSequence extends ResultSequence {
 	 *            ResultSequence
 	 */
 	public void concat(ResultSequence rs) {
-		for (Iterator i = rs.iterator(); i.hasNext();)
+		for (Iterator<Item> i = rs.iterator(); i.hasNext();)
 			_seq.add(i.next());
 	}
 
 	/**
 	 * @return the next iteration of array _seq
 	 */
-	public ListIterator iterator() {
+	public ListIterator<Item> iterator() {
 		return _seq.listIterator();
 	}
 

@@ -45,7 +45,7 @@ public class FnPosition extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return position(args, ec);
 	}
 
@@ -60,7 +60,7 @@ public class FnPosition extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:position operation.
 	 */
-	public static ResultSequence position(Collection args, EvaluationContext ec)
+	public static ResultSequence position(Collection<ResultSequence> args, EvaluationContext ec)
 			throws DynamicError {
 		assert args.size() == 0;
 

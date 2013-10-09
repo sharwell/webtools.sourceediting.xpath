@@ -36,8 +36,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  */
 public class FnError extends Function {
 
-	private static ArrayList _expected_args;
-	private static ArrayList _expected_args1;
+	private static ArrayList<SeqType> _expected_args;
+	private static ArrayList<SeqType> _expected_args1;
 
 	// XXX overloaded...
 	/**
@@ -56,29 +56,29 @@ public class FnError extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		// Differentiate depending on whether there is one (required) argument or whatever.
-		Collection cargs = Function.convert_arguments(args, args.size() == 1 ? expected_args1() : expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, args.size() == 1 ? expected_args1() : expected_args());
 
 		QName code = null;
 		ResultSequence items = null;
 		String description = null;
 		
 		// Iterate over the args
-		Iterator it = cargs.iterator();
+		Iterator<ResultSequence> it = cargs.iterator();
 		if (it.hasNext()) {
-			ResultSequence rsQName = (ResultSequence)it.next();
+			ResultSequence rsQName = it.next();
 			// for arity 2 and 3, the code is not mandatory, as in fn:code((), "description). Handle this:
 			if (! rsQName.empty()) code = (QName)rsQName.first();
 		}
 		// Next arg (if present) is the description
 		if (it.hasNext()) {
-			ResultSequence rsDescription = (ResultSequence)it.next();
+			ResultSequence rsDescription = it.next();
 			description = ((XSString)rsDescription.first()).value();
 		}
 		// Final arg (if present) is the list of items
 		if (it.hasNext()) {
-			items = (ResultSequence)it.next();
+			items = it.next();
 		}
 	
 		// Handle the code if missing
@@ -106,9 +106,9 @@ public class FnError extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new QName(), SeqType.OCC_QMARK));
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_NONE));
 			_expected_args.add(new SeqType(AnyType.class, SeqType.OCC_STAR));
@@ -122,9 +122,9 @@ public class FnError extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args1() {
+	public synchronized static Collection<SeqType> expected_args1() {
 		if (_expected_args1 == null) {
-			_expected_args1 = new ArrayList();
+			_expected_args1 = new ArrayList<SeqType>();
 			_expected_args1.add(new SeqType(new QName(), SeqType.OCC_NONE));
 		}
 

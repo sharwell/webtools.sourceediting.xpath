@@ -48,7 +48,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * </p>
  */
 public class FnNormalizeSpace extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnNormalizeSpace.
@@ -66,7 +66,7 @@ public class FnNormalizeSpace extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the space in the arguments being normalized.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return normalize_space(args, ec);
 	}
 
@@ -79,9 +79,9 @@ public class FnNormalizeSpace extends Function {
 	 *             Dynamic error.
 	 * @return The result of normalizing the space in the arguments.
 	 */
-	public static ResultSequence normalize_space(Collection args, EvaluationContext ec)
+	public static ResultSequence normalize_space(Collection<ResultSequence> args, EvaluationContext ec)
 			throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		ResultSequence arg1 = null;
 		
@@ -90,7 +90,7 @@ public class FnNormalizeSpace extends Function {
 		  arg1 = getResultSetForArityZero(ec);
 		}
 		else {
-		  arg1 = (ResultSequence) cargs.iterator().next();
+		  arg1 = cargs.iterator().next();
 		}
 
 		String str = "";
@@ -189,9 +189,9 @@ public class FnNormalizeSpace extends Function {
 	 * 
 	 * @return The expected arguments.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_QMARK));
 		}
 

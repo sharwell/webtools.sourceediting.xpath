@@ -73,19 +73,19 @@ public abstract class XercesTypeDefinition implements TypeDefinition {
 		return xercesFlags;
 	}
 	
-	public List/*<Short>*/ getSimpleTypes(Attr attr) {
+	public List<Short> getSimpleTypes(Attr attr) {
 		PSVIAttrNSImpl psviAttr= (PSVIAttrNSImpl)attr;
 		return mapList(psviAttr.getItemValueTypes());
 	}
 
-	public List/*<Short>*/ getSimpleTypes(Element element) {
+	public List<Short> getSimpleTypes(Element element) {
 		PSVIElementNSImpl psviElement= (PSVIElementNSImpl)element;
 		return mapList(psviElement.getItemValueTypes());
 	}
 
-	private List/*<Short>*/ mapList(ShortList valueTypes) {
+	private List<Short> mapList(ShortList valueTypes) {
 		if (valueTypes == null) return null;
-		List/*<Short>*/ types = new LinkedList/*<Short>*/();
+		List<Short> types = new LinkedList<Short>();
 		int limit = valueTypes.getLength();
 		for (int i = 0; i < limit; ++i) types.add(Short.valueOf(valueTypes.item(i)));
 		return types;
@@ -99,11 +99,11 @@ public abstract class XercesTypeDefinition implements TypeDefinition {
 
 	public static SimpleXercesTypeDefinition createTypeDefinition(XSSimpleTypeDefinition ad) {
 		if (ad instanceof XSSimpleType) return new SimpleXercesType((XSSimpleType)ad);
-		return new SimpleXercesTypeDefinition((XSSimpleTypeDefinition)ad);
+		return new SimpleXercesTypeDefinition(ad);
 	}
 
 	public static ComplexXercesTypeDefinition createTypeDefinition(XSComplexTypeDefinition ad) {
-		return new ComplexXercesTypeDefinition((XSComplexTypeDefinition)ad);
+		return new ComplexXercesTypeDefinition(ad);
 	}
 
 }

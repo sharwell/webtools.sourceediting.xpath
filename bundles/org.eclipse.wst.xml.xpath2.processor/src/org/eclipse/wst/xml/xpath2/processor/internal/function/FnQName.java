@@ -32,7 +32,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * $paramQName.
  */
 public class FnQName extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnQName.
@@ -50,7 +50,7 @@ public class FnQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return resolve_QName(args, ec.getStaticContext());
 	}
 
@@ -65,19 +65,19 @@ public class FnQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of the fn:QName operation.
 	 */
-	public static ResultSequence resolve_QName(Collection args, StaticContext sc)
+	public static ResultSequence resolve_QName(Collection<ResultSequence> args, StaticContext sc)
 			throws DynamicError {
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get args
-		Iterator argiter = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argiter.next();
+		Iterator<ResultSequence> argiter = cargs.iterator();
+		ResultSequence arg1 = argiter.next();
 
 		String ns = null;
 		if (!arg1.empty())
 			ns = ((XSString) arg1.first()).value();
-		ResultSequence arg2 = (ResultSequence) argiter.next();
+		ResultSequence arg2 = argiter.next();
 		String name = ((XSString) arg2.first()).value();
 
 		QName qn = QName.parse_QName(name);
@@ -93,9 +93,9 @@ public class FnQName extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_NONE));

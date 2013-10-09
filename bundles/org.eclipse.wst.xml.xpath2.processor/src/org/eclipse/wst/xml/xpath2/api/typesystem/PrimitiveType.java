@@ -54,12 +54,12 @@ public interface PrimitiveType/*<Type extends AnyType, NativeType>*/ extends Typ
     /**
      * @return              the actual value (QName, Boolean) of the string value
      */
-    public Class/*<Type>*/ getInterfaceClass();
+    public Class<?> getInterfaceClass();
 
     /**
      * @return              The expected native type (class or interface) to expect when calling getValue. 
      */
-    public Class/*<NativeType>*/ getNativeType();
+    public Class<?> getNativeType();
 
     /**
      * Check whether two actual values are equal.

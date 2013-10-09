@@ -12,6 +12,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.utils;
 
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDate;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDateTime;
@@ -20,9 +21,9 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSTime;
 
 public class ComparableTypePromoter extends ScalarTypePromoter {
 
-	protected boolean checkCombination(Class newType) {
+	protected boolean checkCombination(Class<? extends AnyType> newType) {
 
-		Class targetType = getTargetType();
+		Class<? extends AnyType> targetType = getTargetType();
 		if (newType == XSString.class || newType == XSTime.class || targetType == XSString.class || targetType == XSTime.class) {
 			return targetType == newType;	
 		}
@@ -36,7 +37,7 @@ public class ComparableTypePromoter extends ScalarTypePromoter {
 		return super.checkCombination(newType);
 	}
 
-	protected Class substitute(Class typeToConsider) {
+	protected Class<? extends AnyType> substitute(Class<? extends AnyType> typeToConsider) {
 		if (typeToConsider == XSAnyURI.class || typeToConsider == XSString.class) {
 			return XSString.class;
 		}

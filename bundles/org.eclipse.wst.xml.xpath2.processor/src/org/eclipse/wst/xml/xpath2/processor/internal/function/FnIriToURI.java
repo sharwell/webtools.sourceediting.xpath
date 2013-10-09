@@ -37,7 +37,7 @@ public class FnIriToURI extends AbstractURIFunction {
 	 * @return The evaluation of the arguments after application of the URI
 	 *         escaping rules.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return escape_uri(args, false, true);
 	}	
 

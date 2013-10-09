@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -28,7 +29,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  * Support for Except operation on node types.
  */
 public class OpExcept extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for OpExcept.
@@ -46,7 +47,7 @@ public class OpExcept extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return op_except(args);
@@ -61,24 +62,24 @@ public class OpExcept extends Function {
 	 *             Dynamic error.
 	 * @return Result of operation.
 	 */
-	public static ResultSequence op_except(Collection args) throws DynamicError {
+	public static ResultSequence op_except(Collection<ResultSequence> args) throws DynamicError {
 		ResultBuffer rs = new ResultBuffer();
 
 		// convert arguments
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get arguments
-		Iterator iter = cargs.iterator();
-		ResultSequence one = (ResultSequence) iter.next();
-		ResultSequence two = (ResultSequence) iter.next();
+		Iterator<ResultSequence> iter = cargs.iterator();
+		ResultSequence one = iter.next();
+		ResultSequence two = iter.next();
 
 		// XXX lame
-		for (Iterator i = one.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = one.iterator(); i.hasNext();) {
 			NodeType node = (NodeType) i.next();
 			boolean found = false;
 
 			// death
-			for (Iterator j = two.iterator(); j.hasNext();) {
+			for (Iterator<Item> j = two.iterator(); j.hasNext();) {
 				NodeType node2 = (NodeType) j.next();
 
 				if (node.node_value() == node2.node_value()) {
@@ -100,9 +101,9 @@ public class OpExcept extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 
 			SeqType st = new SeqType(SeqType.OCC_STAR);
 

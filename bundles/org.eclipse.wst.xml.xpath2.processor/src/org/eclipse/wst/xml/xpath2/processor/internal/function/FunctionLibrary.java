@@ -26,7 +26,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  */
 public class FunctionLibrary implements org.eclipse.wst.xml.xpath2.api.FunctionLibrary {
 	private String _namespace;
-	private Map _functions;
+	private Map<String, Function> _functions;
 	private StaticContext _sc;
 	private DynamicContext _dc;
 
@@ -38,7 +38,7 @@ public class FunctionLibrary implements org.eclipse.wst.xml.xpath2.api.FunctionL
 	 */
 	public FunctionLibrary(String ns) {
 		_namespace = ns;
-		_functions = new Hashtable();
+		_functions = new Hashtable<String, Function>();
 		_sc = null;
 		_dc = null;
 	}
@@ -77,7 +77,7 @@ public class FunctionLibrary implements org.eclipse.wst.xml.xpath2.api.FunctionL
 	 * @return The new function.
 	 */
 	public Function function(QName name, int arity) {
-		Function f = (Function) _functions.get(Function.signature(name, arity));
+		Function f = _functions.get(Function.signature(name, arity));
 
 		if (f != null || arity == -1)
 			return f;

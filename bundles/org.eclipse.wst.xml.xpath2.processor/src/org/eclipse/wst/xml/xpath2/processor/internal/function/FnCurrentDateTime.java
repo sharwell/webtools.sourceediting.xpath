@@ -52,7 +52,7 @@ public class FnCurrentDateTime extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return current_dateTime(args, ec.getDynamicContext());
 	}
 
@@ -67,7 +67,7 @@ public class FnCurrentDateTime extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:current-dateTime operation.
 	 */
-	public static ResultSequence current_dateTime(Collection args,
+	public static ResultSequence current_dateTime(Collection<ResultSequence> args,
 			DynamicContext dc) throws DynamicError {
 		assert args.size() == 0;
 

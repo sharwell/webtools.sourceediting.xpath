@@ -71,7 +71,7 @@ import com.ibm.icu.lang.UCharacter;
  * </p>
  */
 public class FnTranslate extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnTranslate.
@@ -89,7 +89,7 @@ public class FnTranslate extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the arguments being translated.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return translate(args);
 	}
 
@@ -102,13 +102,13 @@ public class FnTranslate extends Function {
 	 *             Dynamic error.
 	 * @return The result of translating the arguments.
 	 */
-	public static ResultSequence translate(Collection args) throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+	public static ResultSequence translate(Collection<ResultSequence> args) throws DynamicError {
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
-		Iterator argi = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argi.next();
-		ResultSequence arg2 = (ResultSequence) argi.next();
-		ResultSequence arg3 = (ResultSequence) argi.next();
+		Iterator<ResultSequence> argi = cargs.iterator();
+		ResultSequence arg1 = argi.next();
+		ResultSequence arg2 = argi.next();
+		ResultSequence arg3 = argi.next();
 
 		if (arg1.empty()) {
 			return new XSString("");
@@ -118,14 +118,14 @@ public class FnTranslate extends Function {
 		String mapstr = ((XSString) arg2.first()).value();
 		String transstr = ((XSString) arg3.first()).value();
 
-		Map replacements = buildReplacementMap(mapstr, transstr);
+		Map<Integer, Integer> replacements = buildReplacementMap(mapstr, transstr);
 		
 		StringBuffer sb = new StringBuffer(str.length());
 		CodePointIterator strIter = new StringCodePointIterator(str);
 		for (int input = strIter.current(); input != CodePointIterator.DONE; input = strIter.next()) {
 			Integer inputCodepoint = new Integer(input);
 			if (replacements.containsKey(inputCodepoint)) {
-				Integer replaceWith = (Integer)replacements.get(inputCodepoint);
+				Integer replaceWith = replacements.get(inputCodepoint);
 				if (replaceWith != null) {
 					sb.append(UCharacter.toChars(replaceWith.intValue()));
 				}					
@@ -145,9 +145,9 @@ public class FnTranslate extends Function {
 	 * @param transstr The "mapping into" string
 	 * @return A map which maps input codepoint to output codepoint (or null)
 	 */
-	private static Map buildReplacementMap(String mapstr, String transstr) {
+	private static Map<Integer, Integer> buildReplacementMap(String mapstr, String transstr) {
 		// Build mapping (map from codepoint -> codepoint)		
-		Map replacements = new HashMap(mapstr.length() * 4);
+		Map<Integer, Integer> replacements = new HashMap<Integer, Integer>(mapstr.length() * 4);
 
 		CodePointIterator mapIter = new StringCodePointIterator(mapstr);
 		CodePointIterator transIter = new StringCodePointIterator(transstr);
@@ -172,9 +172,9 @@ public class FnTranslate extends Function {
 	 * 
 	 * @return The expected arguments.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_QMARK));
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_NONE));
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_NONE));

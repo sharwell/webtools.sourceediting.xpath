@@ -18,7 +18,7 @@ import java.util.*;
  * Support for IF expressions.
  */
 public class IfExpr extends Expr {
-	private Collection _exprs;
+	private Collection<Expr> _exprs;
 	private Expr _then;
 	private Expr _else;
 
@@ -32,7 +32,7 @@ public class IfExpr extends Expr {
 	 * @param e
 	 *            If false/else expressions.
 	 */
-	public IfExpr(Collection exps, Expr t, Expr e) {
+	public IfExpr(Collection<Expr> exps, Expr t, Expr e) {
 		_exprs = exps;
 		_then = t;
 		_else = e;
@@ -52,7 +52,7 @@ public class IfExpr extends Expr {
 	 * 
 	 * @return Result of Iterator operation.
 	 */
-	public Iterator iterator() {
+	public Iterator<Expr> iterator() {
 		return _exprs.iterator();
 	}
 

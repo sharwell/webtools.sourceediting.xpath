@@ -31,7 +31,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNCName;
  * sequence, or $arg has no prefix, an empty sequence is returned.
  */
 public class FnPrefixFromQName extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnPrefixFromQName
@@ -49,7 +49,7 @@ public class FnPrefixFromQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return prefix(args, ec.getStaticContext());
 	}
 
@@ -62,12 +62,12 @@ public class FnPrefixFromQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:prefix-from-QName operation.
 	 */
-	public static ResultSequence prefix(Collection args, StaticContext sc) throws DynamicError {
+	public static ResultSequence prefix(Collection<ResultSequence> args, StaticContext sc) throws DynamicError {
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get arg
-		ResultSequence arg1 = (ResultSequence) cargs.iterator().next();
+		ResultSequence arg1 = cargs.iterator().next();
 
 		if (arg1.empty())
 		  return ResultBuffer.EMPTY;
@@ -91,9 +91,9 @@ public class FnPrefixFromQName extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new QName(), SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 		}

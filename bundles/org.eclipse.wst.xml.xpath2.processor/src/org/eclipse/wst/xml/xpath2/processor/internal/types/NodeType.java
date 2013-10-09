@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.ComplexTypeDefinition;
@@ -59,9 +60,9 @@ public abstract class NodeType extends AnyType {
 	private Node _node;
 	protected TypeModel _typeModel;
 
-	public static final Comparator NODE_COMPARATOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			return compare_node((NodeType)o1, (NodeType)o2);
+	public static final Comparator<NodeType> NODE_COMPARATOR = new Comparator<NodeType>() {
+		public int compare(NodeType o1, NodeType o2) {
+			return compare_node(o1, o2);
 		}
 	};
 	
@@ -139,9 +140,9 @@ public abstract class NodeType extends AnyType {
 	}
 
 	public static org.eclipse.wst.xml.xpath2.processor.ResultSequence eliminate_dups(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
-		Hashtable added = new Hashtable(rs.size());
+		Hashtable<Node, Boolean> added = new Hashtable<Node, Boolean>(rs.size());
 
-		for (Iterator i = rs.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
 			NodeType node = (NodeType) i.next();
 			Node n = node.node_value();
 
@@ -154,14 +155,14 @@ public abstract class NodeType extends AnyType {
 	}
 
 	public static org.eclipse.wst.xml.xpath2.processor.ResultSequence sort_document_order(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
-		ArrayList res = new ArrayList(rs.size());
+		ArrayList<NodeType> res = new ArrayList<NodeType>(rs.size());
 
-		for (Iterator i = rs.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
 			NodeType node = (NodeType) i.next();
 			boolean added = false;
 
 			for (int j = 0; j < res.size(); j++) {
-				NodeType x = (NodeType) res.get(j);
+				NodeType x = res.get(j);
 
 				if (before(node, x)) {
 					res.add(j, node);
@@ -174,8 +175,8 @@ public abstract class NodeType extends AnyType {
 		}
 
 		rs = ResultSequenceFactory.create_new();
-		for (Iterator i = res.iterator(); i.hasNext();) {
-			NodeType node = (NodeType) i.next();
+		for (Iterator<NodeType> i = res.iterator(); i.hasNext();) {
+			NodeType node = i.next();
 
 			rs.add(node);
 		}
@@ -250,7 +251,7 @@ public abstract class NodeType extends AnyType {
 	/*
 	 * Construct the "typed value" from a "string value", given the simpleType of the node.
      */
-	protected ResultSequence getXDMTypedValue(TypeDefinition typeDef, List/*<Short>*/ itemValTypes) {
+	protected ResultSequence getXDMTypedValue(TypeDefinition typeDef, List<Short> itemValTypes) {
 		
 		if ("anySimpleType".equals(typeDef.getName()) || 
 		    "anyAtomicType".equals(typeDef.getName())) {
@@ -282,7 +283,7 @@ public abstract class NodeType extends AnyType {
 	/*
      * Get the XDM typed value for schema "simple content model". 
      */
-	private ResultSequence getTypedValueForSimpleContent(SimpleTypeDefinition simpType, List/*<Short>*/ itemValueTypes) {
+	private ResultSequence getTypedValueForSimpleContent(SimpleTypeDefinition simpType, List<Short> itemValueTypes) {
 		
 		ResultBuffer rs = new ResultBuffer();
 		
@@ -309,7 +310,7 @@ public abstract class NodeType extends AnyType {
 	/*
 	 * If the variety of simpleType was 'list', add the typed "list item" values to the parent result set. 
 	 */
-	private void addAtomicListItemsToResultSet(SimpleTypeDefinition simpType, List/*<Short>*/ itemValueTypes, ResultBuffer rs) {
+	private void addAtomicListItemsToResultSet(SimpleTypeDefinition simpType, List<Short> itemValueTypes, ResultBuffer rs) {
 		
 		// tokenize the string value by a 'longest sequence' of white-spaces. this gives us the list items as string values.
 		String[] listItemsStrValues = getStringValue().split("\\s+");
@@ -327,7 +328,7 @@ public abstract class NodeType extends AnyType {
 		    // here the list items may have different atomic types
 			for (int listItemIdx = 0; listItemIdx < listItemsStrValues.length; listItemIdx++) {
 				String listItem = listItemsStrValues[listItemIdx];
-				rs.add(SchemaTypeValueFactory.newSchemaTypeValue(((Short)itemValueTypes.get(listItemIdx)).shortValue(), listItem));
+				rs.add(SchemaTypeValueFactory.newSchemaTypeValue(itemValueTypes.get(listItemIdx).shortValue(), listItem));
 			}
 		}
 		
@@ -341,7 +342,7 @@ public abstract class NodeType extends AnyType {
 	 */
 	private void getTypedValueForVarietyUnion(SimpleTypeDefinition simpType, ResultBuffer rs) {
 		
-		List/*<SimpleTypeDefinition>*/ memberTypes = simpType.getMemberTypes();
+		List<SimpleTypeDefinition> memberTypes = simpType.getMemberTypes();
 		// check member types in order, to find that which one can successfully validate the string value.
 		for (int memTypeIdx = 0; memTypeIdx < memberTypes.size(); memTypeIdx++) {
 			PrimitiveType memSimpleType = (PrimitiveType) memberTypes.get(memTypeIdx);
@@ -411,8 +412,10 @@ public abstract class NodeType extends AnyType {
 	}
 
 	public static ResultBuffer linarize(ResultBuffer rs) {
-		TreeSet all = new TreeSet(NODE_COMPARATOR);
-		all.addAll(rs.getCollection());
+		TreeSet<NodeType> all = new TreeSet<NodeType>(NODE_COMPARATOR);
+		for (Item item : rs.getCollection()) {
+			all.add((NodeType)item);
+		}
 		return new ResultBuffer().concat(all);
 	}
 }

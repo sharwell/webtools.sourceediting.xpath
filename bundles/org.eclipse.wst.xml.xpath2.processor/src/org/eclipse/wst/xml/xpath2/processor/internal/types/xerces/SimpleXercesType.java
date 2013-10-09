@@ -53,11 +53,11 @@ public class SimpleXercesType extends SimpleXercesTypeDefinition implements Prim
 		throw new RuntimeException("construct not supported for Xerces types");
 	}
 
-	public Class getInterfaceClass() {
+	public Class<?> getInterfaceClass() {
 		throw new RuntimeException("getInterfaceClass not supported for Xerces types");
 	}
 
-	public Class getNativeType() {
+	public Class<?> getNativeType() {
 		throw new RuntimeException("getNativeType not supported for Xerces types");
 	}
 

@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
@@ -67,8 +68,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ast.VarRef;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathVisitor;
 
-@SuppressWarnings({"unchecked", "deprecation"})
-public class DefaultVisitor implements XPathVisitor {
+public class DefaultVisitor implements XPathVisitor<Object> {
 
 	/**
 	 * Returns the normalized tree
@@ -79,7 +79,7 @@ public class DefaultVisitor implements XPathVisitor {
 	 */
 	public Object visit(XPath xp) {
 		for (Iterator<Expr> i = xp.iterator(); i.hasNext();) {
-			Expr e = (Expr) i.next();
+			Expr e = i.next();
 			e.accept(this);
 		}
 		return null;
@@ -604,8 +604,10 @@ public class DefaultVisitor implements XPathVisitor {
 	 */
 	public Object visit(AxisStep e) {
 		e.step().accept(this);
-		for (Iterator<Expr> i = e.iterator(); i.hasNext();) {
-			i.next().accept(this);
+		for (Iterator<Collection<Expr>> i = e.iterator(); i.hasNext();) {
+			for (Expr expr : i.next()) {
+				expr.accept(this);
+			}
 		}
 		return null;
 	}
@@ -617,8 +619,10 @@ public class DefaultVisitor implements XPathVisitor {
 	 */
 	public Object visit(FilterExpr e) {
 		e.primary().accept(this);
-		for (Iterator<Expr> i = e.iterator(); i.hasNext();) {
-			i.next().accept(this);
+		for (Iterator<Collection<Expr>> i = e.iterator(); i.hasNext();) {
+			for (Expr expr : i.next()) {
+				expr.accept(this);
+			}
 		}
 		return e;
 	}

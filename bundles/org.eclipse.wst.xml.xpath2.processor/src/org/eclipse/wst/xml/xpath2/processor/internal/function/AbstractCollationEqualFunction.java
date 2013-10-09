@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
@@ -79,7 +80,7 @@ public abstract class AbstractCollationEqualFunction extends Function {
 			DynamicContext context, String collationURI) throws DynamicError {
 		XSString itemStr = new XSString(item.getStringValue());
 
-		for (Iterator i = rs.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
 			AnyType at = (AnyType) i.next();
 
 			if (!(at instanceof CmpEq))

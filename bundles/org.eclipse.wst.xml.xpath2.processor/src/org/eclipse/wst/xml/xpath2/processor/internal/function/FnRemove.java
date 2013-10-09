@@ -50,7 +50,7 @@ public class FnRemove extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return remove(args);
 	}
 
@@ -63,16 +63,16 @@ public class FnRemove extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:remove operation.
 	 */
-	public static ResultSequence remove(Collection args) throws DynamicError {
+	public static ResultSequence remove(Collection<ResultSequence> args) throws DynamicError {
 
 		assert args.size() == 2;
 
 		ResultBuffer rs = new ResultBuffer();
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence target = (ResultSequence) citer.next();
-		ResultSequence arg2 = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence target = citer.next();
+		ResultSequence arg2 = citer.next();
 
 		// sanity chex
 		if (arg2.size() != 1)
@@ -95,7 +95,7 @@ public class FnRemove extends Function {
 
 		int curpos = 1;
 
-		for (Iterator i = target.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = target.iterator(); i.hasNext();) {
 			at = (AnyType) i.next();
 
 			if (curpos != position)

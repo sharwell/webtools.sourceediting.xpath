@@ -40,7 +40,7 @@ public class FnZeroOrOne extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return zero_or_one(args);
 	}
 
@@ -53,14 +53,14 @@ public class FnZeroOrOne extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:zero-or-one operation.
 	 */
-	public static ResultSequence zero_or_one(Collection args)
+	public static ResultSequence zero_or_one(Collection<ResultSequence> args)
 			throws DynamicError {
 
 		assert args.size() == 1;
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence arg = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence arg = citer.next();
 
 		if (arg.size() > 1)
 			throw DynamicError.more_one_item(null);

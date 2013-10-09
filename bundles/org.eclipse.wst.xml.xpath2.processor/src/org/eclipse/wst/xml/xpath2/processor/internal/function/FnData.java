@@ -50,11 +50,11 @@ public class FnData extends Function {
 	 *            argument expressions.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		// 1 argument only!
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		ResultSequence argument = (ResultSequence) args.iterator().next();
+		ResultSequence argument = args.iterator().next();
 
 		return atomize(argument);
 	}
@@ -70,7 +70,7 @@ public class FnData extends Function {
 
 		ResultBuffer rs = new ResultBuffer();
 
-		for (Iterator i = arg.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = arg.iterator(); i.hasNext();) {
 			AnyType at = (AnyType) i.next();
 
 			if (at instanceof AnyAtomicType) {

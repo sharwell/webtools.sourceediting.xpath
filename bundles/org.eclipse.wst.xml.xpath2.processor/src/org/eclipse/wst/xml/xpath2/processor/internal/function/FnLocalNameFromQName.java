@@ -27,7 +27,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNCName;
  * empty sequence, returns the empty sequence.
  */
 public class FnLocalNameFromQName extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnLocalNameFromQName.
@@ -45,7 +45,7 @@ public class FnLocalNameFromQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return local_name(args);
 	}
 
@@ -58,13 +58,13 @@ public class FnLocalNameFromQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:local-name-from-QName operation.
 	 */
-	public static ResultSequence local_name(Collection args)
+	public static ResultSequence local_name(Collection<ResultSequence> args)
 			throws DynamicError {
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get arg
-		ResultSequence arg1 = (ResultSequence) cargs.iterator().next();
+		ResultSequence arg1 = cargs.iterator().next();
 
 		if (arg1.empty())
 			return ResultBuffer.EMPTY;
@@ -79,9 +79,9 @@ public class FnLocalNameFromQName extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new QName(), SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 		}

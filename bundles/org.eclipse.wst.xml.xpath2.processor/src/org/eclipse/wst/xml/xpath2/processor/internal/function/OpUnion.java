@@ -28,7 +28,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  * Support for Union operation.
  */
 public class OpUnion extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for OpUnion.
@@ -46,7 +46,7 @@ public class OpUnion extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return op_union(args);
@@ -61,16 +61,16 @@ public class OpUnion extends Function {
 	 *             Dynamic error.
 	 * @return Result of operation.
 	 */
-	public static ResultSequence op_union(Collection args) throws DynamicError {
+	public static ResultSequence op_union(Collection<ResultSequence> args) throws DynamicError {
 		ResultBuffer rs = new ResultBuffer();
 
 		// convert arguments
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get arguments
-		Iterator iter = cargs.iterator();
-		ResultSequence one = (ResultSequence) iter.next();
-		ResultSequence two = (ResultSequence) iter.next();
+		Iterator<ResultSequence> iter = cargs.iterator();
+		ResultSequence one = iter.next();
+		ResultSequence two = iter.next();
 
 		// XXX i don't fink u've ever seen anything lamer than this
 		rs.concat(one);
@@ -85,9 +85,9 @@ public class OpUnion extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 
 			SeqType st = new SeqType(SeqType.OCC_STAR);
 

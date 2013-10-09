@@ -55,7 +55,7 @@ public class StaticContextBuilder implements StaticContext {
 	private String _defaultCollation = CollationProvider.CODEPOINT_COLLATION;
 
 	// key: String prefix, contents: String namespace
-	private Map/*<String, String>*/ _namespaces = new HashMap/*<String, String>*/();
+	private Map<String, String> _namespaces = new HashMap<String, String>();
 	private Map<String, FunctionLibrary> _functionLibraries = new HashMap<String, FunctionLibrary>();
 	{
 		_functionLibraries.put(XPATH_FUNCTIONS_NS, new FnFunctionLibrary());
@@ -63,11 +63,11 @@ public class StaticContextBuilder implements StaticContext {
 	}
 
 	private URI _base_uri;
-	private Map/*<String, TypeDefinition>*/ _variableTypes = new HashMap/*<String, TypeDefinition>*/();
-	private Map/*<String, Short>*/ _variableCardinality = new HashMap/*<String, Short>*/();
-	private Map/*<String, TypeDefinition>*/ _collectionTypes = new HashMap/*<String, TypeDefinition>*/();
+	private Map<QName, ItemType> _variableTypes = new HashMap<QName, ItemType>();
+	private Map<String, Short> _variableCardinality = new HashMap<String, Short>();
+	private Map<String, TypeDefinition> _collectionTypes = new HashMap<String, TypeDefinition>();
 
-	private Set/*<QName>*/ _hiddenFunctions = new HashSet/*<QName>*/();
+	private Set<QName> _hiddenFunctions = new HashSet<QName>();
 
 	private TypeModel _typeModel;
 	
@@ -78,10 +78,10 @@ public class StaticContextBuilder implements StaticContext {
 	public NamespaceContext getNamespaceContext() {
 		return new NamespaceContext() {
 			
-			public Iterator getPrefixes(String ns) {
-				List/*<String>*/ prefixes = new LinkedList/*<String>*/();
-				for (Iterator it = _namespaces.entrySet().iterator(); it.hasNext(); ) {
-					Map.Entry entry = (Map.Entry)it.next();
+			public Iterator<String> getPrefixes(String ns) {
+				List<String> prefixes = new LinkedList<String>();
+				for (Iterator<Map.Entry<String, String>> it = _namespaces.entrySet().iterator(); it.hasNext(); ) {
+					Map.Entry<String, String> entry = it.next();
 					
 					if (entry.getValue().equals(ns)) prefixes.add(entry.getKey());
 				}
@@ -99,7 +99,7 @@ public class StaticContextBuilder implements StaticContext {
 			}
 			
 			public String getNamespaceURI(String prefix) {
-				String ns = (String)_namespaces.get(prefix);
+				String ns = _namespaces.get(prefix);
 				if (ns == null) ns = XMLConstants.NULL_NS_URI;
 				return ns;
 			}
@@ -154,7 +154,7 @@ public class StaticContextBuilder implements StaticContext {
 	}
 
 	public TypeDefinition getCollectionType(String collectionName) {
-		return (TypeDefinition) _collectionTypes.get(collectionName);
+		return _collectionTypes.get(collectionName);
 	}
 
 	public TypeDefinition getInitialContextType() {
@@ -203,16 +203,15 @@ public class StaticContextBuilder implements StaticContext {
 			}
 
 			public ItemType getVariableType(QName name) {
-				return (ItemType) _variableTypes.get(name);
+				return _variableTypes.get(name);
 			}
 		};
 	}
 
-	// We are explicitly NOT using generics here, in anticipation of JDK1.4 compatibility
-	private static Comparator CODEPOINT_COMPARATOR = new Comparator() {
+	private static Comparator<String> CODEPOINT_COMPARATOR = new Comparator<String>() {
 		
-		public int compare(Object o1, Object o2) {
-			return ((String)o1).compareTo((String)o2);
+		public int compare(String o1, String o2) {
+			return o1.compareTo(o2);
 		}
 	};
 	
@@ -222,7 +221,7 @@ public class StaticContextBuilder implements StaticContext {
 			return _defaultCollation;
 		}
 		
-		public Comparator getCollation(String uri) {
+		public Comparator<String> getCollation(String uri) {
 			if (CollationProvider.CODEPOINT_COLLATION.equals(uri)) return CODEPOINT_COMPARATOR;
 			return null;
 		}

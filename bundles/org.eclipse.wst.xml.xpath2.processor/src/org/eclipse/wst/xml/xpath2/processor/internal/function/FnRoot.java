@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
  * not necessarily, be a document node.
  */
 public class FnRoot extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnRoot.
@@ -55,7 +55,7 @@ public class FnRoot extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
@@ -75,9 +75,9 @@ public class FnRoot extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:root operation.
 	 */
-	public static ResultSequence fn_root(Collection args, EvaluationContext ec) {
+	public static ResultSequence fn_root(Collection<ResultSequence> args, EvaluationContext ec) {
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 		
 		if (cargs.size() > 1)
 			throw new DynamicError(TypeError.invalid_type(null));
@@ -89,7 +89,7 @@ public class FnRoot extends Function {
 			}
 			arg = ResultBuffer.wrap(ec.getContextItem());
 		} else {
-			arg = (ResultSequence) cargs.iterator().next();			
+			arg = cargs.iterator().next();			
 		}
 		
 		if (arg.empty()) {
@@ -127,9 +127,9 @@ public class FnRoot extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 		}

@@ -30,7 +30,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
  * Returns the namespace URI of the xs:QName of $arg.
  */
 public class FnNamespaceUri extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnNamespaceUri.
@@ -48,7 +48,7 @@ public class FnNamespaceUri extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return namespace_uri(args, ec);
 	}
 
@@ -61,10 +61,10 @@ public class FnNamespaceUri extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:namespace-uri operation.
 	 */
-	public static ResultSequence namespace_uri(Collection args,
+	public static ResultSequence namespace_uri(Collection<ResultSequence> args,
 			EvaluationContext context) throws DynamicError {
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		ResultSequence arg1 = null;
 		if (cargs.isEmpty()) {
@@ -74,7 +74,7 @@ public class FnNamespaceUri extends Function {
 			arg1 = (AnyType) context.getContextItem();
 		} else {
 			// get arg
-			arg1 = (ResultSequence) cargs.iterator().next();
+			arg1 = cargs.iterator().next();
 		}
 
 		if (arg1.empty()) {
@@ -97,9 +97,9 @@ public class FnNamespaceUri extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 		}

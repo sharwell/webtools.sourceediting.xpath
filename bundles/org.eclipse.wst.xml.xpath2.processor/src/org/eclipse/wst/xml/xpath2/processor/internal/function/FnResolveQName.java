@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
  * namespaces for a given element.
  */
 public class FnResolveQName extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnResolveQName.
@@ -53,7 +53,7 @@ public class FnResolveQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return resolve_QName(args, ec.getStaticContext());
 	}
 
@@ -68,20 +68,20 @@ public class FnResolveQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:resolve-QName operation.
 	 */
-	public static ResultSequence resolve_QName(Collection args, StaticContext sc)
+	public static ResultSequence resolve_QName(Collection<ResultSequence> args, StaticContext sc)
 			throws DynamicError {
 
-		//Collection cargs = Function.convert_arguments(args, expected_args());
-		Collection cargs = args;
+		//Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = args;
 
 		// get args
-		Iterator argiter = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argiter.next();
+		Iterator<ResultSequence> argiter = cargs.iterator();
+		ResultSequence arg1 = argiter.next();
 
 		if (arg1.empty())
 			return ResultBuffer.EMPTY;
 		
-		ResultSequence arg2 = (ResultSequence) argiter.next();
+		ResultSequence arg2 = argiter.next();
 
 		String name = ((XSString) arg1.first()).value();
 
@@ -115,9 +115,9 @@ public class FnResolveQName extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 			_expected_args

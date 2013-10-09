@@ -27,7 +27,7 @@ import java.util.*;
  */
 public class FilterExpr extends StepExpr {
 	private PrimaryExpr _pexpr;
-	private Collection _exprs;
+	private Collection<Collection<Expr>> _exprs;
 
 	/**
 	 * Constructor of FilterExpr.
@@ -37,7 +37,7 @@ public class FilterExpr extends StepExpr {
 	 * @param exprs
 	 *            is copied to _exprs. 
 	 */
-	public FilterExpr(PrimaryExpr pexpr, Collection exprs) {
+	public FilterExpr(PrimaryExpr pexpr, Collection<Collection<Expr>> exprs) {
 		_pexpr = pexpr;
 		_exprs = exprs;
 	}
@@ -65,7 +65,7 @@ public class FilterExpr extends StepExpr {
 	 * 
 	 * @return The next predicate.
 	 */
-	public Iterator iterator() {
+	public Iterator<Collection<Expr>> iterator() {
 		return _exprs.iterator();
 	}
 

@@ -52,11 +52,11 @@ public class Constructor extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		// sanity checks
-		ResultSequence arg = (ResultSequence) args.iterator().next();
+		ResultSequence arg = args.iterator().next();
 
 		if (arg.size() > 1)
 			DynamicError.throw_type_error();

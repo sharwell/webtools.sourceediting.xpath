@@ -31,7 +31,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * be the zero-length string or will have the lexical form of an xs:NCName.
  */
 public class FnLocalName extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnLocalName.
@@ -49,7 +49,7 @@ public class FnLocalName extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return local_name(args, ec);
 	}
 
@@ -62,10 +62,10 @@ public class FnLocalName extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:local-name operation.
 	 */
-	public static ResultSequence local_name(Collection args, EvaluationContext context)
+	public static ResultSequence local_name(Collection<ResultSequence> args, EvaluationContext context)
 			throws DynamicError {
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get arg
 		ResultSequence arg1 = null;
@@ -77,7 +77,7 @@ public class FnLocalName extends Function {
 				arg1 = (AnyType) context.getContextItem();
 			}
 		} else {
-			arg1 = (ResultSequence) cargs.iterator().next();
+			arg1 = cargs.iterator().next();
 
 		}
 		
@@ -102,9 +102,9 @@ public class FnLocalName extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 		}

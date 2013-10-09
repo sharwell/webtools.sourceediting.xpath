@@ -17,6 +17,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -34,6 +35,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -49,16 +51,15 @@ public class DefaultStaticContext implements StaticContext {
 	private XSCtrLibrary builtinTypes;
 
 	// key: String prefix, contents: String namespace
-	private Map _namespaces;
+	private Map<String, String> _namespaces;
 
 	private String _cntxt_item_type;
-	private Map _functions;
+	private Map<String, org.eclipse.wst.xml.xpath2.api.FunctionLibrary> _functions;
 
 	// XXX collations
 
 	private XSAnyURI _base_uri;
-	private Map _documents;
-	private Map _collections;
+	private Map<String, List<Document>> _collections;
 	
 	public String get_cntxt_item_type() {
 		return _cntxt_item_type;
@@ -68,11 +69,11 @@ public class DefaultStaticContext implements StaticContext {
 		_cntxt_item_type = cntxtItemType;
 	}
 
-	public Map get_collections() {
+	public Map<String, List<Document>> get_collections() {
 		return _collections;
 	}
 
-	public void set_collections(Map collections) {
+	public void set_collections(Map<String, List<Document>> collections) {
 		_collections = collections;
 	}
 
@@ -91,7 +92,7 @@ public class DefaultStaticContext implements StaticContext {
 	// or in more human terms:
 	// a stack of scopes each containing a symbol table
 	// XXX vars contain AnyType... should they be ResultSequence ?
-	private Stack _scopes;
+	private Stack<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>> _scopes;
 
 	/**
 	 * Constructor.
@@ -107,12 +108,12 @@ public class DefaultStaticContext implements StaticContext {
 		_model = model;
 		builtinTypes = new XSCtrLibrary();
 
-		_functions = new HashMap(20); // allow null keys: null namespace
-		_namespaces = new HashMap(20); // ditto
+		_functions = new HashMap<String, org.eclipse.wst.xml.xpath2.api.FunctionLibrary>(20); // allow null keys: null namespace
+		_namespaces = new HashMap<String, String>(20); // ditto
 
 		_cntxt_item_type = null;
 
-		_scopes = new Stack();
+		_scopes = new Stack<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>>();
 		new_scope();
 
 		if (_model != null)
@@ -428,7 +429,7 @@ public class DefaultStaticContext implements StaticContext {
 	 * @return uri prefix is resolved to or null.
 	 */
 	public String resolve_prefix(String pref) {
-		return (String) _namespaces.get(pref);
+		return _namespaces.get(pref);
 	}
 
 	/**
@@ -483,7 +484,7 @@ public class DefaultStaticContext implements StaticContext {
 	 */
 	// variable stuff
 	public void new_scope() {
-		Map vars = new HashMap();
+		Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> vars = new HashMap<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>();
 
 		_scopes.push(vars);
 	}
@@ -495,8 +496,8 @@ public class DefaultStaticContext implements StaticContext {
 		_scopes.pop();
 	}
 
-	private Map current_scope() {
-		return (Map) _scopes.peek();
+	private Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> current_scope() {
+		return _scopes.peek();
 	}
 
 	/**
@@ -507,7 +508,7 @@ public class DefaultStaticContext implements StaticContext {
 	 * @return true if it does.
 	 */
 	public boolean variable_exists(QName var) {
-		Map scope = current_scope();
+		Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = current_scope();
 
 		return scope.containsKey(var);
 	}
@@ -521,8 +522,8 @@ public class DefaultStaticContext implements StaticContext {
 	 */
 	public boolean variable_in_scope(QName var) {
 		// order doesn't matter..
-		for (Iterator i = _scopes.iterator(); i.hasNext();) {
-			Map scope = (Map) i.next();
+		for (Iterator<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>> i = _scopes.iterator(); i.hasNext();) {
+			Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = i.next();
 
 			if (scope.containsKey(var))
 				return true;
@@ -544,7 +545,7 @@ public class DefaultStaticContext implements StaticContext {
 
 	// overwrites, or creates
 	protected void set_variable(QName var, AnyType val) {
-		Map scope = current_scope();
+		Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = current_scope();
 
 		scope.put(var, val);
 	}
@@ -553,7 +554,7 @@ public class DefaultStaticContext implements StaticContext {
 	 * Set a XPath2 sequence into a variable.
 	 */
 	protected void set_variable(QName var, ResultSequence val) {
-		Map scope = current_scope();
+		Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = current_scope();
 
 		scope.put(var, val);
 	}
@@ -570,7 +571,7 @@ public class DefaultStaticContext implements StaticContext {
 		if (!variable_exists(var))
 			return false;
 
-		Map scope = current_scope();
+		Map<QName, ?> scope = current_scope();
 		if (scope.remove(var) == null)
 			return false;
 		return true;
@@ -584,7 +585,7 @@ public class DefaultStaticContext implements StaticContext {
 
 		int pos = _scopes.size();
 		while (--pos >= 0) {
-			Map scope = (Map) _scopes.get(pos);
+			Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = _scopes.get(pos);
 
 			// gotcha
 			if (scope.containsKey(var)) {
@@ -602,20 +603,20 @@ public class DefaultStaticContext implements StaticContext {
 	public void debug_print_vars() {
 		int level = 0;
 
-		for (Iterator i = _scopes.iterator(); i.hasNext();) {
-			Map scope = (Map) i.next();
+		for (Iterator<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>> i = _scopes.iterator(); i.hasNext();) {
+			Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = i.next();
 
 			System.out.println("Scope level " + level);
 //			scope.entrySet().iterator();
-			for (Iterator j = scope.entrySet().iterator(); j.hasNext();) {
-				QName varname = (QName) j.next();
+			for (Iterator<Map.Entry<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>> j = scope.entrySet().iterator(); j.hasNext();) {
+				QName varname = j.next().getKey();
 
-				AnyType val = (AnyType) scope.get(varname);
+				org.eclipse.wst.xml.xpath2.api.ResultSequence val = scope.get(varname);
 
 				String string_val = "null";
 
-				if (val != null)
-					string_val = val.getStringValue();
+				if (val instanceof AnyType)
+					string_val = ((AnyType)val).getStringValue();
 
 				System.out.println("Varname: " + varname.string()
 						+ " expanded=" + varname.expanded() + " Value: "
@@ -634,19 +635,11 @@ public class DefaultStaticContext implements StaticContext {
 		_base_uri = new XSAnyURI(baseuri);
 	}
 
-	public void set_documents(Map _documents) {
-		this._documents = _documents;
-	}
-
-	public Map get_documents() {
-		return _documents;
-	}
-
 	public TypeModel getTypeModel(Node node) {
 		return _model;
 	}
 
-	public Map get_function_libraries() {
+	public Map<String, org.eclipse.wst.xml.xpath2.api.FunctionLibrary> get_function_libraries() {
 		return _functions;
 	}
 }

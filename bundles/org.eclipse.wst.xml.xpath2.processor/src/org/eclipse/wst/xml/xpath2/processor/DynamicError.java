@@ -109,7 +109,7 @@ public class DynamicError extends XPathException {
 	 * @return the DynamicError.
 	 * @since 1.1
 	 */
-	public static DynamicError argument_type_error(Class type) {
+	public static DynamicError argument_type_error(Class<?> type) {
 		return new DynamicError("FORG0006", type != null ?
 				"Invalid argument type :" + type.getName() : "Invalid argument type");
 	}

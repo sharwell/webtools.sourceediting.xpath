@@ -40,7 +40,7 @@ public class FsDiv extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_div(args);
@@ -55,7 +55,7 @@ public class FsDiv extends Function {
 	 *             Dynamic error.
 	 * @return Result of fs:div operation.
 	 */
-	public static ResultSequence fs_div(Collection args) throws DynamicError {
+	public static ResultSequence fs_div(Collection<ResultSequence> args) throws DynamicError {
 		return FsPlus.do_math_op(args, MathDiv.class, "div");
 	}
 }

@@ -61,7 +61,7 @@ import org.w3c.dom.Document;
  * must raise an error: [err:FODC0003].
  */
 public class FnCollection extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 	
 	public static final String DEFAULT_COLLECTION_URI = "http://www.w3.org/2005/xpath-functions/collection/default";
 
@@ -81,7 +81,7 @@ public class FnCollection extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return collection(args, ec);
 	}
 
@@ -96,17 +96,17 @@ public class FnCollection extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:doc operation.
 	 */
-	public static ResultSequence collection(Collection args, EvaluationContext ec)
+	public static ResultSequence collection(Collection<ResultSequence> args, EvaluationContext ec)
 			throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get args
-		Iterator argiter = cargs.iterator();
+		Iterator<ResultSequence> argiter = cargs.iterator();
 		ResultSequence arg1 = null;
 		
 		String uri = DEFAULT_COLLECTION_URI;
 		if (argiter.hasNext()) {
-			arg1 = (ResultSequence) argiter.next();
+			arg1 = argiter.next();
 			uri = ((XSString) arg1.first()).value();
 		}
 		
@@ -137,9 +137,9 @@ public class FnCollection extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 		}
@@ -149,10 +149,10 @@ public class FnCollection extends Function {
 	
 	private static ResultSequence getCollection(String uri, EvaluationContext ec) {
 		ResultBuffer rs = new ResultBuffer();
-		Map/*<String, List<Document>>*/ collectionMap = ec.getDynamicContext().getCollections();
-		List/*<Document>*/ docList = (List) collectionMap.get(uri);
+		Map<String, List<Document>> collectionMap = ec.getDynamicContext().getCollections();
+		List<Document> docList = collectionMap.get(uri);
 		for (int i = 0; i < docList.size(); i++) {
-			Document doc = (Document) docList.get(i);
+			Document doc = docList.get(i);
 			rs.add(new DocType(doc, ec.getStaticContext().getTypeModel()));
 		}
 		return rs.getSequence();

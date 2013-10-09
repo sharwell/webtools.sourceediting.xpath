@@ -42,7 +42,7 @@ public class FsMinus extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_minus(args);
@@ -57,7 +57,7 @@ public class FsMinus extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_minus(Collection args) throws DynamicError {
+	public static ResultSequence fs_minus(Collection<ResultSequence> args) throws DynamicError {
 		return FsPlus.do_math_op(args, MathMinus.class, "minus");
 	}
 
@@ -70,12 +70,12 @@ public class FsMinus extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_minus_unary(Collection args)
+	public static ResultSequence fs_minus_unary(Collection<ResultSequence> args)
 			throws DynamicError {
 		// make sure we got only one arg
 		if (args.size() != 1)
 			DynamicError.throw_type_error();
-		ResultSequence arg = (org.eclipse.wst.xml.xpath2.api.ResultSequence) args.iterator().next();
+		ResultSequence arg = args.iterator().next();
 
 		// make sure we got only one numeric atom
 		if (arg.size() != 1)

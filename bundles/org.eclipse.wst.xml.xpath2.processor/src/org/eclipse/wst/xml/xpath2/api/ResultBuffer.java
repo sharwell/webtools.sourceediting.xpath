@@ -13,6 +13,7 @@
 package org.eclipse.wst.xml.xpath2.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -110,15 +111,15 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#iterator()
 		 */
-		public Iterator iterator() {
-			return new Iterator() {
+		public Iterator<Item> iterator() {
+			return new Iterator<Item>() {
 				boolean seenIt = false;
 				
 				public final void remove() {
 					throw new UnsupportedOperationException("ResultSequences are immutable");
 				}
 				
-				public final Object next() {
+				public final Item next() {
 					if (! seenIt) {
 						seenIt = true;
 						return value;
@@ -188,15 +189,15 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#iterator()
 		 */
-		public Iterator iterator() {
-			return new Iterator() {
+		public Iterator<Item> iterator() {
+			return new Iterator<Item>() {
 				int nextIndex = 0;
 				
 				public final void remove() {
 					throw new UnsupportedOperationException("ResultSequences are immutable");
 				}
 				
-				public final Object next() {
+				public final Item next() {
 					if (nextIndex < results.length) {
 						return results[nextIndex++];
 					}
@@ -227,7 +228,7 @@ public class ResultBuffer {
 		return values.size();
 	}
 
-	public ListIterator iterator() {
+	public ListIterator<Item> iterator() {
 		return values.listIterator();
 	}
 
@@ -262,7 +263,7 @@ public class ResultBuffer {
 				return rs.empty();
 			}
 
-			public Iterator/*<Item>*/ iterator() {
+			public Iterator<Item> iterator() {
 				return rs.iterator();
 			}
 
@@ -286,11 +287,12 @@ public class ResultBuffer {
 				return toArray(new Item[size()]);
 			}
 
-			public Object[] toArray(Object[] arg0) {
+			@SuppressWarnings("unchecked")
+			public <T> T[] toArray(T[] arg0) {
 				if (arg0.length < size())
-					arg0 = new Item[size()];
+					arg0 = Arrays.copyOf(arg0, size());
 				for (int i = 0; i< size(); ++i) {
-					arg0[i] = rs.item(i);
+					arg0[i] = (T)rs.item(i);
 				}
 				return arg0;
 			}
@@ -331,14 +333,14 @@ public class ResultBuffer {
 			throw new IndexOutOfBoundsException("Sequence is empty!");
 		}
 		
-		public Iterator iterator() {
-			return new Iterator() {
+		public Iterator<Item> iterator() {
+			return new Iterator<Item>() {
 				
 				public void remove() {
 					throw new UnsupportedOperationException("ResultSequences are immutable");
 				}
 				
-				public Object next() {
+				public Item next() {
 					throw new IllegalStateException("This ResultSequence is empty");
 				}
 				
@@ -353,7 +355,7 @@ public class ResultBuffer {
 		return this.values;
 	}
 
-	public ResultBuffer concat(Collection/*<Item>*/ others) {
+	public ResultBuffer concat(Collection<? extends Item> others) {
 		this.values.addAll(others);
 		return this;
 	}

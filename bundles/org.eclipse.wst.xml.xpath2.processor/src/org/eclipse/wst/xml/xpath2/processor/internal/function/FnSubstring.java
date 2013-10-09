@@ -75,7 +75,7 @@ public class FnSubstring extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the substring obtained from the arguments.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return substring(args);
 	}
 
@@ -88,16 +88,16 @@ public class FnSubstring extends Function {
 	 *             Dynamic error.
 	 * @return The result of obtaining a substring from the arguments.
 	 */
-	public static ResultSequence substring(Collection args) throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args(args));
+	public static ResultSequence substring(Collection<ResultSequence> args) throws DynamicError {
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args(args));
 
-		Iterator argi = cargs.iterator();
-		ResultSequence stringArg = (ResultSequence) argi.next();
-		ResultSequence startPosArg = (ResultSequence) argi.next();
+		Iterator<ResultSequence> argi = cargs.iterator();
+		ResultSequence stringArg = argi.next();
+		ResultSequence startPosArg = argi.next();
 		ResultSequence lengthArg = null;
 		
 		if (argi.hasNext()) {
-		  lengthArg = (ResultSequence) argi.next();	
+		  lengthArg = argi.next();	
 		}
 
 		if (stringArg.empty()) {
@@ -148,8 +148,8 @@ public class FnSubstring extends Function {
 	 * 
 	 * @return The expected arguments.
 	 */
-	public static Collection expected_args(Collection actualArgs) {
-		Collection _expected_args = new ArrayList();
+	public static Collection<SeqType> expected_args(Collection<ResultSequence> actualArgs) {
+		Collection<SeqType> _expected_args = new ArrayList<SeqType>();
 		
 		_expected_args.add(new SeqType(new XSString(), SeqType.OCC_QMARK));
 		_expected_args.add(new SeqType(new XSDouble(), SeqType.OCC_NONE));

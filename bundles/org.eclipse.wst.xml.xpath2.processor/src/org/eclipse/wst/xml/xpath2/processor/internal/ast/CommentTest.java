@@ -17,6 +17,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.CommentType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
@@ -44,7 +45,7 @@ public class CommentTest extends KindTest {
 		return false;
 	}
 
-	public Class getXDMClassType() {
+	public Class<? extends NodeType> getXDMClassType() {
 		return CommentType.class;
 	}
 

@@ -54,7 +54,7 @@ public class FsPlus extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_plus(args);
@@ -70,19 +70,19 @@ public class FsPlus extends Function {
 	 *             Dynamic error.
 	 * @return Result of conversion.
 	 */
-	private static Collection convert_args(Collection args) throws DynamicError {
-		Collection result = new ArrayList();
+	private static Collection<ResultSequence> convert_args(Collection<ResultSequence> args) throws DynamicError {
+		Collection<ResultSequence> result = new ArrayList<ResultSequence>();
 
 		// Keep track of numeric types for promotion
 		boolean has_float = false;
 		boolean has_double = false;
 		
 		// atomize arguments
-		for (Iterator i = args.iterator(); i.hasNext();) {
-			org.eclipse.wst.xml.xpath2.api.ResultSequence rs = FnData.atomize((org.eclipse.wst.xml.xpath2.api.ResultSequence) i.next());
+		for (Iterator<ResultSequence> i = args.iterator(); i.hasNext();) {
+			ResultSequence rs = FnData.atomize(i.next());
 
 			if (rs.empty())
-				return new ArrayList();
+				return new ArrayList<ResultSequence>();
 
 			if (rs.size() > 1)
 				throw new DynamicError(TypeError.invalid_type(null));
@@ -101,12 +101,12 @@ public class FsPlus extends Function {
 		if (has_double) has_float = false;
 		
 		if (has_double || has_float) {
-			Collection result2 = new ArrayList();
+			Collection<ResultSequence> result2 = new ArrayList<ResultSequence>();
 
 			// promote arguments
-			for (Iterator i = result.iterator(); i.hasNext();) {
-				org.eclipse.wst.xml.xpath2.api.ResultSequence rs = (org.eclipse.wst.xml.xpath2.api.ResultSequence) i.next();
-								
+			for (Iterator<ResultSequence> i = result.iterator(); i.hasNext();) {
+				ResultSequence rs = i.next();
+
 				Item arg = rs.item(0);
 				
 				if (has_double && (arg instanceof XSFloat)) {
@@ -116,7 +116,7 @@ public class FsPlus extends Function {
 				} else if (has_float && (arg instanceof XSDecimal)) {
 					arg = new XSFloat(((XSDecimal)arg).getValue().floatValue());
 				}
-				result2.add(arg);
+				result2.add((ResultSequence)arg);
 			}
 			return result2;
 		}
@@ -135,7 +135,7 @@ public class FsPlus extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_plus(Collection args) throws DynamicError {
+	public static ResultSequence fs_plus(Collection<ResultSequence> args) throws DynamicError {
 		return do_math_op(args, MathPlus.class, "plus");
 	}
 
@@ -148,13 +148,13 @@ public class FsPlus extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_plus_unary(Collection args)
+	public static ResultSequence fs_plus_unary(Collection<ResultSequence> args)
 			throws DynamicError {
 
 		// make sure we got only one arg
 		if (args.size() != 1)
 			DynamicError.throw_type_error();
-		ResultSequence arg = (ResultSequence) args.iterator().next();
+		ResultSequence arg = args.iterator().next();
 
 		// make sure we got only one numeric atom
 		if (arg.size() != 1)
@@ -182,29 +182,29 @@ public class FsPlus extends Function {
 	 *             Dynamic error.
 	 * @return Result of operation.
 	 */
-	public static ResultSequence do_math_op(Collection args, Class type,
+	public static ResultSequence do_math_op(Collection<ResultSequence> args, Class<?> type,
 			String mname) throws DynamicError {
 
 		// sanity check args + convert em
 		if (args.size() != 2)
 			DynamicError.throw_type_error();
 
-		Collection cargs = convert_args(args);
+		Collection<ResultSequence> cargs = convert_args(args);
 
 		if (cargs.size() == 0)
 			return ResultBuffer.EMPTY;
 
 		// make sure arugments are good [at least the first one]
-		Iterator argi = cargs.iterator();
-		Item arg = ((org.eclipse.wst.xml.xpath2.api.ResultSequence) argi.next()).item(0);
-		org.eclipse.wst.xml.xpath2.api.ResultSequence arg2 = (org.eclipse.wst.xml.xpath2.api.ResultSequence) argi.next();
+		Iterator<ResultSequence> argi = cargs.iterator();
+		Item arg = argi.next().item(0);
+		ResultSequence arg2 = argi.next();
 
 		if (!(type.isInstance(arg)))
 			DynamicError.throw_type_error();
 
 		// here is da ownage
 		try {
-			Class margsdef[] = { ResultSequence.class };
+			Class<?> margsdef[] = { ResultSequence.class };
 			Method method = null;
 
 			method = type.getMethod(mname, margsdef);

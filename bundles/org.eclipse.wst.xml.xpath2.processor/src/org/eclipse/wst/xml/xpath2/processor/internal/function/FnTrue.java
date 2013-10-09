@@ -39,7 +39,7 @@ public class FnTrue extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return fn_true(args);
 	}
 
@@ -52,7 +52,7 @@ public class FnTrue extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:true operation.
 	 */
-	public static ResultSequence fn_true(Collection args) throws DynamicError {
+	public static ResultSequence fn_true(Collection<ResultSequence> args) throws DynamicError {
 		assert args.size() == 0;
 
 		return XSBoolean.TRUE;

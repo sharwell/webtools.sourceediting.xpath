@@ -42,7 +42,7 @@ import org.w3c.dom.Node;
  * a parent, the empty sequence is returned.
  */
 public class FnBaseUri extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnBaseUri.
@@ -60,7 +60,7 @@ public class FnBaseUri extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return base_uri(args, ec);
 	}
 
@@ -75,9 +75,9 @@ public class FnBaseUri extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:base-uri operation.
 	 */
-	public static ResultSequence base_uri(Collection args, EvaluationContext ec) 
+	public static ResultSequence base_uri(Collection<ResultSequence> args, EvaluationContext ec) 
 	                       throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 		
 		ResultSequence rs = null;
 		
@@ -94,7 +94,7 @@ public class FnBaseUri extends Function {
 		}
 		else if (cargs.size() == 1) {
 	      // support for arity 1
-		  ResultSequence arg1 = (ResultSequence) cargs.iterator().next();
+		  ResultSequence arg1 = cargs.iterator().next();
 		  Item att = arg1.empty() ? null : arg1.first();
 
 		  rs = getBaseUri(att);
@@ -140,9 +140,9 @@ public class FnBaseUri extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(SeqType.OCC_QMARK));
 		}
 

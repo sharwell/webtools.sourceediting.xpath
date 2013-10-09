@@ -44,7 +44,7 @@ public class FsLe extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_le_value(args, ec.getDynamicContext());
@@ -61,7 +61,7 @@ public class FsLe extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_le_value(Collection args, DynamicContext dc)
+	public static ResultSequence fs_le_value(Collection<ResultSequence> args, DynamicContext dc)
 			throws DynamicError {
 		ResultSequence less = FsLt.fs_lt_value(args, dc);
 
@@ -87,7 +87,7 @@ public class FsLe extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_le_general(Collection args, DynamicContext dc) {
+	public static ResultSequence fs_le_general(Collection<ResultSequence> args, DynamicContext dc) {
 		return FsEq.do_cmp_general_op(args, FsLe.class, "fs_le_value", dc);
 	}
 }

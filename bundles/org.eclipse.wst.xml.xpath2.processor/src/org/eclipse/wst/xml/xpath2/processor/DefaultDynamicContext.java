@@ -60,7 +60,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 
 	private Focus _focus;
 	private XSDuration _tz;
-	private Map _loaded_documents;
+	private Map<URI, Document> _loaded_documents;
 	private GregorianCalendar _current_date_time;
 	private String _default_collation_name = CODEPOINT_COLLATION;
 	private CollationProvider _collation_provider;
@@ -91,7 +91,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 
 		_focus = null;
 		_tz = new XSDayTimeDuration(0, 5, 0, 0, true);
-		_loaded_documents = new HashMap();
+		_loaded_documents = new HashMap<URI, Document>();
 	}
 	/**
 	 * Reads the day from a TimeDuration type
@@ -182,7 +182,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	 * 
 	 * @return a ResultSequence from funct.evaluate(args)
 	 */
-	public ResultSequence evaluate_function(QName name, Collection args)
+	public ResultSequence evaluate_function(QName name, Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args)
 			throws DynamicError {
 		Function funct = function(name, args.size());
 
@@ -213,7 +213,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 		Document doc = null;
 		if (_loaded_documents.containsKey(resolved)) {
 			 //tried before
-			doc = (Document)_loaded_documents.get(resolved);
+			doc = _loaded_documents.get(resolved);
 		} else {
 			doc = retrieve_doc(resolved);
 			_loaded_documents.put(resolved, doc);
@@ -298,11 +298,10 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 		return _default_collation_name;
 	}
 
-	// We are explicitly NOT using generics here, in anticipation of JDK1.4 compatibility
-	private static Comparator CODEPOINT_COMPARATOR = new Comparator() {
+	private static Comparator<String> CODEPOINT_COMPARATOR = new Comparator<String>() {
 		
-		public int compare(Object o1, Object o2) {
-			return ((String)o1).compareTo((String)o2);
+		public int compare(String o1, String o2) {
+			return o1.compareTo(o2);
 		}
 	};
 	
@@ -310,7 +309,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	 * @since 1.1
 	 * 
 	 */
-	public Comparator get_collation(String uri) {
+	public Comparator<String> get_collation(String uri) {
 		if (CODEPOINT_COLLATION.equals(uri)) return CODEPOINT_COMPARATOR;
 		
 		return _collation_provider != null ? _collation_provider.get_collation(uri) : null;

@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
  * Returns the in-scope-prefixes for the element and any of it's ancestors.
  */
 public class FnInScopePrefixes extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnPrefixFromQName
@@ -55,7 +55,7 @@ public class FnInScopePrefixes extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return inScopePrefixes(args, ec.getDynamicContext());
 	}
 
@@ -68,12 +68,12 @@ public class FnInScopePrefixes extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:prefix-from-QName operation.
 	 */
-	public static ResultSequence inScopePrefixes(Collection args, DynamicContext dc) throws DynamicError {
+	public static ResultSequence inScopePrefixes(Collection<ResultSequence> args, DynamicContext dc) throws DynamicError {
 
-//		Collection cargs = Function.convert_arguments(args, expected_args());
-		Collection cargs = args;
+//		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = args;
 
-		ResultSequence arg1 = (ResultSequence) cargs.iterator().next();
+		ResultSequence arg1 = cargs.iterator().next();
 
 		if (arg1.empty())
 		  return ResultBuffer.EMPTY;
@@ -86,22 +86,22 @@ public class FnInScopePrefixes extends Function {
 		}
 
 		ElementType element = (ElementType) anytype;
-		List prefixList = lookupPrefixes(element);
+		List<String> prefixList = lookupPrefixes(element);
 		createPrefixResultSet(rs, prefixList);
 		return rs.getSequence();
 	}
 
-	private static void createPrefixResultSet(ResultBuffer rs, List prefixList) {
+	private static void createPrefixResultSet(ResultBuffer rs, List<String> prefixList) {
 		for (int i = 0; i < prefixList.size(); i++) {
-			String prefix = (String) prefixList.get(i);
+			String prefix = prefixList.get(i);
 			rs.add(new XSString(prefix));
 		}
 	}
 
-	private static List lookupPrefixes(ElementType element) {
+	private static List<String> lookupPrefixes(ElementType element) {
 		Element domElm = (Element) element.node_value();
 		
-		List prefixList = new ArrayList();
+		List<String> prefixList = new ArrayList<String>();
 		Node node = domElm;
 		
 		while (node != null && node.getNodeType() != Node.DOCUMENT_NODE) {
@@ -136,9 +136,9 @@ public class FnInScopePrefixes extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new ElementType(), SeqType.OCC_PLUS);
 			_expected_args.add(arg);
 		}

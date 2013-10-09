@@ -170,7 +170,7 @@ public class ElementTest extends AttrElemTest {
 		return wild();
 	}
 
-	public Class getXDMClassType() {
+	public Class<? extends NodeType> getXDMClassType() {
 		return ElementType.class;
 	}
 	

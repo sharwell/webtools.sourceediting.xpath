@@ -12,21 +12,22 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.utils;
 
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSYearMonthDuration;
 
 public class ScalarTypePromoter extends NumericTypePromoter {
 
-	protected boolean checkCombination(Class newType) {
+	protected boolean checkCombination(Class<? extends AnyType> newType) {
 
-		Class targetType = getTargetType();
+		Class<? extends AnyType> targetType = getTargetType();
 		if (targetType == XSDayTimeDuration.class || targetType == XSYearMonthDuration.class) {
 			return targetType == newType;	
 		}
 		return super.checkCombination(newType);
 	}
 
-	protected Class substitute(Class typeToConsider) {
+	protected Class<? extends AnyType> substitute(Class<? extends AnyType> typeToConsider) {
 		if (typeToConsider == XSDayTimeDuration.class || typeToConsider == XSYearMonthDuration.class) {
 			return typeToConsider;
 		}

@@ -10,6 +10,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.internal.XPathError;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
@@ -18,8 +19,8 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 	public final static String XS_NS = "http://www.w3.org/2001/XMLSchema"; 
 	
 	private final QName name;
-	private final Class implementationClass;
-	private final Class nativeType;
+	private final Class<?> implementationClass;
+	private final Class<?> nativeType;
 	private final BuiltinTypeDefinition baseType;
 	private final Method constructorMethod;
 	private final Method constructorFromNativeMethod;
@@ -32,7 +33,7 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 		this(name, null, null, baseType);
 	}
 
-	public BuiltinTypeDefinition(QName name, Class implementationClass, Class nativeType, BuiltinTypeDefinition baseType) {
+	public BuiltinTypeDefinition(QName name, Class<? extends AnyType> implementationClass, Class<?> nativeType, BuiltinTypeDefinition baseType) {
 		this.name = name;
 		this.implementationClass = implementationClass;
 		this.nativeType = nativeType;
@@ -63,7 +64,7 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 		return implementationClass == null;
 	}
 	
-	public BuiltinTypeDefinition(String name, Class implementationClass, Class nativeType, BuiltinTypeDefinition baseType) {
+	public BuiltinTypeDefinition(String name, Class<? extends AnyType> implementationClass, Class<?> nativeType, BuiltinTypeDefinition baseType) {
 		this(new QName(XS_NS, name), implementationClass, nativeType, baseType);
 	}
 	
@@ -93,11 +94,11 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 		return baseType.derivedFrom(namespace, name, derivationMethod);
 	}
 
-	public List getSimpleTypes(Attr attr) {
+	public List<Short> getSimpleTypes(Attr attr) {
 		return Collections.emptyList();
 	}
 
-	public List getSimpleTypes(Element attr) {
+	public List<Short> getSimpleTypes(Element attr) {
 		return Collections.emptyList();
 	}
 	
@@ -130,7 +131,7 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 		}
 	}
 	
-	public Class getNativeType() {
+	public Class<?> getNativeType() {
 		return nativeType;
 	}
 }

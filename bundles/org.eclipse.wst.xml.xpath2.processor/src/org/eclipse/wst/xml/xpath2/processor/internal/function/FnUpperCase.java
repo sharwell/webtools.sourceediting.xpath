@@ -42,7 +42,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * </p>
  */
 public class FnUpperCase extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnUpperCase.
@@ -60,7 +60,7 @@ public class FnUpperCase extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the arguments being converted to upper case.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return upper_case(args);
 	}
 
@@ -73,11 +73,11 @@ public class FnUpperCase extends Function {
 	 *             Dynamic error.
 	 * @return The result of converting the arguments to upper case.
 	 */
-	public static ResultSequence upper_case(Collection args)
+	public static ResultSequence upper_case(Collection<ResultSequence> args)
 			throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
-		ResultSequence arg1 = (ResultSequence) cargs.iterator().next();
+		ResultSequence arg1 = cargs.iterator().next();
 
 		if (arg1.empty()) {
 			return new XSString("");
@@ -93,9 +93,9 @@ public class FnUpperCase extends Function {
 	 * 
 	 * @return The expected arguments.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_QMARK));
 		}
 

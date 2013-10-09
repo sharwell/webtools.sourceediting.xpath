@@ -45,7 +45,7 @@ public class FnStaticBaseUri extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return static_base_uri(args, ec.getStaticContext());
 	}
 
@@ -60,7 +60,7 @@ public class FnStaticBaseUri extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:static-base-uri operation.
 	 */
-	public static ResultSequence static_base_uri(Collection args,
+	public static ResultSequence static_base_uri(Collection<ResultSequence> args,
 			StaticContext sc) throws DynamicError {
 		assert args.size() == 0;
 		assert sc != null;

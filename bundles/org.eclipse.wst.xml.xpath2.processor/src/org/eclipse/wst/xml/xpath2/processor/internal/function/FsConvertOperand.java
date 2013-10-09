@@ -46,7 +46,7 @@ public class FsConvertOperand extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return convert_operand(args);
 	}
 
@@ -59,15 +59,15 @@ public class FsConvertOperand extends Function {
 	 *             Dynamic error.
 	 * @return Result of fs: operation.
 	 */
-	public static ResultSequence convert_operand(Collection args)
+	public static ResultSequence convert_operand(Collection<ResultSequence> args)
 			throws DynamicError {
 
 		assert args.size() == 2;
 
-		Iterator iter = args.iterator();
+		Iterator<ResultSequence> iter = args.iterator();
 
-		ResultSequence actual = (ResultSequence) iter.next();
-		ResultSequence expected = (ResultSequence) iter.next();
+		ResultSequence actual = iter.next();
+		ResultSequence expected = iter.next();
 
 		if (expected.size() != 1)
 			DynamicError.throw_type_error();
@@ -86,7 +86,7 @@ public class FsConvertOperand extends Function {
 			return result.getSequence();
 
 		// convert sequence
-		for (Iterator i = actual.iterator(); i.hasNext();) {
+		for (Iterator<Item> i = actual.iterator(); i.hasNext();) {
 			AnyType item = (AnyType) i.next();
 
 			// 2

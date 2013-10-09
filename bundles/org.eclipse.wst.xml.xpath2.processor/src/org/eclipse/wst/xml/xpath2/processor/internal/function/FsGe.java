@@ -44,7 +44,7 @@ public class FsGe extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
 		return fs_ge_value(args, ec.getDynamicContext());
@@ -60,7 +60,7 @@ public class FsGe extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_ge_value(Collection args, DynamicContext dc)
+	public static ResultSequence fs_ge_value(Collection<ResultSequence> args, DynamicContext dc)
 			throws DynamicError {
 		ResultSequence greater = FsGt.fs_gt_value(args, dc);
 
@@ -86,7 +86,7 @@ public class FsGe extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_ge_general(Collection args, DynamicContext dc)
+	public static ResultSequence fs_ge_general(Collection<ResultSequence> args, DynamicContext dc)
 			throws DynamicError {
 		return FsEq.do_cmp_general_op(args, FsGe.class, "fs_ge_value", dc);
 	}

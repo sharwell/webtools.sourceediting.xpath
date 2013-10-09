@@ -43,7 +43,7 @@ import org.w3c.dom.Node;
  * such ancestor, then the function returns false.
  */
 public class FnLang extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor for FnLang.
@@ -61,7 +61,7 @@ public class FnLang extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return lang(args, ec);
 	}
 
@@ -74,13 +74,13 @@ public class FnLang extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:lang operation.
 	 */
-	public static ResultSequence lang(Collection args, EvaluationContext ec) throws DynamicError {
+	public static ResultSequence lang(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 
-		Collection cargs = Function.convert_arguments(args, expected_args());
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get arg
-		Iterator citer = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = cargs.iterator();
+		ResultSequence arg1 = citer.next();
 		ResultSequence arg2 = null;
 		if (cargs.size() == 1) {
 			if (ec.getContextItem() == null) {
@@ -88,7 +88,7 @@ public class FnLang extends Function {
 			}
 			arg2 = (AnyType) ec.getContextItem();
 		} else {
-			arg2 = (ResultSequence) citer.next();
+			arg2 = citer.next();
 		}
 		
 		String lang = "";
@@ -155,9 +155,9 @@ public class FnLang extends Function {
 	 * 
 	 * @return Result of operation.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_QMARK));
 			_expected_args.add(new SeqType(SeqType.OCC_NONE));

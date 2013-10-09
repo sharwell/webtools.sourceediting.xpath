@@ -236,7 +236,7 @@ public class XSInteger extends XSDecimal {
 	private ResultSequence convertResultSequence(ResultSequence arg)
 			throws DynamicError {
 		ResultSequence carg = arg;
-		Iterator it = carg.iterator();
+		Iterator<Item> it = carg.iterator();
 		while (it.hasNext()) {
 			AnyType type = (AnyType) it.next();
 			if (type.string_type().equals("xs:untypedAtomic") ||

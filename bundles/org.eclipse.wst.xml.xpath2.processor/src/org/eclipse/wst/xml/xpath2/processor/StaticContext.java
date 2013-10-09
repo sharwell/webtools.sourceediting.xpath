@@ -13,6 +13,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
@@ -22,6 +23,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -265,7 +267,7 @@ public interface StaticContext {
 	 * Java5 it would be <code>Map<String, List<Document>></code>
 	 * 
 	 */
-	public Map get_collections();
+	public Map<String, List<Document>> get_collections();
 	
 	/**
 	 * @since 1.1
@@ -273,7 +275,7 @@ public interface StaticContext {
 	 * Sets the collections map, which maps a String into a List of Document, in
 	 * Java5 it would be <code>Map<String, List<Document>></code>
 	 */
-	public void set_collections(Map collections);
+	public void set_collections(Map<String, List<Document>> collections);
 
 	/**
 	 * Gets the type provider in use for the specified DOM node.

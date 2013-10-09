@@ -61,7 +61,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * </p>
  */
 public class FnCompare extends Function {
-	private static Collection _expected_args = null;
+	private static Collection<SeqType> _expected_args = null;
 
 	/**
 	 * Constructor of FnCompare.
@@ -79,7 +79,7 @@ public class FnCompare extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the comparison of the arguments.
 	 */
-	public ResultSequence evaluate(Collection args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return compare(args, ec.getDynamicContext());
 	}
 
@@ -94,16 +94,16 @@ public class FnCompare extends Function {
 	 *             Dynamic error.
 	 * @return The result of the comparison of the arguments.
 	 */
-	public static ResultSequence compare(Collection args, DynamicContext context) throws DynamicError {
-		Collection cargs = Function.convert_arguments(args, expected_args());
+	public static ResultSequence compare(Collection<ResultSequence> args, DynamicContext context) throws DynamicError {
+		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
-		Iterator argiter = cargs.iterator();
-		ResultSequence arg1 = (ResultSequence) argiter.next();
-		ResultSequence arg2 = (ResultSequence) argiter.next();
+		Iterator<ResultSequence> argiter = cargs.iterator();
+		ResultSequence arg1 = argiter.next();
+		ResultSequence arg2 = argiter.next();
 
 		String collationUri = context.getCollationProvider().getDefaultCollation();
 		if (argiter.hasNext()) {
-			ResultSequence collArg = (ResultSequence) argiter.next();
+			ResultSequence collArg = argiter.next();
 			collationUri = collArg.first().getStringValue();
 		}
 
@@ -120,7 +120,7 @@ public class FnCompare extends Function {
 
 	public static BigInteger compare_string(String collationUri, XSString xstr1,
 			XSString xstr2, DynamicContext context) throws DynamicError {
-		Comparator collator = context.getCollationProvider().getCollation(collationUri);
+		Comparator<String> collator = context.getCollationProvider().getCollation(collationUri);
 		if (collator == null) throw DynamicError.unsupported_collation(collationUri);
 
 		if (xstr1 == null || xstr2 == null) return null;
@@ -140,9 +140,9 @@ public class FnCompare extends Function {
 	 * 
 	 * @return The expected arguments.
 	 */
-	public synchronized static Collection expected_args() {
+	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
-			_expected_args = new ArrayList();
+			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 			_expected_args.add(arg);

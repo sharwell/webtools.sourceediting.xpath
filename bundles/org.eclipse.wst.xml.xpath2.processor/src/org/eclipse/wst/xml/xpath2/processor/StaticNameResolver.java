@@ -98,7 +98,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 /**
  * This class resolves static names.
  */
-public class StaticNameResolver implements XPathVisitor, StaticChecker {
+public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	static class DummyError extends Error {
 
 		/**
@@ -288,9 +288,9 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the XPath.
 	 * @return null.
 	 */
-	public Object visit(XPath xp) {
-		for (Iterator i = xp.iterator(); i.hasNext();) {
-			Expr e = (Expr) i.next();
+	public Void visit(XPath xp) {
+		for (Iterator<Expr> i = xp.iterator(); i.hasNext();) {
+			Expr e = i.next();
 
 			e.accept(this);
 		}
@@ -300,12 +300,12 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 
 	// does a for and a quantified expression
 	// takes the iterator for var expr paris
-	private void doForExpr(Iterator iter, Expr expr) {
+	private void doForExpr(Iterator<VarExprPair> iter, Expr expr) {
 		int scopes = 0;
 
 		// add variables to scope and check the binding sequence
 		while (iter.hasNext()) {
-			VarExprPair pair = (VarExprPair) iter.next();
+			VarExprPair pair = iter.next();
 
 			QName var = pair.varname();
 			if (!expandVarQName(var))
@@ -333,7 +333,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the for expression.
 	 * @return null.
 	 */
-	public Object visit(ForExpr fex) {
+	public Void visit(ForExpr fex) {
 
 		doForExpr(fex.iterator(), fex.expr());
 
@@ -347,16 +347,16 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the quantified expression.
 	 * @return null.
 	 */
-	public Object visit(QuantifiedExpr qex) {
+	public Void visit(QuantifiedExpr qex) {
 		// lets cheat
 		doForExpr(qex.iterator(), qex.expr());
 
 		return null;
 	}
 
-	private void visitExprs(Iterator i) {
+	private void visitExprs(Iterator<Expr> i) {
 		while (i.hasNext()) {
-			Expr e = (Expr) i.next();
+			Expr e = i.next();
 
 			e.accept(this);
 		}
@@ -369,7 +369,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the if expression.
 	 * @return null.
 	 */
-	public Object visit(IfExpr ifex) {
+	public Void visit(IfExpr ifex) {
 
 		visitExprs(ifex.iterator());
 
@@ -400,7 +400,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(OrExpr orex) {
+	public Void visit(OrExpr orex) {
 		printBinExpr("OR", orex);
 		return null;
 	}
@@ -412,7 +412,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(AndExpr andex) {
+	public Void visit(AndExpr andex) {
 		printBinExpr("AND", andex);
 		return null;
 	}
@@ -424,7 +424,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(CmpExpr cmpex) {
+	public Void visit(CmpExpr cmpex) {
 		printBinExpr("CMP" + cmpex.type(), cmpex);
 		return null;
 	}
@@ -436,7 +436,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(RangeExpr rex) {
+	public Void visit(RangeExpr rex) {
 		printBinExpr("RANGE", rex);
 		return null;
 	}
@@ -448,7 +448,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(AddExpr addex) {
+	public Void visit(AddExpr addex) {
 		printBinExpr("ADD", addex);
 		return null;
 	}
@@ -460,7 +460,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(SubExpr subex) {
+	public Void visit(SubExpr subex) {
 		printBinExpr("SUB", subex);
 		return null;
 	}
@@ -472,7 +472,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(MulExpr mulex) {
+	public Void visit(MulExpr mulex) {
 		printBinExpr("MUL", mulex);
 		return null;
 	}
@@ -484,7 +484,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(DivExpr mulex) {
+	public Void visit(DivExpr mulex) {
 		printBinExpr("DIV", mulex);
 		return null;
 	}
@@ -496,7 +496,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(IDivExpr mulex) {
+	public Void visit(IDivExpr mulex) {
 		printBinExpr("IDIV", mulex);
 		return null;
 	}
@@ -508,7 +508,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(ModExpr mulex) {
+	public Void visit(ModExpr mulex) {
 		printBinExpr("MOD", mulex);
 		return null;
 	}
@@ -520,7 +520,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(UnionExpr unex) {
+	public Void visit(UnionExpr unex) {
 		printBinExpr("UNION", unex);
 		return null;
 	}
@@ -532,7 +532,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(PipeExpr pipex) {
+	public Void visit(PipeExpr pipex) {
 		printBinExpr("PIPE", pipex);
 		return null;
 	}
@@ -544,7 +544,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(IntersectExpr iexpr) {
+	public Void visit(IntersectExpr iexpr) {
 		printBinExpr("INTERSECT", iexpr);
 		return null;
 	}
@@ -556,7 +556,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(ExceptExpr eexpr) {
+	public Void visit(ExceptExpr eexpr) {
 		printBinExpr("INT_EXCEPT", eexpr);
 		return null;
 	}
@@ -568,7 +568,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(InstOfExpr ioexp) {
+	public Void visit(InstOfExpr ioexp) {
 		printBinExpr("INSTANCEOF", ioexp);
 		return null;
 	}
@@ -580,7 +580,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(TreatAsExpr taexp) {
+	public Void visit(TreatAsExpr taexp) {
 		printBinExpr("TREATAS", taexp);
 		return null;
 	}
@@ -592,7 +592,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(CastableExpr cexp) {
+	public Void visit(CastableExpr cexp) {
 		printBinExpr("CASTABLE", cexp);
 		return null;
 	}
@@ -604,7 +604,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(CastExpr cexp) {
+	public Void visit(CastExpr cexp) {
 		printBinExpr("CAST", cexp);
 		
 		SingleType st = (SingleType) cexp.right();
@@ -641,7 +641,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(MinusExpr e) {
+	public Void visit(MinusExpr e) {
 		printUnExpr("MINUS", e);
 		return null;
 	}
@@ -653,7 +653,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(PlusExpr e) {
+	public Void visit(PlusExpr e) {
 		printUnExpr("PLUS", e);
 		return null;
 	}
@@ -665,7 +665,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(XPathExpr e) {
+	public Void visit(XPathExpr e) {
 		XPathExpr xp = e;
 		boolean firstStep = true;
 		
@@ -691,7 +691,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(ForwardStep e) {
+	public Void visit(ForwardStep e) {
 		e.node_test().accept(this);
 
 		_axes.add(e.iterator().name());
@@ -706,7 +706,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(ReverseStep e) {
+	public Void visit(ReverseStep e) {
 
 		NodeTest nt = e.node_test();
 		if (nt != null)
@@ -726,7 +726,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(NameTest e) {
+	public Void visit(NameTest e) {
 		QName name = e.name();
 
 		if (!expandItemQName(name))
@@ -742,7 +742,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(VarRef e) {
+	public Void visit(VarRef e) {
 		QName var = e.name();
 		
 		if (!expandVarQName(var))
@@ -767,7 +767,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(StringLiteral e) {
+	public Void visit(StringLiteral e) {
 		return null;
 	}
 
@@ -778,7 +778,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(IntegerLiteral e) {
+	public Void visit(IntegerLiteral e) {
 		return null;
 	}
 
@@ -789,7 +789,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(DoubleLiteral e) {
+	public Void visit(DoubleLiteral e) {
 		return null;
 	}
 
@@ -800,7 +800,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(DecimalLiteral e) {
+	public Void visit(DecimalLiteral e) {
 		return null;
 	}
 
@@ -811,7 +811,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(ParExpr e) {
+	public Void visit(ParExpr e) {
 		visitExprs(e.iterator());
 		return null;
 	}
@@ -823,7 +823,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(CntxItemExpr e) {
+	public Void visit(CntxItemExpr e) {
 		return null;
 	}
 
@@ -834,7 +834,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(FunctionCall e) {
+	public Void visit(FunctionCall e) {
 		QName name = e.name();
 
 		if (!expandFunctionQName(name))
@@ -859,7 +859,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(SingleType e) {
+	public Void visit(SingleType e) {
 		QName type = e.type();
 		if (!expandItemTypeQName(type))
 			reportBadPrefix(type.prefix());
@@ -874,7 +874,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(SequenceType e) {
+	public Void visit(SequenceType e) {
 		ItemType it = e.item_type();
 
 		if (it != null)
@@ -890,7 +890,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(ItemType e) {
+	public Void visit(ItemType e) {
 
 		switch (e.type()) {
 		case ItemType.ITEM:
@@ -922,7 +922,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(AnyKindTest e) {
+	public Void visit(AnyKindTest e) {
 		return null;
 	}
 
@@ -933,7 +933,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(DocumentTest e) {
+	public Void visit(DocumentTest e) {
 
 		switch (e.type()) {
 		case DocumentTest.ELEMENT:
@@ -954,7 +954,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(TextTest e) {
+	public Void visit(TextTest e) {
 		return null;
 	}
 
@@ -965,7 +965,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(CommentTest e) {
+	public Void visit(CommentTest e) {
 		return null;
 	}
 
@@ -976,7 +976,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(PITest e) {
+	public Void visit(PITest e) {
 		String arg = e.arg();
 		if (arg == null)
 			arg = "";
@@ -992,7 +992,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 * @return null.
 	 */
 	// XXX NO CHECK ?
-	public Object visit(AttributeTest e) {
+	public Void visit(AttributeTest e) {
 		QName name = e.name();
 		if (name != null) {
 			if (!expandItemQName(name))
@@ -1014,7 +1014,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(SchemaAttrTest e) {
+	public Void visit(SchemaAttrTest e) {
 		QName name = e.arg();
 
 		if (!expandItemQName(name))
@@ -1035,7 +1035,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 * @return null.
 	 */
 	// XXX NO SEMANTIC CHECK?!
-	public Object visit(ElementTest e) {
+	public Void visit(ElementTest e) {
 		if (e.name() != null) {
 			if (!expandItemTypeQName(e.name()))
 				reportBadPrefix(e.name().prefix());
@@ -1055,7 +1055,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(SchemaElemTest e) {
+	public Void visit(SchemaElemTest e) {
 		QName elem = e.name();
 
 		if (!expandItemQName(elem))
@@ -1067,9 +1067,9 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 		return null;
 	}
 
-	private void visitCollExprs(Iterator i) {
+	private void visitCollExprs(Iterator<Collection<Expr>> i) {
 		while (i.hasNext()) {
-			Collection exprs = (Collection) i.next();
+			Collection<Expr> exprs = i.next();
 
 			visitExprs(exprs.iterator());
 		}
@@ -1082,7 +1082,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(AxisStep e) {
+	public Void visit(AxisStep e) {
 
 		e.step().accept(this);
 
@@ -1097,7 +1097,7 @@ public class StaticNameResolver implements XPathVisitor, StaticChecker {
 	 *            is the expression.
 	 * @return null.
 	 */
-	public Object visit(FilterExpr e) {
+	public Void visit(FilterExpr e) {
 		e.primary().accept(this);
 
 		visitCollExprs(e.iterator());

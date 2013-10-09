@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -43,7 +44,7 @@ public class FnCount extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return count(args);
 	}
 
@@ -56,13 +57,13 @@ public class FnCount extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:count operation.
 	 */
-	public static ResultSequence count(Collection args) throws DynamicError {
+	public static ResultSequence count(Collection<ResultSequence> args) throws DynamicError {
 
 		assert args.size() == 1;
 
 		// get args
-		Iterator citer = args.iterator();
-		ResultSequence arg = (ResultSequence) citer.next();
+		Iterator<ResultSequence> citer = args.iterator();
+		ResultSequence arg = citer.next();
 
 		return ResultSequenceFactory.create_new(new XSInteger(BigInteger.valueOf(arg.size())));
 	}

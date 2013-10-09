@@ -34,9 +34,9 @@ public class SimpleXercesTypeDefinition extends XercesTypeDefinition implements 
 		return createTypeDefinition(simpleTypeDefinition.getItemType());
 	}
 
-	public List/*<SimpleTypeDefinition>*/ getMemberTypes() {
+	public List<SimpleTypeDefinition> getMemberTypes() {
 		XSObjectList xsMemberTypes = simpleTypeDefinition.getMemberTypes();
-		List/*<SimpleTypeDefinition>*/ memberTypes = new LinkedList/*<SimpleTypeDefinition>*/();
+		List<SimpleTypeDefinition> memberTypes = new LinkedList<SimpleTypeDefinition>();
 		for (int i = 0; i < xsMemberTypes.getLength(); i++) {
 			memberTypes.add(createTypeDefinition((XSSimpleTypeDefinition) xsMemberTypes.item(i)));
 		}
@@ -59,7 +59,7 @@ public class SimpleXercesTypeDefinition extends XercesTypeDefinition implements 
 		return simpleTypeDefinition.getNumeric();
 	}
 
-	public Class getNativeType() {
+	public Class<?> getNativeType() {
 		return Node.class;
 	}
 

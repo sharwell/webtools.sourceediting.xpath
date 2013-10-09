@@ -50,7 +50,7 @@ public class InternalXPathParser {
 				xPath2.accept(new DefaultVisitor() {
 					public Object visit(XPathExpr e) {
 						if (e.slashes() > 0) {
-							throw new XPathParserException("Access to root node is not allowed (set by caller)");
+							throw new XPathParserException("Access to root node is not allowed (set by caller)", null);
 						}
 						do {
 							e.expr().accept(this); // check the single step (may have filter with root access)
@@ -62,13 +62,13 @@ public class InternalXPathParser {
 			}
 			return xPath2;
 		} catch (JFlexError e) {
-			throw new XPathParserException("JFlex lexer error: " + e.reason());
+			throw new XPathParserException("JFlex lexer error: " + e.reason(), e);
 		} catch (CupError e) {
-			throw new XPathParserException("CUP parser error: " + e.reason());
+			throw new XPathParserException("CUP parser error: " + e.reason(), e);
 		} catch (StaticError e) {
-			throw  new XPathParserException(e.code(), e.getMessage());
+			throw new XPathParserException(e.code(), e.getMessage(), e);
 		} catch (Exception e) {
-			throw new XPathParserException(e.getMessage());
+			throw new XPathParserException(e.getMessage(), e);
 		}
 	}
 }

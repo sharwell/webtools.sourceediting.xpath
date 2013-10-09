@@ -91,7 +91,7 @@ public class XSShort extends XSInt {
 			
 			return new XSShort(bigInt);
 		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.cant_cast(null, e);
 		}
 
 	}

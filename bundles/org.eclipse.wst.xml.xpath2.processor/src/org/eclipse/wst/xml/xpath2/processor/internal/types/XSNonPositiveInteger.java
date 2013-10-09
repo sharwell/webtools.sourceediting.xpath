@@ -94,7 +94,7 @@ public class XSNonPositiveInteger extends XSInteger {
 			
 			return new XSNonPositiveInteger(bigInt);
 		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.cant_cast(null, e);
 		}
 
 	}

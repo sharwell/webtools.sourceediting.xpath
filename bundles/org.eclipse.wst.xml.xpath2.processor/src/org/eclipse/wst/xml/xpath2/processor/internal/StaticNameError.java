@@ -32,8 +32,8 @@ public class StaticNameError extends StaticError {
 	 * @param reason
 	 *            is the reason for the error.
 	 */
-	public StaticNameError(String code, String reason) {
-		super(code, reason);
+	public StaticNameError(String code, String reason, Throwable cause) {
+		super(code, reason, cause);
 	}
 
 	/**
@@ -42,8 +42,8 @@ public class StaticNameError extends StaticError {
 	 * @param reason
 	 *            is the reason for the error.
 	 */
-	public StaticNameError(String reason) {
-		this(NAME_NOT_FOUND, reason);
+	public StaticNameError(String reason, Throwable cause) {
+		this(NAME_NOT_FOUND, reason, cause);
 	}
 
 }

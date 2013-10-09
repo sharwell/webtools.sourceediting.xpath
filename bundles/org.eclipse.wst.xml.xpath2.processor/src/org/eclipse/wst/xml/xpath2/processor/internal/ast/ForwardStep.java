@@ -112,7 +112,7 @@ public class ForwardStep extends Step {
 			break;
 
 		case NAMESPACE:
-			throw new StaticError("XPST0010", "namespace axis not implemented");
+			throw new StaticError("XPST0010", "namespace axis not implemented", null);
 			
 		default:
 			assert false;

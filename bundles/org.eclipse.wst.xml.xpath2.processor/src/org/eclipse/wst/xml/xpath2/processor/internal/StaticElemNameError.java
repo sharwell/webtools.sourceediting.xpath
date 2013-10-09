@@ -27,7 +27,7 @@ public class StaticElemNameError extends StaticNameError {
 	 * @param reason
 	 *            is the reason for the error.
 	 */
-	public StaticElemNameError(String reason) {
-		super(reason);
+	public StaticElemNameError(String reason, Throwable cause) {
+		super(reason, cause);
 	}
 }

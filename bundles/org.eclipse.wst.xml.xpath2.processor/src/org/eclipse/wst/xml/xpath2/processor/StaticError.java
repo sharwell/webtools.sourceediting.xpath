@@ -32,8 +32,8 @@ public class StaticError extends XPathException {
 	 * @param err
 	 *            Humar readable error message
 	 */
-	public StaticError(String code, String err) {
-		super(err);
+	public StaticError(String code, String err, Throwable cause) {
+		super(err, cause);
 		_code = code;
 	}
 

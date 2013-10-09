@@ -33,8 +33,8 @@ public class XPathParserException extends StaticError {
 	 * @param reason
 	 *            is the reason why the exception has been thrown.
 	 */
-	public XPathParserException(String reason) {
-		super(INVALID_XPATH_EXPRESSION, reason);
+	public XPathParserException(String reason, Throwable cause) {
+		super(INVALID_XPATH_EXPRESSION, reason, cause);
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class XPathParserException extends StaticError {
 	 * @param reason
 	 *            is the reason why the exception has been thrown.
 	 */
-	public XPathParserException(String code, String reason) {
-		super(code, reason);
+	public XPathParserException(String code, String reason, Throwable cause) {
+		super(code, reason, cause);
 	}
 }

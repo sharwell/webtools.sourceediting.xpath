@@ -113,7 +113,7 @@ public class FnResolveURI extends Function {
 			URI baseURI = new URI(base);
 			resolved = baseURI.resolve(relative).toString();
 		} catch (Exception ex) {
-			throw DynamicError.errorResolvingURI();
+			throw DynamicError.errorResolvingURI(ex);
 		}
 		return resolved;
 	}

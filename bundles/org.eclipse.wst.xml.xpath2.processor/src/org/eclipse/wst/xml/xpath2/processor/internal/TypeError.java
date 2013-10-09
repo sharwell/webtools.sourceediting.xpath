@@ -33,8 +33,8 @@ public class TypeError extends XPathException {
 	 * @param err
 	 *            is the reason for the error.
 	 */
-	public TypeError(String code, String err) {
-		super(err);
+	public TypeError(String code, String err, Throwable cause) {
+		super(err, cause);
 		_code = code;
 	}
 
@@ -60,7 +60,7 @@ public class TypeError extends XPathException {
 		if (err != null)
 			error += " " + err;
 
-		return new TypeError("XPTY0020", error);
+		return new TypeError("XPTY0020", error, null);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class TypeError extends XPathException {
 		if (err != null)
 			error += " " + err;
 
-		return new TypeError("XPTY0018", error);
+		return new TypeError("XPTY0018", error, null);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class TypeError extends XPathException {
 		if (err != null)
 			error += " " + err;
 
-		return new TypeError("XPTY0019", error);
+		return new TypeError("XPTY0019", error, null);
 	}
 
 	/**
@@ -108,6 +108,6 @@ public class TypeError extends XPathException {
 		if (err != null)
 			error += " " + err;
 
-		return new TypeError("XPTY0004", error);
+		return new TypeError("XPTY0004", error, null);
 	}
 }

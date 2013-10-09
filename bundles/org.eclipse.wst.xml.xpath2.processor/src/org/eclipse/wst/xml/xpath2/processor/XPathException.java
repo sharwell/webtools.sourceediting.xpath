@@ -29,7 +29,8 @@ public class XPathException extends RuntimeException {
 	 * @param reason
 	 *            Is the reason why the exception has been thrown.
 	 */
-	public XPathException(String reason) {
+	public XPathException(String reason, Throwable cause) {
+		super(cause);
 		_reason = reason;
 	}
 

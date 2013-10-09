@@ -28,7 +28,7 @@ public class StaticFunctNameError extends StaticNameError {
 	 * @param reason
 	 *            is the reason for the error.
 	 */
-	public StaticFunctNameError(String reason) {
-		super(FUNCTION_NOT_FOUND, reason);
+	public StaticFunctNameError(String reason, Throwable cause) {
+		super(FUNCTION_NOT_FOUND, reason, cause);
 	}
 }

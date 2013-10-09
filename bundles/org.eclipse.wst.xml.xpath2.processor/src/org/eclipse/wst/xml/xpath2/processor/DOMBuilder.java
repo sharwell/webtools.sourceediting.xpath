@@ -70,12 +70,12 @@ public class DOMBuilder implements DOMLoader {
 			// }
 			return builder.parse(in);
 		} catch (SAXException e) {
-			throw new DOMLoaderException("SAX exception: " + e.getMessage());
+			throw new DOMLoaderException("SAX exception: " + e.getMessage(), e);
 		} catch (ParserConfigurationException e) {
 			throw new DOMLoaderException("Parser configuration exception: "
-					+ e.getMessage());
+					+ e.getMessage(), e);
 		} catch (IOException e) {
-			throw new DOMLoaderException("IO exception: " + e.getMessage());
+			throw new DOMLoaderException("IO exception: " + e.getMessage(), e);
 		}
 	}
 

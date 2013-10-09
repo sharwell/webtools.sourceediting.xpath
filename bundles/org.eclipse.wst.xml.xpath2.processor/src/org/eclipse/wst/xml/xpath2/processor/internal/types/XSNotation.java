@@ -31,7 +31,7 @@ public class XSNotation extends CtrType {
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			DynamicError.throw_type_error();
-		throw new DynamicError("XPST0080", "Can't Cast to NOTATION");
+		throw new DynamicError("XPST0080", "Can't Cast to NOTATION", null);
 	}
 
 	public String type_name() {

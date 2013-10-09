@@ -93,7 +93,7 @@ public class FnMatches extends AbstractRegExFunction {
 			result = matches(pattern, flags, str1);
 			return XSBoolean.valueOf(result);
 		} catch (PatternSyntaxException pex) {
-			throw DynamicError.regex_error(pex.getMessage());
+			throw DynamicError.regex_error(pex.getMessage(), pex);
 		}
 	}
 	

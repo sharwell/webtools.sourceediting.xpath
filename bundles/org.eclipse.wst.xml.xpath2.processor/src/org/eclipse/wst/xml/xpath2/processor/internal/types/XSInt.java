@@ -92,7 +92,7 @@ public class XSInt extends XSLong {
 			
 			return new XSInt(bigInt);
 		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.cant_cast(null, e);
 		}
 
 	}

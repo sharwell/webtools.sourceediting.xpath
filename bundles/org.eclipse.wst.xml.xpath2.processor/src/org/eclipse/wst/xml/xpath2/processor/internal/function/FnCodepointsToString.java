@@ -95,7 +95,7 @@ public class FnCodepointsToString extends Function {
 			
 			int codepoint = code.int_value().intValue();
 			if (codepoint < MIN_LEGAL_CODEPOINT || codepoint > MAX_LEGAL_CODEPOINT) {
-				throw DynamicError.unsupported_codepoint("U+" + Integer.toString(codepoint, 16).toUpperCase());
+				throw DynamicError.unsupported_codepoint("U+" + Integer.toString(codepoint, 16).toUpperCase(), null);
 			}
 
 			codePointArray[codePointIndex] = codepoint;			
@@ -107,7 +107,7 @@ public class FnCodepointsToString extends Function {
 			return new XSString(str);
 		} catch (IllegalArgumentException iae) {
 			// This should be duoble checked above, but rather safe than sorry
-			throw DynamicError.unsupported_codepoint(iae.getMessage());
+			throw DynamicError.unsupported_codepoint(iae.getMessage(), iae);
 		}
 	}
 

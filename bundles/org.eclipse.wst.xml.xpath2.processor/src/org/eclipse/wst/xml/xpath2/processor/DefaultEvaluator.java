@@ -1645,7 +1645,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 				ok = BuiltinTypeLibrary.BUILTIN_TYPES.lookupType(e.qname().namespace(), e.qname().local()) != null;
 			}
 			if (! ok) report_error(new StaticTypeNameError("Type not defined: "
-					+ e.qname().string()));
+					+ e.qname().string(), null));
 			
 			ResultSequence arg = _param._two;
 			_param._two = item_test(arg, e.qname());

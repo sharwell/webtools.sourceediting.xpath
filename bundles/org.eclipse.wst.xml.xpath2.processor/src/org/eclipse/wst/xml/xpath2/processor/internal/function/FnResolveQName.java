@@ -88,7 +88,7 @@ public class FnResolveQName extends Function {
 		QName qn = QName.parse_QName(name);
 
 		if (qn == null)
-			throw DynamicError.lexical_error(null);
+			throw DynamicError.lexical_error(null, null);
 
 		ElementType xselement = (ElementType) arg2.first();
 		Element element = (Element) xselement.node_value();

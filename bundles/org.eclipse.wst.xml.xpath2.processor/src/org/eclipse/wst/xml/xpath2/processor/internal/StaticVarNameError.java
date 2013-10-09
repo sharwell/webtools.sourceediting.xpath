@@ -27,7 +27,7 @@ public class StaticVarNameError extends StaticNameError {
 	 * @param reason
 	 *            is the reason for the error.
 	 */
-	public StaticVarNameError(String reason) {
-		super(reason);
+	public StaticVarNameError(String reason, Throwable cause) {
+		super(reason, cause);
 	}
 }

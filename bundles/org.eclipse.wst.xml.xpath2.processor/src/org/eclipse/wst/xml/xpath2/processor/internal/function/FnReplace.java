@@ -82,7 +82,7 @@ public class FnReplace extends Function {
 			if (flags.length() == 0) {
 				arg4 = null;
 			} else if (isFlagValid(flags) == false) {
-				throw new DynamicError("FORX0001", "Invalid regular expression. flags");
+				throw new DynamicError("FORX0001", "Invalid regular expression. flags", null);
 			}
 		}
 		String pattern = ((XSString) arg2.first()).value();
@@ -91,17 +91,17 @@ public class FnReplace extends Function {
 		try {
 			return new XSString(str1.replaceAll(pattern, replacement));
 		} catch (PatternSyntaxException err) {
-			throw DynamicError.regex_error(null);
+			throw DynamicError.regex_error(null, err);
 		} catch (IllegalArgumentException ex) {
-			throw new DynamicError("FORX0004", "invalid regex.");
+			throw new DynamicError("FORX0004", "invalid regex.", ex);
 		} catch (IndexOutOfBoundsException ex) {
 			String className = ex.getClass().getName();
 			if (className.endsWith("StringIndexOutOfBoundsException")) {
-				throw new DynamicError("FORX0004", "result out of bounds");
+				throw new DynamicError("FORX0004", "result out of bounds", ex);
 			}
-			throw new DynamicError("FORX0003", "invalid regex.");
+			throw new DynamicError("FORX0003", "invalid regex.", ex);
 		} catch (Exception ex) {
-			throw new DynamicError("FORX0004", "invalid regex.");
+			throw new DynamicError("FORX0004", "invalid regex.", ex);
 		}
 	}
 	

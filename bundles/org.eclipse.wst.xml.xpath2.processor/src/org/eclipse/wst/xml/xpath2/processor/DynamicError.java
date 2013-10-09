@@ -46,8 +46,8 @@ public class DynamicError extends XPathException {
 	 * @param err
 	 *            is the reason for the error.
 	 */
-	public DynamicError(String code, String err) {
-		super(err);
+	public DynamicError(String code, String err, Throwable cause) {
+		super(err, cause);
 		_code = code;
 		_te = null;
 	}
@@ -59,7 +59,7 @@ public class DynamicError extends XPathException {
 	 *            is the error type.
 	 */
 	public DynamicError(TypeError te) {
-		super(te.reason());
+		super(te.reason(), te);
 		_te = te;
 		_code = te.code();
 	}
@@ -83,12 +83,23 @@ public class DynamicError extends XPathException {
 	 * @return the DynamicError.
 	 */
 	public static DynamicError cant_cast(String err) {
+		return cant_cast(err, null);
+	}
+
+	/**
+	 * Returns the dynamic error.
+	 * 
+	 * @param err
+	 *            is the error
+	 * @return the DynamicError.
+	 */
+	public static DynamicError cant_cast(String err, Throwable cause) {
 		String error = "Can't cast to required type.";
 
 		if (err != null)
 			error += " " + err;
 
-		return new DynamicError("FORG0001", error);
+		return new DynamicError("FORG0001", error, cause);
 	}
 
 	/**
@@ -111,7 +122,7 @@ public class DynamicError extends XPathException {
 	 */
 	public static DynamicError argument_type_error(Class<?> type) {
 		return new DynamicError("FORG0006", type != null ?
-				"Invalid argument type :" + type.getName() : "Invalid argument type");
+				"Invalid argument type :" + type.getName() : "Invalid argument type", null);
 	}
 
 	/**
@@ -125,7 +136,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError inputToLargeForDecimal() throws DynamicError {
-		throw new DynamicError("FOCA0001", "Input value too large for decimal");
+		throw new DynamicError("FOCA0001", "Input value too large for decimal", null);
 	}
 	/**
 	 * Returns the dynamic error.
@@ -142,7 +153,7 @@ public class DynamicError extends XPathException {
 			error = desc + " (reported by fn:error)";
 
 		// XXX: Need to pass the namespace also...
-		return new DynamicError(code, error);
+		return new DynamicError(code, error, null);
 	}
 
 	/**
@@ -159,7 +170,7 @@ public class DynamicError extends XPathException {
 			error = err + " (reported by fn:error)";
 
 		// XXX: Need to pass the namespace also...
-		return new DynamicError("FOER0000", error);
+		return new DynamicError("FOER0000", error, null);
 	}
 	
 	/**
@@ -174,7 +185,7 @@ public class DynamicError extends XPathException {
 		if (err != null)
 			error += " " + err;
 
-		return new DynamicError("FORX0001", error);
+		return new DynamicError("FORX0001", error, null);
 		
 	}
 
@@ -185,13 +196,13 @@ public class DynamicError extends XPathException {
 	 *            is the error
 	 * @return the DynamicError.
 	 */
-	public static DynamicError regex_error(String err) {
+	public static DynamicError regex_error(String err, Throwable cause) {
 		String error = "Invalid regular expression.";
 
 		if (err != null)
 			error += " " + err;
 
-		return new DynamicError("FORX0002", error);
+		return new DynamicError("FORX0002", error, cause);
 	}
 
 	/**
@@ -208,7 +219,7 @@ public class DynamicError extends XPathException {
 		if (err != null)
 			error += " " + err;
 
-		return new DynamicError("FORX0003", error);
+		return new DynamicError("FORX0003", error, null);
 	}
 
 	/**
@@ -220,13 +231,13 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 * 
 	 */
-	public static DynamicError unsupported_codepoint(String err) {
+	public static DynamicError unsupported_codepoint(String err, Throwable cause) {
 		String error = "Unsupported codepoint";
 
 		if (err != null)
 			error += " " + err;
 
-		return new DynamicError("FOCH0001", error);
+		return new DynamicError("FOCH0001", error, cause);
 	}
 
 	/**
@@ -244,7 +255,7 @@ public class DynamicError extends XPathException {
 		if (collationName != null)
 			error += " " + collationName;
 
-		return new DynamicError("FOCH0002", error);
+		return new DynamicError("FOCH0002", error, null);
 	}
 
 	/**
@@ -262,7 +273,7 @@ public class DynamicError extends XPathException {
 		if (err != null)
 			error += " " + err;
 
-		return new DynamicError("FOCH0003", error);
+		return new DynamicError("FOCH0003", error, null);
 	}
 
 	/**
@@ -277,16 +288,16 @@ public class DynamicError extends XPathException {
 	public static DynamicError runtime_error(String msg, Throwable err) {
 		String error = "Error at runtime: " + msg + ": " + err.getMessage();
 
-		return new DynamicError("FOER0000", error);
+		return new DynamicError("FOER0000", error, err);
 	}
 
-	private static DynamicError make_error(String code, String err, String msg) {
+	private static DynamicError make_error(String code, String err, String msg, Throwable cause) {
 		String error = err;
 
 		if (msg != null)
 			error += msg;
 
-		return new DynamicError(code, error);
+		return new DynamicError(code, error, cause);
 	}
 
 	/**
@@ -296,8 +307,8 @@ public class DynamicError extends XPathException {
 	 *            is the message
 	 * @return the make_error
 	 */
-	public static DynamicError lexical_error(String msg) {
-		return make_error("FOCA0002", "Invalid lexical value.", msg);
+	public static DynamicError lexical_error(String msg, Throwable cause) {
+		return make_error("FOCA0002", "Invalid lexical value.", msg, cause);
 	}
 
 	/**
@@ -308,7 +319,7 @@ public class DynamicError extends XPathException {
 	 * @return the make_error
 	 */
 	public static DynamicError not_cmp(String msg) {
-		return make_error("FOTY0012", "Items not comparable", msg);
+		return make_error("FOTY0012", "Items not comparable", msg, null);
 	}
 
 	/**
@@ -322,7 +333,8 @@ public class DynamicError extends XPathException {
 		return make_error(
 				"FORG0003",
 				"fn:zero-or-one called with a sequence containing more than one item",
-				msg);
+				msg,
+				null);
 	}
 
 	/**
@@ -335,7 +347,8 @@ public class DynamicError extends XPathException {
 	public static DynamicError empty_seq(String msg) {
 		return make_error("FORG0004",
 				"fn:one-or-more called with a sequence containing no items",
-				msg);
+				msg,
+				null);
 	}
 
 	/**
@@ -349,7 +362,8 @@ public class DynamicError extends XPathException {
 		return make_error(
 				"FORG0005",
 				"fn:exactly-one called with a sequence containing zero or more than one item",
-				msg);
+				msg,
+				null);
 	}
 
 	/**
@@ -361,7 +375,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError invalidCollectionArgument() {
-		return make_error("FODC0004", "Invalid argument to fn:doc", null);
+		return make_error("FODC0004", "Invalid argument to fn:doc", null, null);
 	}
 	
 	/**
@@ -372,7 +386,7 @@ public class DynamicError extends XPathException {
 	 * @return the make_error
 	 */
 	public static DynamicError invalid_doc(String msg) {
-		return make_error("FODC0005", "Invalid argument to fn:doc", msg);
+		return make_error("FODC0005", "Invalid argument to fn:doc", msg, null);
 	}
 
 	/**
@@ -383,8 +397,8 @@ public class DynamicError extends XPathException {
 	 * @return the make_error
 	 * @since 1.1
 	 */
-	public static DynamicError doc_not_found(String msg) {
-		return make_error("FODC0002", "Document argument fn:doc not found", msg);
+	public static DynamicError doc_not_found(String msg, Throwable cause) {
+		return make_error("FODC0002", "Document argument fn:doc not found", msg, cause);
 	}
 
 	/**
@@ -395,7 +409,7 @@ public class DynamicError extends XPathException {
 	 * @return the make_error
 	 */
 	public static DynamicError div_zero(String msg) {
-		return make_error("FOAR0001", "Division by zero", msg);
+		return make_error("FOAR0001", "Division by zero", msg, null);
 	}
 
 	/**
@@ -407,13 +421,13 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError numeric_overflow(String msg) {
-		return make_error("FOAR0002", "Numeric overflow/underflow", msg);
+		return make_error("FOAR0002", "Numeric overflow/underflow", msg, null);
 	}
 	/**
 	 * @since 1.1
 	 */
 	public static DynamicError contextUndefined() {
-		return make_error("XPDY0002", "Context is undefined.", "");
+		return make_error("XPDY0002", "Context is undefined.", "", null);
 	}
 
 	/**
@@ -426,6 +440,7 @@ public class DynamicError extends XPathException {
 		return make_error(
 				"FORG0001",
 				"data type invalid for cast or constructor",
+				null,
 				null);
 	}
 	
@@ -436,7 +451,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError invalidPrefix() {
-		return make_error("FONS0004", "No namespace found for prefix.", null);
+		return make_error("FONS0004", "No namespace found for prefix.", null, null);
 	}
 	
 	/**
@@ -445,7 +460,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError noContextDoc() {
-		return make_error("FODC0001", "No context document.", null);
+		return make_error("FODC0001", "No context document.", null, null);
 	}
 
 	/**
@@ -455,7 +470,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError noBaseURI() {
-		return make_error("FONS0005", "Base-uri not defined in the static context.", null);
+		return make_error("FONS0005", "Base-uri not defined in the static context.", null, null);
 	}
 	
 	/**
@@ -464,8 +479,8 @@ public class DynamicError extends XPathException {
 	 * @return
 	 * @since 1.1
 	 */
-	public static DynamicError errorResolvingURI() {
-		return make_error("FORG0002", "Invalid argument to fn:resolve-uri().", null);
+	public static DynamicError errorResolvingURI(Throwable cause) {
+		return make_error("FORG0002", "Invalid argument to fn:resolve-uri().", null, cause);
 	}
 	
 	/**
@@ -474,7 +489,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError invalidTimezone() {
-		return make_error("FODT0003", "Invalid timezone value.", null);
+		return make_error("FODT0003", "Invalid timezone value.", null, null);
 	}
 	
 	/**
@@ -483,7 +498,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError overflowUnderflow() {
-		return make_error("FODT0002", "Overflow/underflow in duration operation.", null);
+		return make_error("FODT0002", "Overflow/underflow in duration operation.", null, null);
 	}
 	
 	/**
@@ -492,7 +507,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError nan() {
-		return make_error("FOCA0005", "NaN supplied as float/double value.", null);
+		return make_error("FOCA0005", "NaN supplied as float/double value.", null, null);
 	}
 	
 	/**
@@ -500,8 +515,8 @@ public class DynamicError extends XPathException {
 	 * 
 	 * @since 1.1
 	 */
-	public static DynamicError invalidLexicalValue() {
-		return make_error("FOCA0002", "Invalid lexical value.", null);
+	public static DynamicError invalidLexicalValue(Throwable cause) {
+		return make_error("FOCA0002", "Invalid lexical value.", null, cause);
 	}
 	
 	/**
@@ -509,7 +524,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError overflowDateTime() {
-		return make_error("FODT0001", "Overflow/underflow in date/time operation", null);
+		return make_error("FODT0001", "Overflow/underflow in date/time operation", null, null);
 	}
 	
 	/**
@@ -518,6 +533,6 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError inconsistentTimeZone() {
-		return make_error("FORG0008", "The two arguments to fn:dateTime have inconsistent timezones", null);
+		return make_error("FORG0008", "The two arguments to fn:dateTime have inconsistent timezones", null, null);
 	}
 }

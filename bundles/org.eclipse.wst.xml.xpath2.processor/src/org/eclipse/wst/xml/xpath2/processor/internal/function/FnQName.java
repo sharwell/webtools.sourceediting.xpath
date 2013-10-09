@@ -82,7 +82,7 @@ public class FnQName extends Function {
 
 		QName qn = QName.parse_QName(name);
 		if (qn == null)
-			throw DynamicError.lexical_error(null);
+			throw DynamicError.lexical_error(null, null);
 		qn.set_namespace(ns);
 
 		return qn;

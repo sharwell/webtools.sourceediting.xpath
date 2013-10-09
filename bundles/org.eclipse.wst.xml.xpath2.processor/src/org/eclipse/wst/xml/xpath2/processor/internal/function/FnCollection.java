@@ -113,7 +113,7 @@ public class FnCollection extends Function {
 		try {
 			new URI(uri);
 		} catch (URISyntaxException ex) {
-			throw DynamicError.doc_not_found(null);
+			throw DynamicError.doc_not_found(null, ex);
 		}
 		
 		if (uri.indexOf(":") < 0) {
@@ -127,7 +127,7 @@ public class FnCollection extends Function {
 
 		ResultSequence rs = getCollection(uri, ec);
 		if (rs.empty())
-			throw DynamicError.doc_not_found(null);
+			throw DynamicError.doc_not_found(null, null);
 
 		return rs;
 	}

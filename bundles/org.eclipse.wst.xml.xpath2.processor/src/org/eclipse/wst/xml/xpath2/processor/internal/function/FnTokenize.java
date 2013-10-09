@@ -98,7 +98,7 @@ public class FnTokenize extends AbstractRegExFunction {
 			}
 			
 		} catch (PatternSyntaxException err) {
-			throw DynamicError.regex_error(null);
+			throw DynamicError.regex_error(null, err);
 		}
 
 		return rs.getSequence();

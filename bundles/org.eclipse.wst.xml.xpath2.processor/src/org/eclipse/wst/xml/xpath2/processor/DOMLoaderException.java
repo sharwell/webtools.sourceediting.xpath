@@ -29,7 +29,7 @@ public class DOMLoaderException extends XPathException {
 	 * @param reason
 	 *            is the reason for the exception.
 	 */
-	public DOMLoaderException(String reason) {
-		super(reason);
+	public DOMLoaderException(String reason, Throwable cause) {
+		super(reason, cause);
 	}
 }

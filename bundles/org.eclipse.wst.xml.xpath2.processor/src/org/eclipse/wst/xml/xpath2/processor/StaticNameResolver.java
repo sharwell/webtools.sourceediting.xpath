@@ -614,7 +614,7 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 		Function f = _sc.resolveFunction(qName, 1);
 		if (f == null)
 			reportError(new StaticFunctNameError("Type does not exist: "
-					+ type.toString()));
+					+ type.toString(), null));
 		cexp.set_function(f);
 		_resolvedFunctions.add(qName);
 
@@ -749,10 +749,10 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 			reportBadPrefix(var.prefix());
 
 		if (! isVariableInScope(var))
-			reportError(new StaticNameError(StaticNameError.NAME_NOT_FOUND));
+			reportError(new StaticNameError(StaticNameError.NAME_NOT_FOUND, null));
 		
 		if (getVariableType(var) == null)
-			reportError(new StaticNameError(StaticNameError.NAME_NOT_FOUND));
+			reportError(new StaticNameError(StaticNameError.NAME_NOT_FOUND, null));
 
 		// The variable is good. If it was not captured, it must be referring to an external var
 		if (! isVariableCaptured(var)) _freeVariables.add(var.asQName());
@@ -844,7 +844,7 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 		Function f = _sc.resolveFunction(qName, e.arity());
 		if (f == null)
 			reportError(new StaticFunctNameError("Function does not exist: "
-					+ name.string() + " arity: " + e.arity()));
+					+ name.string() + " arity: " + e.arity(), null));
 		e.set_function(f);
 		_resolvedFunctions.add(qName);
 		
@@ -903,7 +903,7 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 			if (BuiltinTypeLibrary.BUILTIN_TYPES.lookupType(e.qname().namespace(), e.qname().local()) == null) {
 				if (_sc.getTypeModel() == null || _sc.getTypeModel().lookupType(e.qname().namespace(), e.qname().local()) == null)
 					reportError(new StaticTypeNameError("Type not defined: "
-							+ e.qname().string()));
+							+ e.qname().string(), null));
 			}
 			break;
 
@@ -1022,7 +1022,7 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 
 		if (_sc.getTypeModel().lookupAttributeDeclaration(name.namespace(), name.local()) == null)
 			reportError(new StaticAttrNameError("Attribute not decleared: "
-					+ name.string()));
+					+ name.string(), null));
 
 		return null;
 	}
@@ -1063,7 +1063,7 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 
 		if (_sc.getTypeModel().lookupElementDeclaration(elem.namespace(), elem.local()) == null)
 			reportError(new StaticElemNameError("Element not declared: "
-					+ elem.string()));
+					+ elem.string(), null));
 		return null;
 	}
 

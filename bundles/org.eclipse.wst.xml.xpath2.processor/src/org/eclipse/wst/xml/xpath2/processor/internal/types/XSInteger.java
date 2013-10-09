@@ -141,7 +141,7 @@ public class XSInteger extends XSDecimal {
 			BigInteger bigInt = castInteger(aat);
 			return new XSInteger(bigInt);
 		} catch (NumberFormatException e) {
-			throw DynamicError.invalidLexicalValue();
+			throw DynamicError.invalidLexicalValue(e);
 		}
 
 	}

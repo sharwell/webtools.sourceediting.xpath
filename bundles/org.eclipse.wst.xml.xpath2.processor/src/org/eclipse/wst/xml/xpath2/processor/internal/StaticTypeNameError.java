@@ -28,7 +28,7 @@ public class StaticTypeNameError extends StaticNameError {
 	 * @param reason
 	 *            is the reason for the error.
 	 */
-	public StaticTypeNameError(String reason) {
-		super(TYPE_NOT_FOUND, reason);
+	public StaticTypeNameError(String reason, Throwable cause) {
+		super(TYPE_NOT_FOUND, reason, cause);
 	}
 }

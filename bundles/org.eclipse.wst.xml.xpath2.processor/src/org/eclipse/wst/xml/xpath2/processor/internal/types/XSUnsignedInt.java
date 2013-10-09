@@ -95,7 +95,7 @@ public class XSUnsignedInt extends XSUnsignedLong {
 			
 			return new XSUnsignedInt(bigInt);
 		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.cant_cast(null, e);
 		}
 
 	}

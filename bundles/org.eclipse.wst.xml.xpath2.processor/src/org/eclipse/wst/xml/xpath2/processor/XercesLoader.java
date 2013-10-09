@@ -124,9 +124,9 @@ public class XercesLoader implements DOMLoader {
 			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
 			throw new DOMLoaderException("Parser configuration exception: "
-					+ e.getMessage());
+					+ e.getMessage(), e);
 		} catch (IOException e) {
-			throw new DOMLoaderException("IO exception: " + e.getMessage());
+			throw new DOMLoaderException("IO exception: " + e.getMessage(), e);
 		}
 		
 		return null;

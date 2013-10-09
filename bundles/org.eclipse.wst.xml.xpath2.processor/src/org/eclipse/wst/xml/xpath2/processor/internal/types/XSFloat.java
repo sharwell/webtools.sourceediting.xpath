@@ -71,7 +71,7 @@ public class XSFloat extends NumericType {
 				_value = new Float(init);
 			}
 		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.cant_cast(null, e);
 		}
 	}
 	/**
@@ -195,7 +195,7 @@ public class XSFloat extends NumericType {
 			}
 			return new XSFloat(f);
 		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.cant_cast(null, e);
 		}
 
 	}

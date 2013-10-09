@@ -21,8 +21,8 @@ public class StaticNsNameError extends StaticNameError {
 	 */
 	private static final long serialVersionUID = -6873980377966290062L;
 
-	public StaticNsNameError(String reason) {
-		super(PREFIX_NOT_FOUND, reason);
+	public StaticNsNameError(String reason, Throwable cause) {
+		super(PREFIX_NOT_FOUND, reason, cause);
 	}
 
 	/**
@@ -39,6 +39,6 @@ public class StaticNsNameError extends StaticNameError {
 			error += ": " + pref;
 		error += ".";
 
-		return new StaticNsNameError(error);
+		return new StaticNsNameError(error, null);
 	}
 }

@@ -134,7 +134,7 @@ public class XSDecimal extends NumericType {
 		}
 		
 		if (!isLexicalValue(aat.getStringValue())) {
-			throw DynamicError.invalidLexicalValue();
+			throw DynamicError.invalidLexicalValue(null);
 		}
 		
 		if (!isCastable(aat)) {
@@ -146,7 +146,7 @@ public class XSDecimal extends NumericType {
 			
 			return castDecimal(aat);
 		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.cant_cast(null, e);
 		}
 
 	}

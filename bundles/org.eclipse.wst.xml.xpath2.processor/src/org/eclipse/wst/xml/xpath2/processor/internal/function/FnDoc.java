@@ -95,7 +95,7 @@ public class FnDoc extends Function {
 
 		Document doc = dc.getDocument(resolved);
 		if (doc == null)
-			throw DynamicError.doc_not_found(null);
+			throw DynamicError.doc_not_found(null, null);
 
 		return new DocType(doc, ec.getStaticContext().getTypeModel());
 	}

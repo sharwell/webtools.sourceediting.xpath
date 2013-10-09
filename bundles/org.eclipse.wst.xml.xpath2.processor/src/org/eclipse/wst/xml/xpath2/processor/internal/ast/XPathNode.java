@@ -11,6 +11,8 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
+import org.eclipse.wst.xml.xpath2.processor.internal.ExpressionPrinterVisitor;
+
 /**
  * Class for a XPathNode object.
  */
@@ -19,4 +21,10 @@ public abstract class XPathNode {
 	 * Support for Visitor interface.
 	 */
 	public abstract <T> T accept(XPathVisitor<T> v);
+
+    @Override
+    public String toString() {
+        return accept(ExpressionPrinterVisitor.DEFAULT);
+    }
+
 }

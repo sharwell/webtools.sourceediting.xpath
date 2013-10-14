@@ -29,8 +29,9 @@ import org.w3c.dom.Node;
 /**
  * interface to static context
  * 
- * @deprecated See <tt>org.eclipse.wst.xml.xpath2.api.StaticContext</tt> instead
+ * @deprecated Use {@link org.eclipse.wst.xml.xpath2.api.StaticContext} instead
  */
+@Deprecated
 public interface StaticContext {
 
 	/**

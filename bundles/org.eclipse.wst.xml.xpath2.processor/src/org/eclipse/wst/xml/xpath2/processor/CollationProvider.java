@@ -17,8 +17,9 @@ import java.util.Comparator;
  * Service provider interface for looking up collations from within the dynamic context.
  * @since 1.1
  * 
- * @deprecated Use org.eclipse.wst.xml.xpath2.api.CollationProvider instead
+ * @deprecated Use {@link org.eclipse.wst.xml.xpath2.api.CollationProvider} instead
  */
+@Deprecated
 public interface CollationProvider {
 	/**
 	 * Gets the named collator. W3C does not define collation names (yet?) so we are constrained to using an

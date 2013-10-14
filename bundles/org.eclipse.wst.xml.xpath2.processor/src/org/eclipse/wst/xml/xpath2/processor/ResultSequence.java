@@ -22,8 +22,9 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Interface to the methods of range of result sequence
- * @deprecated Use org.eclipse.wst.xml.xpath2.api.ResultSequence instead
+ * @deprecated Use {@link org.eclipse.wst.xml.xpath2.api.ResultSequence} instead
  */
+@Deprecated
 public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.ResultSequence {
 
 	/**

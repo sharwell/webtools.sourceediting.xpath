@@ -30,8 +30,9 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathVisitor;
 /**
  * Support for XPath.
  * 
- * @deprecated This is only for internal use, use XPath2Expression instead
+ * @deprecated This is only for internal use, use {@link XPath2Expression} instead
  */
+@Deprecated
 public class XPath extends XPathNode implements XPath2Expression {
 	private Collection<Expr> _exprs;
 	private StaticContext _staticContext;

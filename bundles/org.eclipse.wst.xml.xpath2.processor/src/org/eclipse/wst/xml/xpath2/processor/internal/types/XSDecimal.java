@@ -194,8 +194,9 @@ public class XSDecimal extends NumericType {
 	 * Retrieves the actual value of the number stored
 	 * 
 	 * @return The actual value of the number stored
-	 * @deprecated Use getValue() instead.
+	 * @deprecated Use {@link #getValue()} instead.
 	 */
+	@Deprecated
 	public double double_value() {
 		return _value.doubleValue();
 	}

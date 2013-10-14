@@ -34,8 +34,10 @@ import org.w3c.dom.Node;
 /**
  * Interface for dynamic context.
  * 
- * @deprecated Use 
+ * @deprecated Use {@link org.eclipse.wst.xml.xpath2.api.DynamicContext} and
+ * {@link org.eclipse.wst.xml.xpath2.api.StaticContext} instead.
  */
+@Deprecated
 public interface DynamicContext extends StaticContext {
 
 	/**
@@ -185,6 +187,7 @@ public interface DynamicContext extends StaticContext {
 	/**
 	 * @deprecated
 	 */
+	@Deprecated
 	public int node_position(Node node);
 
 }

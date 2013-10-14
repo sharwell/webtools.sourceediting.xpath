@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.eclipse.wst.xml.xpath2.api.Item;
+import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.typesystem.ItemType;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
@@ -27,8 +28,9 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 
 /**
  * Default implementation of a result sequence.
- * @deprecated use ResultBuffer instead
+ * @deprecated use {@link ResultBuffer} instead
  */
+@Deprecated
 public class DefaultResultSequence extends ResultSequence {
 
 	private List<Item> _seq;

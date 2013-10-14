@@ -36,3 +36,7 @@ bundles/org.eclipse.wst.xml.xpath2.processor/lib/JFlex.jar
 
 # maven
 target/
+
+# NetBeans
+nbactions.xml
+nbactions-*.xml

@@ -14,10 +14,6 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -31,6 +27,10 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.ScalarTypePromoter;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.TypePromoter;
+
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Returns a value obtained by adding together the values in $arg. If the
@@ -89,11 +89,12 @@ public class FnSum extends Function {
 		if (arg.empty())
 			return ResultSequenceFactory.create_new(zero);
 
-		MathPlus total = null; 
+		MathPlus total = null;
 		
-		if (isAllItemsDerivedFromDuration(arg)){
-			for (Iterator i = arg.iterator(); i.hasNext();) {
-				AnyAtomicType conv = (AnyAtomicType)FnData.atomize((AnyType) i.next());
+		ResultSequence atomizedInputSeq = FnData.atomize(arg);
+		if ((AnyAtomicType)atomizedInputSeq.first() instanceof XSDuration) {
+			for (Iterator i = atomizedInputSeq.iterator(); i.hasNext();) {
+				AnyAtomicType conv = (AnyAtomicType) i.next();
 				if (total == null) {
 					total = (MathPlus)conv; 
 				} else {
@@ -104,9 +105,10 @@ public class FnSum extends Function {
 		else {
 			TypePromoter tp = new ScalarTypePromoter();
 			tp.considerSequence(arg);
+
 			for (Iterator i = arg.iterator(); i.hasNext();) {
 				AnyAtomicType conv = tp.promote((AnyType) i.next());
-				
+
 				if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
 					return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
 				}
@@ -117,19 +119,7 @@ public class FnSum extends Function {
 				}
 			}
 		}
-
 		
 		return ResultSequenceFactory.create_new((AnyType) total);
-	}
-	
-	private static boolean isAllItemsDerivedFromDuration(ResultSequence arg) throws DynamicError {
-		boolean itemsDerivedFromDuration = true;
-		for (Iterator i = arg.iterator(); i.hasNext();) {
-			if (!(FnData.atomize((AnyType) i.next()) instanceof XSDuration)) {
-				itemsDerivedFromDuration = false;
-				break;
-			}
-		}
-		return itemsDerivedFromDuration;
 	}
 }

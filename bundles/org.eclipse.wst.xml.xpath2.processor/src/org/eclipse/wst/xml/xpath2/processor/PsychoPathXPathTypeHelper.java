@@ -41,15 +41,18 @@ public class PsychoPathXPathTypeHelper {
 		
 		// dummy type "short code" initializer
 		short typeCode = -100;
+		boolean xs11Types = false;
 		
 		if ("dayTimeDuration".equals(typeDef.getName())) {
-			typeCode = DAYTIMEDURATION_DT; 
+			typeCode = DAYTIMEDURATION_DT;
+			xs11Types = true;
 		}
 		else if ("yearMonthDuration".equals(typeDef.getName())) {
-			typeCode = YEARMONTHDURATION_DT; 
+			typeCode = YEARMONTHDURATION_DT;
+			xs11Types = true;
 		}
 		
-		return ("dayTimeDuration".equals(typeDef.getName()) || "yearMonthDuration".equals(typeDef.getName())) ? typeCode : ((XSSimpleTypeDefinition) typeDef).getBuiltInKind();
+		return (xs11Types ? typeCode : ((XSSimpleTypeDefinition) typeDef).getBuiltInKind());
 		
 	} // getXSDTypeShortCode
 	

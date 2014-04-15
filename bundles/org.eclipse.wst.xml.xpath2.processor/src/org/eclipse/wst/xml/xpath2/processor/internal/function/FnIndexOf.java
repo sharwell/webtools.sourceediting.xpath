@@ -14,9 +14,6 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
-import org.apache.xerces.dom.PSVIElementNSImpl;
-import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
@@ -24,8 +21,6 @@ import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.AttrType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -33,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -133,119 +129,52 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 		get_comparable(at);
 
 		int index = 1;
-		for (Iterator iter = arg1.iterator(); iter.hasNext();) {
-			AnyType cmptype = (AnyType) iter.next();
+		arg1 = FnData.atomize(arg1);
+		for (Iterator i = arg1.iterator(); i.hasNext();) {
+			AnyType cmptype = (AnyType) i.next();
+			if (cmptype instanceof XSUntypedAtomic) {
+				cmptype = new XSString(cmptype.string_value());
+			}
 			get_comparable(cmptype);
+
+			if (!(at instanceof CmpEq))
+				continue;
 			
-			boolean isSeqItemComparable = false;
-			if (cmptype instanceof AnyAtomicType) {
-				AnyAtomicType cmpAnyAtomicType = (AnyAtomicType)cmptype;
-				if (cmpAnyAtomicType instanceof CmpEq) {
-					isSeqItemComparable = true;
+			if (isBoolean(cmptype, at)) {
+				XSBoolean boolat = (XSBoolean) cmptype;
+				if (boolat.eq(at, dynamicContext)) {
+ 				   rs.add(new XSInteger(BigInteger.valueOf(index)));
+				}
+			} else if (isNumeric(cmptype, at)) {
+				NumericType numericat = (NumericType) at;
+				if (numericat.eq(cmptype, dynamicContext)) {
+					rs.add(new XSInteger(BigInteger.valueOf(index)));
+				}
+			} else if (isDuration(cmptype, at)) {
+				XSDuration durat = (XSDuration) at;
+				if (durat.eq(cmptype, dynamicContext)) {
+					rs.add(new XSInteger(BigInteger.valueOf(index)));
+				}
+			} 
+			else if (at instanceof QName && cmptype instanceof QName) {
+				QName qname = (QName)at;
+				if (qname.eq(cmptype, dynamicContext)) {
+					rs.add(new XSInteger(BigInteger.valueOf(index)));
 				}
 			}
-			if (!(at instanceof CmpEq || isSeqItemComparable)) {
-				// values that cannot be compared, are considered distinct
-				rs.add(new XSInteger(BigInteger.valueOf(index)));
-				index++;
-			}
-			else if (cmptype instanceof NodeType && isNodeXSTypeCompatible(cmptype)) {
-				// if the item was an element or attribute node, consider its atomized value
-				ResultSequence rsAtomized = ResultSequenceFactory.create_new();
-				rsAtomized.add(cmptype);
-				rsAtomized = FnData.atomize(rsAtomized);
-				if (rsAtomized.size() == 1) {
-				    populateFnIndexOfResultSequence(dynamicContext, rs, collationUri, at, index, rsAtomized.first());
-				    index++;
+			else if (needsStringComparison(cmptype, at)) {
+				XSString xstr1 = new XSString(cmptype.string_value());
+				XSString itemStr = new XSString(at.string_value());
+				if (FnCompare.compare_string(collationUri, xstr1, itemStr, dynamicContext).equals(BigInteger.ZERO)) {
+					rs.add(new XSInteger(BigInteger.valueOf(index)));
 				}
-				else if (rsAtomized.size() > 1) {
-					// this may happen if an item represents a simpleType list
-					for (Iterator iter_1 = rsAtomized.iterator(); iter_1.hasNext();) {
-						AnyType cmptype_1 = (AnyType) iter_1.next();
-						populateFnIndexOfResultSequence(dynamicContext, rs, collationUri, at, index, cmptype_1);
-						index++;
-					}
-				}
-			}
-			else {
-			   populateFnIndexOfResultSequence(dynamicContext, rs, collationUri, at, index, cmptype);
-			   index++;
-			}
+			} 
+			
+			index++;
 		}
 
 		return rs;
-		
-	} // index_of
-	
-	/*
-	 * Check if the node's schema type is right for comparison.
-	 */
-	private static boolean isNodeXSTypeCompatible(AnyType cmptype) {
-		boolean isXstypeCompatible = false;
-		
-		NodeType nodeType = (NodeType)cmptype;
-		
-		if (nodeType instanceof ElementType) {
-			PSVIElementNSImpl elemPsvImpl = (PSVIElementNSImpl)((ElementType)nodeType).value();
-			XSTypeDefinition typeDef = elemPsvImpl.getTypeDefinition();
-			if (typeDef instanceof XSComplexTypeDefinition) {
-				XSComplexTypeDefinition complexTypeDefinition = (XSComplexTypeDefinition) typeDef;
-				if (complexTypeDefinition.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_SIMPLE) {
-					isXstypeCompatible = true;	
-				}
-			}
-			else {
-				// simple type definition
-				isXstypeCompatible = true;
-			}
-		}
-		else if (nodeType instanceof AttrType) {
-			isXstypeCompatible = true;	
-		}
-		
-		return isXstypeCompatible;
-		
-	} // isNodeXSTypeCompatible
-
-	/*
-	 * Add an index value to the result sequence, if the searched item was found in input sequence. This doesn't
-	 * consider node types (they are handled separately). 
-	 */
-	private static void populateFnIndexOfResultSequence(DynamicContext dynamicContext, ResultSequence rs,
-			                                            String collationUri, AnyAtomicType at, int index, AnyType cmptype)
-			                         throws DynamicError {
-		
-		if (isBoolean(cmptype, at)) {
-			XSBoolean boolat = (XSBoolean) cmptype;
-			if (boolat.eq(at, dynamicContext)) {
-			   rs.add(new XSInteger(BigInteger.valueOf(index)));
-			}
-		} else if (isNumeric(cmptype, at)) {
-			NumericType numericat = (NumericType) at;
-			if (numericat.eq(cmptype, dynamicContext)) {
-				rs.add(new XSInteger(BigInteger.valueOf(index)));
-			}
-		} else if (isDuration(cmptype, at)) {
-			XSDuration durat = (XSDuration) at;
-			if (durat.eq(cmptype, dynamicContext)) {
-				rs.add(new XSInteger(BigInteger.valueOf(index)));
-			}
-		} 
-		else if (at instanceof QName && cmptype instanceof QName) {
-			QName qname = (QName)at;
-			if (qname.eq(cmptype, dynamicContext)) {
-				rs.add(new XSInteger(BigInteger.valueOf(index)));
-			}
-		}
-		else if (needsStringComparison(cmptype, at)) {
-			XSString xstr1 = new XSString(cmptype.string_value());
-			XSString itemStr = new XSString(at.string_value());
-			if (FnCompare.compare_string(collationUri, xstr1, itemStr, dynamicContext).equals(BigInteger.ZERO)) {
-				rs.add(new XSInteger(BigInteger.valueOf(index)));
-			}
-		}
-		
-	} // populateFnIndexOfResultSequence
+	}
 
 	/**
 	 * Obtain a list of expected arguments.

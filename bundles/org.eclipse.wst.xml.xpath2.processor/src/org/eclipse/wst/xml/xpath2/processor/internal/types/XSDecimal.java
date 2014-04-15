@@ -226,12 +226,11 @@ public class XSDecimal extends NumericType {
 	 *         otherwise
 	 */
 	public boolean eq(AnyType at, DynamicContext context) throws DynamicError {
-		if (!(at instanceof NumericType)) {
-		   throw DynamicError.invalidType();	
-		}
-		
 		XSDecimal dt = null;
-		if (!(at instanceof XSDecimal)) { 
+		if (at instanceof XSString) {
+		   DynamicError.invalidType();
+		}
+		else if (!(at instanceof XSDecimal)) { 
 			ResultSequence rs = ResultSequenceFactory.create_new(at);
 			
 			ResultSequence crs = constructor(rs);
@@ -241,7 +240,7 @@ public class XSDecimal extends NumericType {
 		
 			AnyType cat = crs.first();
 
-			dt = (XSDecimal) cat;		
+			dt = (XSDecimal) cat;
 	    } else {
 	    	dt = (XSDecimal) at;
 	    }
@@ -258,10 +257,6 @@ public class XSDecimal extends NumericType {
 	 *         one stored. False otherwise
 	 */
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		if (!(arg instanceof NumericType)) {
-			throw DynamicError.invalidType();
-		}
-		
 		AnyType carg = convertArg(arg);
 		
 		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
@@ -285,9 +280,6 @@ public class XSDecimal extends NumericType {
 	 *         one stored. False otherwise
 	 */
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		if (!(arg instanceof NumericType)) {
-			throw DynamicError.invalidType();
-		}
 		AnyType carg = convertArg(arg);
 		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
 		return (_value.compareTo(val.getValue()) == -1);

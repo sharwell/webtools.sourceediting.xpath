@@ -138,10 +138,9 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	public boolean eq(AnyType arg, DynamicContext context) throws DynamicError {
-		if (!(arg instanceof XSString || arg instanceof XSAnyURI || "NaN".equals(arg.string_value()))) {
-			throw DynamicError.invalidType();	
+		if (arg instanceof XSDecimal) {
+			DynamicError.invalidType();
 		}
-		
 		int cmp = do_compare(arg, context);
 
 		// XXX im not sure what to do here!!! because eq has to return
@@ -163,10 +162,6 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		if (!(arg instanceof XSString || arg instanceof XSAnyURI || "NaN".equals(arg.string_value()))) {
-			throw DynamicError.invalidType();	
-		}
-		
 		int cmp = do_compare(arg, context);
 
 		assert cmp != 666;
@@ -185,10 +180,6 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		if (!(arg instanceof XSString || arg instanceof XSAnyURI || "NaN".equals(arg.string_value()))) {
-			throw DynamicError.invalidType();	
-		}
-		
 		int cmp = do_compare(arg, context);
 
 		assert cmp != 666;

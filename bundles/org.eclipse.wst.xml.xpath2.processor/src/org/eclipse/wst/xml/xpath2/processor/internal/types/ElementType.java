@@ -134,10 +134,8 @@ public class ElementType extends NodeType {
 		   if (!typeInfo.getNil()) {
 		      XSTypeDefinition typeDef = typeInfo.getTypeDefinition();		   
 		      if (typeDef != null) {
-		    	 try {
-		            rs = getXDMTypedValue(typeDef, typeInfo.getItemValueTypes());
-		    	 }
-		    	 catch(DynamicError err) {
+		         rs = getXDMTypedValue(typeDef, typeInfo.getItemValueTypes());
+		    	 /*catch(DynamicError err) {
 		    		if ("FOTY0012".equals(err.code())) {
 		    			// upon encountering an element-only content, perform following additional checks
 		    			if (isDescendantElementValidatedByWildCard(_value)) {
@@ -150,7 +148,7 @@ public class ElementType extends NodeType {
 		    			   throw err;
 		    			}
 		    		}
-		    	 }
+		    	 } */
 		      }
 		      else {
 			     rs.add(new XSUntypedAtomic(string_value()));  

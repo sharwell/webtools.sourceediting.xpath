@@ -32,6 +32,7 @@ import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSObjectList;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.PsychoPathXPathTypeHelper;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -88,7 +89,7 @@ public abstract class NodeType extends AnyType {
 	 * 
 	 * @return Actual node being represented
 	 */
-	public abstract ResultSequence typed_value();
+	public abstract ResultSequence typed_value() throws DynamicError;
 
 	/**
 	 * Retrieves the name of the node

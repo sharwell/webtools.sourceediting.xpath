@@ -228,7 +228,6 @@ public class FsPlus extends Function {
 			}
 			else {
 				ex.printStackTrace();
-				System.exit(1);
 			}
 		}
 		return null; // unreach!

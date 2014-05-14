@@ -228,7 +228,6 @@ public class FsEq extends Function {
 				throw (DynamicError) ex;
 
 			ex.printStackTrace();
-			System.exit(1);
 		}
 
 		if (((XSBoolean) result.first()).value())

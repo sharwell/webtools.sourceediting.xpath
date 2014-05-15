@@ -227,7 +227,6 @@ public class FsEq extends Function {
 			if (ex instanceof DynamicError)
 				throw (DynamicError) ex;
 
-			ex.printStackTrace();
 		}
 
 		if (((XSBoolean) result.first()).value())

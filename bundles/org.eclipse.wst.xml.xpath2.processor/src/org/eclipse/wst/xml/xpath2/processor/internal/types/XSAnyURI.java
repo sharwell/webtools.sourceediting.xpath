@@ -119,7 +119,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 */
 	public boolean eq(AnyType arg, DynamicContext context) throws DynamicError {
 		if (arg instanceof XSAnyURI || arg instanceof XSString) {
-			if (this.string_value().equals(arg.string_value())) {
+			if (_value != null && _value.equals(arg.string_value())) {
 				return true;
 			}
 		} else {

@@ -226,9 +226,6 @@ public class FsPlus extends Function {
 			if (ex instanceof DynamicError) {
 				throw (DynamicError) ex;
 			}
-			else {
-				ex.printStackTrace();
-			}
 		}
 		return null; // unreach!
 	}

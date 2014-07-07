@@ -28,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -226,7 +227,7 @@ public class XSDecimal extends NumericType {
 	 * @return True if the 2 representation represent the same number. False
 	 *         otherwise
 	 */
-	public boolean eq(AnyType at, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType at, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 		XSDecimal dt = null;
 		if (!(at instanceof XSDecimal)) { 
 			ResultSequence rs = ResultSequenceFactory.create_new(at);

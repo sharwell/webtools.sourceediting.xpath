@@ -13,6 +13,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 
@@ -30,5 +31,5 @@ public interface CmpEq {
 	 *             Dynamic error.
 	 * @return Result of operation, true/false.
 	 */
-	public boolean eq(AnyType arg, DynamicContext context) throws DynamicError;
+	public boolean eq(AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError;
 }

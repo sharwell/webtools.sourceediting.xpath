@@ -1053,7 +1053,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 					  (inScopeTypeDefn instanceof SimpleTypeDefinition && ((SimpleTypeDefinition) inScopeTypeDefn).getVariety() != SimpleTypeDefinition.VARIETY_ATOMIC)) {
 					report_error(TypeError.invalid_type(null));
 				}
-				else if (inScopeTypeDefn instanceof PrimitiveType && PsychoPathTypeHelper.isValueValidForSimpleType(at.string_value(), (PrimitiveType) inScopeTypeDefn)) {
+				else if (inScopeTypeDefn instanceof PrimitiveType && PsychoPathXPathTypeHelper.isValueValidForSimpleType(at.string_value(), (PrimitiveType) inScopeTypeDefn)) {
 					return XSBoolean.TRUE;
 				}
 				else {
@@ -2012,7 +2012,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 			if (at instanceof NumericType) {
 				try {
-					return FsEq.fs_eq_fast(at, new XSInteger(BigInteger.valueOf(focus().position())), _dc);
+					return FsEq.fs_eq_fast(at, new XSInteger(BigInteger.valueOf(focus().position())), _sc, _dc);
 				} catch (DynamicError err) {
 					report_error(err);
 

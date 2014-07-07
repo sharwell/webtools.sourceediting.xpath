@@ -20,11 +20,11 @@ import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 
 
 /**
- * An PsychoPath Engine helper class providing common method implementations for performing XML schema evaluation tasks.  
+ * An PsychoPath XPath Engine helper class, providing common method implementations for performing XML Schema evaluation tasks.  
  *
  * @since 2.0
  */
-public class PsychoPathTypeHelper {
+public class PsychoPathXPathTypeHelper {
 	
 	// PsychoPath engine specific constants to support new built-in types, introduced in XML Schema 1.1.
 	public static short DAYTIMEDURATION_DT = -100;
@@ -62,4 +62,4 @@ public class PsychoPathTypeHelper {
 		
 	} // isValueValidForASimpleType
 
-}
+} // class PsychoPathXPathTypeHelper

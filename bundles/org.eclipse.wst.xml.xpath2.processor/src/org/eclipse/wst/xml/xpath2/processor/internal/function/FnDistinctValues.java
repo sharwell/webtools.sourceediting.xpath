@@ -28,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -59,7 +60,7 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 	 * @return Result of evaluation.
 	 */
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
-		return distinct_values(args, ec.getDynamicContext());
+		return distinct_values(args, ec.getStaticContext(), ec.getDynamicContext());
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of fn:distinct-values operation.
 	 */
-	public static ResultSequence distinct_values(Collection<ResultSequence> args, DynamicContext context) throws DynamicError {
+	public static ResultSequence distinct_values(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 
 		ResultBuffer rs = new ResultBuffer();
 
@@ -83,7 +84,7 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 			arg2 = citer.next();
 		}
 		
-		String collationURI = context.getCollationProvider().getDefaultCollation();
+		String collationURI = dynamicContext.getCollationProvider().getDefaultCollation();
 		if (!arg2.empty()) {
 			XSString collation = (XSString) arg2.item(0);
 			collationURI = collation.getStringValue();
@@ -91,7 +92,7 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 
 		for (Iterator<Item> iter = arg1.iterator(); iter.hasNext();) {
 			AnyAtomicType atomizedItem = (AnyAtomicType) FnData.atomize(iter.next());
-			if (!contains(rs, atomizedItem, context, collationURI))
+			if (!contains(rs, atomizedItem, staticContext, dynamicContext, collationURI))
 				rs.add(atomizedItem);
 		}
 
@@ -110,11 +111,11 @@ public class FnDistinctValues extends AbstractCollationEqualFunction {
 	 * @return Result of operation.
 	 */
 	protected static boolean contains(ResultBuffer rs, AnyAtomicType item,
-			DynamicContext context, String collationURI)  {
+			StaticContext staticContext, DynamicContext dynamicContext, String collationURI)  {
 		if (!(item instanceof CmpEq))
 			return false;
 
-		return hasValue(rs, item, context, collationURI);
+		return hasValue(rs, item, staticContext, dynamicContext, collationURI);
 	}
 	
 }

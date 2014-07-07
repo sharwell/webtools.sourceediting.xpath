@@ -17,6 +17,7 @@ import org.apache.xerces.impl.dv.util.HexBin;
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
@@ -150,7 +151,7 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 *         
 	 * @throws DynamicError
 	 */
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
       String valToCompare = arg.getStringValue();
       
       byte[] value1 = Base64.decode(_value);

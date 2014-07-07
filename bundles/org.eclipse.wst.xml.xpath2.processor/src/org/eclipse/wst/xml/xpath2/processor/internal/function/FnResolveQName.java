@@ -9,6 +9,7 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     David Carver (STAR) - bug 288886 - add unit tests and fix fn:resolve-qname function
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi	- bug 360306 - improvements to "resolve-QName" function and xs:QName type implementation
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
@@ -26,8 +27,10 @@ import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
+import javax.xml.XMLConstants;
 /**
  * Returns an xs:QName value (that is, an expanded-QName) by taking an xs:string
  * that has the lexical form of an xs:QName (a string in the form
@@ -83,7 +86,9 @@ public class FnResolveQName extends Function {
 		
 		ResultSequence arg2 = argiter.next();
 
-		String name = ((XSString) arg1.first()).value();
+		//String name = ((XSString) arg1.first()).value();
+		
+		String name = (FnData.atomize(arg1.first())).string_value();
 
 		QName qn = QName.parse_QName(name);
 
@@ -95,6 +100,10 @@ public class FnResolveQName extends Function {
 
 		if (qn.prefix() != null) {
 			String namespaceURI = element.lookupNamespaceURI(qn.prefix());
+			if (namespaceURI == null) {
+			   // a fall back lookup for the namespaceURI
+			   namespaceURI = lookupNamespaceURI(element, qn.prefix());
+			}
 			
 			if (namespaceURI == null) {
 				throw DynamicError.invalidPrefix();
@@ -109,6 +118,26 @@ public class FnResolveQName extends Function {
 
 		return qn;
 	}
+	
+	/*
+	 * Lookup namespaceURI corresponding to a prefix, among the in-scope namespaces of the context element.
+	 * Does recursive lookup up the document tree hierarchy.
+	 */
+	private static String lookupNamespaceURI(Element element, String prefix) {	   
+	   
+	   String nsUri = null;
+	   
+	   Attr attNode = element.getAttributeNode(XMLConstants.XMLNS_ATTRIBUTE+":"+prefix);
+	   if (attNode != null) {
+		   nsUri = attNode.getValue();  
+	   }
+	   else if (element.getParentNode() instanceof Element) {
+		  lookupNamespaceURI((Element)element.getParentNode(), prefix);  
+	   }
+	   
+	   return nsUri;
+	   
+	} // lookupNamespaceURI
 
 	/**
 	 * Obtain a list of expected arguments.

@@ -29,6 +29,7 @@ import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
@@ -128,7 +129,7 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of Equality operation.
 	 */
-	public static boolean fs_eq_fast(AnyType one, AnyType two, DynamicContext context)
+	public static boolean fs_eq_fast(AnyType one, AnyType two, StaticContext staticContext, DynamicContext dynamicContext)
 			throws DynamicError {
 
 		one = FnData.atomize((Item)one);
@@ -145,7 +146,7 @@ public class FsEq extends Function {
 
 		CmpEq cmpone = (CmpEq) one;
 
-		return cmpone.eq(two, context);
+		return cmpone.eq(two, staticContext, dynamicContext);
 	}
 
 	/**

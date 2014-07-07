@@ -18,6 +18,7 @@ import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
@@ -148,7 +149,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @return New XSBoolean representation of true/false result of the equality
 	 *         comparison
 	 */
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
 				XSBoolean.class);
 

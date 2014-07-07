@@ -22,6 +22,7 @@ import java.util.TimeZone;
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
@@ -299,7 +300,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 *         otherwise
 	 * @throws DynamicError
 	 */
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 		XSGDay val = (XSGDay) NumericType.get_single_type(arg, XSGDay.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());

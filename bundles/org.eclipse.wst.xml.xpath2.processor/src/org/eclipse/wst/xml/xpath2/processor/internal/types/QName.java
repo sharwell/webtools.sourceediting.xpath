@@ -11,6 +11,7 @@
  *     David Carver (STAR) - bug 288886 - add unit tests and fix fn:resolve-qname function
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *     Jesper Steen Moller  - bug 340933 - Migrate to new XPath2 API
+ *     Mukul Gandhi	- bug 360306 - improvements to "resolve-QName" function and xs:QName type implementation
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -19,6 +20,7 @@ import javax.xml.XMLConstants;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
@@ -276,10 +278,10 @@ public class QName extends CtrType implements CmpEq {
 		QName arg = (QName) obj;
 
 		// if they aren't expanded... we can't compare them
-		if (!_expanded || !arg.expanded()) {
+		/*if (!_expanded || !arg.expanded()) {
 			assert false; // XXX not stricly necessary
 			return false;
-		}
+		} */
 
 		// two cases: null == null, or .equals(other)
 		String argn = arg.namespace();
@@ -338,8 +340,12 @@ public class QName extends CtrType implements CmpEq {
 	 * @return True if the two represent the same node. False otherwise
 	 * @throws DynamicError
 	 */
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 		QName val = (QName) NumericType.get_single_type(arg, QName.class);
+		String nsUri = staticContext.getNamespaceContext().getNamespaceURI(val._prefix);
+		if (nsUri != null) {
+		   val._namespace = nsUri;
+		}
 		return equals(val);
 	}
 	

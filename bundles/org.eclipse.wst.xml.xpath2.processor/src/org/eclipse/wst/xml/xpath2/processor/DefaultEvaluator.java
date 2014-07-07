@@ -17,6 +17,7 @@
  *     Jesper Steen Moller  - bug 312191 - instance of test fails with partial matches
   *    Mukul Gandhi         - bug 325262 - providing ability to store an XPath2 sequence into
  *                                         an user-defined variable.
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *     Jesper Steen Moller  - bug 340933 - Migrate to new XPath2 API
  *     Jesper Steen Moller - bug 343804 - Updated API information
  *******************************************************************************/
@@ -1162,7 +1163,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		}
 		// XXX lame
 		if (node_types) {
-			rs = NodeType.linarize(rs);
+			rs = NodeType.linearize(rs);
 		}
 		return rs.getSequence();
 	}

@@ -18,16 +18,14 @@
  *     Mukul Gandhi - bug 323900 - improving computing the typed value of element &
  *                                 attribute nodes, where the schema type of nodes
  *                                 are simple, with varieties 'list' and 'union'.                                 
+ *     Jesper Moller - bug 316988 - Removed O(n^2) performance for large results
  *     Jesper Steen Moller  - bug 340933 - Migrate to new XPath2 API
  *     Lukasz Wycisk - bug 361803 - NodeType:dom_to_xpath and null value
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -139,49 +137,12 @@ public abstract class NodeType extends AnyType {
 		return null;
 	}
 
-	public static org.eclipse.wst.xml.xpath2.processor.ResultSequence eliminate_dups(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
-		Hashtable<Node, Boolean> added = new Hashtable<Node, Boolean>(rs.size());
-
-		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
-			NodeType node = (NodeType) i.next();
-			Node n = node.node_value();
-
-			if (added.containsKey(n))
-				i.remove();
-			else
-				added.put(n, Boolean.TRUE);
+	public static ResultBuffer linearize(ResultBuffer rs) {
+		TreeSet<NodeType> all = new TreeSet<NodeType>(NODE_COMPARATOR);
+		for (Item item : rs.getCollection()) {
+			all.add((NodeType)item);
 		}
-		return rs;
-	}
-
-	public static org.eclipse.wst.xml.xpath2.processor.ResultSequence sort_document_order(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
-		ArrayList<NodeType> res = new ArrayList<NodeType>(rs.size());
-
-		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
-			NodeType node = (NodeType) i.next();
-			boolean added = false;
-
-			for (int j = 0; j < res.size(); j++) {
-				NodeType x = res.get(j);
-
-				if (before(node, x)) {
-					res.add(j, node);
-					added = true;
-					break;
-				}
-			}
-			if (!added)
-				res.add(node);
-		}
-
-		rs = ResultSequenceFactory.create_new();
-		for (Iterator<NodeType> i = res.iterator(); i.hasNext();) {
-			NodeType node = i.next();
-
-			rs.add(node);
-		}
-
-		return rs;
+		return new ResultBuffer().concat(all);
 	}
 
 	public static boolean same(NodeType a, NodeType b) {
@@ -214,7 +175,7 @@ public abstract class NodeType extends AnyType {
 		Document docA = getDocument(nodeA);
 		Document docB = getDocument(nodeB);
 		
-		if (docA != docB && ! docA.isSameNode(docB)) {
+		if (docA != docB) {
 			return compareDocuments(docA, docB);
 		}
 		short relation = nodeA.compareDocumentPosition(nodeB);
@@ -225,12 +186,24 @@ public abstract class NodeType extends AnyType {
 		throw new RuntimeException("Unexpected result from node comparison: " + relation);
 	}
 
+	/**
+	 * Compare two documents (node ordering wise). Uses information from the DOM itself if applicable,
+	 * otherwise uses document URI, or if they are identical, compare by hash code.
+	 * 
+	 * @param docA First document
+	 * @param docB Second document
+	 * @return negative, zero, or positive like {@link Comparable#compareTo(Object)}
+	 */
 	private static int compareDocuments(Document docA, Document docB) {
+		if (docA.isSameNode(docB)) return 0; // Object alias for same underlying node (proxy?)
+		
 		// Arbitrary but fulfills the spec (provided documenURI is always set)
-		if (docB.getDocumentURI() == null && docA.getDocumentURI() == null) {
-			return System.identityHashCode(docA) - System.identityHashCode(docB); 
+		if (docA.getDocumentURI() != null && docB.getDocumentURI() != null) {
+			int difference = docB.getDocumentURI().compareTo(docA.getDocumentURI());
+			if (difference != 0) return difference;
 		}
-		return docB.getDocumentURI().compareTo(docA.getDocumentURI());
+		// Last resort
+		return docA.hashCode() - docB.hashCode();
 	}
 
 	private static Document getDocument(Node nodeA) {
@@ -389,6 +362,15 @@ public abstract class NodeType extends AnyType {
 		}
 		return false;
 	}
+	
+	public boolean equals(Object obj) {
+		return obj instanceof NodeType && same(this, (NodeType)obj);
+	}
+	
+	public int hashCode() {
+		return _node.hashCode();
+	}
+	
 
 	/**
 	 * Looks up the available type for the node, if available
@@ -409,13 +391,5 @@ public abstract class NodeType extends AnyType {
 
 	public TypeModel getTypeModel() {
 		return _typeModel;
-	}
-
-	public static ResultBuffer linarize(ResultBuffer rs) {
-		TreeSet<NodeType> all = new TreeSet<NodeType>(NODE_COMPARATOR);
-		for (Item item : rs.getCollection()) {
-			all.add((NodeType)item);
-		}
-		return new ResultBuffer().concat(all);
 	}
 }

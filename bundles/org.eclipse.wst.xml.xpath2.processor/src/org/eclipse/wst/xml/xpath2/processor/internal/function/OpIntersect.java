@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,13 +9,17 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     Jesper Steen Moeller - bug 285145 - implement full arity checking
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -64,8 +68,6 @@ public class OpIntersect extends Function {
 	 */
 	public static ResultSequence op_intersect(Collection<ResultSequence> args)
 			throws DynamicError {
-		ResultBuffer rs = new ResultBuffer();
-
 		// convert arguments
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
@@ -74,27 +76,18 @@ public class OpIntersect extends Function {
 		ResultSequence one = iter.next();
 		ResultSequence two = iter.next();
 
-		// XXX lame
-		for (Iterator<Item> i = one.iterator(); i.hasNext();) {
-			NodeType node = (NodeType) i.next();
-			boolean found = false;
-
-			// death
-			for (Iterator<Item> j = two.iterator(); j.hasNext();) {
-				NodeType node2 = (NodeType) j.next();
-
-				if (node.node_value() == node2.node_value()) {
-					found = true;
-					break;
-				}
-
-			}
-			if (found)
-				rs.add(node);
+		Set<Item> leftSide = new HashSet<Item>();
+		for (int i = 0; i < one.size();  ++i) {
+			leftSide.add(one.item(i));
 		}
-		rs = NodeType.linarize(rs);
-
-		return rs.getSequence();
+		TreeSet<NodeType> inBoth = new TreeSet<NodeType>(NodeType.NODE_COMPARATOR);
+		for (int j = 0; j < two.size();  ++j) {
+			if (leftSide.contains(two.item(j))) {
+				// insert AND sort
+				inBoth.add((NodeType)two.item(j));
+			}
+		}
+		return new ResultBuffer().concat(inBoth).getSequence();
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+ * Copyright (c) 2005, 2011 Andrea Bittau, University College London, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,7 @@
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     Jesper Steen Moeller - bug 285145 - implement full arity checking
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
@@ -16,6 +17,8 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.TreeSet;
 
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -63,8 +66,6 @@ public class OpExcept extends Function {
 	 * @return Result of operation.
 	 */
 	public static ResultSequence op_except(Collection<ResultSequence> args) throws DynamicError {
-		ResultBuffer rs = new ResultBuffer();
-
 		// convert arguments
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
@@ -72,28 +73,12 @@ public class OpExcept extends Function {
 		Iterator<ResultSequence> iter = cargs.iterator();
 		ResultSequence one = iter.next();
 		ResultSequence two = iter.next();
+		
+		TreeSet<NodeType> all = new TreeSet<NodeType>(NodeType.NODE_COMPARATOR);
+		for (Iterator<Item> itOne = one.iterator(); itOne.hasNext(); ) all.add((NodeType)itOne.next());
+		for (Iterator<Item> itTwo = two.iterator(); itTwo.hasNext(); ) all.remove((NodeType)itTwo.next());
 
-		// XXX lame
-		for (Iterator<Item> i = one.iterator(); i.hasNext();) {
-			NodeType node = (NodeType) i.next();
-			boolean found = false;
-
-			// death
-			for (Iterator<Item> j = two.iterator(); j.hasNext();) {
-				NodeType node2 = (NodeType) j.next();
-
-				if (node.node_value() == node2.node_value()) {
-					found = true;
-					break;
-				}
-
-			}
-			if (!found)
-				rs.add(node);
-		}
-		rs = NodeType.linarize(rs);
-
-		return rs.getSequence();
+		return new ResultBuffer().concat(all).getSequence();
 	}
 
 	/**

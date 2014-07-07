@@ -28,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.ScalarTypePromoter;
@@ -91,24 +92,37 @@ public class FnSum extends Function {
 			return ResultSequenceFactory.create_new(zero);
 
 		MathPlus total = null;
-
-		TypePromoter tp = new ScalarTypePromoter();
-		tp.considerSequence(arg);
-
-		for (Iterator<Item> i = arg.iterator(); i.hasNext();) {
-			AnyAtomicType conv = tp.promote((AnyType) i.next());
-			
-			if(conv == null){
-				conv = zero;
+		
+		ResultSequence atomizedInputSeq = FnData.atomize(arg);
+		if ((AnyAtomicType)atomizedInputSeq.first() instanceof XSDuration) {
+			for (Iterator i = atomizedInputSeq.iterator(); i.hasNext();) {
+				AnyAtomicType conv = (AnyAtomicType) i.next();
+				if (total == null) {
+					total = (MathPlus)conv; 
+				} else {
+					total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+				}
 			}
-			
-			if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
-				return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
-			}
-			if (total == null) {
-				total = (MathPlus)conv; 
-			} else {
-				total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+		}
+		else {
+			TypePromoter tp = new ScalarTypePromoter();
+			tp.considerSequence(arg);
+
+			for (Iterator<Item> i = arg.iterator(); i.hasNext();) {
+				AnyAtomicType conv = tp.promote((AnyType) i.next());
+
+				if(conv == null){
+					conv = zero;
+				}
+
+				if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
+					return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
+				}
+				if (total == null) {
+					total = (MathPlus)conv; 
+				} else {
+					total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+				}
 			}
 		}
 		

@@ -16,6 +16,7 @@
  *     Mukul Gandhi - bug 325262 - providing ability to store an XPath2 sequence into
  *                                 an user-defined variable.
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 362446 - providing API to have non document node as root node of an XDM tree
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -189,5 +190,19 @@ public interface DynamicContext extends StaticContext {
 	 */
 	@Deprecated
 	public int node_position(Node node);
+	
+	/**
+	 * Set root node of an XDM tree
+	 * 
+	 * @param rootNode
+	 */
+	public void setRootNode(Node rootNode);
+	
+	/**
+	 * Get root node of an XDM tree
+	 * 
+	 * @return the root node of XDM tree 
+	 */
+	public Node getRootNode();
 
 }

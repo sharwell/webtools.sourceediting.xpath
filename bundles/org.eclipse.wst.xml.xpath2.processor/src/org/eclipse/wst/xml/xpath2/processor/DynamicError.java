@@ -15,7 +15,8 @@
  *     Jesper Steen Moller  - bug 280555 - Add pluggable collation support
  *     Jesper Steen Moller  - bug 262765 - Add FORG0006
  *     Jesper Steen Moller  - bug 290337 - Revisit use of ICU
- *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi 		- bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi			- bug 393904 - improvements to computing typed value of element nodes
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -110,7 +111,7 @@ public class DynamicError extends XPathException {
 	 * @return the DynamicError.
 	 */
 	public static DynamicError throw_type_error() throws DynamicError {
-		throw argument_type_error(null);
+		throw argument_type_error((Class)null);
 	}
 
 	/**
@@ -123,6 +124,10 @@ public class DynamicError extends XPathException {
 	public static DynamicError argument_type_error(Class<?> type) {
 		return new DynamicError("FORG0006", type != null ?
 				"Invalid argument type :" + type.getName() : "Invalid argument type", null);
+	}
+	
+	public static DynamicError argument_type_error(String typeName) {
+		return make_error("FORG0006", "Invalid argument type : " +typeName, null);
 	}
 
 	/**
@@ -319,7 +324,19 @@ public class DynamicError extends XPathException {
 	 * @return the make_error
 	 */
 	public static DynamicError not_cmp(String msg) {
-		return make_error("FOTY0012", "Items not comparable", msg, null);
+		// using the error code "not currently used" from the XPath 2.0 spec. revisit
+		return make_error("XPDY0021", "Items not comparable", msg, null);
+	}
+	
+	/**
+	 * Returns the error message when, during atomization a node doesn't have a typed value
+	 * 
+	 * @param msg
+	 *            is the message
+	 * @return the make_error
+	 */
+	public static DynamicError no_typedvalue_for_node(String msg) {
+		return make_error("FOTY0012", "the node has no typed value", msg, null);
 	}
 
 	/**

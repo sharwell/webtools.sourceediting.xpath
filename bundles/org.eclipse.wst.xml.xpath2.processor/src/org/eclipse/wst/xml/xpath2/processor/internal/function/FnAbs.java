@@ -123,11 +123,23 @@ public class FnAbs extends Function {
 
 		arg = FnData.atomize( arg );
 		AnyType at = (AnyType) arg.item(0);
+		
+		NumericType numericTypeResult = null;
 
-		if (!(at instanceof NumericType))
-			throw DynamicError.invalidType();
+		if (at instanceof NumericType) {
+			numericTypeResult = (NumericType) at; 
+		}
+		else {
+			AnyType atomizedArg = FnData.atomize(at);
+			if (!(atomizedArg instanceof NumericType)) {
+				throw DynamicError.invalidType();	
+			}
+			else {
+				numericTypeResult = (NumericType) atomizedArg; 
+			}
+		}
 				
-		return (NumericType) at;
+		return numericTypeResult;
 	}
 
 }

@@ -211,7 +211,7 @@ public abstract class NodeType extends AnyType {
 		return nodeA instanceof Document ? (Document)nodeA : nodeA.getOwnerDocument();
 	}
 
-	protected Object getTypedValueForPrimitiveType(TypeDefinition typeDef) {		
+	protected AnyType getTypedValueForPrimitiveType(TypeDefinition typeDef) {		
 		String strValue = getStringValue();
 		
 		if (typeDef == null) {
@@ -274,7 +274,7 @@ public abstract class NodeType extends AnyType {
 			addAtomicListItemsToResultSet(simpType, itemValueTypes, rs);
 		}
 		else if (simpType.getVariety() == SimpleTypeDefinition.VARIETY_UNION) {
-			getTypedValueForVarietyUnion(simpType, rs);
+			getTypedValueForVarietyUnion(simpType, itemValueTypes, rs);
 		}
 		
 		return rs.getSequence();
@@ -315,14 +315,22 @@ public abstract class NodeType extends AnyType {
 	 * to be returned as the typed value of the parent node, by considering the member types of the union (i.e
 	 * whichever member type first in order, can successfully validate the string value of the parent node).
 	 */
-	private void getTypedValueForVarietyUnion(SimpleTypeDefinition simpType, ResultBuffer rs) {
+	private void getTypedValueForVarietyUnion(SimpleTypeDefinition simpType, ShortList itemValueTypes, ResultBuffer rs) {
 		
 		List<SimpleTypeDefinition> memberTypes = simpType.getMemberTypes();
 		// check member types in order, to find that which one can successfully validate the string value.
 		for (int memTypeIdx = 0; memTypeIdx < memberTypes.size(); memTypeIdx++) {
 			PrimitiveType memSimpleType = (PrimitiveType) memberTypes.get(memTypeIdx);
 		   if (PsychoPathXPathTypeHelper.isValueValidForSimpleType(getStringValue(), memSimpleType)) {
-			   rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPathTypeHelper.getXSDTypeShortCode(memSimpleType), getStringValue()));
+			   if (memSimpleType.getVariety() == SimpleTypeDefinition.VARIETY_LIST) {
+				   addAtomicListItemsToResultSet(memSimpleType, itemValueTypes, rs);
+			   }
+			   else if (memSimpleType.getVariety() == SimpleTypeDefinition.VARIETY_UNION) {
+				   getTypedValueForVarietyUnion(memSimpleType, itemValueTypes, rs);
+			   }
+			   else {
+				   rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathXPathTypeHelper.getXSDTypeShortCode(memSimpleType), getStringValue()));
+			   }
 			   // no more memberTypes need to be checked
 			   break; 
 		   }

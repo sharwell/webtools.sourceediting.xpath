@@ -27,9 +27,13 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.ComparableTypePromoter;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.TypePromoter;
 
@@ -78,12 +82,11 @@ public class FnMax extends Function {
 			return ResultSequenceFactory.create_new();
 
 		CmpGt max = null;
-
 		TypePromoter tp = new ComparableTypePromoter();
 		tp.considerSequence(arg);
-
+		
 		for (Iterator<Item> i = arg.iterator(); i.hasNext();) {
-			AnyAtomicType conv = tp.promote((AnyType) i.next());
+			AnyAtomicType conv = convertInputItem(tp, (AnyType) i.next());
 			
 			if( conv != null ){
 				
@@ -97,6 +100,7 @@ public class FnMax extends Function {
 		}
 		return ResultSequenceFactory.create_new((AnyType) max);
 	}
+
 
 	/**
 	 * Obtain arguments.

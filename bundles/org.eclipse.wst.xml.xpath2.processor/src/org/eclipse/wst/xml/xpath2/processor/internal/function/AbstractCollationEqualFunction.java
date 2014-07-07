@@ -79,13 +79,20 @@ public abstract class AbstractCollationEqualFunction extends Function {
 	
 	protected static boolean hasValue(ResultBuffer rs, AnyAtomicType item,
 			StaticContext staticContext, DynamicContext dynamicContext, String collationURI) throws DynamicError {
-		XSString itemStr = new XSString(item.getStringValue());
 
 		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
 			AnyType at = (AnyType) i.next();
+			
+			boolean isUntypedAtomic = false;
+			if (at instanceof XSUntypedAtomic || item instanceof XSUntypedAtomic) {
+				isUntypedAtomic = true;
+			}				
 
-			if (!(at instanceof CmpEq))
-				continue;
+			if (!isUntypedAtomic) {
+				if (!(at instanceof CmpEq || item instanceof CmpEq)) {
+					continue;
+				}
+			}
 
 			if (isBoolean(item, at)) {
 				XSBoolean boolat = (XSBoolean) at;
@@ -110,12 +117,14 @@ public abstract class AbstractCollationEqualFunction extends Function {
 
 			if (needsStringComparison(item, at)) {
 				XSString xstr1 = new XSString(at.getStringValue());
+				XSString itemStr = new XSString(item.getStringValue());
 				if (FnCompare.compare_string(collationURI, xstr1, itemStr,
 						dynamicContext).equals(BigInteger.ZERO)) {
 					return true;
 				}
 			}
 		}
+		
 		return false;
 	}
 
@@ -171,13 +180,18 @@ public abstract class AbstractCollationEqualFunction extends Function {
 			}
 		}
 
-		if (at instanceof XSString) {
+		if (at instanceof XSString && item instanceof XSString) {
 			return true;
 		}
 		
-		if (at instanceof XSUntypedAtomic) {
+		if (at instanceof XSUntypedAtomic && item instanceof XSUntypedAtomic) {
 			return true;
 		}
+		
+		if ((at instanceof XSString && item instanceof XSUntypedAtomic) || (at instanceof XSUntypedAtomic && item instanceof XSString)) {
+		   return true;
+		}
+		
 		return false;
 	}
 

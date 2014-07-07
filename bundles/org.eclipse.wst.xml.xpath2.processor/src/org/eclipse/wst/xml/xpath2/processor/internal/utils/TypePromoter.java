@@ -10,6 +10,7 @@
  *     Jesper Steen Moller - bug 281028 - avg/min/max/sum work
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
  *    Lukasz Wycisk - bug 361060 - Aggregations with nil=’true’ throw exceptions.
+ *     Mukul Gandhi - bug 393904 - improvements to computing typed value of element nodes
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.utils;
@@ -54,18 +55,31 @@ public abstract class TypePromoter {
 		
 	public void considerType(Class<? extends AnyType> typeToConsider) throws DynamicError {
 		Class<? extends AnyType> baseType = substitute(typeToConsider);
+		String typeStrName = getTypeNameStr(typeToConsider);
 		
 		if (baseType == null) {
-			throw DynamicError.argument_type_error(typeToConsider);
+			throw DynamicError.argument_type_error(typeStrName);
 		}
 		
 		if (targetType == null) {
 			targetType = baseType;
 		} else {
 			if (! checkCombination(baseType)) {
-				throw DynamicError.argument_type_error(typeToConsider);
+				throw DynamicError.argument_type_error(typeStrName);
 			}
 		}
+	}
+
+	private String getTypeNameStr(Class typeClass) {
+		String typeStrName = "";
+		try {
+			typeStrName = ((AnyType)typeClass.newInstance()).string_type();
+		} catch (InstantiationException e) {
+		   // no op
+		} catch (IllegalAccessException e) {
+		   // no op	
+		}
+		return typeStrName;
 	}
 	
 	public void considerTypes(Collection<? extends Class<? extends AnyType>> typesToConsider) throws DynamicError {		

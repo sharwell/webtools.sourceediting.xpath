@@ -138,6 +138,9 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	public boolean eq(AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
+		if (arg instanceof XSDecimal) {
+			DynamicError.invalidType();
+		}
 		int cmp = do_compare(arg, dynamicContext);
 
 		// XXX im not sure what to do here!!! because eq has to return

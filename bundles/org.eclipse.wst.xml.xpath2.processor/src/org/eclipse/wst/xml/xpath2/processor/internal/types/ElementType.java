@@ -18,6 +18,7 @@
  *                                 attribute nodes, where the schema type of nodes
  *                                 are simple, with varieties 'list' and 'union'.
  *     Lukasz Wycisk - bug 361659 - ElemntType typed value in case of nil=’true’
+ *	   Mukul Gandhi	- bug 393904 - improvements to computing typed value of element nodes                                  
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -27,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -113,6 +115,20 @@ public class ElementType extends NodeType {
 		if (!isNilled(_value)) {
 			if (typeDef != null) {
 				return getXDMTypedValue(typeDef, typeDef.getSimpleTypes(_value));
+		    	 /*catch(DynamicError err) {
+		    		if ("FOTY0012".equals(err.code())) {
+		    			// upon encountering an element-only content, perform following additional checks
+		    			if (isDescendantElementValidatedByWildCard(_value)) {
+		    			   // find the typed value, as if it were compleType 'mixed' content model
+		    			   rs.add(new XSUntypedAtomic(string_value()));
+		    			}
+		    			else {
+		    			   // this error indicates that a typed-value cannot be computed, and the dynamic error
+		    			   // FOTY0012 will be shown to the caller of XPath engine. 
+		    			   throw err;
+		    			}
+		    		}
+		    	 } */
 			}
 			else {
 				return new XSUntypedAtomic(getStringValue());
@@ -124,6 +140,37 @@ public class ElementType extends NodeType {
 	private boolean isNilled(Element _value2) {
 		return TRUE_VALUE.equals(_value2.getAttributeNS(SCHEMA_INSTANCE, NIL_ATTRIBUTE));
 	}
+
+	/*
+	 * Check if a descendant element of this element node, is validated by a wild-card.
+	 * Check the following additional conditions:
+	 * a) If validated by a 'skip' wild-card, return 'true'.
+	 * b) If validated by a 'lax' wild-card, but an element declaration for the wild-card didn't exist 
+	 *    in the schema return 'true' else return 'false'.
+	 * c) If validated by a 'strict' wild-card, return 'false'.
+	 */
+	private boolean isDescendantElementValidatedByWildCard(Element elemNode) {
+		boolean isDescElemValByWildCard = false;
+		
+		NodeList childNodes = ((PSVIElementNSImpl) elemNode).getChildNodes();
+		for (int ndIdex = 0; ndIdex < childNodes.getLength(); ndIdex++) {
+			Node node = childNodes.item(ndIdex);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+			   PSVIElementNSImpl psviElem = (PSVIElementNSImpl)node;
+			   XSTypeDefinition elemType = psviElem.getTypeDefinition();
+			   if (elemType == null || "anyType".equals(elemType.getName()) || isDescendantElementValidatedByWildCard((Element)node)) {
+				  // this element instance was likely validated by a 'skip', or 'lax' (which didn't 
+				  // find an element declaration) wild-card. otherwise, continue checking other nodes
+				  // in this tree recursively.
+				  isDescElemValByWildCard = true;
+				  break;
+			   }
+			}			
+		}
+		
+		return isDescElemValByWildCard;
+		
+	} // isDescendantElementValidatedByWildCard
 
 	// recursively concatenate TextNode strings
 	/**

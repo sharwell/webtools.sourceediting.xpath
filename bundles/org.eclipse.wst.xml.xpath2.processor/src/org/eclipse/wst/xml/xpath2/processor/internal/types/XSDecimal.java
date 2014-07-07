@@ -229,7 +229,10 @@ public class XSDecimal extends NumericType {
 	 */
 	public boolean eq(AnyType at, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 		XSDecimal dt = null;
-		if (!(at instanceof XSDecimal)) { 
+		if (at instanceof XSString) {
+		   DynamicError.invalidType();
+		}
+		else if (!(at instanceof XSDecimal)) { 
 			ResultSequence rs = ResultSequenceFactory.create_new(at);
 			
 			ResultSequence crs = constructor(rs);

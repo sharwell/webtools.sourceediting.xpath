@@ -36,6 +36,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
 
 /**
  * Returns a sequence of positive integers giving the positions within the
@@ -130,9 +131,12 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 		get_comparable(at);
 
 		int index = 1;
-
+		arg1 = FnData.atomize(arg1);
 		for (Iterator<Item> i = arg1.iterator(); i.hasNext();) {
 			AnyType cmptype = (AnyType) i.next();
+			if (cmptype instanceof XSUntypedAtomic) {
+				cmptype = new XSString(cmptype.string_value());
+			}
 			get_comparable(cmptype);
 
 			if (!(at instanceof CmpEq))
@@ -143,30 +147,24 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 				if (boolat.eq(at, staticContext, dynamicContext)) {
  				   rb.add(new XSInteger(BigInteger.valueOf(index)));
 				}
-			} else 
-			
-			if (isNumeric(cmptype, at)) {
+			} else if (isNumeric(cmptype, at)) {
 				NumericType numericat = (NumericType) at;
 				if (numericat.eq(cmptype, staticContext, dynamicContext)) {
 					rb.add(new XSInteger(BigInteger.valueOf(index)));
 				}
-			} else
-			
-			if (isDuration(cmptype, at)) {
+			} else if (isDuration(cmptype, at)) {
 				XSDuration durat = (XSDuration) at;
 				if (durat.eq(cmptype, staticContext, dynamicContext)) {
 					rb.add(new XSInteger(BigInteger.valueOf(index)));
 				}
-			} else
-				
-			if (at instanceof QName && cmptype instanceof QName ) {
+			} 
+			else if (at instanceof QName && cmptype instanceof QName) {
 				QName qname = (QName)at;
 				if (qname.eq(cmptype, staticContext, dynamicContext)) {
 					rb.add(new XSInteger(BigInteger.valueOf(index)));
 				}
-			} else 
-			
-			if (needsStringComparison(cmptype, at)) {
+			}
+			else if (needsStringComparison(cmptype, at)) {
 				XSString xstr1 = new XSString(cmptype.getStringValue());
 				XSString itemStr = new XSString(at.getStringValue());
 				if (FnCompare.compare_string(collationUri, xstr1, itemStr, dynamicContext).equals(BigInteger.ZERO)) {

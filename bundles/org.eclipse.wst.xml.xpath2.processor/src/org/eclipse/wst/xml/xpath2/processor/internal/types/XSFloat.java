@@ -229,6 +229,13 @@ public class XSFloat extends NumericType {
 			return false;
 		}
 		
+		// 0 = -0
+		boolean isThatValueZero = f.zero() || f.negativeZero();
+		boolean isThisValueZero = zero() || negativeZero();
+		if (isThatValueZero && isThisValueZero) {
+		   return true;
+		}
+		
 		Float thatvalue = new Float(f.float_value());
 		Float thisvalue = new Float(float_value());
 

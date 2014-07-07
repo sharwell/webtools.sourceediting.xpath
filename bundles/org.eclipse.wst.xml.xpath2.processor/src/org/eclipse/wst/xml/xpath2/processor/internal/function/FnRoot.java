@@ -12,6 +12,7 @@
  *     Jesper Steen Moeller - bug 281159 - tak extra care to find the root 
  *     Jesper Steen Moller - bug 275610 - Avoid big time and memory overhead for externals
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 362446 - providing API to have non document node as root node of an XDM tree
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
@@ -101,22 +102,26 @@ public class FnRoot extends Function {
 		if (!(aa instanceof NodeType))
 			throw new DynamicError(TypeError.invalid_type(null));
 
-		NodeType nt = (NodeType) aa;
-
-		// ok we got a sane argument... own it.
-		Node root = nt.node_value();
-
-		while (root != null && ! (root instanceof Document)) {
-			Node newroot = root.getParentNode();
-			if (newroot == null && root instanceof Attr) {
-				newroot = ((Attr)root).getOwnerElement();
+		Node root = null;
+		
+		if (dc.getRootNode() != null) {
+			// REVISIT...
+			root = dc.getRootNode(); 
+		}
+		else {
+			NodeType nt = (NodeType) aa;
+			// ok we got a sane argument... own it.
+			root = nt.node_value();
+			while (root != null && ! (root instanceof Document)) {
+				Node newroot = root.getParentNode();
+				if (newroot == null && root instanceof Attr) {
+					newroot = ((Attr)root).getOwnerElement();
+				}
+				// found it
+				if (newroot == null)
+					break;
+				root = newroot;
 			}
-				
-			// found it
-			if (newroot == null)
-				break;
-
-			root = newroot;
 		}
 
 		return NodeType.dom_to_xpath(root, ec.getStaticContext().getTypeModel());

@@ -14,9 +14,10 @@
  *     Jesper Moller- bug 275610 - Avoid big time and memory overhead for externals
  *     David Carver (STAR) - bug 289304 - fixe schema awarness of types on attributes
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
- *      Mukul Gandhi - bug 323900 - improving computing the typed value of element &
+ *     Mukul Gandhi - bug 323900 - improving computing the typed value of element &
  *                                  attribute nodes, where the schema type of nodes
- *                                  are simple, with varieties 'list' and 'union'.  
+ *                                  are simple, with varieties 'list' and 'union'.
+ *	   Mukul Gandhi	- bug 393904 - improvements to computing typed value of element nodes                                    
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -26,6 +27,7 @@ import java.util.List;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 import org.w3c.dom.Attr;
 import org.w3c.dom.TypeInfo;

@@ -13,6 +13,7 @@
  *     David Carver (STAR) - bug 283777 - implemented gt, lt comparison code.
  *     Jesper Steen Moller - bug 281159 - added promotion of xs:anyURI to string (reverse case) 
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi  - fixed a bug in implementation of "eq" function 
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
@@ -118,7 +119,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 */
 	public boolean eq(AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 		if (arg instanceof XSAnyURI || arg instanceof XSString) {
-			if (this.string_value().equals(arg.string_value())) {
+			if (_value != null && _value.equals(arg.string_value())) {
 				return true;
 			}
 		} else {

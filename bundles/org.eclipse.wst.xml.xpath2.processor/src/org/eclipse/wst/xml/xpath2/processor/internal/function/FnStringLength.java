@@ -90,7 +90,7 @@ public class FnStringLength extends Function {
 
 		if (cargs.isEmpty()) {
 		  // support for arity = 0
-		  return getResultSetForArityZero(ec);
+		  arg1 = getResultSetForArityZero(ec.getDynamicContext());
 		}
 		else {
 		  arg1 = cargs.iterator().next();

@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
+ *     Mukul Gandhi  - bug 353373 - "preceding" & "following" axes behavior is erroneous
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -23,7 +24,6 @@ import org.w3c.dom.Node;
  * tree in which the context node is found
  */
 public class PrecedingAxis extends ReverseAxis {
-	// XXX DOCUMENT ORDER.... dunno
 
 	/**
 	 * returns preceding nodes of the context node
@@ -43,24 +43,37 @@ public class PrecedingAxis extends ReverseAxis {
 		// get the parent
 		NodeType parent = null;
 		ResultBuffer parentBuffer = new ResultBuffer();
-		new ParentAxis().iterate(node, parentBuffer, limitNode);
-		if (parentBuffer.size() == 1) {
+		new ParentAxis().iterate(node, result, limitNode);
+		if (parentBuffer.size() == 1)
 			parent = (NodeType) parentBuffer.item(0);
-			// if we got a parent, we gotta repeat the story for the parent
-			// and add the results
+
+		// get the preceding siblings of this node, and add them
+		if (parent != null) {
+			PrecedingSiblingAxis psa = new PrecedingSiblingAxis();
+			ResultBuffer siblingBuffer = new ResultBuffer();
+			psa.iterate(node, siblingBuffer, limitNode);
+			
+			// for each sibling, get all its descendants
+			DescendantAxis da = new DescendantAxis();
+			for (Iterator<Item> i = siblingBuffer.iterator(); i.hasNext();) {
+				// add firstly this node to the result
+				NodeType precedingNodeTmp = (NodeType) i.next();
+				result.add(precedingNodeTmp);
+				// get descendants of this node, and add them to the result
+				da.iterate(precedingNodeTmp, result, null);
+			}
+			
+			// add preceding siblings of original context node & their descendants to the result
+			siblingBuffer = new ResultBuffer();
+			psa.iterate(node, siblingBuffer, limitNode);
+			for (Iterator<Item> i = siblingBuffer.iterator(); i.hasNext();) {
+				NodeType precedingNodeTmp = (NodeType) i.next();
+				result.add(precedingNodeTmp);
+				da.iterate(precedingNodeTmp, result, null);
+			}
+			
+			// we gotta repeat the story for the parent and add the results
 			iterate(parent, result, limitNode);
-		}
-
-		// get the following siblings of this node, and add them
-		PrecedingSiblingAxis psa = new PrecedingSiblingAxis();
-		ResultBuffer siblingBuffer = new ResultBuffer();
-		psa.iterate(node, siblingBuffer, limitNode);
-
-		// for each sibling, get all its descendants
-		DescendantAxis da = new DescendantAxis();
-		for (Iterator<Item> i = siblingBuffer.iterator(); i.hasNext();) {
-			result.add((NodeType)i);
-			da.iterate((NodeType) i.next(), result, null);
 		}
 	}
 	

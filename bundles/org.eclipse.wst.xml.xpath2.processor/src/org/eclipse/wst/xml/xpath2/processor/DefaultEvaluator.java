@@ -21,6 +21,7 @@
  *     Jesper Steen Moller  - bug 340933 - Migrate to new XPath2 API
  *     Mukul Gandhi         - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
  *     Jesper Steen Moller - bug 343804 - Updated API information
+ *     Mukul Gandhi         - bug 353373 - "preceding" & "following" axes behavior is erroneous
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -173,6 +174,9 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	private EvaluationContext _ec;
 
 	private StaticContext _sc;
+	
+	// temporary variable to track if a reverse step is currently been processed 
+	private boolean fIsReverseStep = false;
 
 	private Focus _focus = new Focus(ResultBuffer.EMPTY);
 
@@ -1347,6 +1351,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 */
 	// XXX unify with top
 	public ResultSequence visit(ReverseStep e) {
+		fIsReverseStep = true;
 		// get context node
 		AnyType ci = focus().context_item();
 
@@ -2046,6 +2051,10 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 								.int_value()).intValue();
 
 						if (pos <= focus.last() && pos > 0) {
+							if (fIsReverseStep == true) {
+								pos = focus.last() - pos + 1;
+								fIsReverseStep = false; // reset
+							}
 							focus.set_position(pos);
 							rs.add(focus.context_item());
 						}

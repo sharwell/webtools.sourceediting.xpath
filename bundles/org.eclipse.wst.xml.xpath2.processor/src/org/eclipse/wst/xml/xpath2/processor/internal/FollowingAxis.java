@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
+ *     Mukul Gandhi  - bug 353373 - "preceding" & "following" axes behavior is erroneous
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -33,9 +34,6 @@ public class FollowingAxis extends ForwardAxis {
 	 */
 	public void iterate(NodeType node, ResultBuffer result, Node limitNode) {
 
-		// XXX should be root... not parent!!! read the spec.... BUG BUG
-		// BUG LAME LAME....
-
 		if (limitNode != null && limitNode.isSameNode(node.node_value())) {
 			// no further, we have reached the limit node
 			return;
@@ -48,16 +46,16 @@ public class FollowingAxis extends ForwardAxis {
 		if (parentBuffer.size() == 1)
 			parent = (NodeType) parentBuffer.item(0);
 
-		// get the following siblings of this node, and add them
+		DescendantAxis da = new DescendantAxis();
+
+		// get the following siblings & their descendants for this node and add them
 		FollowingSiblingAxis fsa = new FollowingSiblingAxis();
 		ResultBuffer siblingBuffer = new ResultBuffer();
 		fsa.iterate(node, siblingBuffer, limitNode);
-
-		// for each sibling, get all its descendants
-		DescendantAxis da = new DescendantAxis();
 		for (Iterator<Item> i = siblingBuffer.iterator(); i.hasNext();) {
-			result.add((NodeType)i);
-			da.iterate((NodeType) i.next(), result, null);
+			NodeType followingSiblingTemp = (NodeType) i.next();
+			result.add(followingSiblingTemp);
+			da.iterate(followingSiblingTemp, result, null);
 		}
 
 		// if we got a parent, we gotta repeat the story for the parent

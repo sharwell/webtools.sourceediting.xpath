@@ -11,6 +11,7 @@
  *     Jesper Steen Moller - bug 297707 - Missing the empty-sequence() type
  *     Mukul Gandhi        - bug 325262 - providing ability to store an XPath2 sequence
  *                                        into an user-defined variable.
+ *     Mukul Gandhi - bug 361748 - ability of "instance of" checks to work on sequence types having types xs:untypedAtomic and xs:untyped                                  
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
@@ -32,6 +33,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.function.Function;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FunctionLibrary;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AttrType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
@@ -441,27 +444,36 @@ public class DefaultStaticContext implements StaticContext {
 	 *            name of expected type
 	 * @return true if a derivation exists
 	 */
-	// XXX fix this
 	public boolean derives_from(NodeType at, QName et) {
 		
+		boolean isDerivedFrom = false;		
+
 		TypeDefinition td = _model.getType(at.node_value());
-
-		short method = TypeDefinition.DERIVATION_EXTENSION | TypeDefinition.DERIVATION_RESTRICTION;
-
-		// XXX
-		if (!et.expanded()) {
-			String pre = et.prefix();
-
-			if (pre != null) {
-				if (prefix_exists(pre)) {
-					et.set_namespace(resolve_prefix(pre));
+		if (td != null) {
+			short method = 0;
+			if (et.namespace() == null) {
+				String pre = et.prefix();
+				if (pre != null) {
+					if (prefix_exists(pre)) {
+						et.set_namespace(resolve_prefix(pre));
+					} else
+						assert false;
 				} else
-					assert false;
-			} else
-				et.set_namespace(default_namespace());
+					et.set_namespace(default_namespace());
+			}
+
+			isDerivedFrom = td.derivedFrom(et.namespace(), et.local(), method);
+		}
+		else {
+			// check the case for XDM types "untypedAtomic" and "untyped"
+			if ((at instanceof AttrType && "untypedAtomic".equals(et.local())) ||
+				(at instanceof ElementType && "untyped".equals(et.local()))) {
+				isDerivedFrom = true;
+			}
 		}
 
-		return td != null && td.derivedFrom(et.namespace(), et.local(), method);
+		return isDerivedFrom;
+		
 	}
 
 	/**

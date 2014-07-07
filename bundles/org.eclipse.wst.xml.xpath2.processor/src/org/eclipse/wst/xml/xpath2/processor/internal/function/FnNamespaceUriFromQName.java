@@ -8,6 +8,7 @@
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0 
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
+ *     Mukul Gandhi - bug 361721 - fixes to fn:namespace-uri-from-QName function
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
@@ -17,6 +18,7 @@ import java.util.Collection;
 
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -47,7 +49,7 @@ public class FnNamespaceUriFromQName extends Function {
 	 * @return Result of evaluation.
 	 */
 	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
-		return namespace(args);
+		return namespace(args, ec.getStaticContext());
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class FnNamespaceUriFromQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:namespace-uri-from-QName operation.
 	 */
-	public static ResultSequence namespace(Collection<ResultSequence> args) throws DynamicError {
+	public static ResultSequence namespace(Collection<ResultSequence> args, StaticContext staticContext) throws DynamicError {
 
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
@@ -70,11 +72,27 @@ public class FnNamespaceUriFromQName extends Function {
 			return ResultBuffer.EMPTY;
 
 		QName qname = (QName) arg1.first();
+		if (qname.namespace() == null) {
+		   qname = QName.parse_QName(qname.string_value());
+		}
 
 		String ns = qname.namespace();
 
-		if (ns == null)
-			ns = "";
+		if (ns == null) {
+		   // attempt to find namespace name of QName value, by looking into the dynamic context
+		   String prefix = qname.prefix();
+		   if (prefix != null && !"".equals(prefix)) {
+			  ns = staticContext.getNamespaceContext().getNamespaceURI(prefix);
+		   }
+		   else {
+			  ns = staticContext.getDefaultNamespace();
+		   }
+		}
+		
+		if (ns == null) {
+		   ns = "";
+		}
+		
 		return new XSAnyURI(ns);
 	}
 

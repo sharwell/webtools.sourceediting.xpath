@@ -22,6 +22,7 @@
  *     Mukul Gandhi         - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
  *     Jesper Steen Moller - bug 343804 - Updated API information
  *     Mukul Gandhi         - bug 353373 - "preceding" & "following" axes behavior is erroneous
+ *     Mukul Gandhi         - bug 362026 - "instance of" must not atomize the LHS before the comparison check
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
@@ -1664,8 +1665,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			if (! ok ) {
 				ok = BuiltinTypeLibrary.BUILTIN_TYPES.lookupType(e.qname().namespace(), e.qname().local()) != null;
 			}
-			if (! ok) report_error(new StaticTypeNameError("Type not defined: "
-					+ e.qname().string(), null));
+			if (! ok) report_error(new StaticTypeNameError("Type not defined: " + e.qname().string(), null));
 			
 			ResultSequence arg = _param._two;
 			_param._two = item_test(arg, e.qname());
@@ -1685,8 +1685,6 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			AnyType item = (AnyType) i.next();
 			
 			if (item instanceof NodeType) {
-				NodeType node = ((NodeType)item);
-				if (derivesFrom(node, qname)) rb.add(node);
 			} else {
 				// atomic of some sort
 				if (qname.equals(ANY_ATOMIC_TYPE)) {

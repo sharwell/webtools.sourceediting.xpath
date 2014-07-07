@@ -227,7 +227,8 @@ public abstract class NodeType extends AnyType {
      */
 	protected ResultSequence getXDMTypedValue(TypeDefinition typeDef, List<Short> itemValTypes) {
 		
-		if ("anySimpleType".equals(typeDef.getName()) || 
+		if ("anyType".equals(typeDef.getName()) ||
+			"anySimpleType".equals(typeDef.getName()) || 
 		    "anyAtomicType".equals(typeDef.getName())) {
 			return new XSUntypedAtomic(getStringValue());
 		}

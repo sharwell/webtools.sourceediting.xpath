@@ -569,7 +569,7 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	 * @return null.
 	 */
 	public Void visit(InstOfExpr ioexp) {
-		printBinExpr("INSTANCEOF", ioexp);
+		printBinExpr("INSTANCEOF", ioexp);	
 		return null;
 	}
 
@@ -901,9 +901,12 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 				reportBadPrefix(type.prefix());
 
 			if (BuiltinTypeLibrary.BUILTIN_TYPES.lookupType(e.qname().namespace(), e.qname().local()) == null) {
-				if (_sc.getTypeModel() == null || _sc.getTypeModel().lookupType(e.qname().namespace(), e.qname().local()) == null)
-					reportError(new StaticTypeNameError("Type not defined: "
-							+ e.qname().string(), null));
+				if (_sc.getTypeModel() == null || _sc.getTypeModel().lookupType(e.qname().namespace(), e.qname().local()) == null) {
+					if (_sc.resolveFunction(type.asQName(), 1) == null) {
+						reportError(new StaticTypeNameError("Type not defined: "
+								+ e.qname().string(), null));
+					}
+				}
 			}
 			break;
 

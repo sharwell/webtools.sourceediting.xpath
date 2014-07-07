@@ -9,17 +9,18 @@
  *     Mukul Gandhi - initial API and implementation
  *     Mukul Gandhi - bug 323900 - improving computing the typed value of element and attribute nodes, where the 
  *                                 schema type of nodes are simple, with varieties 'list' and 'union'. 
+ *     Mukul Gandhi - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types 
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor;
 
+import org.eclipse.wst.xml.xpath2.api.typesystem.PrimitiveType;
 import org.eclipse.wst.xml.xpath2.api.typesystem.SimpleTypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 
 
 /**
- * An PsychoPath Engine helper class providing useful module implementations for commonly 
- * performed "XML schema" evaluation tasks.  
+ * An PsychoPath Engine helper class providing common method implementations for performing XML schema evaluation tasks.  
  *
  * @since 2.0
  */
@@ -49,5 +50,16 @@ public class PsychoPathTypeHelper {
 		return (typeCode != -100) ? typeCode : ((SimpleTypeDefinition) typeDef).getBuiltInKind();
 		
 	} // getXSDTypeShortCode
+	
+	
+	/*
+	 * Determine if a "string value" is valid for a given simpleType definition.
+	 */
+	public static boolean isValueValidForSimpleType(String value, PrimitiveType simplType) {
+		
+		// attempt to validate the value with the simpleType
+		return simplType.validate(value);
+		
+	} // isValueValidForASimpleType
 
 }

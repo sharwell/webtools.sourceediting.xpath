@@ -20,6 +20,7 @@
  *                                 are simple, with varieties 'list' and 'union'.                                 
  *     Jesper Moller - bug 316988 - Removed O(n^2) performance for large results
  *     Jesper Steen Moller  - bug 340933 - Migrate to new XPath2 API
+ *     Mukul Gandhi  - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
  *     Lukasz Wycisk - bug 361803 - NodeType:dom_to_xpath and null value
  *******************************************************************************/
 
@@ -319,8 +320,7 @@ public abstract class NodeType extends AnyType {
 		// check member types in order, to find that which one can successfully validate the string value.
 		for (int memTypeIdx = 0; memTypeIdx < memberTypes.size(); memTypeIdx++) {
 			PrimitiveType memSimpleType = (PrimitiveType) memberTypes.get(memTypeIdx);
-		   if (isValueValidForSimpleType(getStringValue(), memSimpleType)) {
-			  
+		   if (PsychoPathTypeHelper.isValueValidForSimpleType(getStringValue(), memSimpleType)) {
 			   rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathTypeHelper.getXSDTypeShortCode(memSimpleType), getStringValue()));
 			   // no more memberTypes need to be checked
 			   break; 
@@ -328,18 +328,6 @@ public abstract class NodeType extends AnyType {
 		}
 		
 	} // getTypedValueForVarietyUnion
-	
-	
-	/*
-	 * Determine if a "string value" is valid for a given simpleType definition. This is a helped method for other methods.
-	 */
-	private boolean isValueValidForSimpleType (String value, PrimitiveType simplType) {
-		
-		// attempt to validate the value with the simpleType
-		return simplType.validate(value);
-		
-	} // isValueValidForASimpleType
-	
 	
 	public abstract boolean isID();
 	

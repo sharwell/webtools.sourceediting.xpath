@@ -19,6 +19,7 @@
  *                                         an user-defined variable.
  *     Jesper Steen Moller  - bug 316988 - Removed O(n^2) performance for large results
  *     Jesper Steen Moller  - bug 340933 - Migrate to new XPath2 API
+ *     Mukul Gandhi         - bug 343224 - allow user defined simpleType definitions to be available in in-scope schema types
  *     Jesper Steen Moller - bug 343804 - Updated API information
  *******************************************************************************/
 
@@ -37,6 +38,9 @@ import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
+import org.eclipse.wst.xml.xpath2.api.typesystem.ComplexTypeDefinition;
+import org.eclipse.wst.xml.xpath2.api.typesystem.PrimitiveType;
+import org.eclipse.wst.xml.xpath2.api.typesystem.SimpleTypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
 import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
@@ -986,9 +990,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(CastableExpr cexp) {
 		boolean castable = false;
 		try {
-			CastExpr ce = new CastExpr((Expr) cexp.left(), (SingleType) cexp
-					.right());
-
+			CastExpr ce = new CastExpr((Expr) cexp.left(), (SingleType) cexp.right());
 			visit(ce);
 			castable = true;
 		} catch (Throwable t) {
@@ -1040,8 +1042,20 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 				function = _sc.resolveFunction(type.asQName(), args.size());
 				cexp.set_function(function);
 			}
-			if (function == null)
-				report_error(TypeError.invalid_type(null));
+			if (function == null) {
+				// check castable with other in-scope "use defined" simple types
+				TypeDefinition inScopeTypeDefn = _sc.getTypeModel().lookupType(type.namespace(), type.local());
+				if (inScopeTypeDefn == null || inScopeTypeDefn instanceof ComplexTypeDefinition || 
+					  (inScopeTypeDefn instanceof SimpleTypeDefinition && ((SimpleTypeDefinition) inScopeTypeDefn).getVariety() != SimpleTypeDefinition.VARIETY_ATOMIC)) {
+					report_error(TypeError.invalid_type(null));
+				}
+				else if (inScopeTypeDefn instanceof PrimitiveType && PsychoPathTypeHelper.isValueValidForSimpleType(at.string_value(), (PrimitiveType) inScopeTypeDefn)) {
+					return XSBoolean.TRUE;
+				}
+				else {
+					report_error(TypeError.invalid_type(null));
+				}
+			}
 			return function.evaluate(args, _ec);
 		} catch (DynamicError err) {
 			report_error(err);

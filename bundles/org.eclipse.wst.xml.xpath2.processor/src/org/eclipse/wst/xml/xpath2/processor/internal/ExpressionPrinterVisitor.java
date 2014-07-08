@@ -5,7 +5,9 @@
  */
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
+import java.util.Collection;
 import java.util.Iterator;
+
 import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AndExpr;
@@ -55,9 +57,11 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ast.SubExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.TextTest;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.TreatAsExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.UnionExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.VarExprPair;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.VarRef;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathVisitor;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.LiteralUtils;
 
 /**
  *
@@ -82,15 +86,64 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
         return builder.toString();
     }
 
-    @Override
-    public String visit(ForExpr fex) {
-        return "??";
-    }
+	@Override
+	public String visit(ForExpr fex) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("for");
+		boolean first = true;
+		for (VarExprPair pair : fex.ve_pairs()) {
+			if (first) {
+				builder.append(" $");
+				first = false;
+			} else {
+				builder.append(", $");
+			}
 
-    @Override
-    public String visit(QuantifiedExpr qex) {
-        return "??";
-    }
+			builder.append(pair.varname().toString());
+			builder.append(" in ");
+			builder.append(pair.expr().accept(this));
+		}
+
+		builder.append(" return ");
+		builder.append(fex.expr().accept(this));
+		return builder.toString();
+	}
+
+	@Override
+	public String visit(QuantifiedExpr qex) {
+		StringBuilder builder = new StringBuilder();
+		switch (qex.type()) {
+		case QuantifiedExpr.SOME:
+			builder.append("some");
+			break;
+
+		case QuantifiedExpr.ALL:
+			builder.append("every");
+			break;
+
+		default:
+			assert false;
+			break;
+		}
+
+		boolean first = true;
+		for (VarExprPair pair : qex.ve_pairs()) {
+			if (first) {
+				builder.append(" $");
+				first = false;
+			} else {
+				builder.append(", $");
+			}
+
+			builder.append(pair.varname().toString());
+			builder.append(" in ");
+			builder.append(pair.expr().accept(this));
+		}
+
+		builder.append(" satisfies ");
+		builder.append(qex.expr().accept(this));
+		return builder.toString();
+	}
 
     @Override
     public String visit(IfExpr ifex) {
@@ -207,6 +260,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
             break;
 
         default:
+			assert false;
             builder.append("??");
             break;
         }
@@ -220,10 +274,14 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
         return builder.toString();
     }
 
-    @Override
-    public String visit(RangeExpr rex) {
-        return "??";
-    }
+	@Override
+	public String visit(RangeExpr rex) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(rex.left().accept(this));
+		builder.append(" to ");
+		builder.append(rex.right().accept(this));
+		return builder.toString();
+	}
 
     @Override
     public String visit(AddExpr addex) {
@@ -315,25 +373,41 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
         return builder.toString();
     }
 
-    @Override
-    public String visit(InstOfExpr ioexp) {
-        return "??";
-    }
+	@Override
+	public String visit(InstOfExpr ioexp) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(ioexp.left().accept(this));
+		builder.append(" instance of ");
+		builder.append(ioexp.right().accept(this));
+		return builder.toString();
+	}
 
-    @Override
-    public String visit(TreatAsExpr taexp) {
-        return "??";
-    }
+	@Override
+	public String visit(TreatAsExpr taexp) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(taexp.left().accept(this));
+		builder.append(" treat as ");
+		builder.append(taexp.right().accept(this));
+		return builder.toString();
+	}
 
-    @Override
-    public String visit(CastableExpr cexp) {
-        return "??";
-    }
+	@Override
+	public String visit(CastableExpr cexp) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(cexp.left().accept(this));
+		builder.append(" castable as ");
+		builder.append(cexp.right().accept(this));
+		return builder.toString();
+	}
 
-    @Override
-    public String visit(CastExpr cexp) {
-        return "??";
-    }
+	@Override
+	public String visit(CastExpr cexp) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(cexp.left().accept(this));
+		builder.append(" cast as ");
+		builder.append(cexp.right().accept(this));
+		return builder.toString();
+	}
 
     @Override
     public String visit(MinusExpr e) {
@@ -412,6 +486,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
             break;
 
         default:
+			assert false;
             builder.append("??::");
             break;
         }
@@ -449,6 +524,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
             break;
 
         default:
+			assert false;
             builder.append("??::");
             break;
         }
@@ -464,7 +540,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 
     @Override
     public String visit(VarRef e) {
-        return "??";
+        return "$" + e.name().toString();
     }
 
     @Override
@@ -507,7 +583,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 
     @Override
     public String visit(CntxItemExpr e) {
-        return "??";
+        return ".";
     }
 
     @Override
@@ -529,85 +605,222 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
         return builder.toString();
     }
 
-    @Override
-    public String visit(SingleType e) {
-        return "??";
-    }
+	@Override
+	public String visit(SingleType e) {
+		String result = e.type().toString();
+		if (e.qmark()) {
+			result += "?";
+		}
 
-    @Override
-    public String visit(SequenceType e) {
-        return "??";
-    }
+		return result;
+	}
 
-    @Override
-    public String visit(ItemType e) {
-        return "??";
-    }
+	@Override
+	public String visit(SequenceType e) {
+		if (e.occurrence() == SequenceType.EMPTY) {
+			return "empty-sequence()";
+		}
 
-    @Override
-    public String visit(AnyKindTest e) {
-        return "??";
-    }
+		String itemType = e.item_type().accept(this);
+		switch (e.occurrence()) {
+		case SequenceType.NONE:
+			return itemType;
 
-    @Override
-    public String visit(DocumentTest e) {
-        return "??";
-    }
+		case SequenceType.QUESTION:
+			return itemType + "?";
 
-    @Override
-    public String visit(TextTest e) {
-        return "??";
-    }
+		case SequenceType.STAR:
+			return itemType + "*";
 
-    @Override
-    public String visit(CommentTest e) {
-        return "??";
-    }
+		case SequenceType.PLUS:
+			return itemType + "+";
 
-    @Override
-    public String visit(PITest e) {
-        return "??";
-    }
+		default:
+			assert false;
+			return "??";
+		}
+	}
 
-    @Override
-    public String visit(AttributeTest e) {
-        return "??";
-    }
+	@Override
+	public String visit(ItemType e) {
+		switch (e.type()) {
+		case ItemType.QNAME:
+			return e.qname().toString();
 
-    @Override
-    public String visit(SchemaAttrTest e) {
-        return "??";
-    }
+		case ItemType.KINDTEST:
+			return e.kind_test().accept(this);
 
-    @Override
-    public String visit(ElementTest e) {
-        return "??";
-    }
+		case ItemType.ITEM:
+			return "item()";
 
-    @Override
-    public String visit(SchemaElemTest e) {
-        return "??";
-    }
+		default:
+			assert false;
+			return "??";
+		}
+	}
 
-    @Override
-    public String visit(AxisStep e) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(e.step().accept(this));
-        if (e.predicate_count() > 0) {
-            builder.append("[??]");
-        }
+	@Override
+	public String visit(AnyKindTest e) {
+		return "node()";
+	}
 
-        return builder.toString();
-    }
+	@Override
+	public String visit(DocumentTest e) {
+		if (e.type() == DocumentTest.NONE) {
+			return "document()";
+		}
 
-    @Override
-    public String visit(FilterExpr e) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(e.primary().accept(this));
-        if (e.predicate_count() > 0) {
-            builder.append("[??]");
-        }
+		StringBuilder builder = new StringBuilder("document(");
+		switch (e.type()) {
+		case DocumentTest.ELEMENT:
+			builder.append(e.elem_test().accept(this));
+			break;
 
-        return builder.toString();
-    }
+		case DocumentTest.SCHEMA_ELEMENT:
+			builder.append(e.schema_elem_test().accept(this));
+			break;
+
+		default:
+			assert false;
+			builder.append("??");
+			break;
+		}
+
+		builder.append(')');
+		return builder.toString();
+	}
+
+	@Override
+	public String visit(TextTest e) {
+		return "text()";
+	}
+
+	@Override
+	public String visit(CommentTest e) {
+		return "comment()";
+	}
+
+	@Override
+	public String visit(PITest e) {
+		if (e.arg() == null) {
+			return "processing-instruction()";
+		}
+
+		return "processing-instruction(" + LiteralUtils.quote(e.arg()) + ")";
+	}
+
+	@Override
+	public String visit(AttributeTest e) {
+		if (e.type() == null && e.name() == null) {
+			if (e.wild()) {
+				return "attribute(*)";
+			} else {
+				return "attribute()";
+			}
+		} else {
+			StringBuilder builder = new StringBuilder("attribute(");
+			if (e.wild()) {
+				builder.append('*');
+			} else {
+				assert e.name() != null;
+				builder.append(e.name().toString());
+			}
+
+			if (e.type() != null) {
+				builder.append(", ");
+				builder.append(e.type().toString());
+			}
+
+			return builder.toString();
+		}
+	}
+
+	@Override
+	public String visit(SchemaAttrTest e) {
+		return "schema-attribute(" + e.name().toString() + ")";
+	}
+
+	@Override
+	public String visit(ElementTest e) {
+		if (e.type() == null && e.name() == null) {
+			assert !e.qmark();
+			if (e.wild()) {
+				return "element(*)";
+			} else {
+				return "element()";
+			}
+		} else {
+			StringBuilder builder = new StringBuilder("element(");
+			if (e.wild()) {
+				builder.append("*");
+			} else {
+				assert e.name() != null;
+				builder.append(e.name().toString());
+			}
+
+			if (e.type() != null) {
+				builder.append(", ");
+				builder.append(e.type().toString());
+				if (e.qmark()) {
+					builder.append('?');
+				}
+			} else {
+				assert !e.qmark();
+			}
+
+			return builder.toString();
+		}
+	}
+
+	@Override
+	public String visit(SchemaElemTest e) {
+		StringBuilder builder = new StringBuilder("schema-element(");
+		builder.append(e.name().toString());
+		builder.append(')');
+		return builder.toString();
+	}
+
+	@Override
+	public String visit(AxisStep e) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(e.step().accept(this));
+		for (Iterator<Collection<Expr>> exprIt = e.iterator(); exprIt.hasNext(); ) {
+			builder.append('[');
+			boolean first = true;
+			for (Expr expr : exprIt.next()) {
+				if (first) {
+					first = false;
+				} else {
+					builder.append(", ");
+				}
+
+				builder.append(expr.accept(this));
+			}
+			builder.append(']');
+		}
+
+		return builder.toString();
+	}
+
+	@Override
+	public String visit(FilterExpr e) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(e.primary().accept(this));
+		for (Iterator<Collection<Expr>> exprIt = e.iterator(); exprIt.hasNext(); ) {
+			builder.append('[');
+			boolean first = true;
+			for (Expr expr : exprIt.next()) {
+				if (first) {
+					first = false;
+				} else {
+					builder.append(", ");
+				}
+
+				builder.append(expr.accept(this));
+			}
+			builder.append(']');
+		}
+
+		return builder.toString();
+	}
 }

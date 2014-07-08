@@ -14,6 +14,7 @@ package org.eclipse.wst.xml.xpath2.api;
 import java.util.Collection;
 
 import javax.xml.namespace.QName;
+import org.w3c.dom.Node;
 
 /**
  * This interface represents a parsed and statically bound XPath2 expression.
@@ -59,5 +60,5 @@ public interface XPath2Expression {
 	 * @param contextItems Context item (typically nodes, often one) to evaluate under.
 	 * @return A ResultSequence 
 	 */
-	ResultSequence evaluate(DynamicContext dynamicContext, Object[] contextItems);
+	ResultSequence evaluate(DynamicContext dynamicContext, Node[] contextItems);
 }

@@ -273,7 +273,7 @@ public class FsEq extends Function {
 		Method comparator = null;
 
 		try {
-			Class margsdef[] = { Collection.class, DynamicContext.class };
+			Class<?> margsdef[] = { Collection.class, DynamicContext.class };
 
 			comparator = type.getMethod(mname, margsdef);
 

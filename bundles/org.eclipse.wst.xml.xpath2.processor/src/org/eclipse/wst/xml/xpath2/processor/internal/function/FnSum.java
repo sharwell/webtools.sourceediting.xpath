@@ -95,7 +95,7 @@ public class FnSum extends Function {
 		
 		ResultSequence atomizedInputSeq = FnData.atomize(arg);
 		if ((AnyAtomicType)atomizedInputSeq.first() instanceof XSDuration) {
-			for (Iterator i = atomizedInputSeq.iterator(); i.hasNext();) {
+			for (Iterator<Item> i = atomizedInputSeq.iterator(); i.hasNext();) {
 				AnyAtomicType conv = (AnyAtomicType) i.next();
 				if (total == null) {
 					total = (MathPlus)conv; 

@@ -70,10 +70,10 @@ public abstract class TypePromoter {
 		}
 	}
 
-	private String getTypeNameStr(Class typeClass) {
+	private String getTypeNameStr(Class<? extends AnyType> typeClass) {
 		String typeStrName = "";
 		try {
-			typeStrName = ((AnyType)typeClass.newInstance()).string_type();
+			typeStrName = typeClass.newInstance().string_type();
 		} catch (InstantiationException e) {
 		   // no op
 		} catch (IllegalAccessException e) {

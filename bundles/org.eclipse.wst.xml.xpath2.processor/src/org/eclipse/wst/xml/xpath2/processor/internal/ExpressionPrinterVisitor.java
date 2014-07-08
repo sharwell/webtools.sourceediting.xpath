@@ -464,7 +464,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 
     @Override
     public String visit(VarRef e) {
-        return "??";
+        return "$" + e.name().toString();
     }
 
     @Override

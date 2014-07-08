@@ -8,13 +8,15 @@
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0
  *     Bug 338494    - prohibiting xpath expressions starting with / or // to be parsed. 
+ *     Sam Harwell   - parser implementation using ANTLR
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
-import java.io.StringReader;
-
-import java_cup.runtime.Symbol;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 
 import org.eclipse.wst.xml.xpath2.processor.StaticError;
 import org.eclipse.wst.xml.xpath2.processor.XPathParserException;
@@ -40,12 +42,14 @@ public class InternalXPathParser {
 	 */
 	public XPath parse(String xpath, boolean isRootlessAccess) throws XPathParserException {
 
-		XPathFlex lexer = new XPathFlex(new StringReader(xpath));
+		XPathLexer lexer = new XPathLexer(new ANTLRInputStream(xpath));
 
 		try {
-			XPathCup p = new XPathCup(lexer); 
-			Symbol res = p.parse();
-			XPath xPath2 = (XPath) res.value;
+			XPathParser p = new XPathParser(new CommonTokenStream(lexer)); 
+			p.setErrorHandler(new BailErrorStrategy());
+			XPathParser.XPathContext context = p.xPath();
+			XPathBuilderVisitor visitor = XPathBuilderVisitor.INSTANCE;
+			XPath xPath2 = visitor.visitXPath(context);
 			if (isRootlessAccess) {
 				xPath2.accept(new DefaultVisitor() {
 					public Object visit(XPathExpr e) {
@@ -61,10 +65,8 @@ public class InternalXPathParser {
 				});
 			}
 			return xPath2;
-		} catch (JFlexError e) {
-			throw new XPathParserException("JFlex lexer error: " + e.reason(), e);
-		} catch (CupError e) {
-			throw new XPathParserException("CUP parser error: " + e.reason(), e);
+		} catch (RecognitionException e) {
+			throw new XPathParserException("ANTLR parser error: " + e.getMessage(), e);
 		} catch (StaticError e) {
 			throw new XPathParserException(e.code(), e.getMessage(), e);
 		} catch (Exception e) {

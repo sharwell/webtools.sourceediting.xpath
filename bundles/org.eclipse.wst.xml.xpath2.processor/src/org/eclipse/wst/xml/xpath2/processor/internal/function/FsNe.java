@@ -18,6 +18,7 @@ import java.util.Collection;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
@@ -41,10 +42,10 @@ public class FsNe extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection<ResultSequence> args, DynamicContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_ne_value(args, ec);
+		return fs_ne_value(args, staticContext, dynamicContext);
 	}
 
 	/**
@@ -58,9 +59,9 @@ public class FsNe extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_ne_value(Collection<ResultSequence> args, DynamicContext context)
+	public static ResultSequence fs_ne_value(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext)
 			throws DynamicError {
-		return FnNot.fn_not(FsEq.fs_eq_value(args, context));
+		return FnNot.fn_not(FsEq.fs_eq_value(args, staticContext, dynamicContext));
 	}
 
 	/**
@@ -74,9 +75,15 @@ public class FsNe extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_ne_general(Collection<ResultSequence> args, DynamicContext ec)
+	public static ResultSequence fs_ne_general(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext)
 			throws DynamicError {
-		return FsEq.do_cmp_general_op(args, FsNe.class, "fs_ne_value", ec);
+		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
+			@Override
+			public ResultSequence execute(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
+				return fs_ne_value(args, staticContext, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_general_op(args, op, staticContext, dynamicContext);
 	}
 
 }

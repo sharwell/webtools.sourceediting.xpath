@@ -666,40 +666,40 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 			switch (cmpex.type()) {
 			case CmpExpr.EQ:
-				return FsEq.fs_eq_value(args, _dc);
+				return FsEq.fs_eq_value(args, _sc, _dc);
 
 			case CmpExpr.NE:
-				return FsNe.fs_ne_value(args, _dc);
+				return FsNe.fs_ne_value(args, _sc, _dc);
 
 			case CmpExpr.GT:
-				return FsGt.fs_gt_value(args, _dc);
+				return FsGt.fs_gt_value(args, _sc, _dc);
 
 			case CmpExpr.LT:
-				return FsLt.fs_lt_value(args, _dc);
+				return FsLt.fs_lt_value(args, _sc, _dc);
 
 			case CmpExpr.GE:
-				return FsGe.fs_ge_value(args, _dc);
+				return FsGe.fs_ge_value(args, _sc, _dc);
 
 			case CmpExpr.LE:
-				return FsLe.fs_le_value(args, _dc);
+				return FsLe.fs_le_value(args, _sc, _dc);
 
 			case CmpExpr.EQUALS:
-				return FsEq.fs_eq_general(args, _dc);
+				return FsEq.fs_eq_general(args, _sc, _dc);
 
 			case CmpExpr.NOTEQUALS:
-				return FsNe.fs_ne_general(args, _dc);
+				return FsNe.fs_ne_general(args, _sc, _dc);
 
 			case CmpExpr.GREATER:
-				return FsGt.fs_gt_general(args, _dc);
+				return FsGt.fs_gt_general(args, _sc, _dc);
 
 			case CmpExpr.LESSTHAN:
-				return FsLt.fs_lt_general(args, _dc);
+				return FsLt.fs_lt_general(args, _sc, _dc);
 
 			case CmpExpr.GREATEREQUAL:
-				return FsGe.fs_ge_general(args, _dc);
+				return FsGe.fs_ge_general(args, _sc, _dc);
 
 			case CmpExpr.LESSEQUAL:
-				return FsLe.fs_le_general(args, _dc);
+				return FsLe.fs_le_general(args, _sc, _dc);
 
 			case CmpExpr.IS:
 			case CmpExpr.LESS_LESS:

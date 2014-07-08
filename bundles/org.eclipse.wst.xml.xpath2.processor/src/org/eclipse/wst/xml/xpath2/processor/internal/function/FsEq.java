@@ -64,7 +64,7 @@ public class FsEq extends Function {
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_eq_value(args, ec.getDynamicContext());
+		return fs_eq_value(args, ec.getStaticContext(), ec.getDynamicContext());
 	}
 
 	/**
@@ -113,9 +113,20 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of conversion.
 	 */
-	public static ResultSequence fs_eq_value(Collection<ResultSequence> args, DynamicContext context)
+	public static ResultSequence fs_eq_value(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext)
 			throws DynamicError {
-		return do_cmp_value_op(args, CmpEq.class, "eq", context);
+		CmpValueOp<CmpEq> op = new CmpValueOp<CmpEq>() {
+			@Override
+			public Class<? extends CmpEq> getType() {
+				return CmpEq.class;
+			}
+
+			@Override
+			public boolean execute(CmpEq obj, AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
+				return obj.eq(arg, staticContext, dynamicContext);
+			}
+		};
+		return do_cmp_value_op(args, op, staticContext, dynamicContext);
 	}
 
 	/**
@@ -163,7 +174,7 @@ public class FsEq extends Function {
 	 * @return Result of Equality operation.
 	 */
 	private static boolean do_general_pair(AnyType a, AnyType b,
-			Method comparator, DynamicContext ec) throws DynamicError {
+			CmpGeneralOp op, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 
 		// section 3.5.2
 
@@ -217,20 +228,7 @@ public class FsEq extends Function {
 		args.add(one);
 		args.add(two);
 
-		Object margs[] = { args, ec };
-
-		ResultSequence result = null;
-		try {
-			result = (ResultSequence) comparator.invoke(null, margs);
-		} catch (IllegalAccessException err) {
-			assert false;
-		} catch (InvocationTargetException err) {
-			Throwable ex = err.getTargetException();
-
-			if (ex instanceof RuntimeException)
-				throw (RuntimeException) ex;
-			throw new RuntimeException(ex);
-		}
+		ResultSequence result = op.execute(args, staticContext, dynamicContext);
 
 		if (((XSBoolean) result.first()).value())
 			return true;
@@ -247,9 +245,18 @@ public class FsEq extends Function {
 	 *         Dynamic context 
 	 * @return Result of general equality operation.
 	 */
-	public static ResultSequence fs_eq_general(Collection<ResultSequence> args, DynamicContext dc)
-			{
-		return do_cmp_general_op(args, FsEq.class, "fs_eq_value", dc);
+	public static ResultSequence fs_eq_general(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext) {
+		CmpGeneralOp op = new CmpGeneralOp() {
+			@Override
+			public ResultSequence execute(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
+				return FsEq.fs_eq_value(args, staticContext, dynamicContext);
+			}
+		};
+		return do_cmp_general_op(args, op, staticContext, dynamicContext);
+	}
+
+	public interface CmpGeneralOp {
+		ResultSequence execute(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError;
 	}
 
 	// voodoo 3
@@ -266,20 +273,8 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence do_cmp_general_op(Collection<ResultSequence> args, Class<?> type,
-			String mname, DynamicContext dc) throws DynamicError {
-
-		// do the voodoo
-		Method comparator = null;
-
-		try {
-			Class<?> margsdef[] = { Collection.class, DynamicContext.class };
-
-			comparator = type.getMethod(mname, margsdef);
-
-		} catch (NoSuchMethodException err) {
-			throw new RuntimeException("Can’t find method : " + mname, err);
-		}
+	public static ResultSequence do_cmp_general_op(Collection<ResultSequence> args, CmpGeneralOp op,
+			StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 
 		// sanity check args and get them
 		if (args.size() != 2)
@@ -304,13 +299,19 @@ public class FsEq extends Function {
 			for (Iterator<Item> j = two.iterator(); j.hasNext();) {
 				AnyType b = (AnyType) j.next();
 
-				if (do_general_pair(a, b, comparator, dc))
+				if (do_general_pair(a, b, op, staticContext, dynamicContext))
 					return ResultSequenceFactory
 							.create_new(new XSBoolean(true));
 			}
 		}
 
 		return ResultSequenceFactory.create_new(new XSBoolean(false));
+	}
+
+	public interface CmpValueOp<T> {
+		Class<? extends T> getType();
+
+		boolean execute(T obj, AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError;
 	}
 
 	// voodoo 2
@@ -329,8 +330,8 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence do_cmp_value_op(Collection<ResultSequence> args, Class<?> type,
-			String mname, DynamicContext context) throws DynamicError {
+	public static <T> ResultSequence do_cmp_value_op(Collection<ResultSequence> args, CmpValueOp<T> op,
+			StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
 
 		// sanity check args + convert em
 		if (args.size() != 2)
@@ -349,33 +350,10 @@ public class FsEq extends Function {
 		if (arg2.size() != 1)
 			DynamicError.throw_type_error();
 
-		if (!(type.isInstance(arg)))
+		if (!(op.getType().isInstance(arg)))
 			DynamicError.throw_type_error();
 
-		try {
-			Class<?>[] margsdef = { AnyType.class, DynamicContext.class };
-			Method method = null;
-
-			method = type.getMethod(mname, margsdef);
-
-			Object margs[] = { arg2.first(), context };
-			Boolean cmpres = (Boolean) method.invoke(arg, margs);
-
-			return ResultSequenceFactory.create_new(new XSBoolean(cmpres
-					.booleanValue()));
-		} catch (NoSuchMethodException err) {
-			assert false;
-			throw new RuntimeException("cannot compare using method " + mname, err);
-		} catch (IllegalAccessException err) {
-			assert false;
-			throw new RuntimeException("cannot compare using method " + mname, err);
-		} catch (InvocationTargetException err) {
-			Throwable ex = err.getTargetException();
-
-			if (ex instanceof DynamicError)
-				throw (DynamicError) ex;
-
-			throw new RuntimeException("cannot compare using method " + mname, ex);
-		}
+		boolean cmpres = op.execute(op.getType().cast(arg), (AnyType)arg2.first(), staticContext, dynamicContext); // (Boolean) method.invoke(arg, margs);
+		return ResultSequenceFactory.create_new(new XSBoolean(cmpres));
 	}
 }

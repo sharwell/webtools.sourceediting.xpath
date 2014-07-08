@@ -30,7 +30,6 @@ import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
@@ -237,7 +236,7 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 					// create a new item of the expected
 					// type initialized with from the string
 					// value of the item
-					ResultSequence converted = null;
+					org.eclipse.wst.xml.xpath2.processor.ResultSequence converted = null;
 					if (expected_aat instanceof XSString) {
 					   XSString strType = new XSString(item.getStringValue());
 					   converted = ResultSequenceFactory.create_new(strType);

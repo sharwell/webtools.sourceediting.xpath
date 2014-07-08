@@ -230,13 +230,13 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	/**
 	 * @since 2.0
 	 */
-	public DefaultEvaluator(org.eclipse.wst.xml.xpath2.api.StaticContext staticContext, org.eclipse.wst.xml.xpath2.api.DynamicContext dynamicContext, Object[] contextItems) {
+	public DefaultEvaluator(org.eclipse.wst.xml.xpath2.api.StaticContext staticContext, org.eclipse.wst.xml.xpath2.api.DynamicContext dynamicContext, Node[] contextItems) {
 		this(staticContext, dynamicContext);
 
 		// initialize context item with root of document
 		ResultBuffer rs = new ResultBuffer();
-		for (Object obj : contextItems) {
-			if (obj instanceof Node) rs.add(NodeType.dom_to_xpath((Node)obj, _sc.getTypeModel()));
+		for (Node obj : contextItems) {
+			rs.add(NodeType.dom_to_xpath(obj, _sc.getTypeModel()));
 		}
 
 		set_focus(new Focus(rs.getSequence()));

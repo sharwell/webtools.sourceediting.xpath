@@ -132,8 +132,8 @@ public class FsEq extends Function {
 	public static boolean fs_eq_fast(AnyType one, AnyType two, StaticContext staticContext, DynamicContext dynamicContext)
 			throws DynamicError {
 
-		one = FnData.atomize((Item)one);
-		two = FnData.atomize((Item)two);
+		one = FnData.atomize(one);
+		two = FnData.atomize(two);
 
 		if (one instanceof XSUntypedAtomic)
 			one = new XSString(one.getStringValue());

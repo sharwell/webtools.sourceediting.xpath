@@ -19,7 +19,9 @@ import java.util.Collection;
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
@@ -45,7 +47,7 @@ public class FsGt extends Function {
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_gt_value(args, ec.getDynamicContext());
+		return fs_gt_value(args, ec.getStaticContext(), ec.getDynamicContext());
 	}
 
 	/**
@@ -59,9 +61,20 @@ public class FsGt extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_gt_value(Collection<ResultSequence> args, DynamicContext dynamic)
+	public static ResultSequence fs_gt_value(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext)
 			throws DynamicError {
-		return FsEq.do_cmp_value_op(args, CmpGt.class, "gt", dynamic);
+		FsEq.CmpValueOp<CmpGt> op = new FsEq.CmpValueOp<CmpGt>() {
+			@Override
+			public Class<? extends CmpGt> getType() {
+				return CmpGt.class;
+			}
+
+			@Override
+			public boolean execute(CmpGt obj, AnyType arg, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
+				return obj.gt(arg, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_value_op(args, op, staticContext, dynamicContext);
 	}
 
 	/**
@@ -75,9 +88,15 @@ public class FsGt extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_gt_general(Collection<ResultSequence> args, DynamicContext dc)
+	public static ResultSequence fs_gt_general(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext)
 			throws DynamicError {
-		return FsEq.do_cmp_general_op(args, FsGt.class, "fs_gt_value", dc);
+		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
+			@Override
+			public ResultSequence execute(Collection<ResultSequence> args, StaticContext staticContext, DynamicContext dynamicContext) throws DynamicError {
+				return fs_gt_value(args, staticContext, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_general_op(args, op, staticContext, dynamicContext);
 	}
 
 }

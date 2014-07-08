@@ -304,9 +304,9 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 		return result;
 	}
 
-	protected static ResultSequence getResultSetForArityZero(EvaluationContext ec)
+	protected static org.eclipse.wst.xml.xpath2.api.ResultSequence getResultSetForArityZero(EvaluationContext ec)
 			throws DynamicError {
-		ResultSequence rs = ResultSequenceFactory.create_new();
+		ResultBuffer rs = new ResultBuffer();
 		
 		Item contextItem = ec.getContextItem();
 		if (contextItem != null) {
@@ -316,7 +316,7 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 		} else {
 			throw DynamicError.contextUndefined();
 		}
-		return rs;
+		return rs.getSequence();
 	}
 
 	public boolean is_vararg() {

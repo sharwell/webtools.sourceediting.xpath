@@ -41,6 +41,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.xml.XMLConstants;
+
 /**
  * Default implementation of a static context as described by the XPath 2.0
  * specification.

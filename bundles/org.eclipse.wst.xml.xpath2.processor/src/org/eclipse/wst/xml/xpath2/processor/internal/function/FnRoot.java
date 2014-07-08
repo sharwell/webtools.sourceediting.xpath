@@ -104,9 +104,9 @@ public class FnRoot extends Function {
 
 		Node root = null;
 		
-		if (dc.getRootNode() != null) {
+		if (ec.getDynamicContext().getLimitNode() != null) {
 			// REVISIT...
-			root = dc.getRootNode(); 
+			root = ec.getDynamicContext().getLimitNode(); 
 		}
 		else {
 			NodeType nt = (NodeType) aa;

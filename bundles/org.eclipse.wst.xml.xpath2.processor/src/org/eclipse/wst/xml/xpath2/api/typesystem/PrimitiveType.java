@@ -16,7 +16,7 @@ import org.eclipse.wst.xml.xpath2.api.Item;
 /**
  * @since 2.0
  */
-public interface PrimitiveType/*<Type extends AnyType, NativeType>*/ extends TypeDefinition {
+public interface PrimitiveType/*<Type extends AnyType, NativeType>*/ extends SimpleTypeDefinition {
 
     /**
      * validate a given string against this simple type.

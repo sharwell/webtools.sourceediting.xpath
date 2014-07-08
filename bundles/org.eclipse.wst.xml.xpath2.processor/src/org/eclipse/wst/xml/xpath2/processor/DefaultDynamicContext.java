@@ -65,7 +65,6 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	private GregorianCalendar _current_date_time;
 	private String _default_collation_name = CODEPOINT_COLLATION;
 	private CollationProvider _collation_provider;
-	private Node _rootNode;
 
 	/**
 	 * Constructor.
@@ -125,24 +124,6 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	 */
 	public void set_focus(Focus f) {
 		_focus = f;
-	}
-	
-	/**
-	 * Set root node of an XDM tree
-	 * 
-	 * @param rootNode
-	 */
-	public void setRootNode(Node rootNode) {
-		_rootNode = rootNode;
-	}
-	
-	/**
-	 * Get root node of an XDM tree
-	 * 
-	 * @return the root node of XDM tree 
-	 */
-	public Node getRootNode() {
-		return _rootNode;
 	}
 
 	/**

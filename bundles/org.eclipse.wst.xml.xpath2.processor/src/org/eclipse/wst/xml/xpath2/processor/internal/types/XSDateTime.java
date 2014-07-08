@@ -521,7 +521,7 @@ Cloneable {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyType aatAnyType = arg.first();
+		AnyType aatAnyType = (AnyType) arg.first();
 		AnyAtomicType aat = null; 
 		if (aatAnyType instanceof NodeType) {
 		   aat =  (AnyAtomicType)((NodeType)aatAnyType).typed_value().first(); 	

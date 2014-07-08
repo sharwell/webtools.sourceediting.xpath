@@ -28,7 +28,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
-import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -149,16 +148,15 @@ public class ElementType extends NodeType {
 	 *    in the schema return 'true' else return 'false'.
 	 * c) If validated by a 'strict' wild-card, return 'false'.
 	 */
-	private boolean isDescendantElementValidatedByWildCard(Element elemNode) {
+	private boolean isDescendantElementValidatedByWildCard(Element elemNode, TypeModel typeModel) {
 		boolean isDescElemValByWildCard = false;
 		
-		NodeList childNodes = ((PSVIElementNSImpl) elemNode).getChildNodes();
+		NodeList childNodes = elemNode.getChildNodes();
 		for (int ndIdex = 0; ndIdex < childNodes.getLength(); ndIdex++) {
 			Node node = childNodes.item(ndIdex);
 			if (node.getNodeType() == Node.ELEMENT_NODE) {
-			   PSVIElementNSImpl psviElem = (PSVIElementNSImpl)node;
-			   XSTypeDefinition elemType = psviElem.getTypeDefinition();
-			   if (elemType == null || "anyType".equals(elemType.getName()) || isDescendantElementValidatedByWildCard((Element)node)) {
+			   TypeDefinition elemType = typeModel.getType(node);
+			   if (elemType == null || "anyType".equals(elemType.getName()) || isDescendantElementValidatedByWildCard((Element)node, typeModel)) {
 				  // this element instance was likely validated by a 'skip', or 'lax' (which didn't 
 				  // find an element declaration) wild-card. otherwise, continue checking other nodes
 				  // in this tree recursively.

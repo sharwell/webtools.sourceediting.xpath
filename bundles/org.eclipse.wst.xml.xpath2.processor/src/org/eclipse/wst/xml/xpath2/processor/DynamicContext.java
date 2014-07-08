@@ -190,19 +190,5 @@ public interface DynamicContext extends StaticContext {
 	 */
 	@Deprecated
 	public int node_position(Node node);
-	
-	/**
-	 * Set root node of an XDM tree
-	 * 
-	 * @param rootNode
-	 */
-	public void setRootNode(Node rootNode);
-	
-	/**
-	 * Get root node of an XDM tree
-	 * 
-	 * @return the root node of XDM tree 
-	 */
-	public Node getRootNode();
 
 }

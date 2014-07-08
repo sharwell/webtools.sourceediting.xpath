@@ -17,6 +17,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.Collection;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -122,7 +123,7 @@ public class FnAbs extends Function {
 			return null;
 
 		arg = FnData.atomize( arg );
-		AnyType at = (AnyType) arg.item(0);
+		Item at = arg.item(0);
 		
 		NumericType numericTypeResult = null;
 

@@ -315,13 +315,13 @@ public abstract class NodeType extends AnyType {
 	 * to be returned as the typed value of the parent node, by considering the member types of the union (i.e
 	 * whichever member type first in order, can successfully validate the string value of the parent node).
 	 */
-	private void getTypedValueForVarietyUnion(SimpleTypeDefinition simpType, ShortList itemValueTypes, ResultBuffer rs) {
+	private void getTypedValueForVarietyUnion(SimpleTypeDefinition simpType, List<Short> itemValueTypes, ResultBuffer rs) {
 		
 		List<SimpleTypeDefinition> memberTypes = simpType.getMemberTypes();
 		// check member types in order, to find that which one can successfully validate the string value.
 		for (int memTypeIdx = 0; memTypeIdx < memberTypes.size(); memTypeIdx++) {
-			PrimitiveType memSimpleType = (PrimitiveType) memberTypes.get(memTypeIdx);
-		   if (PsychoPathXPathTypeHelper.isValueValidForSimpleType(getStringValue(), memSimpleType)) {
+			SimpleTypeDefinition memSimpleType = memberTypes.get(memTypeIdx);
+		   if (memSimpleType instanceof PrimitiveType && PsychoPathXPathTypeHelper.isValueValidForSimpleType(getStringValue(), (PrimitiveType)memSimpleType)) {
 			   if (memSimpleType.getVariety() == SimpleTypeDefinition.VARIETY_LIST) {
 				   addAtomicListItemsToResultSet(memSimpleType, itemValueTypes, rs);
 			   }

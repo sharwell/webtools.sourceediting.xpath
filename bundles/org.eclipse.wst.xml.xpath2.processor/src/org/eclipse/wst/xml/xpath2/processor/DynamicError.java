@@ -127,7 +127,7 @@ public class DynamicError extends XPathException {
 	}
 	
 	public static DynamicError argument_type_error(String typeName) {
-		return make_error("FORG0006", "Invalid argument type : " +typeName, null);
+		return make_error("FORG0006", "Invalid argument type : " +typeName, null, null);
 	}
 
 	/**

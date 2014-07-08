@@ -27,6 +27,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.SingleItemSequence;
 
 /**
  * fn:data takes a sequence of items and returns a sequence of atomic values.
@@ -106,5 +107,16 @@ public class FnData extends Function {
 			assert false;
 			return null;
 		}
+	}
+
+	/**
+	 * Atomize a {@link SingleResultSequence} argument expression.
+	 * 
+	 * @param arg
+	 *            input expression.
+	 * @return Result of operation.
+	 */
+	public static AnyType atomize(SingleItemSequence arg) {
+		return atomize((Item)arg);
 	}
 }

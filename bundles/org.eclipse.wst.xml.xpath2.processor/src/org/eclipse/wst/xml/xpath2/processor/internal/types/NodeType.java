@@ -343,6 +343,10 @@ public abstract class NodeType extends AnyType {
 		List<SimpleTypeDefinition> memberTypes = simpType.getMemberTypes();
 		// check member types in order, to find that which one can successfully validate the string value.
 		for (SimpleTypeDefinition memberType : memberTypes) {
+			if (!(memberType instanceof PrimitiveType)) {
+				continue;
+			}
+
 			PrimitiveType memSimpleType = (PrimitiveType) memberType;
 		   if (isValueValidForSimpleType(getStringValue(), memSimpleType)) {
 			  

@@ -119,6 +119,7 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	 *            is the static context.
 	 * @since 2.0
 	 */
+	@Deprecated
 	public StaticNameResolver(final org.eclipse.wst.xml.xpath2.processor.StaticContext sc) {
 		_sc = new StaticContextAdapter(sc);
 		_err = null;

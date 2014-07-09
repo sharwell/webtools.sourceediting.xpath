@@ -44,6 +44,7 @@ public class StaticContextAdapter implements
 		org.eclipse.wst.xml.xpath2.api.StaticContext {
 	private final org.eclipse.wst.xml.xpath2.processor.StaticContext sc;
 
+	@Deprecated
 	public StaticContextAdapter(
 			org.eclipse.wst.xml.xpath2.processor.StaticContext sc) {
 		this.sc = sc;

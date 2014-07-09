@@ -58,6 +58,7 @@ import org.w3c.dom.Node;
  * Initializes and provides functionality of a dynamic context according to the
  * XPath 2.0 specification.
  */
+@Deprecated
 public class DefaultDynamicContext extends DefaultStaticContext implements
 		DynamicContext {
 

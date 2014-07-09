@@ -25,6 +25,7 @@ public class DynamicContextAdapter implements
 	private final org.eclipse.wst.xml.xpath2.processor.DynamicContext dc;
 	private StaticContextAdapter sca;
 
+	@Deprecated
 	public DynamicContextAdapter(
 			org.eclipse.wst.xml.xpath2.processor.DynamicContext dc) {
 		this.dc = dc;

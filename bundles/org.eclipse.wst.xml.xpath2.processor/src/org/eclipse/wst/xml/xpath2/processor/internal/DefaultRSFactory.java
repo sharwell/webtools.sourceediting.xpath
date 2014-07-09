@@ -19,6 +19,7 @@ import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
  * Factory implementation which creates sequences of type DefaultResultSequence.
  * 
  */
+@Deprecated
 public class DefaultRSFactory extends ResultSequenceFactory {
 	private static final ResultSequence _rs_creator = new DefaultResultSequence();
 

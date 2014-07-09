@@ -25,6 +25,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 @SuppressWarnings("deprecation")
 public class ResultSequenceUtil {
 
+	@Deprecated
 	public static ResultSequence newToOld(
 			org.eclipse.wst.xml.xpath2.api.ResultSequence result) {
 		if (result instanceof ResultSequence) 

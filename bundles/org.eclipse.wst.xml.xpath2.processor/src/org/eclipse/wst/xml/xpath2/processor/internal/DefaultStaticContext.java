@@ -42,6 +42,7 @@ import org.w3c.dom.Node;
  * Default implementation of a static context as described by the XPath 2.0
  * specification.
  */
+@Deprecated
 public class DefaultStaticContext implements StaticContext {
 
 	private boolean _xpath1_compatible;

@@ -206,6 +206,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		return nodeTd != null && nodeTd.derivedFromType(td, method);
 	}
 
+	@Deprecated
 	public DefaultEvaluator(org.eclipse.wst.xml.xpath2.processor.DynamicContext dynamicContext, Document doc) {
 		this(new StaticContextAdapter(dynamicContext), new DynamicContextAdapter(dynamicContext));
 		
@@ -313,6 +314,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *             error.
 	 * @return result sequence.
 	 */
+	@Deprecated
 	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(XPathNode node) {
 		return ResultSequenceUtil.newToOld(evaluate2(node));
 	}

@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
+import org.eclipse.wst.xml.xpath2.api.XPath2Expression;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.*;
 
 /**
@@ -26,6 +27,9 @@ public interface Evaluator {
 	 * @throws DynamicError
 	 *             dynamic error.
 	 * @return Result of evaluation.
+	 *
+	 * @deprecated Use {@link XPath2Expression#evaluate} instead.
 	 */
+	@Deprecated
 	public ResultSequence evaluate(XPathNode root) throws DynamicError;
 }

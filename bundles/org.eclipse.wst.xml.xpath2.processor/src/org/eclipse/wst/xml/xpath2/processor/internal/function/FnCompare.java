@@ -25,7 +25,6 @@ import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
@@ -113,7 +112,7 @@ public class FnCompare extends Function {
 
 		BigInteger result = compare_string(collationUri, xstr1, xstr2, context);
 		if (result != null) {
-			return ResultSequenceFactory.create_new(new XSInteger(result));
+			return new XSInteger(result);
 		} else {
 			return ResultBuffer.EMPTY;
 		}

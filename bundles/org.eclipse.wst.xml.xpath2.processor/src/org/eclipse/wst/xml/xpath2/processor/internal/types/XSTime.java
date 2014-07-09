@@ -30,7 +30,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
@@ -403,7 +402,7 @@ Cloneable {
 		xmlCal.add(dtduration.negate());
 		res = new XSTime(xmlCal.toGregorianCalendar(), res.tz());
 
-		return ResultSequenceFactory.create_new(res);
+		return res;
 	}
 
 	private ResultSequence minusXSTimeDuration(Item at) {
@@ -413,7 +412,7 @@ Cloneable {
 		Calendar thatCal = normalizeCalendar(val.calendar(), val.tz());
 		long duration = thisCal.getTimeInMillis() - thatCal.getTimeInMillis();
 		dtduration = _datatypeFactory.newDuration(duration);
-		return ResultSequenceFactory.create_new(XSDayTimeDuration.parseDTDuration(dtduration.toString()));
+		return XSDayTimeDuration.parseDTDuration(dtduration.toString());
 	}
 
 	/**
@@ -437,7 +436,7 @@ Cloneable {
 
 			res.calendar().add(Calendar.MILLISECOND, (int) ms);
 
-			return ResultSequenceFactory.create_new(res);
+			return res;
 		} catch (CloneNotSupportedException err) {
 			assert false;
 			return null;

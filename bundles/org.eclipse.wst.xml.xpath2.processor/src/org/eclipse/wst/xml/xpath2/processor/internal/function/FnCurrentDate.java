@@ -19,7 +19,6 @@ import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDate;
@@ -71,6 +70,6 @@ public class FnCurrentDate extends Function {
 		XSDayTimeDuration tz = new XSDayTimeDuration(dc.getTimezoneOffset());
 		AnyType res = new XSDate(dc.getCurrentDateTime(), tz);
 
-		return ResultSequenceFactory.create_new(res);
+		return res;
 	}
 }

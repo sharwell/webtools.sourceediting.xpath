@@ -31,7 +31,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
@@ -442,7 +441,7 @@ Cloneable {
 					.newDuration(val.getStringValue());
 			xmlCal.add(dtduration.negate());
 			res = new XSDate(xmlCal.toGregorianCalendar(), res.tz());
-			return ResultSequenceFactory.create_new(res);
+			return res;
 		} catch (CloneNotSupportedException ex) {
 		}
 		return null;
@@ -454,7 +453,7 @@ Cloneable {
 			XSDate res = (XSDate) clone();
 
 			res.calendar().add(Calendar.MONTH, val.monthValue() * -1);
-			return ResultSequenceFactory.create_new(res);
+			return res;
 		} catch (CloneNotSupportedException ex) {
 
 		}
@@ -469,8 +468,7 @@ Cloneable {
 		long duration = thisCal.getTimeInMillis()
 				- thatCal.getTimeInMillis();
 		dtduration = _datatypeFactory.newDuration(duration);
-		return ResultSequenceFactory.create_new(XSDayTimeDuration
-				.parseDTDuration(dtduration.toString()));
+		return XSDayTimeDuration.parseDTDuration(dtduration.toString());
 	}
 
 	/**
@@ -499,7 +497,7 @@ Cloneable {
 				XSDate res = (XSDate) clone();
 
 				res.calendar().add(Calendar.MONTH, val.monthValue());
-				return ResultSequenceFactory.create_new(res);
+				return res;
 			} else if (at instanceof XSDayTimeDuration) {
 				XSDayTimeDuration val = (XSDayTimeDuration) at;
 
@@ -514,7 +512,7 @@ Cloneable {
 
 				res.calendar().add(Calendar.MILLISECOND,
 						(int) (val.time_value() * 1000.0));
-				return ResultSequenceFactory.create_new(res);
+				return res;
 			} else {
 				DynamicError.throw_type_error();
 				return null; // unreach

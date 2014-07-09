@@ -16,7 +16,6 @@ import java.util.Collection;
 
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
 
@@ -56,6 +55,6 @@ public class FnFalse extends Function {
 	public static ResultSequence fn_false(Collection<ResultSequence> args) throws DynamicError {
 		assert args.size() == 0;
 
-		return ResultSequenceFactory.create_new(new XSBoolean(false));
+		return new XSBoolean(false);
 	}
 }

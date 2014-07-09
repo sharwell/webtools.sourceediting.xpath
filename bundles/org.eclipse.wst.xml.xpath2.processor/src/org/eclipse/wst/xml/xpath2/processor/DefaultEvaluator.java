@@ -572,8 +572,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(OrExpr orex) {
 		boolean res[] = do_logic_exp(orex);
 
-		return ResultSequenceFactory
-				.create_new(new XSBoolean(res[0] || res[1]));
+		return new XSBoolean(res[0] || res[1]);
 	}
 
 	/**
@@ -586,8 +585,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(AndExpr andex) {
 		boolean res[] = do_logic_exp(andex);
 
-		return ResultSequenceFactory
-				.create_new(new XSBoolean(res[0] && res[1]));
+		return new XSBoolean(res[0] && res[1]);
 	}
 
 	private ResultSequence node_cmp(int type, Collection<ResultSequence> args) {
@@ -930,7 +928,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 		// get the sequence type
 		SequenceType seqt = (SequenceType) ioexp.right();
-		return ResultSequenceFactory.create_new(new XSBoolean(isInstanceOf(rs, seqt)));
+		return new XSBoolean(isInstanceOf(rs, seqt));
 	}
 		
 	private boolean isInstanceOf(ResultSequence rs, SequenceType seqt) {
@@ -994,7 +992,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			castable = false;
 		}
 
-		return ResultSequenceFactory.create_new(new XSBoolean(castable));
+		return new XSBoolean(castable);
 	}
 
 	/**
@@ -1031,7 +1029,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 		// prepare args from function
 		Collection<ResultSequence> args = new ArrayList<ResultSequence>();
-		args.add(ResultSequenceFactory.create_new(aat));
+		args.add(aat);
 
 		try {
 			Function function = cexp.function();

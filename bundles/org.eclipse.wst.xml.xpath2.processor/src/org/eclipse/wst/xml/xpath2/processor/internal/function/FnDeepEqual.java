@@ -22,7 +22,6 @@ import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
@@ -92,7 +91,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 
 		boolean result = deep_equal(arg1, arg2, context, collationURI);
 
-		return ResultSequenceFactory.create_new(new XSBoolean(result));
+		return new XSBoolean(result);
 	}
 
 	/**

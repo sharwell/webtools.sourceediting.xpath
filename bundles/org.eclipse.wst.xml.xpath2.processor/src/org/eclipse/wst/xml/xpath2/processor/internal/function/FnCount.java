@@ -19,7 +19,6 @@ import java.util.Iterator;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
 
@@ -65,6 +64,6 @@ public class FnCount extends Function {
 		Iterator<ResultSequence> citer = args.iterator();
 		ResultSequence arg = citer.next();
 
-		return ResultSequenceFactory.create_new(new XSInteger(BigInteger.valueOf(arg.size())));
+		return new XSInteger(BigInteger.valueOf(arg.size()));
 	}
 }

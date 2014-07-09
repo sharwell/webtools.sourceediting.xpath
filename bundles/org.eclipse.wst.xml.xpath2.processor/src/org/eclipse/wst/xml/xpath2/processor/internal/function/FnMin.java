@@ -25,7 +25,6 @@ import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -89,14 +88,14 @@ public class FnMin extends Function {
 			if( conv != null ){
 				
 				if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
-					return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
+					return tp.promote(new XSFloat(Float.NaN));
 				}
 				if (max == null || ((CmpLt)conv).lt((AnyType)max, context)) {
 					max = (CmpLt)conv;
 				}
 			}
 		}
-		return ResultSequenceFactory.create_new((AnyType) max);
+		return (AnyType) max;
 	}
 
 }

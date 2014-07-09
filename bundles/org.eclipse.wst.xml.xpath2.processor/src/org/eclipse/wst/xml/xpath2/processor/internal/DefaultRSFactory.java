@@ -36,6 +36,7 @@ public class DefaultRSFactory extends org.eclipse.wst.xml.xpath2.processor.Resul
 		_head_pos = POOL_SIZE - 1;
 	}
 
+	@Override
 	protected org.eclipse.wst.xml.xpath2.processor.ResultSequence fact_create_new() {
 		if (_head_pos > 0) {
 			return _rs_pool[_head_pos--];
@@ -44,6 +45,7 @@ public class DefaultRSFactory extends org.eclipse.wst.xml.xpath2.processor.Resul
 		return _rs_creator.create_new();
 	}
 
+	@Override
 	protected void fact_release(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
 		int new_pos = _head_pos + 1;
 
@@ -55,6 +57,7 @@ public class DefaultRSFactory extends org.eclipse.wst.xml.xpath2.processor.Resul
 		}
 	}
 
+	@Override
 	protected void fact_print_debug() {
 		System.out.println("Head pos: " + _head_pos);
 	}

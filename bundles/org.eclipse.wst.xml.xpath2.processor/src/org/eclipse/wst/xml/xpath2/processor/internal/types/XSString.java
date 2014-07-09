@@ -59,6 +59,7 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "xs:string" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_STRING;
 	}
@@ -68,6 +69,7 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "string" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "string";
 	}
@@ -78,6 +80,7 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return The String stored
 	 */
+	@Override
 	public String getStringValue() {
 		return _value;
 	}
@@ -101,6 +104,7 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @return New ResultSequence consisting of the supplied String
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -136,6 +140,7 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 *         otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		int cmp = do_compare(arg, dynamicContext);
 
@@ -157,6 +162,7 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 *         supplied. False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		int cmp = do_compare(arg, context);
 
@@ -175,6 +181,7 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 *         False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		int cmp = do_compare(arg, context);
 
@@ -182,10 +189,12 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 
 		return cmp < 0;
 	}
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_STRING;
 	}
 
+	@Override
 	public Object getNativeValue() {
 		return _value;
 	}

@@ -864,6 +864,7 @@ class XPathFlex implements java_cup.runtime.Scanner {
    * @exception   java.io.IOException  if any I/O-Error occurs
    */
   @SuppressWarnings("fallthrough")
+  @Override
   public java_cup.runtime.Symbol next_token() throws java.io.IOException {
     int zzInput;
     int zzAction;

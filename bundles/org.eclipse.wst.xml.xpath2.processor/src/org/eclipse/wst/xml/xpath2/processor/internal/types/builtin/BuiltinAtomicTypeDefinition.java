@@ -8,6 +8,7 @@ public class BuiltinAtomicTypeDefinition extends BuiltinTypeDefinition {
 		super(name, implementationClass, nativeType, baseType);
 	}
 	
+	@Override
 	public boolean isAbstract() {
 		return false;
 	}

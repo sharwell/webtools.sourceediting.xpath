@@ -39,6 +39,7 @@ public class SchemaElemTest extends KindTest {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}
@@ -48,19 +49,23 @@ public class SchemaElemTest extends KindTest {
 	 * 
 	 * @return Result of QName operation.
 	 */
+	@Override
 	public QName name() {
 		return _arg;
 	}
 
+	@Override
 	public AnyType createTestType(ResultSequence rs, StaticContext sc) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public boolean isWild() {
 		return false;
 	}
 
+	@Override
 	public Class<? extends NodeType> getXDMClassType() {
 		// TODO Auto-generated method stub
 		return null;

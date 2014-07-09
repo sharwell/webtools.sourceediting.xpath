@@ -54,6 +54,7 @@ public class PIType extends NodeType {
 	 * 
 	 * @return "processing-instruction" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return PROCESSING_INSTRUCTION;
 	}
@@ -64,6 +65,7 @@ public class PIType extends NodeType {
 	 * 
 	 * @return String representation of the actual processing instruction stored
 	 */
+	@Override
 	public String getStringValue() {
 		return _value.getData();
 	}
@@ -75,6 +77,7 @@ public class PIType extends NodeType {
 	 * @return New ResultSequence consisting of the processing instruction
 	 *         stored
 	 */
+	@Override
 	public ResultSequence typed_value() {
 		return new XSString(getStringValue());
 	}
@@ -84,6 +87,7 @@ public class PIType extends NodeType {
 	 * 
 	 * @return A QName representation of the node's name
 	 */
+	@Override
 	public QName node_name() {
 		QName name = new QName(null, _value.getTarget());
 
@@ -95,6 +99,7 @@ public class PIType extends NodeType {
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	public boolean isID() {
 		return false;
 	}
@@ -102,10 +107,12 @@ public class PIType extends NodeType {
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	public boolean isIDREF() {
 		return false;
 	}
 	
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_UNTYPEDATOMIC;
 	}

@@ -31,6 +31,7 @@ public class FollowingAxis extends ForwardAxis {
 	 * @param node
 	 *            is the type of node.
 	 */
+	@Override
 	public void iterate(NodeType node, ResultBuffer result, Node limitNode) {
 
 		// XXX should be root... not parent!!! read the spec.... BUG BUG
@@ -67,6 +68,7 @@ public class FollowingAxis extends ForwardAxis {
 		}
 	}
 	
+	@Override
 	public String name() {
 		return "following";
 	}

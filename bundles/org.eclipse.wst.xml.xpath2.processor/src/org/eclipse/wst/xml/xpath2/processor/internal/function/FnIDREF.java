@@ -59,6 +59,7 @@ public class FnIDREF extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return idref(args, ec);
 	}

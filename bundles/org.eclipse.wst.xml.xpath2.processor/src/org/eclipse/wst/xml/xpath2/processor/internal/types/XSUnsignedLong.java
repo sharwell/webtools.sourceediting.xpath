@@ -49,6 +49,7 @@ public class XSUnsignedLong extends XSNonNegativeInteger {
 	 * 
 	 * @return "xs:unsignedLong" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_UNSIGNED_LONG;
 	}
@@ -58,6 +59,7 @@ public class XSUnsignedLong extends XSNonNegativeInteger {
 	 * 
 	 * @return "unsignedLong" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "unsignedLong";
 	}
@@ -71,6 +73,7 @@ public class XSUnsignedLong extends XSNonNegativeInteger {
 	 * @return New ResultSequence consisting of the 'unsignedLong' supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -100,6 +103,7 @@ public class XSUnsignedLong extends XSNonNegativeInteger {
 
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_UNSIGNEDLONG;
 	}

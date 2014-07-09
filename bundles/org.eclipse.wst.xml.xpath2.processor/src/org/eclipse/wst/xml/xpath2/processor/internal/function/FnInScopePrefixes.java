@@ -55,6 +55,7 @@ public class FnInScopePrefixes extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return inScopePrefixes(args, ec.getDynamicContext());
 	}

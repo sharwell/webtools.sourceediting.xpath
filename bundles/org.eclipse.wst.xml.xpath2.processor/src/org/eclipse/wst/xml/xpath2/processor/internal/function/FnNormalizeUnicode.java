@@ -76,6 +76,7 @@ public class FnNormalizeUnicode extends Function {
 			modeMap.put("NFKD", Normalizer.NFKD);
 		}
 		
+		@Override
 		public String normalize(String argument, String normalizationForm)
 				throws DynamicError {
 			Normalizer.Mode mode = modeMap.get(normalizationForm);
@@ -127,6 +128,7 @@ public class FnNormalizeUnicode extends Function {
 
 	static class FailingNormalizer implements W3CNormalizer {
 		
+		@Override
 		public String normalize(String argument, String normalizationForm)
 				throws DynamicError {
 			throw DynamicError.unsupported_normalization_form("Can't normalize to form " + normalizationForm + ": No ICU Library or Java 6 found. 'normalize-unicode' requires either 'com.ibm.icu.text.Normalizer' or 'java.text.Normalizer' on the classpath");
@@ -142,6 +144,7 @@ public class FnNormalizeUnicode extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the space in the arguments being normalized.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return normalize_unicode(args, ec.getDynamicContext());
 	}

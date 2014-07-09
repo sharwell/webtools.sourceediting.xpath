@@ -102,6 +102,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * @return an xs:integer _tz
 	 * @since 1.1
 	 */
+	@Override
 	public XSDuration tz() {
 		return _tz;
 	}
@@ -111,6 +112,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * @since 1.1
 	 * @see org.eclipse.wst.xml.xpath2.processor.DynamicContext#get_current_time()
 	 */
+	@Override
 	public GregorianCalendar current_date_time() {
 		if (_current_date_time == null) {
 			_current_date_time = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
@@ -124,6 +126,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * @param f
 	 *            focus to set
 	 */
+	@Override
 	public void set_focus(Focus f) {
 		_focus = f;
 	}
@@ -133,6 +136,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * 
 	 * @return _focus
 	 */
+	@Override
 	public Focus focus() {
 		return _focus;
 	}
@@ -142,6 +146,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * 
 	 * @return an AnyType result from _focus.context_item()
 	 */
+	@Override
 	public AnyType context_item() {
 		return _focus.context_item();
 	}
@@ -151,6 +156,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * 
 	 * @return an integer result from _focus.position()
 	 */
+	@Override
 	public int context_position() {
 		return _focus.position();
 	}
@@ -160,6 +166,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * 
 	 * @return an integer result from _focus.last()
 	 */
+	@Override
 	public int last() {
 		return _focus.last();
 	}
@@ -170,6 +177,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * @return an AnyType result from get_var(name) or return NULL
 	 * @since 2.0
 	 */
+	@Override
 	public Object get_variable(QName name) {
 		// XXX: built-in variables
 		if ("fs".equals(name.prefix())) {
@@ -185,6 +193,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * 
 	 * @return a ResultSequence from funct.evaluate(args)
 	 */
+	@Override
 	public ResultSequence evaluate_function(QName name, Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args)
 			throws DynamicError {
 		Function funct = function(name, args.size());
@@ -195,22 +204,27 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 		final org.eclipse.wst.xml.xpath2.api.StaticContext sc = new StaticContextAdapter(this);
 		EvaluationContext ec = new EvaluationContext() {
 			
+			@Override
 			public org.eclipse.wst.xml.xpath2.api.DynamicContext getDynamicContext() {
 				return dc;
 			}
 			
+			@Override
 			public AnyType getContextItem() {
 				return _focus.context_item();
 			}
 			
+			@Override
 			public int getContextPosition() {
 				return _focus.position();
 			}
 		
+			@Override
 			public int getLastPosition() {
 				return _focus.last();
 			}
 			
+			@Override
 			public org.eclipse.wst.xml.xpath2.api.StaticContext getStaticContext() {
 				return sc;
 			}
@@ -226,6 +240,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 *            Function library to add.
 	 * 
 	 */
+	@Override
 	public void add_function_library(FunctionLibrary fl) {
 		super.add_function_library(fl);
 		fl.set_dynamic_context(new DynamicContextAdapter(this));
@@ -237,6 +252,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * @return a ResultSequence from ResultSequenceFactory.create_new()
 	 * @since 1.1
 	 */
+	@Override
 	public ResultSequence get_doc(URI resolved) {
 		Document doc;
 		if (_loaded_documents.containsKey(resolved)) {
@@ -255,6 +271,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	public URI resolve_uri(String uri) {
 		try {
 			URI realURI = URI.create(uri);
@@ -297,6 +314,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * @param val
 	 *            Variable value.
 	 */
+	@Override
 	public void set_variable(QName var, AnyType val) {
 		super.set_variable(var, val);
 	}
@@ -308,6 +326,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public void set_variable(QName var, ResultSequence val) {
 		super.set_variable(var, val);
 	}
@@ -322,12 +341,14 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	public String default_collation_name() {
 		return _default_collation_name;
 	}
 
 	private static Comparator<String> CODEPOINT_COMPARATOR = new Comparator<String>() {
 		
+		@Override
 		public int compare(String o1, String o2) {
 			return o1.compareTo(o2);
 		}
@@ -337,6 +358,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * @since 1.1
 	 * 
 	 */
+	@Override
 	public Comparator<String> get_collation(String uri) {
 		if (CODEPOINT_COLLATION.equals(uri)) return CODEPOINT_COMPARATOR;
 		
@@ -358,6 +380,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * @deprecated  This will be removed in a future version use focus().position().
 	 */
 	@Deprecated
+	@Override
 	public int node_position(Node node) {
 	  // unused parameter!
 	  return _focus.position();	
@@ -366,6 +389,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public TypeModel getTypeModel(Node node) {
 		return super.getTypeModel(node);
 	}

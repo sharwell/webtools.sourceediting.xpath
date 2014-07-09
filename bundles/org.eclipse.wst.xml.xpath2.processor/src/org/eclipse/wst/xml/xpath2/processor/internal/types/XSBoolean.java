@@ -65,6 +65,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "xs:boolean", the full datatype pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_BOOLEAN;
 	}
@@ -79,6 +80,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "boolean", which is the datatype name.
 	 */
+	@Override
 	public String type_name() {
 		return "boolean";
 	}
@@ -88,6 +90,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return the String representation of the boolean value stored
 	 */
+	@Override
 	public String getStringValue() {
 		return "" + _value;
 	}
@@ -110,6 +113,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 * @return A new result sequence consisting of the boolean value supplied.
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 		  return ResultBuffer.EMPTY;
@@ -157,6 +161,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @return New XSBoolean representation of true/false result of the equality
 	 *         comparison
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
 				XSBoolean.class);
@@ -176,6 +181,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @return New XSBoolean representation of true/false result of the
 	 *         comparison
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
 				XSBoolean.class);
@@ -199,6 +205,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @return New XSBoolean representation of true/false result of the
 	 *         comparison
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
 				XSBoolean.class);
@@ -210,6 +217,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 		return result;
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_BOOLEAN;
 	}

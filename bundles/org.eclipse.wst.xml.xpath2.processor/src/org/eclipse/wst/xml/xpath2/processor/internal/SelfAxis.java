@@ -26,10 +26,12 @@ public class SelfAxis extends ForwardAxis {
 	 * @param node
 	 *            is the node type
 	 */
+	@Override
 	public void iterate(NodeType node, ResultBuffer copyInto, Node limitNode) {
 		copyInto.add(node);
 	}
 	
+	@Override
 	public String name() {
 		return "self";
 	}

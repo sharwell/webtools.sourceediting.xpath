@@ -21,6 +21,7 @@ public class SimpleXercesType extends SimpleXercesTypeDefinition implements Prim
 		return simpleType.getPrimitiveKind();
 	}
 
+	@Override
 	public boolean validate(String content) {
 		boolean isValueValid = true;
 		try {
@@ -36,27 +37,33 @@ public class SimpleXercesType extends SimpleXercesTypeDefinition implements Prim
 		return isValueValid;
 	}
 
+	@Override
 	public boolean isEqual(Object value1, Object value2) {
 		return simpleType.isEqual(value1, value2);
 	}
 
+	@Override
 	public boolean isIDType() {
 		return simpleType.isIDType();
 	}
 
+	@Override
 	public boolean validateNative(Object content) {
 
 		return false;
 	}
 
+	@Override
 	public Item construct(Object content) {
 		throw new RuntimeException("construct not supported for Xerces types");
 	}
 
+	@Override
 	public Class<?> getInterfaceClass() {
 		throw new RuntimeException("getInterfaceClass not supported for Xerces types");
 	}
 
+	@Override
 	public Class<?> getNativeType() {
 		throw new RuntimeException("getNativeType not supported for Xerces types");
 	}

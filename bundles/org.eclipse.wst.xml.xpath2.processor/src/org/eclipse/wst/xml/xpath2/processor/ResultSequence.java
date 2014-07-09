@@ -46,6 +46,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 	/**
 	 * List Iterator.
 	 */
+	@Override
 	public abstract ListIterator<Item> iterator();
 
 	/**
@@ -61,6 +62,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 	 * 
 	 * @return the size.
 	 */
+	@Override
 	public abstract int size();
 
 	/**
@@ -80,6 +82,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 	 * 
 	 * @return the first item.
 	 */
+	@Override
 	public AnyType first() {
 		return get(0);
 	}
@@ -89,6 +92,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 	 * 
 	 * @return boolean.
 	 */
+	@Override
 	public boolean empty() {
 		if (size() == 0)
 			return true;
@@ -140,6 +144,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public Item item(int index) {
 		return get(index);
 	}
@@ -147,6 +152,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public ItemType itemType(int index) {
 		return get(index).getItemType();
 	}
@@ -154,6 +160,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public Object value(int index) {
 		return get(index).getNativeValue();
 	}

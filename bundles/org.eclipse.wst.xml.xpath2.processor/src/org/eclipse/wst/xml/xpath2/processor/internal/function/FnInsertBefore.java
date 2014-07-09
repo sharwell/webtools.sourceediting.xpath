@@ -47,6 +47,7 @@ public class FnInsertBefore extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return insert_before(args);
 	}

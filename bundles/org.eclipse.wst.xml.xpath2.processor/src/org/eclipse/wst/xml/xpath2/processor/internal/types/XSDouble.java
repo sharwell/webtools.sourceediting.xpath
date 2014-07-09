@@ -108,6 +108,7 @@ public class XSDouble extends NumericType {
 	 * @throws DynamicError
 	 * @return A new result sequence consisting of the double number supplied.
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 
 		if (arg.empty())
@@ -161,6 +162,7 @@ public class XSDouble extends NumericType {
 	 * 
 	 * @return "xs:double" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_DOUBLE;
 	}
@@ -170,6 +172,7 @@ public class XSDouble extends NumericType {
 	 * 
 	 * @return "double" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "double";
 	}
@@ -179,6 +182,7 @@ public class XSDouble extends NumericType {
 	 * 
 	 * @return String representation of the Decimal value stored
 	 */
+	@Override
 	public String getStringValue() {
 		if (zero()) {
 			return "0";
@@ -218,6 +222,7 @@ public class XSDouble extends NumericType {
 	 * 
 	 * @return True if this XSDouble represents 0. False otherwise.
 	 */
+	@Override
 	public boolean zero() {
 		return (Double.compare(_value, 0.0E0) == 0);
 	}
@@ -252,6 +257,7 @@ public class XSDouble extends NumericType {
 	 *         otherwise
 	 * @since 1.1
 	 */
+	@Override
 	public boolean eq(AnyType aa, DynamicContext dynamicContext) throws DynamicError {
 		ResultSequence crs = constructor(aa);
 		
@@ -284,6 +290,7 @@ public class XSDouble extends NumericType {
 	 * @return True if the supplied type represents a number smaller than this
 	 *         one stored. False otherwise
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
 		
@@ -308,6 +315,7 @@ public class XSDouble extends NumericType {
 	 * @return True if the supplied type represents a number greater than this
 	 *         one stored. False otherwise
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
 
@@ -324,6 +332,7 @@ public class XSDouble extends NumericType {
 	 *            The ResultSequence to perform an addition with
 	 * @return A XSDouble consisting of the result of the mathematical addition.
 	 */
+	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
@@ -360,6 +369,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble consisting of the result of the mathematical
 	 *         subtraction.
 	 */
+	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		
@@ -378,6 +388,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble consisting of the result of the mathematical
 	 *         multiplication.
 	 */
+	@Override
 	public ResultSequence times(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -393,6 +404,7 @@ public class XSDouble extends NumericType {
 	 *            The ResultSequence to perform an division with
 	 * @return A XSDouble consisting of the result of the mathematical division.
 	 */
+	@Override
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -409,6 +421,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSInteger consisting of the result of the mathematical integer
 	 *         division.
 	 */
+	@Override
 	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -435,6 +448,7 @@ public class XSDouble extends NumericType {
 	 *            The ResultSequence to perform a modulus with
 	 * @return A XSDouble consisting of the result of the mathematical modulus.
 	 */
+	@Override
 	public ResultSequence mod(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -447,6 +461,7 @@ public class XSDouble extends NumericType {
 	 * 
 	 * @return A XSDouble representing the negation of this XSDecimal
 	 */
+	@Override
 	public ResultSequence unary_minus() {
 		return new XSDouble(-1 * double_value());
 	}
@@ -457,6 +472,7 @@ public class XSDouble extends NumericType {
 	 * 
 	 * @return A XSDouble representing the absolute value of the number stored
 	 */
+	@Override
 	public NumericType abs() {
 		return new XSDouble(Math.abs(double_value()));
 	}
@@ -467,6 +483,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble representing the smallest integer greater than the
 	 *         number stored
 	 */
+	@Override
 	public NumericType ceiling() {
 		return new XSDouble(Math.ceil(double_value()));
 	}
@@ -477,6 +494,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble representing the largest integer smaller than the
 	 *         number stored
 	 */
+	@Override
 	public NumericType floor() {
 		return new XSDouble(Math.floor(double_value()));
 	}
@@ -486,6 +504,7 @@ public class XSDouble extends NumericType {
 	 * 
 	 * @return A XSDouble representing the closest long of the number stored.
 	 */
+	@Override
 	public NumericType round() {
 		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(0, BigDecimal.ROUND_HALF_UP);
@@ -497,6 +516,7 @@ public class XSDouble extends NumericType {
 	 * 
 	 * @return A XSDouble representing the closest long of the number stored.
 	 */
+	@Override
 	public NumericType round_half_to_even() {
 
 		return round_half_to_even(0);
@@ -510,16 +530,19 @@ public class XSDouble extends NumericType {
 	 *            An integer precision
 	 * @return A XSDouble representing the closest long of the number stored.
 	 */
+	@Override
 	public NumericType round_half_to_even(int precision) {
 		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
 		return new XSDouble(round.doubleValue());
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_DOUBLE;
 	}
 
+	@Override
     public Object getNativeValue() {
     	return double_value();
     }

@@ -72,10 +72,12 @@ public class AttributeTest extends AttrElemTest {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}
 
+	@Override
 	public AnyType createTestType(ResultSequence rs, StaticContext sc) {
 		if (name() == null && !wild()) {
 			return new AttrType();
@@ -131,10 +133,12 @@ public class AttributeTest extends AttrElemTest {
 		return anyType;
 	}
 
+	@Override
 	public boolean isWild() {
 		return wild();
 	}
 
+	@Override
 	public Class<? extends NodeType> getXDMClassType() {
 		return AttrType.class;
 	}

@@ -65,6 +65,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * 
 	 * @return "gDay" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "gDay";
 	}
@@ -144,6 +145,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * @return New ResultSequence consisting of the supplied day
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -238,6 +240,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * 
 	 * @return String representation of the stored day
 	 */
+	@Override
 	public String getStringValue() {
 		String ret = "---";
 
@@ -276,6 +279,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * 
 	 * @return "xs:gDay" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_G_DAY;
 	}
@@ -285,6 +289,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * 
 	 * @return Calendar representation of the day stored
 	 */
+	@Override
 	public Calendar calendar() {
 		return _calendar;
 	}
@@ -299,6 +304,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 *         otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		XSGDay val = (XSGDay) NumericType.get_single_type(arg, XSGDay.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
@@ -317,6 +323,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 		return _tz;
 	}	
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_GDAY;
 	}

@@ -72,10 +72,12 @@ public class FunctionLibraryImpl implements FunctionLibrary {
 		return name + "_" + ((arity < 0) ? "x" : arity);
 	}
 
+	@Override
 	public boolean functionExists(String name, int arity) {
 		return resolveFunction(name, arity) != null;
 	}
 
+	@Override
 	public org.eclipse.wst.xml.xpath2.api.Function resolveFunction(
 			String localName, int arity) {
 
@@ -97,6 +99,7 @@ public class FunctionLibraryImpl implements FunctionLibrary {
 		return null;
 	}
 
+	@Override
 	public String getNamespace() {
 		return _namespace;
 	}

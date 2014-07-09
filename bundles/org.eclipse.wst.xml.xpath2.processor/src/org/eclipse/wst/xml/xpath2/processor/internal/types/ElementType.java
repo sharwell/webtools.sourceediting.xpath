@@ -82,6 +82,7 @@ public class ElementType extends NodeType {
 	 * 
 	 * @return "element" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return ELEMENT;
 	}
@@ -91,6 +92,7 @@ public class ElementType extends NodeType {
 	 * 
 	 * @return String representation of the element being stored
 	 */
+	@Override
 	public String getStringValue() {
 		// XXX can we cache ?
 		if (_string_value != null)
@@ -106,6 +108,7 @@ public class ElementType extends NodeType {
 	 * 
 	 * @return New ResultSequence consisting of the element stored
 	 */
+	@Override
 	public ResultSequence typed_value() {
 		
 		TypeDefinition typeDef = getType();
@@ -160,12 +163,14 @@ public class ElementType extends NodeType {
 	 * 
 	 * @return QName representation of the name of the node
 	 */
+	@Override
 	public QName node_name() {
 		QName name = new QName(_value.getPrefix(), _value.getLocalName(), _value.getNamespaceURI());
 
 		return name;
 	}
 
+	@Override
 	public ResultSequence nilled() {
 
 		if (_value instanceof PSVIElementNSImpl) {
@@ -180,6 +185,7 @@ public class ElementType extends NodeType {
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	public boolean isID() {
 		return isElementType(SCHEMA_TYPE_ID);
 	}
@@ -187,6 +193,7 @@ public class ElementType extends NodeType {
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	public boolean isIDREF() {
 		return isElementType(SCHEMA_TYPE_IDREF);
 	}
@@ -196,6 +203,7 @@ public class ElementType extends NodeType {
 		return isType(typeInfo, typeName);
 	}
 	
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_UNTYPED;
 	}

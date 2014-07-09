@@ -22,49 +22,59 @@ public class BuiltinListTypeDefinition extends BuiltinTypeDefinition implements 
 		this.itemType = itemType;
 	}
 
+	@Override
 	public boolean isAbstract() {
 		return false;
 	}
 
+	@Override
 	public short getVariety() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public SimpleTypeDefinition getPrimitiveType() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public short getBuiltInKind() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public TypeDefinition getItemType() {
 		return itemType;
 	}
 
+	@Override
 	public List<SimpleTypeDefinition> getMemberTypes() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public short getOrdered() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
+	@Override
 	public boolean getFinite() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public boolean getBounded() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	@Override
 	public boolean getNumeric() {
 		// TODO Auto-generated method stub
 		return false;

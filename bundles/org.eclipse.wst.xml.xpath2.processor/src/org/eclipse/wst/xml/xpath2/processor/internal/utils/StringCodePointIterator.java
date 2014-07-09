@@ -61,6 +61,7 @@ public final class StringCodePointIterator implements CodePointIterator
      * Implements CodePointIterator.first() for String.
      * @see CodePointIterator#first
      */
+    @Override
     public int first()
     {
         pos = 0;
@@ -72,6 +73,7 @@ public final class StringCodePointIterator implements CodePointIterator
      * Implements CodePointIterator.last() for String.
      * @see CodePointIterator#last
      */
+    @Override
     public int last()
     {
         pos = end;
@@ -83,6 +85,7 @@ public final class StringCodePointIterator implements CodePointIterator
      * Implements CodePointIterator.current() for String.
      * @see CodePointIterator#current
      */
+    @Override
     public int current()
     {
         if (pos < end) {
@@ -101,6 +104,7 @@ public final class StringCodePointIterator implements CodePointIterator
      * Implements CodePointIterator.next() for String.
      * @see CodePointIterator#next
      */
+    @Override
     public int next()
     {
         if (pos < end - 1) {
@@ -119,6 +123,7 @@ public final class StringCodePointIterator implements CodePointIterator
      * Implements CodePointIterator.previous() for String.
      * @see CodePointIterator#previous
      */
+    @Override
     public int previous()
     {
         if (pos > 0) {
@@ -136,6 +141,7 @@ public final class StringCodePointIterator implements CodePointIterator
      * Implements CodePointIterator.getIndex() for String.
      * @see CodePointIterator#getIndex
      */
+    @Override
     public int getIndex()
     {
         return cpPos;
@@ -147,6 +153,7 @@ public final class StringCodePointIterator implements CodePointIterator
      * @return true if the given obj is the same as this
      * StringCodePointIterator object; false otherwise.
      */
+	@Override
 	public boolean equals(Object obj)
     {
         if (this == obj)
@@ -169,6 +176,7 @@ public final class StringCodePointIterator implements CodePointIterator
      * Computes a hashcode for this iterator.
      * @return A hash code
      */
+	@Override
 	public int hashCode()
     {
         return text.hashCode() ^ pos ^ end;
@@ -178,6 +186,7 @@ public final class StringCodePointIterator implements CodePointIterator
      * Creates a copy of this iterator.
      * @return A copy of this
      */
+	@Override
 	public Object clone()
     {
         try {

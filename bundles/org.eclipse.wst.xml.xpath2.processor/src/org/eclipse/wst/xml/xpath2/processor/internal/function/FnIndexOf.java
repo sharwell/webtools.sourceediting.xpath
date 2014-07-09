@@ -60,6 +60,7 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return index_of(args, ec.getDynamicContext());
 	}

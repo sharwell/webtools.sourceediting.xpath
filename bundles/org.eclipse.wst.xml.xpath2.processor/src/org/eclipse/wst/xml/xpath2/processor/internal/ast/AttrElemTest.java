@@ -74,6 +74,7 @@ public abstract class AttrElemTest extends KindTest {
 	 * 
 	 * @return Result of name test.
 	 */
+	@Override
 	public QName name() {
 		return _name;
 	}

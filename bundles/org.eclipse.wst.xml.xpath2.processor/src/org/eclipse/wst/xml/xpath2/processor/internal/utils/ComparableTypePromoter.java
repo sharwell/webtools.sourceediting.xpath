@@ -21,6 +21,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSTime;
 
 public class ComparableTypePromoter extends ScalarTypePromoter {
 
+	@Override
 	protected boolean checkCombination(Class<? extends AnyType> newType) {
 
 		Class<? extends AnyType> targetType = getTargetType();
@@ -37,6 +38,7 @@ public class ComparableTypePromoter extends ScalarTypePromoter {
 		return super.checkCombination(newType);
 	}
 
+	@Override
 	protected Class<? extends AnyType> substitute(Class<? extends AnyType> typeToConsider) {
 		if (typeToConsider == XSAnyURI.class || typeToConsider == XSString.class) {
 			return XSString.class;

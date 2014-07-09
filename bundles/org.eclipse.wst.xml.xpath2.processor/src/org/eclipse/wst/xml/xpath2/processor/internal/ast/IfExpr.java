@@ -44,6 +44,7 @@ public class IfExpr extends Expr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

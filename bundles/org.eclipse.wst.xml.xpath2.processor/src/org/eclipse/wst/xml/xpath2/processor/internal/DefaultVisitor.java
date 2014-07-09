@@ -77,6 +77,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 * @return the xpath expressions.
 	 */
 	@SuppressWarnings("deprecation")
+	@Override
 	public Object visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		for (Iterator<Expr> i = xp.iterator(); i.hasNext();) {
 			Expr e = i.next();
@@ -91,6 +92,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the For expression.
 	 * @return fex expression.
 	 */
+	@Override
 	public Object visit(ForExpr fex) {
 		for (Iterator<VarExprPair> i = fex.iterator(); i.hasNext();) {
 			i.next().expr().accept(this);
@@ -105,6 +107,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the Quantified expression.
 	 * @return qex expression.
 	 */
+	@Override
 	public Object visit(QuantifiedExpr qex) {
 		for (Iterator<VarExprPair> i = qex.iterator(); i.hasNext();) {
 			i.next().expr().accept(this);
@@ -119,6 +122,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the 'if' expression.
 	 * @return ifex expression.
 	 */
+	@Override
 	public Object visit(IfExpr ifex) {
 		for (Iterator<Expr> i = ifex.iterator(); i.hasNext();) {
 			i.next().accept(this);
@@ -133,6 +137,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the 'or' expression.
 	 * @return make logic expr(orex).
 	 */
+	@Override
 	public Object visit(OrExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -144,6 +149,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the 'and' expression.
 	 * @return make logic expr(andex).
 	 */
+	@Override
 	public Object visit(AndExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -155,6 +161,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the compare expression.
 	 * @return cmpex.
 	 */
+	@Override
 	public Object visit(CmpExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -166,6 +173,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the range expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(RangeExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -177,6 +185,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the add expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(AddExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -188,6 +197,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the sub expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(SubExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -199,6 +209,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the multiply expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(MulExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -210,6 +221,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the division expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(DivExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -222,6 +234,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            integer.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(IDivExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -233,6 +246,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the mod expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(ModExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -244,6 +258,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the union expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(UnionExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -255,6 +270,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the pipe expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(PipeExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -266,6 +282,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the intersect expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(IntersectExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -277,6 +294,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the except expression.
 	 * @return a new function.
 	 */
+	@Override
 	public Object visit(ExceptExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -288,6 +306,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the instance of expression.
 	 * @return a ioexp.
 	 */
+	@Override
 	public Object visit(InstOfExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -299,6 +318,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the treat as expression.
 	 * @return a taexp.
 	 */
+	@Override
 	public Object visit(TreatAsExpr ex) {
 		ex.left().accept(this);
 		ex.right().accept(this);
@@ -310,6 +330,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the castable expression.
 	 * @return cexp.
 	 */
+	@Override
 	public Object visit(CastableExpr cexp) {
 		cexp.left().accept(this);
 		cexp.right().accept(this);
@@ -321,6 +342,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the cast expression.
 	 * @return cexp.
 	 */
+	@Override
 	public Object visit(CastExpr cexp) {
 		cexp.left().accept(this);
 		cexp.right().accept(this);
@@ -332,6 +354,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the minus expression.
 	 * @return new sub expression
 	 */
+	@Override
 	public Object visit(MinusExpr e) {
 		e.arg().accept(this);
 		return null;
@@ -342,6 +365,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the plus expression.
 	 * @return new add expression
 	 */
+	@Override
 	public Object visit(PlusExpr e) {
 		e.arg().accept(this);
 		return null;
@@ -352,6 +376,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the xpath expression.
 	 * @return result.
 	 */
+	@Override
 	public Object visit(XPathExpr e) {
 		e.expr().accept(this);
 		e.next().accept(this);
@@ -363,6 +388,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the forward step.
 	 * @return e
 	 */
+	@Override
 	public Object visit(ForwardStep e) {
 		e.node_test().accept(this);
 		return null;
@@ -373,6 +399,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the reverse step.
 	 * @return e
 	 */
+	@Override
 	public Object visit(ReverseStep e) {
 		if (e.node_test() != null) {
 			e.node_test().accept(this);
@@ -385,6 +412,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the Name test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(NameTest e) {
 		return null;
 	}
@@ -394,6 +422,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the veriable reference.
 	 * @return e
 	 */
+	@Override
 	public Object visit(VarRef e) {
 		return null;
 	}
@@ -403,6 +432,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the string literal.
 	 * @return e
 	 */
+	@Override
 	public Object visit(StringLiteral e) {
 		return null;
 	}
@@ -412,6 +442,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the integer literal.
 	 * @return e
 	 */
+	@Override
 	public Object visit(IntegerLiteral e) {
 		return null;
 	}
@@ -421,6 +452,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the double literal.
 	 * @return e
 	 */
+	@Override
 	public Object visit(DoubleLiteral e) {
 		return null;
 	}
@@ -430,6 +462,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the decimal literal.
 	 * @return e
 	 */
+	@Override
 	public Object visit(DecimalLiteral e) {
 		return null;
 	}
@@ -439,6 +472,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the par expression.
 	 * @return e
 	 */
+	@Override
 	public Object visit(ParExpr e) {
 		for (Iterator<Expr> i = e.iterator(); i.hasNext();) {
 			i.next().accept(this);
@@ -451,6 +485,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the Cntx Item Expression.
 	 * @return new function
 	 */
+	@Override
 	public Object visit(CntxItemExpr e) {
 		return null;
 	}
@@ -460,6 +495,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the fucntion call.
 	 * @return e
 	 */
+	@Override
 	public Object visit(FunctionCall e) {
 		for (Iterator<Expr> i = e.iterator(); i.hasNext();) {
 			i.next().accept(this);
@@ -472,6 +508,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the single type.
 	 * @return e
 	 */
+	@Override
 	public Object visit(SingleType e) {
 		return e;
 	}
@@ -481,6 +518,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the sequence type.
 	 * @return e
 	 */
+	@Override
 	public Object visit(SequenceType e) {
 		ItemType it = e.item_type();
 		if (it != null)
@@ -493,6 +531,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the item type.
 	 * @return e
 	 */
+	@Override
 	public Object visit(ItemType e) {
 
 		switch (e.type()) {
@@ -513,6 +552,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the any kind test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(AnyKindTest e) {
 		return null;
 	}
@@ -522,6 +562,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the document test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(DocumentTest e) {
 
 		switch (e.type()) {
@@ -541,6 +582,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the text test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(TextTest e) {
 		return null;
 	}
@@ -550,6 +592,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the common test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(CommentTest e) {
 		return null;
 	}
@@ -559,6 +602,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the PI test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(PITest e) {
 		return null;
 	}
@@ -568,6 +612,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the attribute test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(AttributeTest e) {
 		return e;
 	}
@@ -577,6 +622,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the schema attribute test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(SchemaAttrTest e) {
 		return e;
 	}
@@ -586,6 +632,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the element test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(ElementTest e) {
 		return e;
 	}
@@ -595,6 +642,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the schema element test.
 	 * @return e
 	 */
+	@Override
 	public Object visit(SchemaElemTest e) {
 		return e;
 	}
@@ -604,6 +652,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the axis step.
 	 * @return e
 	 */
+	@Override
 	public Object visit(AxisStep e) {
 		e.step().accept(this);
 		for (Iterator<Collection<Expr>> i = e.iterator(); i.hasNext();) {
@@ -619,6 +668,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the filter expression.
 	 * @return e
 	 */
+	@Override
 	public Object visit(FilterExpr e) {
 		e.primary().accept(this);
 		for (Iterator<Collection<Expr>> i = e.iterator(); i.hasNext();) {

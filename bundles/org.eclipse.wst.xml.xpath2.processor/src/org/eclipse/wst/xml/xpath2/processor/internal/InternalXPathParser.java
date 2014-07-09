@@ -46,6 +46,7 @@ public class InternalXPathParser {
 			org.eclipse.wst.xml.xpath2.processor.ast.XPath xPath2 = (org.eclipse.wst.xml.xpath2.processor.ast.XPath) res.value;
 			if (isRootlessAccess) {
 				xPath2.accept(new DefaultVisitor() {
+					@Override
 					public Object visit(XPathExpr e) {
 						if (e.slashes() > 0) {
 							throw new XPathParserException("Access to root node is not allowed (set by caller)", null);

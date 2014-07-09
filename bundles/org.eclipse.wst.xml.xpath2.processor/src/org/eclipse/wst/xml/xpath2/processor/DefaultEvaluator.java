@@ -236,22 +236,27 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		_dc = dynamicContext;
 		_ec = new EvaluationContext() {
 			
+			@Override
 			public org.eclipse.wst.xml.xpath2.api.DynamicContext getDynamicContext() {
 				return _dc;
 			}
 			
+			@Override
 			public AnyType getContextItem() {
 				return _focus.context_item();
 			}
 			
+			@Override
 			public int getContextPosition() {
 				return _focus.position();
 			}
 		
+			@Override
 			public int getLastPosition() {
 				return _focus.last();
 			}
 			
+			@Override
 			public StaticContext getStaticContext() {
 				return _sc;
 			}
@@ -315,6 +320,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * @return result sequence.
 	 */
 	@Deprecated
+	@Override
 	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(XPathNode node) throws DynamicError {
 		return ResultSequenceUtil.newToOld(evaluate2(node));
 	}
@@ -364,6 +370,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * @return result sequence.
 	 */
 	@SuppressWarnings("deprecation")
+	@Override
 	public ResultSequence visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		ResultSequence rs = do_expr(xp.iterator());
 
@@ -501,6 +508,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the for expression.
 	 * @return a new function.
 	 */
+	@Override
 	public ResultSequence visit(ForExpr fex) {
 		// XXX
 		List<VarExprPair> pairs = new ArrayList<VarExprPair>(fex.ve_pairs());
@@ -516,6 +524,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the quantified expression.
 	 * @return a new function or null.
 	 */
+	@Override
 	public ResultSequence visit(QuantifiedExpr qex) {
 		List<VarExprPair> pairs = new ArrayList<VarExprPair>(qex.ve_pairs());
 
@@ -538,6 +547,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the if expression.
 	 * @return a ifex.then_clause().accept(this).
 	 */
+	@Override
 	public ResultSequence visit(IfExpr ifex) {
 		ResultSequence test_res = do_expr(ifex.iterator());
 
@@ -571,6 +581,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the or expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(OrExpr orex) {
 		boolean res[] = do_logic_exp(orex);
 
@@ -584,6 +595,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the and expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(AndExpr andex) {
 		boolean res[] = do_logic_exp(andex);
 
@@ -647,6 +659,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the compare expression.
 	 * @return a new function or null
 	 */
+	@Override
 	public ResultSequence visit(CmpExpr cmpex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(cmpex);
@@ -709,6 +722,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the range expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(RangeExpr rex) {
 		ResultSequence one = rex.left().accept(this);
 		ResultSequence two = rex.right().accept(this);
@@ -742,6 +756,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the and expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(AddExpr addex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(addex);
@@ -759,6 +774,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the sub expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(SubExpr subex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(subex);
@@ -776,6 +792,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the mul expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(MulExpr mulex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(mulex);
@@ -793,6 +810,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the division expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(DivExpr mulex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(mulex);
@@ -810,6 +828,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the integer division expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(IDivExpr mulex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(mulex);
@@ -827,6 +846,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the modular expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(ModExpr mulex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(mulex);
@@ -855,6 +875,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the union expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(UnionExpr unex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(unex);
@@ -873,6 +894,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * @return a new function
 	 */
 	// XXX same as above
+	@Override
 	public ResultSequence visit(PipeExpr pipex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(pipex);
@@ -890,6 +912,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the intersect expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(IntersectExpr iexpr) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(iexpr);
@@ -907,6 +930,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the except expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(ExceptExpr eexpr) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(eexpr);
@@ -924,6 +948,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the instance of expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(InstOfExpr ioexp) {
 		// get the value
 		ResultSequence rs = ioexp.left().accept(this);
@@ -959,6 +984,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the treat-as expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(TreatAsExpr taexp) {
 
 		ResultSequence rs = taexp.left().accept(this);
@@ -982,6 +1008,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the castable expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(CastableExpr cexp) {
 		boolean castable;
 		try {
@@ -1004,6 +1031,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the cast expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(CastExpr cexp) {
 
 		ResultSequence rs = cexp.left().accept(this);
@@ -1055,6 +1083,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the minus expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(MinusExpr e) {
 		ResultSequence rs = e.arg().accept(this);
 
@@ -1076,6 +1105,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the plus expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(PlusExpr e) {
 		ResultSequence rs = e.arg().accept(this);
 
@@ -1201,6 +1231,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the XPath expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(XPathExpr e) {
 		XPathExpr xp = e;
 
@@ -1294,6 +1325,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the forward step.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(ForwardStep e) {
 
 		// get context node
@@ -1329,6 +1361,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * @return a new function
 	 */
 	// XXX unify with top
+	@Override
 	public ResultSequence visit(ReverseStep e) {
 		// get context node
 		AnyType ci = focus().context_item();
@@ -1441,6 +1474,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is thename test.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(NameTest e) {
 		QName name = e.name();
 
@@ -1471,6 +1505,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the variable reference.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(VarRef e) {
 		ResultBuffer rs = new ResultBuffer();
 
@@ -1495,6 +1530,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the string literal.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(StringLiteral e) {
 		return e.value();
 	}
@@ -1506,6 +1542,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the integer literal.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(IntegerLiteral e) {
 		return e.value();
 	}
@@ -1517,6 +1554,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the double literal.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(DoubleLiteral e) {
 		return e.value();
 	}
@@ -1528,6 +1566,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the decimal literal.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(DecimalLiteral e) {
 		ResultBuffer rs = new ResultBuffer();
 
@@ -1542,6 +1581,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the parent expression.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(ParExpr e) {
 		return do_expr(e.iterator());
 	}
@@ -1553,6 +1593,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the context item expression.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(CntxItemExpr e) {
 		ResultBuffer rs = new ResultBuffer();
 
@@ -1571,6 +1612,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the function call.
 	 * @return a new function or null
 	 */
+	@Override
 	public ResultSequence visit(FunctionCall e) {
 		ArrayList<ResultSequence> args = new ArrayList<ResultSequence>();
 
@@ -1600,6 +1642,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the single type.
 	 * @return null
 	 */
+	@Override
 	public ResultSequence visit(SingleType e) {
 		return null;
 	}
@@ -1611,6 +1654,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the sequence type.
 	 * @return null
 	 */
+	@Override
 	public ResultSequence visit(SequenceType e) {
 		ItemType it = e.item_type();
 
@@ -1627,6 +1671,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the item type.
 	 * @return null
 	 */
+	@Override
 	public ResultSequence visit(ItemType e) {
 
 		switch (e.type()) {
@@ -1698,6 +1743,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the any kind test.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(AnyKindTest e) {
 		ResultSequence arg = _param._two;
 
@@ -1711,6 +1757,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the document test.
 	 * @return result sequence
 	 */
+	@Override
 	public ResultSequence visit(DocumentTest e) {
 		ResultSequence arg = _param._two;
 		int type = e.type();
@@ -1780,6 +1827,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the text test.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(TextTest e) {
 		ResultSequence arg = _param._two;
 
@@ -1794,6 +1842,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the text test.
 	 * @return a new function
 	 */
+	@Override
 	public ResultSequence visit(CommentTest e) {
 		ResultSequence arg = _param._two;
 
@@ -1807,6 +1856,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the PI test.
 	 * @return a argument
 	 */
+	@Override
 	public ResultSequence visit(PITest e) {
 		ResultSequence arg = _param._two;
 
@@ -1841,6 +1891,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the attribute test.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(AttributeTest e) {
 		// filter out all attrs
 		ResultSequence rs = kind_test(_param._two,
@@ -1877,6 +1928,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the schema attribute test.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(SchemaAttrTest e) {
 		// filter out all attrs
 		ResultSequence rs = kind_test(_param._two,
@@ -1910,6 +1962,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the element test.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(ElementTest e) {
 		// filter out all elements
 		ResultSequence rs = kind_test(_param._two,
@@ -1949,6 +2002,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the schema element test.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(SchemaElemTest e) {
 		// filter out all elements
 		ResultSequence rs = kind_test(_param._two,
@@ -2069,6 +2123,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the axis step.
 	 * @return a result sequence
 	 */
+	@Override
 	public ResultSequence visit(AxisStep e) {
 		ResultSequence rs = e.step().accept(this);
 
@@ -2102,6 +2157,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * @return a result sequence
 	 */
 	// XXX unify with top ?
+	@Override
 	public ResultSequence visit(FilterExpr e) {
 		ResultSequence rs = e.primary().accept(this);
 

@@ -136,16 +136,19 @@ public class FunctionLibrary implements org.eclipse.wst.xml.xpath2.api.FunctionL
 		return _dc;
 	}
 
+	@Override
 	public boolean functionExists(String name, int arity) {
 		return function_exists(new QName(null,name, namespace()), arity);
 	}
 
+	@Override
 	public org.eclipse.wst.xml.xpath2.api.Function resolveFunction(
 			String localName, int arity) {
 
 		return function(new QName("f", localName, namespace()), arity);
 	}
 
+	@Override
 	public String getNamespace() {
 		return namespace();
 	}

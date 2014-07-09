@@ -18,22 +18,27 @@ public class SimpleXercesTypeDefinition extends XercesTypeDefinition implements 
 		this.simpleTypeDefinition = ad;
 	}
 
+	@Override
 	public short getVariety() {
 		return simpleTypeDefinition.getVariety();
 	}
 
+	@Override
 	public SimpleTypeDefinition getPrimitiveType() {
 		return createTypeDefinition(simpleTypeDefinition.getPrimitiveType());
 	}
 
+	@Override
 	public short getBuiltInKind() {
 		return simpleTypeDefinition.getBuiltInKind();
 	}
 
+	@Override
 	public TypeDefinition getItemType() {
 		return createTypeDefinition(simpleTypeDefinition.getItemType());
 	}
 
+	@Override
 	public List<SimpleTypeDefinition> getMemberTypes() {
 		XSObjectList xsMemberTypes = simpleTypeDefinition.getMemberTypes();
 		List<SimpleTypeDefinition> memberTypes = new LinkedList<SimpleTypeDefinition>();
@@ -43,22 +48,27 @@ public class SimpleXercesTypeDefinition extends XercesTypeDefinition implements 
 		return memberTypes;
 	}
 
+	@Override
 	public short getOrdered() {
 		return simpleTypeDefinition.getOrdered();
 	}
 
+	@Override
 	public boolean getFinite() {
 		return simpleTypeDefinition.getFinite();
 	}
 
+	@Override
 	public boolean getBounded() {
 		return simpleTypeDefinition.getBounded();
 	}
 
+	@Override
 	public boolean getNumeric() {
 		return simpleTypeDefinition.getNumeric();
 	}
 
+	@Override
 	public Class<?> getNativeType() {
 		return Node.class;
 	}

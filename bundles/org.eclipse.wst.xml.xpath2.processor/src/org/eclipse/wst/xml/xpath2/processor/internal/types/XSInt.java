@@ -47,6 +47,7 @@ public class XSInt extends XSLong {
 	 * 
 	 * @return "xs:int" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_INT;
 	}
@@ -56,6 +57,7 @@ public class XSInt extends XSLong {
 	 * 
 	 * @return "int" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "int";
 	}
@@ -69,6 +71,7 @@ public class XSInt extends XSLong {
 	 * @return New ResultSequence consisting of the 'int' supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 
 		if (arg.empty())
@@ -97,6 +100,7 @@ public class XSInt extends XSLong {
 
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_INT;
 	}

@@ -63,6 +63,7 @@ public class FnConcat extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the concatenation of the arguments.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return concat(args);
 	}

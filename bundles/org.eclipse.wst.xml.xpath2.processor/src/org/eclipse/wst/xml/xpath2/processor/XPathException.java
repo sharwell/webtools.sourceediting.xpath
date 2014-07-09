@@ -43,6 +43,7 @@ public class XPathException extends RuntimeException {
 		return _reason;
 	}
 	
+	@Override
 	public String getMessage() {
 		return _reason;
 	}

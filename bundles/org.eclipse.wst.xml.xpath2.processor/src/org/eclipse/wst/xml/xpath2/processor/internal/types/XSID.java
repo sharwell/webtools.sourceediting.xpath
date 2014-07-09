@@ -35,14 +35,17 @@ public class XSID extends XSNCName {
 		super();
 	}
 
+	@Override
 	public String string_type() {
 		return XS_ID;
 	}
 	
+	@Override
 	public String type_name() {
 		return "ID";
 	}
 	
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -58,6 +61,7 @@ public class XSID extends XSNCName {
 		return new XSID(strValue);
 	}
 	
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_ID;
 	}

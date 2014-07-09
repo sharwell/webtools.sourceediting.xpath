@@ -20,10 +20,12 @@ public class SimpleAtomicItemTypeImpl implements AtomicItemType {
 		this.occurrence = occurrence;
 	}
 
+	@Override
 	public short getOccurrence() {
 		return this.occurrence;
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return typeDefinition;
 	}

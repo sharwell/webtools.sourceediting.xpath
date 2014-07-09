@@ -69,6 +69,7 @@ public class FnEncodeForURI extends AbstractURIFunction {
 	 * @return The evaluation of the arguments after application of the URI
 	 *         escaping rules.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return escape_uri(args, true, true);
 	}

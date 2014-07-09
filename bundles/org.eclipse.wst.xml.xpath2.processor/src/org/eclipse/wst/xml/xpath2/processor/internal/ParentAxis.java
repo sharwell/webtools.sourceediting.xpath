@@ -33,6 +33,7 @@ public class ParentAxis extends ReverseAxis {
 	 * @throws dc
 	 *             is the Dynamic context.
 	 */
+	@Override
 	public void iterate(NodeType node, ResultBuffer copyInto, Node limitNode) {
 		Node n = node.node_value();
 		
@@ -65,6 +66,7 @@ public class ParentAxis extends ReverseAxis {
 		return parent;
 	}
 	
+	@Override
 	public String name() {
 		return "parent";
 	}

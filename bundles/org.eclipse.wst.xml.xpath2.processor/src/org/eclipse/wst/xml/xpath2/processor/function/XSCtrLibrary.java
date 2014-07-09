@@ -108,18 +108,22 @@ public class XSCtrLibrary extends ConstructorFL {
 
 		add_abstract_type("anyAtomicType", new AnyAtomicType() {
 
+			@Override
 			public String string_type() {
 				return null;
 			}
 
+			@Override
 			public String getStringValue() {
 				return null;
 			}
 			
+			@Override
 			public TypeDefinition getTypeDefinition() {
 				return null;
 			}
 
+			@Override
 			public ItemType sequenceType() {
 				return null;
 			}

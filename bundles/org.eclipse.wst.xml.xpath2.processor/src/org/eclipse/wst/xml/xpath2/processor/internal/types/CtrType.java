@@ -37,6 +37,7 @@ public abstract class CtrType extends AnyAtomicType {
 	 */
 	public abstract String type_name();
 	
+	@Override
 	public Object getNativeValue() {
 		return string_value();
 	}

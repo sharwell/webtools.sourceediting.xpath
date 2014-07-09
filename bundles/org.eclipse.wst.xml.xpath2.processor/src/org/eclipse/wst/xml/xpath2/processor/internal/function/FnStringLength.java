@@ -68,6 +68,7 @@ public class FnStringLength extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the string length of the arguments.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return string_length(args, ec);
 	}

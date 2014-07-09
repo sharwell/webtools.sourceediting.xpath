@@ -49,6 +49,7 @@ public class XSUnsignedInt extends XSUnsignedLong {
 	 * 
 	 * @return "xs:unsignedInt" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_UNSIGNED_INT;
 	}
@@ -58,6 +59,7 @@ public class XSUnsignedInt extends XSUnsignedLong {
 	 * 
 	 * @return "unsignedInt" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "unsignedInt";
 	}
@@ -71,6 +73,7 @@ public class XSUnsignedInt extends XSUnsignedLong {
 	 * @return New ResultSequence consisting of the 'unsignedInt' supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -100,10 +103,12 @@ public class XSUnsignedInt extends XSUnsignedLong {
 
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_UNSIGNEDINT;
 	}
 
+	@Override
 	public Number getNativeValue() {
 		return getValue().intValue();
 	}

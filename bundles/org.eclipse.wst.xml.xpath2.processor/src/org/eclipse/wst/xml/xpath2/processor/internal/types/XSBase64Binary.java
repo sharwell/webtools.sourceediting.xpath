@@ -52,6 +52,7 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 * 
 	 * @return "xs:base64Binary" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_BASE64_BINARY;
 	}
@@ -61,6 +62,7 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 * 
 	 * @return "base64Binary" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "base64Binary";
 	}
@@ -71,6 +73,7 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 * 
 	 * @return The base64Binary stored
 	 */
+	@Override
 	public String getStringValue() {
 		return _value;
 	}
@@ -93,6 +96,7 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 * @return New ResultSequence representing base64Binary value 
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 
 		if (arg.empty())
@@ -150,6 +154,7 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 	 *         
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
       String valToCompare = arg.getStringValue();
       
@@ -173,10 +178,12 @@ public class XSBase64Binary extends CtrType implements CmpEq {
       return true;
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_BASE64BINARY;
 	}
 
+	@Override
 	public Object getNativeValue() {
 		return Base64.decode(_value);
 	}

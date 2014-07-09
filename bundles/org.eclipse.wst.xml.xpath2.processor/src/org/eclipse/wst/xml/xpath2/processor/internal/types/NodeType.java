@@ -60,6 +60,7 @@ public abstract class NodeType extends AnyType {
 	protected final TypeModel _typeModel;
 
 	public static final Comparator<NodeType> NODE_COMPARATOR = new Comparator<NodeType>() {
+		@Override
 		public int compare(NodeType o1, NodeType o2) {
 			return compare_node(o1, o2);
 		}
@@ -400,6 +401,7 @@ public abstract class NodeType extends AnyType {
 		}
 	}
 
+	@Override
 	public Object getNativeValue() {
 		return node_value();
 	}

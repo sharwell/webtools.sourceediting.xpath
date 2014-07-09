@@ -57,6 +57,7 @@ public class XPath extends XPathNode implements XPath2Expression {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}
@@ -73,6 +74,7 @@ public class XPath extends XPathNode implements XPath2Expression {
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public Collection<QName> getFreeVariables() {
 		return _freeVariables;
 	}
@@ -87,6 +89,7 @@ public class XPath extends XPathNode implements XPath2Expression {
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public Collection<QName> getResolvedFunctions() {
 		return _resolvedFunctions;
 	}
@@ -101,6 +104,7 @@ public class XPath extends XPathNode implements XPath2Expression {
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public Collection<String> getAxes() {
 		return _axes;
 	}
@@ -115,6 +119,7 @@ public class XPath extends XPathNode implements XPath2Expression {
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public boolean isRootPathUsed() {
 		return _rootUsed;
 	}
@@ -129,6 +134,7 @@ public class XPath extends XPathNode implements XPath2Expression {
 	/**
 	 * @since 2.0
 	 */
+	@Override
 	public ResultSequence evaluate(DynamicContext dynamicContext, Node[] contextItems) {
 		if (_staticContext == null) throw new IllegalStateException("Static Context not set yet!");
 		return new DefaultEvaluator(_staticContext, dynamicContext, contextItems).evaluate2(this);

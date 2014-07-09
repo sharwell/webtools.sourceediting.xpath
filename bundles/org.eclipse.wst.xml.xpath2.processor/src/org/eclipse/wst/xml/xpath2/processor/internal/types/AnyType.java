@@ -49,6 +49,7 @@ public abstract class AnyType implements SingleItemSequence {
 	 * 
 	 * @return Value as a string
 	 */
+	@Override
 	public abstract String getStringValue();
 	
 	public String string_value() {
@@ -62,24 +63,30 @@ public abstract class AnyType implements SingleItemSequence {
 	 */
 	public abstract TypeDefinition getTypeDefinition();
 
+	@Override
 	public boolean empty() {
 		return false;
 	}
 	
+	@Override
 	public Iterator<Item> iterator() {
 		return Collections.singletonList((Item)this).iterator();
 	}
 	
+	@Override
 	public ItemType getItemType() {
 		return new SimpleAtomicItemTypeImpl(getTypeDefinition());
 	}
 	
+	@Override
 	abstract public Object getNativeValue();
 	
+	@Override
 	public int size() {
 		return 1;
 	}
 
+	@Override
 	public Item item(int index) {
 		checkIOOB(index);
 		return this;
@@ -89,23 +96,28 @@ public abstract class AnyType implements SingleItemSequence {
 		if (index != 0) throw new IndexOutOfBoundsException("Index out of bounds, index = " + index + ", length = 1");
 	}
 
+	@Override
 	public Object value(int index) {
 		checkIOOB(index);
 		return getNativeValue();
 	}
+	@Override
 	public ItemType itemType(int index) {
 		checkIOOB(index);
 		return getItemType();
 	}
 	
+	@Override
 	public AnyType first() {
 		return this;
 	}
 
+	@Override
 	public Object firstValue() {
 		return this.getNativeValue();
 	}
 
+	@Override
 	public ItemType sequenceType() {
 		return new SimpleAtomicItemTypeImpl(getTypeDefinition(), ItemType.OCCURRENCE_ONE);
 	}

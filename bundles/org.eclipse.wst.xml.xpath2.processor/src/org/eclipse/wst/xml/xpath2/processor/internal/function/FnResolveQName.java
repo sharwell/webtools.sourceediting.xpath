@@ -53,6 +53,7 @@ public class FnResolveQName extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return resolve_QName(args, ec.getStaticContext());
 	}

@@ -81,6 +81,7 @@ Cloneable {
 	 * 
 	 * @return "date" which is the dataype name
 	 */
+	@Override
 	public String type_name() {
 		return "date";
 	}
@@ -90,6 +91,7 @@ Cloneable {
 	 * 
 	 * @return A copy of this date representation
 	 */
+	@Override
 	public Object clone() throws CloneNotSupportedException {
 		Calendar c = (Calendar) calendar().clone();
 		XSDuration t = tz();
@@ -152,6 +154,7 @@ Cloneable {
 	 * @throws DynamicError
 	 * @return A new result sequence consisting of the date value supplied.
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -254,6 +257,7 @@ Cloneable {
 	 * 
 	 * @return String representation of the date stored
 	 */
+	@Override
 	public String getStringValue() {
 		String ret = "";
 
@@ -301,6 +305,7 @@ Cloneable {
 	 * 
 	 * @return "xs:date" which is the datatype full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_DATE;
 	}
@@ -310,6 +315,7 @@ Cloneable {
 	 * 
 	 * @return Calendar representation of the date stored
 	 */
+	@Override
 	public Calendar calendar() {
 		return _calendar;
 	}
@@ -334,6 +340,7 @@ Cloneable {
 	 * @return True if the two dates are represent the same exact point in time.
 	 *         False otherwise.
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		XSDate val = (XSDate) NumericType.get_single_type((Item)arg, XSDate.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
@@ -351,6 +358,7 @@ Cloneable {
 	 * @return True if in time, this date lies before the date supplied. False
 	 *         otherwise.
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSDate val = (XSDate) NumericType.get_single_type((Item)arg, XSDate.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
@@ -368,6 +376,7 @@ Cloneable {
 	 * @return True if in time, this date lies after the date supplied. False
 	 *         otherwise.
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSDate val = (XSDate) NumericType.get_single_type((Item)arg, XSDate.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
@@ -403,6 +412,7 @@ Cloneable {
 	 * @return New ResultSequence consisting of the result of the mathematical
 	 *         minus operation.
 	 */
+	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		if (arg.size() != 1)
 			throw DynamicError.throw_type_error();
@@ -484,6 +494,7 @@ Cloneable {
 	 * @return New ResultSequence consisting of the result of the mathematical
 	 *         minus operation.
 	 */
+	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
 		if (arg.size() != 1)
 			DynamicError.throw_type_error();
@@ -523,6 +534,7 @@ Cloneable {
 		}
 
 	}
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_DATE;
 	}

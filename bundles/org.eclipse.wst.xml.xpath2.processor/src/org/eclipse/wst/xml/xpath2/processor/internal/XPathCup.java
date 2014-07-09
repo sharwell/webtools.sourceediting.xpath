@@ -175,6 +175,7 @@ public class XPathCup extends java_cup.runtime.lr_parser {
     "\002\004\003\000\002\004\003\000\002\004\003" });
 
   /** Access to production table. */
+  @Override
   public short[][] production_table() {return _production_table;}
 
   /** Parse-action table. */
@@ -2793,6 +2794,7 @@ public class XPathCup extends java_cup.runtime.lr_parser {
     "\121\uffad\122\uffad\123\uffad\124\uffad\131\uffad\001\002" });
 
   /** Access to parse-action table. */
+  @Override
   public short[][] action_table() {return _action_table;}
 
   /** <code>reduce_goto</code> table. */
@@ -3245,18 +3247,21 @@ public class XPathCup extends java_cup.runtime.lr_parser {
     "" });
 
   /** Access to <code>reduce_goto</code> table. */
+  @Override
   public short[][] reduce_table() {return _reduce_table;}
 
   /** Instance of action encapsulation class. */
   protected CUP$XPathCup$actions action_obj;
 
   /** Action encapsulation object initializer. */
+  @Override
   protected void init_actions()
     {
       action_obj = new CUP$XPathCup$actions(this);
     }
 
   /** Invoke a user supplied parse action. */
+  @Override
   public java_cup.runtime.Symbol do_action(
     int                        act_num,
     java_cup.runtime.lr_parser parser,
@@ -3269,19 +3274,24 @@ public class XPathCup extends java_cup.runtime.lr_parser {
   }
 
   /** Indicates start state. */
+  @Override
   public int start_state() {return 0;}
   /** Indicates start production. */
+  @Override
   public int start_production() {return 1;}
 
   /** <code>EOF</code> Symbol index. */
+  @Override
   public int EOF_sym() {return 0;}
 
   /** <code>error</code> Symbol index. */
+  @Override
   public int error_sym() {return 1;}
 
 
 
 
+@Override
 public void report_error(String message, Object info) {
 	String err = "Parser error: ";
 

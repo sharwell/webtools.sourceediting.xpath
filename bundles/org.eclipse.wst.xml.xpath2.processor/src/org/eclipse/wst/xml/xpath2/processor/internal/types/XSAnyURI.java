@@ -57,6 +57,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "xs:anyURI", the full type pathname of this datatype
 	 */
+	@Override
 	public String string_type() {
 		return XS_ANY_URI;
 	}
@@ -66,6 +67,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @return "anyURI", the type name of this datatype
 	 */
+	@Override
 	public String type_name() {
 		return "anyURI";
 	}
@@ -77,6 +79,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @return the URI value held by this instance of the URI datatype as a
 	 *         String
 	 */
+	@Override
 	public String string_value() {
 		return _value;
 	}
@@ -90,6 +93,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 * @return new result sequence consisting of the URI supplied
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -115,6 +119,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 *         otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		if (arg instanceof XSAnyURI || arg instanceof XSString) {
 			if (this.string_value().equals(arg.string_value())) {
@@ -132,6 +137,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * must be of type xs:anyURI (or, by promotion of this, xs:string)
 	 * @since 1.1
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		if (!(arg instanceof XSAnyURI || arg instanceof XSString)) {
 			throw DynamicError.throw_type_error();	
@@ -152,6 +158,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * 
 	 * @since 1.1
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		if (!(arg instanceof XSAnyURI || arg instanceof XSString)) {
 			throw DynamicError.throw_type_error();
@@ -166,10 +173,12 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 		return false;
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_ANYURI;
 	}
 
+	@Override
 	public String getStringValue() {
 		return _value;
 	}

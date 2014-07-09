@@ -48,6 +48,7 @@ public class XSUntypedAtomic extends CtrType {
 	 * 
 	 * @return "xs:untypedAtomic" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_UNTYPED_ATOMIC;
 	}
@@ -58,10 +59,12 @@ public class XSUntypedAtomic extends CtrType {
 	 * 
 	 * @return String representation of the value of this untyped atomic node
 	 */
+	@Override
 	public String getStringValue() {
 		return _value;
 	}
 
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -70,14 +73,17 @@ public class XSUntypedAtomic extends CtrType {
 		return new XSUntypedAtomic(aat.getStringValue());
 	}
 
+	@Override
 	public String type_name() {
 		return "untypedAtomic";
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_UNTYPEDATOMIC;
 	}
 
+	@Override
 	public Object getNativeValue() {
 		return _value;
 	}

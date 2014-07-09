@@ -126,15 +126,18 @@ public class BuiltinTypeLibrary {
 	
 	public static final TypeModel BUILTIN_TYPES = new TypeModel() {
 
+		@Override
 		public TypeDefinition lookupType(String namespace, String typeName) {
 			if (! BuiltinTypeDefinition.XS_NS.equals(namespace)) return null;
 			return (TypeDefinition) builtinTypes.get(typeName);
 		}
 
+		@Override
 		public TypeDefinition lookupElementDeclaration(String namespace, String elementName) {
 			return null;
 		}
 
+		@Override
 		public TypeDefinition lookupAttributeDeclaration(String namespace, String attributeName) {
 			return null;
 		}
@@ -198,6 +201,7 @@ public class BuiltinTypeLibrary {
 
 		private void addType(BuiltinTypeDefinition btd) { builtinTypes.put(btd.getName(), btd); }
 
+		@Override
 		public TypeDefinition getType(Node node) {
 			return null;
 		}

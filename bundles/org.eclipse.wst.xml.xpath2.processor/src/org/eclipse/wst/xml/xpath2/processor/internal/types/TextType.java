@@ -43,6 +43,7 @@ public class TextType extends NodeType {
 	 * 
 	 * @return "text" which is the datatype's name
 	 */
+	@Override
 	public String string_type() {
 		return TEXT;
 	}
@@ -52,6 +53,7 @@ public class TextType extends NodeType {
 	 * 
 	 * @return String representation of the actual value stored
 	 */
+	@Override
 	public String getStringValue() {
 		return _value.getNodeValue();
 	}
@@ -61,6 +63,7 @@ public class TextType extends NodeType {
 	 * 
 	 * @return New ResultSequence consisting of the Text value stored
 	 */
+	@Override
 	public ResultSequence typed_value() {
 		return new XSUntypedAtomic(_value.getData());
 	}
@@ -70,6 +73,7 @@ public class TextType extends NodeType {
 	 * 
 	 * @return null (no user defined name for this node gets defined)
 	 */
+	@Override
 	public QName node_name() {
 		return null;
 	}
@@ -78,6 +82,7 @@ public class TextType extends NodeType {
 	 * Will always return false;
 	 * @since 1.1
 	 */
+	@Override
 	public boolean isID() {
 
 		return false;
@@ -87,10 +92,12 @@ public class TextType extends NodeType {
 	 * 
 	 * @since 1.1
 	 */
+	@Override
 	public boolean isIDREF() {
 		return false;
 	}
 	
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_UNTYPEDATOMIC;
 	}

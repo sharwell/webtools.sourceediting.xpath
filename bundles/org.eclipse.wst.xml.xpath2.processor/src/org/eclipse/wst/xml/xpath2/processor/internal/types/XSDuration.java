@@ -113,10 +113,12 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 		this(0, 0, 0, 0, 0, 0.0, false);
 	}
 
+	@Override
 	public String type_name() {
 		return "duration";
 	}
 
+	@Override
 	public String string_type() {
 		return XS_DURATION;
 	}
@@ -126,6 +128,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * 
 	 * @return String representation of the duration stored
 	 */
+	@Override
 	public String getStringValue() {
 		String ret = "";
 		boolean did_something = false;
@@ -232,6 +235,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * @return True if they both represent the duration of time. False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		XSDuration val = (XSDuration) NumericType.get_single_type(arg,
 				XSDuration.class);
@@ -248,6 +252,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 *         stored. False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSDuration val = (XSDuration) NumericType.get_single_type(arg,
 				XSDayTimeDuration.class);
@@ -264,6 +269,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 *         stored. False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSDuration val = (XSDuration) NumericType.get_single_type(arg,
 				XSDayTimeDuration.class);
@@ -322,6 +328,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * @return New ResultSequence consisting of the time duration extracted
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -462,6 +469,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 				negative);
 	}
 
+	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return new XSDuration(year(), month(), days(), hours(), minutes(),
 				seconds(), negative());
@@ -507,10 +515,12 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	}
 	
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_DURATION;
 	}
 
+	@Override
 	public Object getNativeValue() {
 		return _datatypeFactory.newDuration(! negative(), year(), month(), days(), hours(), minutes(), (int)seconds());
 	}

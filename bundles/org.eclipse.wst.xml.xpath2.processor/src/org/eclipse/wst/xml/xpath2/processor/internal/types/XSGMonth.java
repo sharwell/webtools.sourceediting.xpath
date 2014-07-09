@@ -64,6 +64,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * 
 	 * @return "gMonth" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "gMonth";
 	}
@@ -140,6 +141,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * @return New ResultSequence consisting of the supplied month
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -234,6 +236,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * 
 	 * @return String representation of the stored month
 	 */
+	@Override
 	public String getStringValue() {
 		String ret = "--";
 
@@ -271,6 +274,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * 
 	 * @return "xs:gMonth" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_G_MONTH;
 	}
@@ -280,6 +284,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * 
 	 * @return Calendar representation of the month stored
 	 */
+	@Override
 	public Calendar calendar() {
 		return _calendar;
 	}
@@ -294,6 +299,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 *         otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		XSGMonth val = (XSGMonth) NumericType.get_single_type(arg,
 				XSGMonth.class);
@@ -313,6 +319,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 		return _tz;
 	}	
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_GMONTH;
 	}

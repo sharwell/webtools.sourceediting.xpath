@@ -88,6 +88,7 @@ public class FnTranslate extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the arguments being translated.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return translate(args);
 	}

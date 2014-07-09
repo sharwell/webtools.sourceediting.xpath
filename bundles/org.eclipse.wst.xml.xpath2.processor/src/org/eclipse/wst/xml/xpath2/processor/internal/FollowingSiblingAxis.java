@@ -30,6 +30,7 @@ public class FollowingSiblingAxis extends ForwardAxis {
 	 * @param node
 	 *            is the type of node.
 	 */
+	@Override
 	public void iterate(NodeType node, ResultBuffer copyInto, Node limitNode) {
 		// XXX check for attribute / namespace node... if so return
 		// empty sequence
@@ -47,6 +48,7 @@ public class FollowingSiblingAxis extends ForwardAxis {
 		} while (iterNode != null);
 	}
 	
+	@Override
 	public String name() {
 		return "following-sibling";
 	}

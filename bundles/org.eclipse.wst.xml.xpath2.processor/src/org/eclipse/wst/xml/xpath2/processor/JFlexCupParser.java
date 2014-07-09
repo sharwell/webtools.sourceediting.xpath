@@ -28,6 +28,7 @@ public class JFlexCupParser implements XPathParser {
 	 * @return the xpath value.
 	 */
 	@SuppressWarnings("deprecation")
+	@Override
 	public org.eclipse.wst.xml.xpath2.processor.ast.XPath parse(String xpath) throws XPathParserException {
 
 		return new InternalXPathParser().parse(xpath, false);
@@ -45,6 +46,7 @@ public class JFlexCupParser implements XPathParser {
 	 * @since 2.0
 	 */
 	@SuppressWarnings("deprecation")
+	@Override
 	public org.eclipse.wst.xml.xpath2.processor.ast.XPath parse(String xpath, boolean isRootlessAccess) throws XPathParserException {
 
 		return new InternalXPathParser().parse(xpath, isRootlessAccess);

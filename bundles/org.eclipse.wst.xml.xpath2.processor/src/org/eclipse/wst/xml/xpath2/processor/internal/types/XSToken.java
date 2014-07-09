@@ -47,6 +47,7 @@ public class XSToken extends XSNormalizedString {
 	 * 
 	 * @return "xs:token" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_TOKEN;
 	}
@@ -56,6 +57,7 @@ public class XSToken extends XSNormalizedString {
 	 * 
 	 * @return "token" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "token";
 	}
@@ -69,6 +71,7 @@ public class XSToken extends XSNormalizedString {
 	 * @return New ResultSequence consisting of the supplied String
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 		   return ResultBuffer.EMPTY;
@@ -87,6 +90,7 @@ public class XSToken extends XSNormalizedString {
 	/*
 	 * Does the string in context satisfies constraints of the datatype, xs:token. 
 	 */
+	@Override
 	protected boolean isSatisfiesConstraints(String srcString) {
 	   
 		boolean isToken = true;
@@ -102,6 +106,7 @@ public class XSToken extends XSNormalizedString {
 		  
 	} // isSatisfiesConstraints
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_TOKEN;
 	}

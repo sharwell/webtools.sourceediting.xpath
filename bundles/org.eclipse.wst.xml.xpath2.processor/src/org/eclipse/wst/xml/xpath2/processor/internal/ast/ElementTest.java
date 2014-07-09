@@ -96,6 +96,7 @@ public class ElementTest extends AttrElemTest {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}
@@ -109,6 +110,7 @@ public class ElementTest extends AttrElemTest {
 		return _qmark;
 	}
 
+	@Override
 	public AnyType createTestType(ResultSequence rs, StaticContext sc) {
 
 		if (name() == null && !wild()) {
@@ -169,10 +171,12 @@ public class ElementTest extends AttrElemTest {
 		return anyType;
 	}
 
+	@Override
 	public boolean isWild() {
 		return wild();
 	}
 
+	@Override
 	public Class<? extends NodeType> getXDMClassType() {
 		return ElementType.class;
 	}
@@ -183,10 +187,12 @@ public class ElementTest extends AttrElemTest {
 			this.node = node;
 		}
 
+		@Override
 		public Node item(int index) {
 			return node;
 		}
 
+		@Override
 		public int getLength() {
 			if (node != null) {
 				return 1;

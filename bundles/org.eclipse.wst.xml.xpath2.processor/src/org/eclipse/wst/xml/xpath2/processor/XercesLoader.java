@@ -83,6 +83,7 @@ public class XercesLoader implements DOMLoader {
 	 *             DOM loader exception.
 	 * @return The loaded document.
 	 */
+	@Override
 	public Document load(InputStream in) throws DOMLoaderException {
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -106,16 +107,19 @@ public class XercesLoader implements DOMLoader {
 
 			if (_validating) {
 				builder.setErrorHandler(new ErrorHandler() {
+					@Override
 					public void fatalError(SAXParseException e)
 							throws SAXException {
 						throw e;
 					}
 
+					@Override
 					public void error(SAXParseException e)
 							throws SAXParseException {
 						throw e;
 					}
 
+					@Override
 					public void warning(SAXParseException e)
 							throws SAXParseException {
 						throw e; // XXX
@@ -143,6 +147,7 @@ public class XercesLoader implements DOMLoader {
 	 * @param x
 	 *            is the value to set the validating boolean to.
 	 */
+	@Override
 	public void set_validating(boolean x) {
 		_validating = x;
 	}

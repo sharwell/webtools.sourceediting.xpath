@@ -37,6 +37,7 @@ public class DoubleLiteral extends NumericLiteral {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

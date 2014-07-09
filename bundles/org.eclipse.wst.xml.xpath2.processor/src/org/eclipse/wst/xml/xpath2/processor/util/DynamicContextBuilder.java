@@ -80,6 +80,7 @@ public class DynamicContextBuilder implements DynamicContext {
 	 * 
 	 * @return an xs:integer _tz
 	 */
+	@Override
 	public Duration getTimezoneOffset() {
 		return _tz;
 	}
@@ -87,6 +88,7 @@ public class DynamicContextBuilder implements DynamicContext {
 	/**
 	 * Gets the Current stable date time from the dynamic context.
 	 */
+	@Override
 	public GregorianCalendar getCurrentDateTime() {
 		if (_currentDateTime == null) {
 			_currentDateTime = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
@@ -94,14 +96,17 @@ public class DynamicContextBuilder implements DynamicContext {
 		return _currentDateTime;
 	}
 
+	@Override
 	public Node getLimitNode() {
 		return null;
 	}
 
+	@Override
 	public ResultSequence getVariable(QName name) {
 		return _variables.get(name);
 	}
 
+	@Override
 	public Document getDocument(URI resolved) {
 		Document doc = null;
 		if (_loaded_documents.containsKey(resolved)) {
@@ -132,6 +137,7 @@ public class DynamicContextBuilder implements DynamicContext {
 		}
 	}
 
+	@Override
 	public URI resolveUri(String uri) {
 		try {
 			URI realURI = URI.create(uri);
@@ -144,10 +150,12 @@ public class DynamicContextBuilder implements DynamicContext {
 		}
 	}
 
+	@Override
 	public Map<String, List<Document>> getCollections() {
 		return _collections;
 	}
 
+	@Override
 	public List<Document> getDefaultCollection() {
 		return getCollections().get(FnCollection.DEFAULT_COLLECTION_URI);
 	}
@@ -166,6 +174,7 @@ public class DynamicContextBuilder implements DynamicContext {
 		this._collections = map;
 	}
 	
+	@Override
 	public CollationProvider getCollationProvider() {
 		return _staticContext.getCollationProvider();
 	}

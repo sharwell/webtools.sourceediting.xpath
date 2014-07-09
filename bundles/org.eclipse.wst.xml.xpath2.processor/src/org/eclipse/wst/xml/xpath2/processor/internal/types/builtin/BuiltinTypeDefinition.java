@@ -68,24 +68,29 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 		this(new QName(XS_NS, name), implementationClass, nativeType, baseType);
 	}
 	
+	@Override
 	public String getNamespace() {
 		return name.getNamespaceURI();
 	}
 
+	@Override
 	public String getName() {
 		return name.getLocalPart();
 	}
 
+	@Override
 	public TypeDefinition getBaseType() {
 		return baseType;
 	}
 
+	@Override
 	public boolean derivedFromType(TypeDefinition ancestorType, short derivationMethod) {
 		if (ancestorType == this) return true;
 		if (baseType == null) return false;
 		return baseType.derivedFromType(ancestorType, derivationMethod);
 	}
 
+	@Override
 	public boolean derivedFrom(String namespace, String name, short derivationMethod) {
 		if (namespace.equals(getNamespace()) && name.equals(getName())) return true;
 		
@@ -94,10 +99,12 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 		return baseType.derivedFrom(namespace, name, derivationMethod);
 	}
 
+	@Override
 	public List<Short> getSimpleTypes(Attr attr) {
 		return Collections.emptyList();
 	}
 
+	@Override
 	public List<Short> getSimpleTypes(Element attr) {
 		return Collections.emptyList();
 	}
@@ -105,6 +112,7 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.AtomicTypeDefinition#construct(org.eclipse.wst.xml.xpath2.api.ResultSequence)
 	 */
+	@Override
 	public SingleItemSequence construct(ResultSequence rs) {
 		try {
 			if (implementationClass == null) throw new XPathError("Type " + getName() + " is abstract!");
@@ -118,6 +126,7 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 		}
 	}
 	
+	@Override
 	public SingleItemSequence constructNative(Object obj) {
 		try {
 			if (constructorFromNativeMethod == null) throw new XPathError("Type " + getName() + " cannot be constructed from native object!");
@@ -131,6 +140,7 @@ public class BuiltinTypeDefinition implements AtomicTypeDefinition  {
 		}
 	}
 	
+	@Override
 	public Class<?> getNativeType() {
 		return nativeType;
 	}

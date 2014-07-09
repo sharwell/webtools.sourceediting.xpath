@@ -53,6 +53,7 @@ public class FnAbs extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		// 1 argument only!
 		assert args.size() >= min_arity() && args.size() <= max_arity();

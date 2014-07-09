@@ -78,6 +78,7 @@ public class DocumentTest extends KindTest {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}
@@ -109,20 +110,24 @@ public class DocumentTest extends KindTest {
 		return _schema_etest;
 	}
 
+	@Override
 	public AnyType createTestType(ResultSequence rs, StaticContext sc) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public QName name() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public boolean isWild() {
 		return false;
 	}
 
+	@Override
 	public Class<? extends NodeType> getXDMClassType() {
 		return DocType.class;
 	}

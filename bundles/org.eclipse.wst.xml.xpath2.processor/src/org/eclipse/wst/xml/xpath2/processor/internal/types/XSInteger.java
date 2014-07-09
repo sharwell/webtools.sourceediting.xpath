@@ -72,6 +72,7 @@ public class XSInteger extends XSDecimal {
 	 * 
 	 * @return "xs:integer" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_INTEGER;
 	}
@@ -81,6 +82,7 @@ public class XSInteger extends XSDecimal {
 	 * 
 	 * @return "integer" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "integer";
 	}
@@ -90,6 +92,7 @@ public class XSInteger extends XSDecimal {
 	 * 
 	 * @return String representation of the integer stored
 	 */
+	@Override
 	public String getStringValue() {
 		return _value.toString();
 	}
@@ -104,6 +107,7 @@ public class XSInteger extends XSDecimal {
 	 * 
 	 * @return True is the integer represented is 0. False otherwise
 	 */
+	@Override
 	public boolean zero() {
 		return (_value.compareTo(BigInteger.ZERO) == 0);
 	}
@@ -117,6 +121,7 @@ public class XSInteger extends XSDecimal {
 	 * @return New ResultSequence consisting of the integer supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -178,6 +183,7 @@ public class XSInteger extends XSDecimal {
 		return false;
 	}
 	
+	@Override
 	protected boolean isLexicalValue(String value) {
 		
 		try {
@@ -218,6 +224,7 @@ public class XSInteger extends XSDecimal {
 	 * @return A XSInteger consisting of the result of the mathematical
 	 *         addition.
 	 */
+	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
@@ -255,6 +262,7 @@ public class XSInteger extends XSDecimal {
 	 * @return A XSInteger consisting of the result of the mathematical
 	 *         subtraction.
 	 */
+	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
@@ -271,6 +279,7 @@ public class XSInteger extends XSDecimal {
 	 * @return A XSInteger consisting of the result of the mathematical
 	 *         multiplication.
 	 */
+	@Override
 	public ResultSequence times(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -287,6 +296,7 @@ public class XSInteger extends XSDecimal {
 	 *            The ResultSequence to perform a modulus with
 	 * @return A XSInteger consisting of the result of the mathematical modulus.
 	 */
+	@Override
 	public ResultSequence mod(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -301,6 +311,7 @@ public class XSInteger extends XSDecimal {
 	 * 
 	 * @return New XSInteger representing the negation of the integer stored
 	 */
+	@Override
 	public ResultSequence unary_minus() {
 		return new XSInteger(int_value().multiply(BigInteger.valueOf(-1)));
 	}
@@ -310,6 +321,7 @@ public class XSInteger extends XSDecimal {
 	 * 
 	 * @return New XSInteger representing the absolute of the integer stored
 	 */
+	@Override
 	public NumericType abs() {
 		return new XSInteger(int_value().abs());
 	}
@@ -318,6 +330,7 @@ public class XSInteger extends XSDecimal {
 	 * (non-Javadoc)
 	 * @see org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal#gt(org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType)
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
         XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
@@ -327,6 +340,7 @@ public class XSInteger extends XSDecimal {
 		return compareResult > 0;
 	}
 	
+	@Override
 	protected Item convertArg(AnyType arg) throws DynamicError {
 		ResultSequence rs = constructor(arg);
 		Item carg = rs.first();
@@ -337,6 +351,7 @@ public class XSInteger extends XSDecimal {
 	 * (non-Javadoc)
 	 * @see org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal#lt(org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType)
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
         XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
@@ -346,6 +361,7 @@ public class XSInteger extends XSDecimal {
 		return compareResult < 0;
 	}
 	
+	@Override
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		
@@ -359,6 +375,7 @@ public class XSInteger extends XSDecimal {
 		return new XSDecimal(result);
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_INTEGER;
 	}

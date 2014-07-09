@@ -11,6 +11,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.function.FnBoolean;
  */
 public class Engine implements XPath2Engine {
 
+	@Override
 	public XPath2Expression parseExpression(String expression, StaticContext context) {
 		@SuppressWarnings("deprecation")
 		org.eclipse.wst.xml.xpath2.processor.ast.XPath xPath = new JFlexCupParser().parse(expression);

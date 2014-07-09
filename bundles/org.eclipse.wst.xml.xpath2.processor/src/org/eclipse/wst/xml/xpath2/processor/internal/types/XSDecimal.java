@@ -68,6 +68,7 @@ public class XSDecimal extends NumericType {
 	 * 
 	 * @return "xs:decimal" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_DECIMAL;
 	}
@@ -77,6 +78,7 @@ public class XSDecimal extends NumericType {
 	 * 
 	 * @return "decimal" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "decimal";
 	}
@@ -86,6 +88,7 @@ public class XSDecimal extends NumericType {
 	 * 
 	 * @return String representation of the Decimal value stored
 	 */
+	@Override
 	public String getStringValue() {
 		
 		if (zero()) {
@@ -103,6 +106,7 @@ public class XSDecimal extends NumericType {
 	 * 
 	 * @return True if this XSDecimal represents 0. False otherwise
 	 */
+	@Override
 	public boolean zero() {
 		return (_value.compareTo(new BigDecimal(0.0)) == 0);
 	}
@@ -116,6 +120,7 @@ public class XSDecimal extends NumericType {
 	 * @throws DynamicError
 	 * @return A new result sequence consisting of the decimal number supplied.
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -225,6 +230,7 @@ public class XSDecimal extends NumericType {
 	 * @return True if the 2 representation represent the same number. False
 	 *         otherwise
 	 */
+	@Override
 	public boolean eq(AnyType at, DynamicContext dynamicContext) throws DynamicError {
 		XSDecimal dt = null;
 		if (!(at instanceof XSDecimal)) { 
@@ -251,6 +257,7 @@ public class XSDecimal extends NumericType {
 	 * @return True if the supplied type represents a number smaller than this
 	 *         one stored. False otherwise
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
 		
@@ -273,6 +280,7 @@ public class XSDecimal extends NumericType {
 	 * @return True if the supplied type represents a number greater than this
 	 *         one stored. False otherwise
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
 		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
@@ -290,6 +298,7 @@ public class XSDecimal extends NumericType {
 	 * @return A XSDecimal consisting of the result of the mathematical
 	 *         addition.
 	 */
+	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
 		// get arg
 		ResultSequence carg = convertResultSequence(arg);
@@ -326,6 +335,7 @@ public class XSDecimal extends NumericType {
 	 * @return A XSDecimal consisting of the result of the mathematical
 	 *         subtraction.
 	 */
+	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		
 		ResultSequence carg = convertResultSequence(arg);
@@ -347,6 +357,7 @@ public class XSDecimal extends NumericType {
 	 * @return A XSDecimal consisting of the result of the mathematical
 	 *         multiplication.
 	 */
+	@Override
 	public ResultSequence times(ResultSequence arg) {
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -364,6 +375,7 @@ public class XSDecimal extends NumericType {
 	 * @return A XSDecimal consisting of the result of the mathematical
 	 *         division.
 	 */
+	@Override
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 			
@@ -385,6 +397,7 @@ public class XSDecimal extends NumericType {
 	 * @return A XSInteger consisting of the result of the mathematical integer
 	 *         division.
 	 */
+	@Override
 	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -407,6 +420,7 @@ public class XSDecimal extends NumericType {
 	 *            The ResultSequence to perform a modulus with
 	 * @return A XSDecimal consisting of the result of the mathematical modulus.
 	 */
+	@Override
 	public ResultSequence mod(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -433,6 +447,7 @@ public class XSDecimal extends NumericType {
 	 * 
 	 * @return A XSDecimal representing the negation of this XSDecimal
 	 */
+	@Override
 	public ResultSequence unary_minus() {
 		BigDecimal result = _value.negate();
 		return new XSDecimal(result);
@@ -444,6 +459,7 @@ public class XSDecimal extends NumericType {
 	 * 
 	 * @return A XSDecimal representing the absolute value of the number stored
 	 */
+	@Override
 	public NumericType abs() {
 		return new XSDecimal(_value.abs());
 	}
@@ -454,6 +470,7 @@ public class XSDecimal extends NumericType {
 	 * @return A XSDecimal representing the smallest integer greater than the
 	 *         number stored
 	 */
+	@Override
 	public NumericType ceiling() {
 		BigDecimal ceiling = _value.setScale(0, BigDecimal.ROUND_CEILING);
 		return new XSDecimal(ceiling);
@@ -465,6 +482,7 @@ public class XSDecimal extends NumericType {
 	 * @return A XSDecimal representing the largest integer smaller than the
 	 *         number stored
 	 */
+	@Override
 	public NumericType floor() {
 		BigDecimal floor = _value.setScale(0, BigDecimal.ROUND_FLOOR);
 		return new XSDecimal(floor);
@@ -475,6 +493,7 @@ public class XSDecimal extends NumericType {
 	 * 
 	 * @return A XSDecimal representing the closest long of the number stored.
 	 */
+	@Override
 	public NumericType round() {
 		BigDecimal round = _value.setScale(0, BigDecimal.ROUND_UP);
 		return new XSDecimal(round);
@@ -485,6 +504,7 @@ public class XSDecimal extends NumericType {
 	 * 
 	 * @return A XSDecimal representing the closest long of the number stored.
 	 */
+	@Override
 	public NumericType round_half_to_even() {
 		return round_half_to_even(0);
 	}
@@ -495,11 +515,13 @@ public class XSDecimal extends NumericType {
 	 * @param precision An integer precision 
 	 * @return A XSDecimal representing the closest long of the number stored.
 	 */
+	@Override
 	public NumericType round_half_to_even(int precision) {
 		BigDecimal round = _value.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
 		return new XSDecimal(round);
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_DECIMAL;
 	}

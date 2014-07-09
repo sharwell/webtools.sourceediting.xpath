@@ -57,6 +57,7 @@ public class FnBoolean extends Function {
 	 *            argument expressions.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		// 1 argument only!
 		assert args.size() >= min_arity() && args.size() <= max_arity();

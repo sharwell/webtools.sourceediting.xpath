@@ -52,6 +52,7 @@ public class FnReverse extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the reversal of the arguments.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return reverse(args);
 	}

@@ -67,10 +67,12 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 		_cntxt_item_type = cntxtItemType;
 	}
 
+	@Override
 	public Map<String, List<Document>> get_collections() {
 		return _collections;
 	}
 
+	@Override
 	public void set_collections(Map<String, List<Document>> collections) {
 		_collections = collections;
 	}
@@ -141,6 +143,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 * 
 	 * @return XSAnyURI
 	 */
+	@Override
 	public XSAnyURI base_uri() {
 		return _base_uri;
 	}
@@ -150,6 +153,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 * 
 	 * @return boolean
 	 */
+	@Override
 	public boolean xpath1_compatible() {
 		return _xpath1_compatible;
 	}
@@ -163,6 +167,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            namespace URI
 	 * 
 	 */
+	@Override
 	public void add_namespace(String prefix, String namespace) {
 		// XXX are these reserved ?
 		// refer to formal semantics section 2.5.1
@@ -181,6 +186,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 * 
 	 * @return string
 	 */
+	@Override
 	public String default_namespace() {
 		return _default_namespace;
 	}
@@ -190,6 +196,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 * 
 	 * @return string
 	 */
+	@Override
 	public String default_function_namespace() {
 		return _default_function_namespace;
 	}
@@ -200,6 +207,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 * @param fl
 	 *            Function library to add.
 	 */
+	@Override
 	public void add_function_library(FunctionLibrary fl) {
 		fl.set_static_context(new StaticContextAdapter(this));
 		_functions.put(fl.namespace(), fl);
@@ -214,6 +222,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            arity of function.
 	 * @return true if function exists. False otherwise.
 	 */
+	@Override
 	public boolean function_exists(QName name, int arity) {
 		String ns = name.namespace();
 		if (!_functions.containsKey(ns))
@@ -243,6 +252,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            name of type to create
 	 * @return Atomic type of desired type.
 	 */
+	@Override
 	public AnyAtomicType make_atomic(QName name) {
 		String ns = name.namespace();
 
@@ -282,6 +292,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            qname to expand.
 	 * @return true on success.
 	 */
+	@Override
 	public boolean expand_qname(QName name) {
 		return expand_qname(name, null);
 	}
@@ -293,6 +304,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            qname to expand.
 	 * @return true on success.
 	 */
+	@Override
 	public boolean expand_function_qname(QName name) {
 		return expand_qname(name, default_function_namespace());
 	}
@@ -305,6 +317,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            qname to expand.
 	 * @return true on success.
 	 */
+	@Override
 	public boolean expand_elem_type_qname(QName name) {
 		return expand_qname(name, default_namespace());
 	}
@@ -317,6 +330,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            type name.
 	 * @return true if type is defined.
 	 */
+	@Override
 	public boolean type_defined(QName qname) {
 		
 		if (_model == null) {
@@ -351,6 +365,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            name of element.
 	 * @return true if element declared.
 	 */
+	@Override
 	public boolean element_declared(QName elem) {
 		if (_model == null)
 			return false;
@@ -371,6 +386,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            name of element who's type is desired.
 	 * @return schema definition of type
 	 */
+	@Override
 	public TypeDefinition element_type_definition(QName elem) {
 		return _model.lookupElementDeclaration(elem.local(),
 				elem.namespace());
@@ -383,6 +399,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            name of attribute.
 	 * @return true if attribute is declared.
 	 */
+	@Override
 	public boolean attribute_declared(QName attr) {
 		if (_model == null)
 			return false;
@@ -403,6 +420,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            element name
 	 * @return schema definition of the type of the attribute
 	 */
+	@Override
 	public TypeDefinition attribute_type_definition(QName elem) {
 		return _model.lookupAttributeDeclaration(elem
 				.local(), elem.namespace());
@@ -415,6 +433,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            prefix name.
 	 * @return true if it does.
 	 */
+	@Override
 	public boolean prefix_exists(String pref) {
 		return _namespaces.containsKey(pref);
 	}
@@ -426,6 +445,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            prefix name
 	 * @return uri prefix is resolved to or null.
 	 */
+	@Override
 	public String resolve_prefix(String pref) {
 		return _namespaces.get(pref);
 	}
@@ -440,6 +460,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 * @return true if a derivation exists
 	 */
 	// XXX fix this
+	@Override
 	public boolean derives_from(NodeType at, QName et) {
 		
 		TypeDefinition td = _model.getType(at.node_value());
@@ -471,6 +492,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            type definition of expected type.
 	 * @return true if a derivation exists.
 	 */
+	@Override
 	public boolean derives_from(NodeType at, TypeDefinition et) {
 		TypeDefinition td = _model.getType(at.node_value());
 		short method = 0;
@@ -481,6 +503,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 * Creates a new scope level.
 	 */
 	// variable stuff
+	@Override
 	public void new_scope() {
 		Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> vars = new HashMap<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>();
 
@@ -490,6 +513,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	/**
 	 * Destroys a scope.
 	 */
+	@Override
 	public void destroy_scope() {
 		_scopes.remove(_scopes.size() - 1);
 	}
@@ -505,6 +529,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            variable name.
 	 * @return true if it does.
 	 */
+	@Override
 	public boolean variable_exists(QName var) {
 		Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = current_scope();
 
@@ -518,6 +543,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            variable name.
 	 * @return true if variable is in current or above scope.
 	 */
+	@Override
 	public boolean variable_in_scope(QName var) {
 		// order doesn't matter..
 		for (Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope : _scopes) {
@@ -535,6 +561,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 * @param var
 	 *            variable name to add.
 	 */
+	@Override
 	public void add_variable(QName var) {
 		set_variable(var, (AnyType) null);
 	}
@@ -563,6 +590,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 *            variable name to delete.
 	 * @return false if variable doesn't exist.
 	 */
+	@Override
 	public boolean del_variable(QName var) {
 		if (!variable_exists(var))
 			return false;
@@ -625,10 +653,12 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	/**
 	 * Set the Base URI for the static context.
 	 */
+	@Override
 	public void set_base_uri(String baseuri) {
 		_base_uri = new XSAnyURI(baseuri);
 	}
 
+	@Override
 	public TypeModel getTypeModel(Node node) {
 		return _model;
 	}

@@ -29,6 +29,7 @@ public class DescendantOrSelfAxis extends ForwardAxis {
 	 * @param node
 	 *            is the type of node.
 	 */
+	@Override
 	public void iterate(NodeType node, ResultBuffer rs, Node limitNode) {
 
 		// add self
@@ -38,6 +39,7 @@ public class DescendantOrSelfAxis extends ForwardAxis {
 		new DescendantAxis().iterate(node, rs, null);
 	}
 
+	@Override
 	public String name() {
 		return "descendant-or-self";
 	}

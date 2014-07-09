@@ -33,10 +33,12 @@ public class DynamicContextAdapter implements
 		this.sca = new StaticContextAdapter(dc);
 	}
 
+	@Override
 	public Node getLimitNode() {
 		return null;
 	}
 
+	@Override
 	public ResultSequence getVariable(javax.xml.namespace.QName name) {
 		Object var = dc.get_variable(new QName(name));
 		if (var == null) return ResultBuffer.EMPTY;
@@ -44,14 +46,17 @@ public class DynamicContextAdapter implements
 		return ResultBuffer.wrap((Item)var);
 	}
 
+	@Override
 	public URI resolveUri(String uri) {
 		return dc.resolve_uri(uri);
 	}
 
+	@Override
 	public GregorianCalendar getCurrentDateTime() {
 		return dc.current_date_time();
 	}
 
+	@Override
 	public Duration getTimezoneOffset() {
 		XSDuration tz = dc.tz();
 		try {
@@ -61,20 +66,24 @@ public class DynamicContextAdapter implements
 		}
 	}
 
+	@Override
 	public Document getDocument(URI uri) {
 		ResultSequence rs = dc.get_doc(uri);
 		if (rs == null || rs.empty()) return null;
 		return ((DocType)(rs.item(0))).value();
 	}
 
+	@Override
 	public Map<String, List<Document>> getCollections() {
 		return dc.get_collections();
 	}
 
+	@Override
 	public List<Document> getDefaultCollection() {
 		return getCollections().get(FnCollection.DEFAULT_COLLECTION_URI);
 	}
 
+	@Override
 	public CollationProvider getCollationProvider() {
 		return sca.getCollationProvider();
 	}

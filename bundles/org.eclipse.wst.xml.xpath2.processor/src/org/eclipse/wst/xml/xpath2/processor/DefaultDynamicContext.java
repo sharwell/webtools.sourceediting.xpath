@@ -34,8 +34,12 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.xerces.xs.XSModel;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
 import org.eclipse.wst.xml.xpath2.processor.internal.DefaultStaticContext;
+import org.eclipse.wst.xml.xpath2.processor.internal.DynamicContextAdapter;
 import org.eclipse.wst.xml.xpath2.processor.internal.Focus;
+import org.eclipse.wst.xml.xpath2.processor.internal.StaticContextAdapter;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.Function;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FunctionLibrary;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
@@ -45,7 +49,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.xerces.XercesTypeModel;
 import org.eclipse.wst.xml.xpath2.processor.util.ResultSequenceUtil;
-import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -188,7 +191,32 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 
 		assert funct != null;
 
-		return ResultSequenceUtil.newToOld(funct.evaluate(args));
+		final org.eclipse.wst.xml.xpath2.api.DynamicContext dc = new DynamicContextAdapter(this);
+		final org.eclipse.wst.xml.xpath2.api.StaticContext sc = new StaticContextAdapter(this);
+		EvaluationContext ec = new EvaluationContext() {
+			
+			public org.eclipse.wst.xml.xpath2.api.DynamicContext getDynamicContext() {
+				return dc;
+			}
+			
+			public AnyType getContextItem() {
+				return _focus.context_item();
+			}
+			
+			public int getContextPosition() {
+				return _focus.position();
+			}
+		
+			public int getLastPosition() {
+				return _focus.last();
+			}
+			
+			public org.eclipse.wst.xml.xpath2.api.StaticContext getStaticContext() {
+				return sc;
+			}
+		};
+
+		return ResultSequenceUtil.newToOld(funct.evaluate(args, ec));
 	}
 
 	/**

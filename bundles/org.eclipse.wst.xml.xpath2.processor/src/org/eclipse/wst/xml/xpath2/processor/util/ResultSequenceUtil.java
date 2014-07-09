@@ -20,7 +20,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
  * 
  * @since 2.0
  */
-@SuppressWarnings("deprecation")
 public class ResultSequenceUtil {
 
 	@Deprecated

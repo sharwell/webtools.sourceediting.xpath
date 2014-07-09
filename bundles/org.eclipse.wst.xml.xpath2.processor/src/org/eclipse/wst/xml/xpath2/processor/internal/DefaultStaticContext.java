@@ -204,7 +204,7 @@ public class DefaultStaticContext implements StaticContext {
 	 *            Function library to add.
 	 */
 	public void add_function_library(FunctionLibrary fl) {
-		fl.set_static_context(this);
+		fl.set_static_context(new StaticContextAdapter(this));
 		_functions.put(fl.namespace(), fl);
 	}
 

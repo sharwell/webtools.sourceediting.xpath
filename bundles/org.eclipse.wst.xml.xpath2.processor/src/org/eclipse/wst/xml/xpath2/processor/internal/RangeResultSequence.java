@@ -15,25 +15,25 @@
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.Item;
+import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
+import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.ItemType;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.SimpleAtomicItemTypeImpl;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
  * A range expression can be used to construct a sequence of consecutive
  * integers.
  */
-public class RangeResultSequence extends ResultSequence {
+public class RangeResultSequence implements ResultSequence {
 
-	private int _start;
-	private int _end;
-	private int _size;
-	private ResultSequence _tail;
+	private final int _start;
+	private final int _end;
+	private final int _size;
 
 	/**
 	 * set the start and end of the range result sequence
@@ -50,103 +50,74 @@ public class RangeResultSequence extends ResultSequence {
 
 		_start = start;
 		_end = end;
-
-		_tail = ResultSequenceFactory.create_new();
 	}
 
 	/**
-	 * item is an integer to add to the range.
-	 * 
-	 * @param item
-	 *            is an integer.
-	 */
-	public void add(AnyType item) {
-		_tail.add(item);
-	}
-
-	/**
-	 * remove the tail from the range given.
-	 * 
-	 * @param rs
-	 *            is the range
-	 */
-	public void concat(ResultSequence rs) {
-		_tail.concat(rs);
-	}
-
-	/**
-	 * interate through range.
+	 * iterate through range.
 	 * 
 	 * @return tail
 	 */
-	public ListIterator<Item> iterator() {
-		// XXX life is getting hard...
-		if (_size != 0) {
-			ResultSequence newtail = ResultSequenceFactory.create_new();
-
-			for (; _start <= _end; _start++)
-				newtail.add(new XSInteger(BigInteger.valueOf(_start)));
-
-			newtail.concat(_tail);
-			_tail.release();
-			_tail = newtail;
-
-			_size = 0;
-			_start = 0;
-			_end = 0;
-
+	@Override
+	public Iterator<Item> iterator() {
+		if (empty()) {
+			return ResultBuffer.EMPTY.iterator();
 		}
 
-		return _tail.iterator();
+		return new Iterator<Item>() {
+			private int _next = _start;
+
+			public void remove() {
+				throw new UnsupportedOperationException("ResultSequences are immutable");
+			}
+
+			public Item next() {
+				if (_next == _end) {
+					throw new IllegalStateException("Reached the end of the ResultSequence");
+				}
+
+				return new XSInteger(BigInteger.valueOf(_next++));
+			}
+
+			public boolean hasNext() {
+				return _next < _end;
+			}
+		};
 	}
 
 	/**
 	 * @return item from range
 	 */
-	public AnyType get(int i) {
-		if (i < _size)
-			return new XSInteger(BigInteger.valueOf(_start + i));
-		else
-			return _tail.get(i - _size);
+	@Override
+	public XSInteger item(int index) {
+		if (index < 0 || index >= _size) {
+			throw new IndexOutOfBoundsException("Index " + index + " is out of alllowed bounds (less than " + _size + ")");
+		}
+
+		return new XSInteger(BigInteger.valueOf(_start + index));
 	}
 
 	/**
 	 * @return size
 	 */
+	@Override
 	public int size() {
-		return _size + _tail.size();
-	}
-
-	/**
-	 * clear range
-	 */
-	public void clear() {
-		_size = 0;
-		_tail.clear();
-	}
-
-	/**
-	 * create new result sequence
-	 * 
-	 * @return null
-	 */
-	public ResultSequence create_new() {
-		assert false;
-		return null;
+		return _size;
 	}
 
 	/**
 	 * @return first item in range
 	 */
-	public AnyType first() {
-		return get(0);
+	@Override
+	public XSInteger first() {
+		return item(0);
 	}
 
 	/**
 	 * @return first item in range
 	 */
-	public Object firstValue() {
-		return get(0).getNativeValue();
+	@Override
+	public Number firstValue() {
+		return item(0).getNativeValue();
 	}
 
 	/**
@@ -154,17 +125,23 @@ public class RangeResultSequence extends ResultSequence {
 	 * 
 	 * @return boolean
 	 */
+	@Override
 	public boolean empty() {
 		return size() == 0;
 	}
 
+	@Override
 	public ItemType sequenceType() {
 		return new SimpleAtomicItemTypeImpl(BuiltinTypeLibrary.XS_INTEGER, ItemType.OCCURRENCE_NONE_OR_MANY);
 	}
 
-	/**
-	 * release
-	 */
-	public void release() {
+	@Override
+	public Number value(int index) {
+		return item(index).getNativeValue();
+	}
+
+	@Override
+	public ItemType itemType(int index) {
+		return item(index).getItemType();
 	}
 }

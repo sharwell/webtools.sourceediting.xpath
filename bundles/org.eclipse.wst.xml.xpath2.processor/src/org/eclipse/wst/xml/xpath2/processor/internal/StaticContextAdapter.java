@@ -151,9 +151,9 @@ public class StaticContextAdapter implements
 
 	public Function resolveFunction(javax.xml.namespace.QName name, int arity) {
 		if (sc.function_exists(new QName(name), arity)) {
-			if (sc instanceof DefaultStaticContext) {
-				DefaultStaticContext dc = (DefaultStaticContext)sc;
-				return dc.function(new QName(name), arity);
+			FunctionLibrary functionLibrary = getFunctionLibraries().get(name.getNamespaceURI());
+			if (functionLibrary != null) {
+				return functionLibrary.resolveFunction(name.getLocalPart(), arity);
 			}
 		}
 		throw new IllegalArgumentException("Function not found "+name);

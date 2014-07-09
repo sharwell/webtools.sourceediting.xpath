@@ -229,7 +229,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	 */
 	public void add_function_library(FunctionLibrary fl) {
 		super.add_function_library(fl);
-		fl.set_dynamic_context(this);
+		fl.set_dynamic_context(new DynamicContextAdapter(this));
 	}
 
 	/**

@@ -17,8 +17,8 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
-import org.eclipse.wst.xml.xpath2.processor.StaticContext;
+import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**

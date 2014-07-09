@@ -40,7 +40,6 @@ import org.eclipse.wst.xml.xpath2.api.typesystem.SimpleTypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
 import org.eclipse.wst.xml.xpath2.processor.PsychoPathTypeHelper;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -139,7 +138,7 @@ public abstract class NodeType extends AnyType {
 		return null;
 	}
 
-	public static org.eclipse.wst.xml.xpath2.processor.ResultSequence eliminate_dups(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
+	public static ResultSequence eliminate_dups(ResultSequence rs) {
 		HashSet<Node> added = new HashSet<Node>(rs.size());
 
 		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
@@ -154,7 +153,7 @@ public abstract class NodeType extends AnyType {
 		return rs;
 	}
 
-	public static org.eclipse.wst.xml.xpath2.processor.ResultSequence sort_document_order(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
+	public static ResultSequence sort_document_order(ResultSequence rs) {
 		ArrayList<NodeType> res = new ArrayList<NodeType>(rs.size());
 
 		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
@@ -174,14 +173,14 @@ public abstract class NodeType extends AnyType {
 				res.add(node);
 		}
 
-		rs = ResultSequenceFactory.create_new();
+		ResultBuffer result = new ResultBuffer();
 		for (Iterator<NodeType> i = res.iterator(); i.hasNext();) {
 			NodeType node = i.next();
 
-			rs.add(node);
+			result.add(node);
 		}
 
-		return rs;
+		return result.getSequence();
 	}
 
 	public static boolean same(NodeType a, NodeType b) {

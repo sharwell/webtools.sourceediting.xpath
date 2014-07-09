@@ -33,7 +33,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSTime;
 /**
   * A special constructor function for constructing a xs:dateTime value from a xs:date
   * value and a xs:time value.
-  * ref: Section 5.2 of the F&O spec, http://www.w3.org/TR/xpath-functions/.
+  * ref: Section 5.2 of the F&amp;O spec, http://www.w3.org/TR/xpath-functions/.
  */
 public class FnDateTime extends Function {
 	private static Collection<SeqType> _expected_args = null;

@@ -63,7 +63,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  * <p>
  * If $escape-reserved is false, additional characters are added to the list of
  * characters that are not escaped. These are the following: SEMICOLON ";",
- * SOLIDUS "/", QUESTION MARK "?", COLON ":", COMMERCIAL AT "@", AMPERSAND "&",
+ * SOLIDUS "/", QUESTION MARK "?", COLON ":", COMMERCIAL AT "@", AMPERSAND "&amp;",
  * EQUALS SIGN "=", PLUS SIGN "+", DOLLAR SIGN "$", COMMA ",", LEFT SQUARE
  * BRACKET "[" and RIGHT SQUARE BRACKET "]".
  * </p>

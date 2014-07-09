@@ -32,7 +32,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
  * at the position indicated by the value of $startingLoc and continuing for the
  * number of items indicated by the value of $length. More specifically, returns
  * the items in $sourceString whose position $p obeys: - fn:round($startingLoc)
- * <= $p < fn:round($startingLoc) + fn:round($length)
+ * &lt;= $p &lt; fn:round($startingLoc) + fn:round($length)
  */
 public class FnSubsequence extends Function {
 	

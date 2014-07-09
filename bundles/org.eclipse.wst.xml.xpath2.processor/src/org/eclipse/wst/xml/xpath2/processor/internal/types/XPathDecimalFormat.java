@@ -26,7 +26,7 @@ import java.util.Locale;
  * is optional.  Otherwise all existing DecimalFormat patterns are handled
  * as is.
  * @author dcarver
- * @see 1.1
+ * @since 1.1
  *
  */
 public class XPathDecimalFormat extends DecimalFormat {

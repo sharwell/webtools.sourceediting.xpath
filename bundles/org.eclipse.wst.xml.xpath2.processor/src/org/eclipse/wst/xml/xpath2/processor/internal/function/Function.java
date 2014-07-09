@@ -11,7 +11,7 @@
  *     Mukul Gandhi - bug 273795 - improvements to function, substring (implemented
  *                                 numeric type promotion). 
  *     Jesper Steen Moeller - bug 285145 - implement full arity checking
- *     Jesper Steen Moeller - bug 281159 - implement xs:anyUri -> xs:string promotion
+ *     Jesper Steen Moeller - bug 281159 - implement xs:anyUri &rarr; xs:string promotion
  *     Jesper Steen Moller  - bug 281938 - undefined context should raise error
  *     Jesper Steen Moller  - bug 340933 - Migrate to new XPath2 API
  *******************************************************************************/
@@ -90,8 +90,6 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 	 * 
 	 * @param name
 	 *            QName.
-	 * @param arity
-	 *            the arity of a specific function.
 	 */
 	public Function(QName name, int min_arity, int max_arity) {
 		_name = name;

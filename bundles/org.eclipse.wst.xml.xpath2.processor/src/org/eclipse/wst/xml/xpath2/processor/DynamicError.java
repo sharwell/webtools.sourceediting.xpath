@@ -369,8 +369,6 @@ public class DynamicError extends XPathException {
 	/**
 	 * Returns the error message when reads Invalid argument to fn:collection
 	 * 
-	 * @param msg
-	 *            is the message
 	 * @return the make_error
 	 * @since 1.1
 	 */
@@ -432,7 +430,6 @@ public class DynamicError extends XPathException {
 
 	/**
 	 * Data is invalid for casting or the data type constructor.
-	 * @param msg
 	 * @return FORG0001
 	 * @since 1.1
 	 */

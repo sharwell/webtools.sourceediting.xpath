@@ -315,7 +315,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * 
 	 * @param node
 	 *            is the xpath node.
-	 * @throws dynamic
+	 * @throws DynamicError
 	 *             error.
 	 * @return result sequence.
 	 */

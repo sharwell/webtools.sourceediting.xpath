@@ -70,7 +70,7 @@ public class FsNe extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dc 
+	 * @param ec 
 	 *             The dynamic context
 	 * @throws DynamicError
 	 *             Dynamic error.

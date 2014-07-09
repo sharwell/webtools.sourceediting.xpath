@@ -15,7 +15,7 @@
  *     David Carver (STAR) - bug 289304 - fixed schema awareness on elements
  *     Mukul Gandhi - bug 318313 - improvements to computation of typed values of nodes,
  *                                 when validated by XML Schema primitive types
- *     Mukul Gandhi - bug 323900 - improving computing the typed value of element &
+ *     Mukul Gandhi - bug 323900 - improving computing the typed value of element &amp;
  *                                 attribute nodes, where the schema type of nodes
  *                                 are simple, with varieties 'list' and 'union'.                                 
  *     Jesper Steen Moller  - bug 340933 - Migrate to new XPath2 API
@@ -71,8 +71,6 @@ public abstract class NodeType extends AnyType {
 	 * 
 	 * @param node
 	 *            The Node being represented
-	 * @param document_order
-	 *            The document order
 	 */
 	public NodeType(Node node, TypeModel tm) {
 		_node = node;

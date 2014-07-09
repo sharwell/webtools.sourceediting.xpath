@@ -85,8 +85,6 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	 * 
 	 * @param schema
 	 *            Schema information of document. May be null
-	 * @param doc
-	 *            Document [root] node of XML source.
 	 * @since 2.0
 	 */
 	public DefaultDynamicContext(TypeModel schema) {
@@ -110,7 +108,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * Gets the Current stable date time from the dynamic context.
 	 * @since 1.1
-	 * @see org.eclipse.wst.xml.xpath2.processor.DynamicContext#get_current_time()
+	 * @see DynamicContext#current_date_time()
 	 */
 	@Override
 	public GregorianCalendar current_date_time() {

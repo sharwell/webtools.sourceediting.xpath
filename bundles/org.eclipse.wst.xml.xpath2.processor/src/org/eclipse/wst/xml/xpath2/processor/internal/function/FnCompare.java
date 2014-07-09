@@ -89,7 +89,7 @@ public class FnCompare extends Function {
 	 * 
 	 * @param args
 	 *            are compared (optional 3rd argument is the collation)
-	 * @param dynamicContext
+	 * @param context
 	 * 	       Current dynamic context 
 	 * @throws DynamicError
 	 *             Dynamic error.

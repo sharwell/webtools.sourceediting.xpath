@@ -78,7 +78,7 @@ public class FnSum extends Function {
 	/**
 	 * Sum operation.
 	 * 
-	 * @param args
+	 * @param arg
 	 *            Result from the expressions evaluation.
 	 * @throws DynamicError
 	 *             Dynamic error.

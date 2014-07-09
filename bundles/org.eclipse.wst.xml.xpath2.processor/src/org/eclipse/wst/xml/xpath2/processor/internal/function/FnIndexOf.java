@@ -94,7 +94,7 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param dynamicContext 
+	 * @param dc 
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of fn:index-of operation.

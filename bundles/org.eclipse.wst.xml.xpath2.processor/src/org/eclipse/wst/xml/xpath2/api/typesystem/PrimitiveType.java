@@ -22,8 +22,6 @@ public interface PrimitiveType/*<Type extends AnyType, NativeType>*/ extends Typ
      * validate a given string against this simple type.
      *
      * @param content       the string value that needs to be validated
-     * @param context       the validation context
-     * @param validatedInfo used to store validation result
      *
      * @return              the actual value (QName, Boolean) of the string value
      */
@@ -33,8 +31,6 @@ public interface PrimitiveType/*<Type extends AnyType, NativeType>*/ extends Typ
      * validate a given string against this simple type.
      *
      * @param content       the string value that needs to be validated
-     * @param context       the validation context
-     * @param validatedInfo used to store validation result
      *
      * @return              the actual value (QName, Boolean) of the string value
      */
@@ -44,8 +40,6 @@ public interface PrimitiveType/*<Type extends AnyType, NativeType>*/ extends Typ
      * validate a given string against this simple type.
      *
      * @param content       the string value that needs to be validated
-     * @param context       the validation context
-     * @param validatedInfo used to store validation result
      *
      * @return              the actual value (QName, Boolean) of the string value
      */

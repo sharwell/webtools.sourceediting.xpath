@@ -265,7 +265,7 @@ public interface StaticContext {
 	 * @since 1.1
 	 * 
 	 * Gets the collections map, which maps a String into a List of Document, in
-	 * Java5 it would be <code>Map<String, List<Document>></code>
+	 * Java5 it would be {@code Map<String, List<Document>>}
 	 * 
 	 */
 	public Map<String, List<Document>> get_collections();
@@ -274,7 +274,7 @@ public interface StaticContext {
 	 * @since 1.1
 	 * 
 	 * Sets the collections map, which maps a String into a List of Document, in
-	 * Java5 it would be <code>Map<String, List<Document>></code>
+	 * Java5 it would be {@code Map<String, List<Document>>}
 	 */
 	public void set_collections(Map<String, List<Document>> collections);
 

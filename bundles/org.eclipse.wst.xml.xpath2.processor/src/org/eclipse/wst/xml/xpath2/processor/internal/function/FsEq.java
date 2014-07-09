@@ -162,7 +162,7 @@ public class FsEq extends Function {
 	 *            input1 of any type.
 	 * @param b
 	 *            input2 of any type.
-	 * @param dc
+	 * @param ec
 	 *              Dynamic Context
 	 * @throws DynamicError
 	 *             Dynamic error.
@@ -261,10 +261,6 @@ public class FsEq extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param type
-	 *            type of the arguments.
-	 * @param mname
-	 *            Method name for template simulation.
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
@@ -315,11 +311,7 @@ public class FsEq extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param type
-	 *            type of the arguments.
-	 * @param mname
-	 *            Method name for template simulation.
-	 * @param dynamicContext 
+	 * @param context 
 	 *             Dynamic error.
 	 * @throws DynamicError
 	 *             Dynamic error.

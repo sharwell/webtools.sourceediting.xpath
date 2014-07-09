@@ -69,7 +69,7 @@ public class FnAdjustDateTimeToTimeZone extends Function {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param sc
+	 * @param dynamicContext
 	 *            Result of static context operation.
 	 * @throws DynamicError
 	 *             Dynamic error.

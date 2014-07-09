@@ -29,7 +29,6 @@ public interface CodePointIterator extends Cloneable
      * Sets the position to the last possible position (or 0 if the text is empty)
      * and returns the code point at that position.
      * @return the last code point in the text, or DONE if the text is empty
-     * @see #getEndIndex()
      */
     public int last();
 

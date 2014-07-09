@@ -31,7 +31,7 @@ public class InternalXPathParser {
 	 *            is the xpath string.
 	 * @param isRootlessAccess
 	 *            if 'true' then PsychoPath engine can't parse xpath expressions starting with / or //.
-	 * @throws XPathParserException.
+	 * @throws XPathParserException
 	 * @return the xpath value.
 	 * @since 2.0
 	 */

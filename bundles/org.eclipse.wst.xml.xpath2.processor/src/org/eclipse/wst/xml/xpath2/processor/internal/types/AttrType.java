@@ -14,7 +14,7 @@
  *     Jesper Moller- bug 275610 - Avoid big time and memory overhead for externals
  *     David Carver (STAR) - bug 289304 - fixe schema awarness of types on attributes
  *     Mukul Gandhi - bug 280798 - PsychoPath support for JDK 1.4
- *      Mukul Gandhi - bug 323900 - improving computing the typed value of element &
+ *      Mukul Gandhi - bug 323900 - improving computing the typed value of element &amp;
  *                                  attribute nodes, where the schema type of nodes
  *                                  are simple, with varieties 'list' and 'union'.  
  *******************************************************************************/

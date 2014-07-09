@@ -8,7 +8,7 @@
  * Contributors:
  *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0
  *     Mukul Gandhi - bug 274805 - improvements to xs:integer data type. Using Java
- *                      BigInteger class to enhance numerical range to -INF -> +INF.
+ *                      BigInteger class to enhance numerical range to -INF &rarr; +INF.
  *     David Carver (STAR) - bug 262765 - fix comparision to zero.
  *     David Carver (STAR) - bug 282223 - fix casting issues.
  *     Jesper Steen Moller - bug 262765 - fix type tests

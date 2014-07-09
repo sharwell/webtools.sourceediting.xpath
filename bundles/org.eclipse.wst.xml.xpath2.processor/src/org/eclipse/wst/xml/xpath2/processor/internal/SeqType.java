@@ -212,7 +212,7 @@ public class SeqType {
 	 * 
 	 * @param args
 	 *            is a result sequence
-	 * @throws a
+	 * @throws DynamicError
 	 *             dynamic error
 	 * @return a result sequence
 	 */

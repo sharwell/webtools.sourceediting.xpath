@@ -64,7 +64,6 @@ public class FsPlus extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param sc 
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of conversion.
@@ -127,7 +126,6 @@ public class FsPlus extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param sc 
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
@@ -187,7 +185,6 @@ public class FsPlus extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param sc 
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of operation.

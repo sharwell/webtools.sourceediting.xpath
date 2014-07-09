@@ -56,7 +56,7 @@ import org.w3c.dom.Node;
 
 
 /**
- * This type captures all of the built-in XPath 2.0 types, as defined in F&O specification.
+ * This type captures all of the built-in XPath 2.0 types, as defined in F&amp;O specification.
  * http://www.w3.org/TR/xquery-operators/#datatypes
  */
 public class BuiltinTypeLibrary {

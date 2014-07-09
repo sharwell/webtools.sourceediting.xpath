@@ -28,8 +28,6 @@ public class PrecedingSiblingAxis extends ReverseAxis {
 	 * 
 	 * @param node
 	 *            is the node type.
-	 * @throws dc
-	 *             is the Dynamic context.
 	 */
 	@Override
 	public void iterate(NodeType node, ResultBuffer copyInto, Node limitNode) {

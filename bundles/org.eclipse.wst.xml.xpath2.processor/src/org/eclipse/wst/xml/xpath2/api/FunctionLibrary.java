@@ -34,7 +34,7 @@ public interface FunctionLibrary {
 	/**
 	 * Function support.
 	 * 
-	 * @param name
+	 * @param localName
 	 *            local name .
 	 * @param arity
 	 *            arity of the function.

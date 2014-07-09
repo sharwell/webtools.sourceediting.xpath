@@ -97,7 +97,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	/**
 	 * Constructor.
 	 * 
-	 * @param schema
+	 * @param model
 	 *            Schema information from document. May be null.
 	 */
 	public DefaultStaticContext(TypeModel model) {

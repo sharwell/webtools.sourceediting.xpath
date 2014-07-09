@@ -21,13 +21,13 @@ public class LiteralUtils {
 	
 	/**
 	 * Unquotes a quoted string, changing double quotes into single quotes as well.
-     * Examples (string delimited by > and <):
-     *  >"A"< becomes >A< 
-     *  >'B'< becomes >B< 
-	 *  >"A""B"< becomes >A"B<
-	 *  >"A""B"< becomes >A"B<
-	 *  >'A''''B'< becomes >A''B<
-	 *  >"A''''B"< becomes >A''''B<
+     * Examples (string delimited by &gt; and &lt;):
+     *  &gt;"A"&lt; becomes &gt;A&lt; 
+     *  &gt;'B'&lt; becomes &gt;B&lt; 
+	 *  &gt;"A""B"&lt; becomes &gt;A"B&lt;
+	 *  &gt;"A""B"&lt; becomes &gt;A"B&lt;
+	 *  &gt;'A''''B'&lt; becomes &gt;A''B&lt;
+	 *  &gt;"A''''B"&lt; becomes &gt;A''''B&lt;
 	 * @param quotedString A quoted string possibly containing escaped quotes
 	 * @return unquoted and unescaped string
 	 */

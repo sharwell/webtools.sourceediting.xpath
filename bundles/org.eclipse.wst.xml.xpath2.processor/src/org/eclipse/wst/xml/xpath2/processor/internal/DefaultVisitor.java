@@ -157,7 +157,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	}
 
 	/**
-	 * @param cmpex
+	 * @param ex
 	 *            is the compare expression.
 	 * @return cmpex.
 	 */
@@ -169,7 +169,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	}
 
 	/**
-	 * @param rex
+	 * @param ex
 	 *            is the range expression.
 	 * @return a new function.
 	 */
@@ -205,7 +205,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	}
 
 	/**
-	 * @param mulex
+	 * @param ex
 	 *            is the multiply expression.
 	 * @return a new function.
 	 */
@@ -302,7 +302,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	}
 
 	/**
-	 * @param ioexp
+	 * @param ex
 	 *            is the instance of expression.
 	 * @return a ioexp.
 	 */
@@ -314,7 +314,7 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	}
 
 	/**
-	 * @param taexp
+	 * @param ex
 	 *            is the treat as expression.
 	 * @return a taexp.
 	 */

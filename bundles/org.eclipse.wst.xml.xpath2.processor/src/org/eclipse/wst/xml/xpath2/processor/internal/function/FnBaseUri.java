@@ -70,7 +70,7 @@ public class FnBaseUri extends Function {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param d_context
+	 * @param ec
 	 * 			  Dynamic context
 	 * @throws DynamicError
 	 *             Dynamic error.

@@ -54,7 +54,7 @@ public class FnPosition extends Function {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param dc
+	 * @param ec
 	 *            Result of dynamic context operation.
 	 * @throws DynamicError
 	 *             Dynamic error.

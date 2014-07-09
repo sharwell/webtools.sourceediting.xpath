@@ -600,11 +600,11 @@ class XPathFlex implements java_cup.runtime.Scanner {
   private int yycolumn;
 
   /** 
-   * zzAtBOL == true <=> the scanner is currently at the beginning of a line
+   * zzAtBOL == true &lt;=&gt; the scanner is currently at the beginning of a line
    */
   private boolean zzAtBOL = true;
 
-  /** zzAtEOF == true <=> the scanner is at the EOF */
+  /** zzAtEOF == true &lt;=&gt; the scanner is at the EOF */
   private boolean zzAtEOF;
 
   /** denotes if the user-EOF-code has already been executed */

@@ -52,7 +52,7 @@ public interface Function {
 	/**
 	 * Checks if this function has an to the
 	 * 
-	 * @param actual_arity
+	 * @param actualArity
 	 * @return
 	 */
 	boolean canMatchArity(int actualArity);

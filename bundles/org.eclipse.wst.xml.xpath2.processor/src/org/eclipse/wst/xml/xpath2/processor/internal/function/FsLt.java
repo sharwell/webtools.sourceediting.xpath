@@ -53,7 +53,7 @@ public class FsLt extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param context 
+	 * @param dc
 	 *             Dynamic context
 	 * @throws DynamicError
 	 *             Dynamic error.

@@ -66,7 +66,7 @@ public class FnMax extends Function {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param context 
+	 * @param dynamicContext 
 	 *            Relevant dynamic context
 	 * @throws DynamicError
 	 *             Dynamic error.

@@ -138,7 +138,7 @@ public class FnTranslate extends Function {
 	}
 
 	/**
-	 * Build a replacement map from the mapstr and the transstr for translation. The function returns a Map<Integer, Integer> mapping each codepoint
+	 * Build a replacement map from the mapstr and the transstr for translation. The function returns a {@code Map<Integer, Integer>} mapping each codepoint
 	 * mentioned in the mapstr into the corresponding codepoint in transstr, or null if there is no matching mapping in transstr.
 	 * 
 	 * @param mapstr The "mapping from" string

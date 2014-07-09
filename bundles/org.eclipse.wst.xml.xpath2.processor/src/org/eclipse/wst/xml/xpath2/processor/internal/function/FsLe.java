@@ -72,7 +72,7 @@ public class FsLe extends Function {
 		if (((XSBoolean) equal.first()).value())
 			return equal;
 
-		return new XSBoolean(false);
+		return XSBoolean.FALSE;
 	}
 
 	/**

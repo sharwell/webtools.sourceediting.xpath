@@ -572,7 +572,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(OrExpr orex) {
 		boolean res[] = do_logic_exp(orex);
 
-		return new XSBoolean(res[0] || res[1]);
+		return XSBoolean.valueOf(res[0] || res[1]);
 	}
 
 	/**
@@ -585,7 +585,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(AndExpr andex) {
 		boolean res[] = do_logic_exp(andex);
 
-		return new XSBoolean(res[0] && res[1]);
+		return XSBoolean.valueOf(res[0] && res[1]);
 	}
 
 	private ResultSequence node_cmp(int type, Collection<ResultSequence> args) {
@@ -928,7 +928,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 		// get the sequence type
 		SequenceType seqt = (SequenceType) ioexp.right();
-		return new XSBoolean(isInstanceOf(rs, seqt));
+		return XSBoolean.valueOf(isInstanceOf(rs, seqt));
 	}
 		
 	private boolean isInstanceOf(ResultSequence rs, SequenceType seqt) {
@@ -992,7 +992,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			castable = false;
 		}
 
-		return new XSBoolean(castable);
+		return XSBoolean.valueOf(castable);
 	}
 
 	/**

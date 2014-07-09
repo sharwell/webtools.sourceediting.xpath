@@ -35,8 +35,7 @@ public class SchemaTypeValueFactory {
 		}
 		
 		if (typeDef == XSConstants.BOOLEAN_DT) {
-			String newStrValue = ("1".equals(strValue) || "true".equals(strValue)) ? "true" : "false";
-			return new XSBoolean(Boolean.valueOf(newStrValue).booleanValue());
+			return XSBoolean.valueOf("1".equals(strValue) || "true".equals(strValue));
 		}
 		
 		if (typeDef == XSConstants.DATE_DT) {       

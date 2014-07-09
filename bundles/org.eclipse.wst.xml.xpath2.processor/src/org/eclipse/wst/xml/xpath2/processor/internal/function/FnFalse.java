@@ -55,6 +55,6 @@ public class FnFalse extends Function {
 	public static ResultSequence fn_false(Collection<ResultSequence> args) throws DynamicError {
 		assert args.size() == 0;
 
-		return new XSBoolean(false);
+		return XSBoolean.FALSE;
 	}
 }

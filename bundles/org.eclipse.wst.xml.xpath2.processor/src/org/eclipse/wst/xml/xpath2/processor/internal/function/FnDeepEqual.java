@@ -91,7 +91,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 
 		boolean result = deep_equal(arg1, arg2, context, collationURI);
 
-		return new XSBoolean(result);
+		return XSBoolean.valueOf(result);
 	}
 
 	/**

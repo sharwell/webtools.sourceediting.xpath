@@ -59,7 +59,7 @@ public class XSCtrLibrary extends ConstructorFL {
 		add_type(new XSName());
 		add_type(new XSNCName());
 		add_type(new XSNMTOKEN());
-		add_type(new XSBoolean());
+		add_type(XSBoolean.FALSE);
 		add_type(new XSUntypedAtomic());
 		add_type(new XSNotation());
 

@@ -67,7 +67,7 @@ public class FnNot extends Function {
 		if (ret.value() == false)
 			answer = true;
 
-		return new XSBoolean(answer);
+		return XSBoolean.valueOf(answer);
 	}
 
 }

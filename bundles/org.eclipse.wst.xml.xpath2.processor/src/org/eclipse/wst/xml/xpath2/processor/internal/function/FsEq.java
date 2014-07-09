@@ -284,7 +284,7 @@ public class FsEq extends Function {
 
 		// XXX ?
 		if (one.empty() || two.empty())
-			return new XSBoolean(false);
+			return XSBoolean.FALSE;
 
 		// atomize
 		one = FnData.atomize(one);
@@ -297,11 +297,11 @@ public class FsEq extends Function {
 				AnyType b = (AnyType) j.next();
 
 				if (do_general_pair(a, b, op, dc))
-					return new XSBoolean(true);
+					return XSBoolean.TRUE;
 			}
 		}
 
-		return new XSBoolean(false);
+		return XSBoolean.FALSE;
 	}
 
 	public interface CmpValueOp<T> {
@@ -350,6 +350,6 @@ public class FsEq extends Function {
 			DynamicError.throw_type_error();
 
 		boolean cmpres = op.execute(op.getType().cast(arg), (AnyType)arg2.first(), context);
-		return new XSBoolean(cmpres);
+		return XSBoolean.valueOf(cmpres);
 	}
 }

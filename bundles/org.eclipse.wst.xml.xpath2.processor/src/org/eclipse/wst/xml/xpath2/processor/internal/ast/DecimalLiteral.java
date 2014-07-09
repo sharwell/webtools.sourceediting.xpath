@@ -22,7 +22,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * 
  */
 public class DecimalLiteral extends NumericLiteral {
-	private XSDecimal _value;
+	private final XSDecimal _value;
 
 	/**
 	 * Constructor for DecimalLiteral

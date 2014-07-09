@@ -39,7 +39,7 @@ public class XSDecimal extends NumericType {
 
 	private static final String XS_DECIMAL = "xs:decimal";
 	private BigDecimal _value;
-	private XPathDecimalFormat format = new XPathDecimalFormat("0.####################");
+	private final XPathDecimalFormat format = new XPathDecimalFormat("0.####################");
 
 	/**
 	 * Initiates a representation of 0.0

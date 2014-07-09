@@ -79,7 +79,7 @@ public class CmpExpr extends BinExpr {
 	 */
 	public static final int GREATER_GREATER = 14;
 
-	private int _type;
+	private final int _type;
 
 	/**
 	 * Constructor for CmpExpr

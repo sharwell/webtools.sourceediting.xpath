@@ -24,8 +24,8 @@ import org.eclipse.wst.xml.xpath2.api.FunctionLibrary;
  * Class for Function Library support.
  */
 public class FunctionLibraryImpl implements FunctionLibrary {
-	private String _namespace;
-	private Map<String, Function> _functions;
+	private final String _namespace;
+	private final Map<String, Function> _functions;
 
 	/**
 	 * Constructor for FunctionLibrary.

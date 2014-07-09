@@ -43,36 +43,32 @@ public class ReverseStep extends Step {
 	 */
 	public static final int DOTDOT = 5;
 
-	private int _axis;
-	private ReverseAxis _iterator;
+	private final int _axis;
+	private final ReverseAxis _iterator;
 
-	private void update_iterator() {
-		switch (_axis) {
+	private static ReverseAxis update_iterator(int axis) {
+		switch (axis) {
 		case PARENT:
-			_iterator = new ParentAxis();
-			break;
+			return new ParentAxis();
+
 		case ANCESTOR:
-			_iterator = new AncestorAxis();
-			break;
+			return new AncestorAxis();
 
 		case PRECEDING_SIBLING:
-			_iterator = new PrecedingSiblingAxis();
-			break;
+			return new PrecedingSiblingAxis();
 
 		case PRECEDING:
-			_iterator = new PrecedingAxis();
-			break;
+			return new PrecedingAxis();
 
 		case ANCESTOR_OR_SELF:
-			_iterator = new AncestorOrSelfAxis();
-			break;
+			return new AncestorOrSelfAxis();
 
 		case DOTDOT:
-			_iterator = null;
-			break;
+			return null;
 
 		default:
 			assert false;
+			return null;
 		}
 	}
 
@@ -88,7 +84,7 @@ public class ReverseStep extends Step {
 		super(node_test);
 
 		_axis = axis;
-		update_iterator();
+		_iterator = update_iterator(axis);
 	}
 
 	/**

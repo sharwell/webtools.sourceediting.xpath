@@ -21,7 +21,7 @@ import java.util.*;
  */
 public class AxisStep extends StepExpr {
 	private Step _step;
-	private Collection<Collection<Expr>> _exprs;
+	private final Collection<Collection<Expr>> _exprs;
 
 	/**
 	 * Constructor for AxisStep.

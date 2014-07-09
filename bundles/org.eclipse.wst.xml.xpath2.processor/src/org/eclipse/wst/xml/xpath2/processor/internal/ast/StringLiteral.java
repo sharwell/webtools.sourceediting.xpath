@@ -25,7 +25,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * 
  */
 public class StringLiteral extends Literal {
-	private XSString _value;
+	private final XSString _value;
 
 	/**
 	 * Constructor for StringLiteral

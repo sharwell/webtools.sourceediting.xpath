@@ -41,7 +41,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.utils.TypePromoter;
  */
 public class FnSum extends Function {
 
-	static private XSInteger ZERO = new XSInteger(BigInteger.ZERO);
+	private static final XSInteger ZERO = new XSInteger(BigInteger.ZERO);
 
 	/**
 	 * Constructor for FnSum.

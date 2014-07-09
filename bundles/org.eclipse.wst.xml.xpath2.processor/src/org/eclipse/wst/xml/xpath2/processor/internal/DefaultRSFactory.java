@@ -22,7 +22,7 @@ public class DefaultRSFactory extends org.eclipse.wst.xml.xpath2.processor.Resul
 
 	public static final int POOL_SIZE = 50;
 
-	private org.eclipse.wst.xml.xpath2.processor.ResultSequence[] _rs_pool = new org.eclipse.wst.xml.xpath2.processor.ResultSequence[POOL_SIZE];
+	private final org.eclipse.wst.xml.xpath2.processor.ResultSequence[] _rs_pool = new org.eclipse.wst.xml.xpath2.processor.ResultSequence[POOL_SIZE];
 	private int _head_pos;
 
 	/**

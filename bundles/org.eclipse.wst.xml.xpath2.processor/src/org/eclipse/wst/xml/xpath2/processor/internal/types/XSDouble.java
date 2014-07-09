@@ -35,8 +35,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSDouble extends NumericType {
 
 	private static final String XS_DOUBLE = "xs:double";
-	private Double _value;
-	private XPathDecimalFormat format = new XPathDecimalFormat(
+	private final Double _value;
+	private final XPathDecimalFormat format = new XPathDecimalFormat(
 			"0.################E0");
 
 	/**

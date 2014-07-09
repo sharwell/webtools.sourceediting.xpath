@@ -25,8 +25,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  * Class for Function Library support.
  */
 public class FunctionLibrary implements org.eclipse.wst.xml.xpath2.api.FunctionLibrary {
-	private String _namespace;
-	private Map<String, Function> _functions;
+	private final String _namespace;
+	private final Map<String, Function> _functions;
 	private StaticContext _sc;
 	private DynamicContext _dc;
 

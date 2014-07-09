@@ -18,9 +18,9 @@ import java.util.*;
  * Support for IF expressions.
  */
 public class IfExpr extends Expr {
-	private Collection<Expr> _exprs;
-	private Expr _then;
-	private Expr _else;
+	private final Collection<Expr> _exprs;
+	private final Expr _then;
+	private final Expr _else;
 
 	/**
 	 * Constructor for IfExpr.

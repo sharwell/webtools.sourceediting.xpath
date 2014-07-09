@@ -67,7 +67,7 @@ public class FnNormalizeUnicode extends Function {
 	 */
 	static class ICUNormalizer implements W3CNormalizer {
 		
-		private Map<String, Normalizer.Mode> modeMap = new HashMap<String, Normalizer.Mode>();
+		private static final Map<String, Normalizer.Mode> modeMap = new HashMap<String, Normalizer.Mode>();
 		{
 			// Can't handle "FULLY-NORMALIZED" yet
 			

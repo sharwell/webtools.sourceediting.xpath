@@ -27,7 +27,7 @@ import java.util.*;
  */
 public class FilterExpr extends StepExpr {
 	private PrimaryExpr _pexpr;
-	private Collection<Collection<Expr>> _exprs;
+	private final Collection<Collection<Expr>> _exprs;
 
 	/**
 	 * Constructor of FilterExpr.

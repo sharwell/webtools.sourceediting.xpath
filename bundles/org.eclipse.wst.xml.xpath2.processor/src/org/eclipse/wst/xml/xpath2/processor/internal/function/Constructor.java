@@ -26,7 +26,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  * Constructor class for functions.
  */
 public class Constructor extends Function {
-	private CtrType _atomic_type;
+	private final CtrType _atomic_type;
 
 	/**
 	 * Constructor for Constructor class.

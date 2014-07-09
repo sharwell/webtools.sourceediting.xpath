@@ -25,7 +25,7 @@ import org.w3c.dom.Comment;
  */
 public class CommentType extends NodeType {
 	private static final String COMMENT = "comment";
-	private Comment _value;
+	private final Comment _value;
 
 	/**
 	 * Initialise according to the supplied parameters

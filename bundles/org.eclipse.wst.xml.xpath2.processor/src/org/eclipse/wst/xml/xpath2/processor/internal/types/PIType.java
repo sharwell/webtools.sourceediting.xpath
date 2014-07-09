@@ -25,7 +25,7 @@ import org.w3c.dom.ProcessingInstruction;
  */
 public class PIType extends NodeType {
 	private static final String PROCESSING_INSTRUCTION = "processing instruction";
-	private ProcessingInstruction _value;
+	private final ProcessingInstruction _value;
 
 	/**
 	 * Initialises according to the supplied parameters

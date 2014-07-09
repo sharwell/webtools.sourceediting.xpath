@@ -21,8 +21,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * Class for Function Call support.
  */
 public class FunctionCall extends PrimaryExpr {
-	private QName _name;
-	private Collection<Expr> _args;
+	private final QName _name;
+	private final Collection<Expr> _args;
 	private Function _function;
 
 	/**

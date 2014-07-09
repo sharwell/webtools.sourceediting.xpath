@@ -56,8 +56,8 @@ public abstract class NodeType extends AnyType {
 	
 	protected static final String SCHEMA_TYPE_IDREF = "IDREF";
 	protected static final String SCHEMA_TYPE_ID = "ID";
-	private Node _node;
-	protected TypeModel _typeModel;
+	private final Node _node;
+	protected final TypeModel _typeModel;
 
 	public static final Comparator<NodeType> NODE_COMPARATOR = new Comparator<NodeType>() {
 		public int compare(NodeType o1, NodeType o2) {

@@ -20,7 +20,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
  */
 public class Focus {
 	private int _cp; // context position
-	private org.eclipse.wst.xml.xpath2.api.ResultSequence _rs; // all items in context
+	private final org.eclipse.wst.xml.xpath2.api.ResultSequence _rs; // all items in context
 
 	/**
 	 * Sets the _rs to rs and context position to 1.

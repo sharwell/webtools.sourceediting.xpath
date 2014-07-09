@@ -20,7 +20,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * Support for Schema Attribute test.
  */
 public class SchemaAttrTest extends KindTest {
-	private QName _arg;
+	private final QName _arg;
 
 	/**
 	 * Constructor for SchemaAttrTest.

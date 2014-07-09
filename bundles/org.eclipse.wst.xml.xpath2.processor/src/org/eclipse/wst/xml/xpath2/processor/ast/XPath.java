@@ -35,7 +35,7 @@ import org.w3c.dom.Node;
  */
 @Deprecated
 public class XPath extends XPathNode implements XPath2Expression {
-	private Collection<Expr> _exprs;
+	private final Collection<Expr> _exprs;
 	private StaticContext _staticContext;
 	private Collection<QName> _resolvedFunctions;
 	private Collection<String> _axes;

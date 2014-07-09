@@ -25,7 +25,7 @@ import org.w3c.dom.Text;
  */
 public class TextType extends NodeType {
 	private static final String TEXT = "text";
-	private Text _value;
+	private final Text _value;
 
 	/**
 	 * Initialises using the supplied parameters

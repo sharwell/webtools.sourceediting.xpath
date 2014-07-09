@@ -18,7 +18,7 @@ import java.util.*;
  * Class for parethesized expressions support.
  */
 public class ParExpr extends PrimaryExpr {
-	private Collection<Expr> _exprs;
+	private final Collection<Expr> _exprs;
 
 	/**
 	 * Constructor for ParExpr.

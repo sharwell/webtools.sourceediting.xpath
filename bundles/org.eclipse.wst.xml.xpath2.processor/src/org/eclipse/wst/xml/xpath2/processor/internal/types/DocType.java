@@ -24,7 +24,7 @@ import org.w3c.dom.Document;
  */
 public class DocType extends NodeType {
 	private static final String DOCUMENT = "document";
-	private Document _value;
+	private final Document _value;
 	private String _string_value;
 
 	/**

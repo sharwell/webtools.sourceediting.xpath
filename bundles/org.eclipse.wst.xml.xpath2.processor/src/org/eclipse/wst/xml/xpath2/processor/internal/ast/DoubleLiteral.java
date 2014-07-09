@@ -20,7 +20,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * 
  */
 public class DoubleLiteral extends NumericLiteral {
-	private XSDouble _value;
+	private final XSDouble _value;
 
 	/**
 	 * Constructor for Doubleiteral

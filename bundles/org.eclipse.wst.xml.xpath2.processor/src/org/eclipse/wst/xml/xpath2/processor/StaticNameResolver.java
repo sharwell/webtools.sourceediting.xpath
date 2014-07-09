@@ -106,12 +106,13 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 		private static final long serialVersionUID = 3898564402981741950L;
 	}
 
-	private org.eclipse.wst.xml.xpath2.api.StaticContext _sc;
+	private final org.eclipse.wst.xml.xpath2.api.StaticContext _sc;
 	private StaticNameError _err;
 	
-	private Set<javax.xml.namespace.QName> _resolvedFunctions = new HashSet<javax.xml.namespace.QName>();
-	private Set<String> _axes = new HashSet<String>();
-	private Set<javax.xml.namespace.QName> _freeVariables = new HashSet<javax.xml.namespace.QName>();
+	private final Set<javax.xml.namespace.QName> _resolvedFunctions = new HashSet<javax.xml.namespace.QName>();
+	private final Set<String> _axes = new HashSet<String>();
+	private final Set<javax.xml.namespace.QName> _freeVariables = new HashSet<javax.xml.namespace.QName>();
+
 	/**
 	 * Constructor for static name resolver
 	 * 

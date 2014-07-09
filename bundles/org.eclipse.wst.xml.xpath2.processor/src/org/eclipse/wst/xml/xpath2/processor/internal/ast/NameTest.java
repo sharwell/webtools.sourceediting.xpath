@@ -18,7 +18,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * Class for Name test operation.
  */
 public class NameTest extends NodeTest {
-	private QName _name;
+	private final QName _name;
 
 	/**
 	 * Constructor for NameTest.

@@ -50,24 +50,24 @@ public class StaticContextBuilder implements StaticContext {
 
 	private boolean _xpath1_compatible = false;
 	private String _default_namespace = "";
-	private String _default_function_namespace = XPATH_FUNCTIONS_NS;
-	private TypeDefinition _initialContextType = null; 
+	private final String _default_function_namespace = XPATH_FUNCTIONS_NS;
+	private final TypeDefinition _initialContextType = null; 
 	private String _defaultCollation = CollationProvider.CODEPOINT_COLLATION;
 
 	// key: String prefix, contents: String namespace
-	private Map<String, String> _namespaces = new HashMap<String, String>();
-	private Map<String, FunctionLibrary> _functionLibraries = new HashMap<String, FunctionLibrary>();
+	private final Map<String, String> _namespaces = new HashMap<String, String>();
+	private final Map<String, FunctionLibrary> _functionLibraries = new HashMap<String, FunctionLibrary>();
 	{
 		_functionLibraries.put(XPATH_FUNCTIONS_NS, new FnFunctionLibrary());
 		_functionLibraries.put(XSCtrLibrary.XML_SCHEMA_NS, new XSCtrLibrary());
 	}
 
 	private URI _base_uri;
-	private Map<QName, ItemType> _variableTypes = new HashMap<QName, ItemType>();
-	private Map<String, Short> _variableCardinality = new HashMap<String, Short>();
-	private Map<String, TypeDefinition> _collectionTypes = new HashMap<String, TypeDefinition>();
+	private final Map<QName, ItemType> _variableTypes = new HashMap<QName, ItemType>();
+	private final Map<String, Short> _variableCardinality = new HashMap<String, Short>();
+	private final Map<String, TypeDefinition> _collectionTypes = new HashMap<String, TypeDefinition>();
 
-	private Set<QName> _hiddenFunctions = new HashSet<QName>();
+	private final Set<QName> _hiddenFunctions = new HashSet<QName>();
 
 	private TypeModel _typeModel;
 	
@@ -208,7 +208,7 @@ public class StaticContextBuilder implements StaticContext {
 		};
 	}
 
-	private static Comparator<String> CODEPOINT_COMPARATOR = new Comparator<String>() {
+	private static final Comparator<String> CODEPOINT_COMPARATOR = new Comparator<String>() {
 		
 		public int compare(String o1, String o2) {
 			return o1.compareTo(o2);

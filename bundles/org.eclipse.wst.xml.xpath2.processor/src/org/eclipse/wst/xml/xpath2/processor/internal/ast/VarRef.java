@@ -19,7 +19,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * reference.
  */
 public class VarRef extends PrimaryExpr {
-	private QName _varname;
+	private final QName _varname;
 
 	/**
 	 * Constructor for VarRef.

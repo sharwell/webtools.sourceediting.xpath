@@ -15,7 +15,7 @@ public class XercesTypeModel implements TypeModel {
 	/**
 	 * 
 	 */
-	private XSModel _schema;
+	private final XSModel _schema;
 
 	public XercesTypeModel(Document doc) {
 		_schema = ((ElementPSVI) doc.getDocumentElement()).getSchemaInformation();

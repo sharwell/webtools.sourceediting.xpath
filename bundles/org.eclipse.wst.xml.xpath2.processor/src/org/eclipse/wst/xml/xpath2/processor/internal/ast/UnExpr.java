@@ -15,7 +15,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.ast;
  * Support for Unary expressions.
  */
 public abstract class UnExpr extends Expr {
-	private Expr _arg;
+	private final Expr _arg;
 
 	/**
 	 * Constructor for UnExpr.

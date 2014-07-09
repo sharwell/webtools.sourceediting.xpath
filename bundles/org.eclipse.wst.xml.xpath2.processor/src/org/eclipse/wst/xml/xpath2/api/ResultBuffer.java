@@ -28,7 +28,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.SingleItemSeq
  */
 public class ResultBuffer {
 
-	private ArrayList<Item> values = new ArrayList<Item>();
+	private final ArrayList<Item> values = new ArrayList<Item>();
 	
 	public ResultSequence getSequence() {
 		if (values.size() == 0) return EMPTY;

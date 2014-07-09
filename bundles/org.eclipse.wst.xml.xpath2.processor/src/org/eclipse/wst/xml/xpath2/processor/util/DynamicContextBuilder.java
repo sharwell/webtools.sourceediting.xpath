@@ -59,17 +59,17 @@ public class DynamicContextBuilder implements DynamicContext {
 			throw new RuntimeException("Cannot initialize XML datatypes", e);
 		}
 	}
-	private TimeZone _systemTimezone = TimeZone.getDefault();
+	private final TimeZone _systemTimezone = TimeZone.getDefault();
 	
 	private Duration _tz = _datatypeFactory.newDuration(_systemTimezone.getRawOffset());
 	private GregorianCalendar _currentDateTime;
 	
-	private Map<QName,ResultSequence> _variables = new HashMap<QName,ResultSequence>();
+	private final Map<QName,ResultSequence> _variables = new HashMap<QName,ResultSequence>();
 	private final StaticContext _staticContext;
 
 	private Map<String, List<Document>> _collections;
 
-	private Map<URI, Document> _loaded_documents = new HashMap<URI, Document>();
+	private final Map<URI, Document> _loaded_documents = new HashMap<URI, Document>();
 
 	public DynamicContextBuilder(StaticContext sc) {
 		_staticContext = sc;

@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
  * Class for Element testing.
  */
 public class ElementTest extends AttrElemTest {
-	private boolean _qmark = false;
+	private final boolean _qmark;
 
 	private AnyType anyType = null;
 
@@ -66,6 +66,7 @@ public class ElementTest extends AttrElemTest {
 	 */
 	public ElementTest(QName name, boolean wild, QName type) {
 		super(name, wild, type);
+		_qmark = false;
 	}
 
 	/**
@@ -79,6 +80,7 @@ public class ElementTest extends AttrElemTest {
 	 */
 	public ElementTest(QName name, boolean wild) {
 		super(name, wild);
+		_qmark = false;
 	}
 
 	/**
@@ -86,6 +88,7 @@ public class ElementTest extends AttrElemTest {
 	 */
 	public ElementTest() {
 		super();
+		_qmark = false;
 	}
 
 	/**
@@ -175,7 +178,7 @@ public class ElementTest extends AttrElemTest {
 	}
 	
 	private static class SingleItemNodeListImpl implements NodeList {
-		private Node node;
+		private final Node node;
 		public SingleItemNodeListImpl(Node node) {
 			this.node = node;
 		}

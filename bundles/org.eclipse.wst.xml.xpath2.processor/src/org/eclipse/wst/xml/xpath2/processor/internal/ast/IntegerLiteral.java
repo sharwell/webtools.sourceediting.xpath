@@ -23,7 +23,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
  * 
  */
 public class IntegerLiteral extends NumericLiteral {
-	private XSInteger _value;
+	private final XSInteger _value;
 
 	/**
 	 * Constructor for IntegerLiteral

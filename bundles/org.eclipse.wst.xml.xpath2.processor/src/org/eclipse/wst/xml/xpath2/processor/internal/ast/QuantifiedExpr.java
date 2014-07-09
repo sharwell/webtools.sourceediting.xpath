@@ -28,9 +28,9 @@ public class QuantifiedExpr extends Expr {
 	 */
 	public static final int ALL = 1;
 
-	private Collection<VarExprPair> _var_expr_pairs;
+	private final Collection<VarExprPair> _var_expr_pairs;
 	private Expr _return;
-	private int _type;
+	private final int _type;
 
 	/**
 	 * Constructor for QuantifiedExpr.

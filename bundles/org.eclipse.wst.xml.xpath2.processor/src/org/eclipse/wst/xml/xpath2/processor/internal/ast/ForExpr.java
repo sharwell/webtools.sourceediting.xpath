@@ -18,7 +18,7 @@ import java.util.*;
  * Class for the For expression.
  */
 public class ForExpr extends Expr {
-	private Collection<VarExprPair> _var_expr_pairs;
+	private final Collection<VarExprPair> _var_expr_pairs;
 	private Expr _return;
 
 	/**

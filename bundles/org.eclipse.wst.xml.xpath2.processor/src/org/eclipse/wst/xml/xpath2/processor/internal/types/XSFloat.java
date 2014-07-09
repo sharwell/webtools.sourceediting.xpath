@@ -35,8 +35,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSFloat extends NumericType {
 
 	private static final String XS_FLOAT = "xs:float";
-	private Float _value;
-	private XPathDecimalFormat format = new XPathDecimalFormat("0.#######E0");
+	private final Float _value;
+	private final XPathDecimalFormat format = new XPathDecimalFormat("0.#######E0");
 	/**
 	 * Initiates a representation of the supplied number
 	 * 

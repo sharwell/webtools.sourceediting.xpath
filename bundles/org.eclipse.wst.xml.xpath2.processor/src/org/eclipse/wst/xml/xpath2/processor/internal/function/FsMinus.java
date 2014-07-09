@@ -86,15 +86,15 @@ public class FsMinus extends Function {
 			throws DynamicError {
 		// make sure we got only one arg
 		if (args.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		ResultSequence arg = args.iterator().next();
 
 		// make sure we got only one numeric atom
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		Item at = arg.first();
 		if (!(at instanceof NumericType))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		NumericType nt = (NumericType) at;
 

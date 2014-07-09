@@ -76,11 +76,11 @@ public class FnInsertBefore extends Function {
 
 		// sanity chex
 		if (arg2.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = arg2.first();
 		if (!(at instanceof XSInteger))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		// XXX cloning!
 		if (target.empty())

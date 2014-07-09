@@ -117,7 +117,7 @@ public class FnAbs extends Function {
 			throws DynamicError {
 		int size = arg.size();
 		if (size > 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		if (size == 0)
 			return null;

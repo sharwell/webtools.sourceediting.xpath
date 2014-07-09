@@ -81,7 +81,7 @@ public class XSToken extends XSNormalizedString {
 		String srcString = aat.getStringValue();
 		if (!isSatisfiesConstraints(srcString)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 		
 		return new XSToken(srcString);

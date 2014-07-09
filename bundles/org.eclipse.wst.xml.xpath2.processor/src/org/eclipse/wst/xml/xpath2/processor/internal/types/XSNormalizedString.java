@@ -82,7 +82,7 @@ public class XSNormalizedString extends XSString {
 		String srcString = aat.getStringValue();
 		if (!isSatisfiesConstraints(srcString)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 		
 		return new XSNormalizedString(srcString);

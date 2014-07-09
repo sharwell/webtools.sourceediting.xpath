@@ -82,7 +82,7 @@ public class XSNMTOKEN extends XSToken {
 		
 		if (!XMLChar.isValidNmtoken(strValue)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 
 		return new XSNMTOKEN(strValue);

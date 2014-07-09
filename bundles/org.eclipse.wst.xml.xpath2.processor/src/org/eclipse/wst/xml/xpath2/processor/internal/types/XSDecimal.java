@@ -304,7 +304,7 @@ public class XSDecimal extends NumericType {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSDecimal))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		XSDecimal dt = (XSDecimal) at;
 
 		// own it
@@ -342,7 +342,7 @@ public class XSDecimal extends NumericType {
 
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSDecimal))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		XSDecimal dt = (XSDecimal) at;
 
 		return new XSDecimal(_value.subtract(dt.getValue()));

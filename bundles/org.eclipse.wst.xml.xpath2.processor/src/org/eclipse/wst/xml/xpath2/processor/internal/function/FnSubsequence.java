@@ -84,7 +84,7 @@ public class FnSubsequence extends Function {
 
 		Item at = startLoc.first();
 		if (!(at instanceof NumericType)) {
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 
 		at = new XSDouble(at.getStringValue());
@@ -95,15 +95,15 @@ public class FnSubsequence extends Function {
 	    if (length != null) {
 	    	// the 3rd argument is present
 			if (length.size() != 1)
-				DynamicError.throw_type_error();
+				throw DynamicError.throw_type_error();
 			at = length.first();
 			if (!(at instanceof NumericType)) {
-				DynamicError.throw_type_error();
+				throw DynamicError.throw_type_error();
 			}
 			at = new XSDouble(at.getStringValue());
 			int len = (int) ((XSDouble) at).double_value();
 			if (len < 0) {
-				DynamicError.throw_type_error();	
+				throw DynamicError.throw_type_error();	
 			}
 
 			if (start <= 0) {				

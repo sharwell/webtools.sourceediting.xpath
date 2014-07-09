@@ -134,12 +134,12 @@ public class QName extends CtrType implements CmpEq {
 	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
 
 		if (!(aat instanceof XSString) && !(aat instanceof QName))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		
 		String sarg = aat.getStringValue();
 

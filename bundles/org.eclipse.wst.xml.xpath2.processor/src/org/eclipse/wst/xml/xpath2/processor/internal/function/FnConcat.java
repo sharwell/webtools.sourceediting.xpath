@@ -81,7 +81,7 @@ public class FnConcat extends Function {
 
 		// sanity check
 		if (args.size() < 2)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		ResultBuffer rs = new ResultBuffer();
 
@@ -94,7 +94,7 @@ public class FnConcat extends Function {
 
 			// sanity check
 			if (size > 1)
-				DynamicError.throw_type_error();
+				throw DynamicError.throw_type_error();
 
 			if (size == 0) {
 				continue;

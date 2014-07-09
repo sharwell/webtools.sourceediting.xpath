@@ -226,7 +226,7 @@ public class XSFloat extends NumericType {
 	public boolean eq(AnyType aa, DynamicContext dynamicContext) throws DynamicError {
 		Item carg = convertArg(aa);
 		if (!(carg instanceof XSFloat))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		/* Note: as implemented, this comparison returns false for (NaN eq NaN),
 		 * but true for (+0.0f eq -0.0f). As such, it is not precisely the same
@@ -288,7 +288,7 @@ public class XSFloat extends NumericType {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSFloat))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		XSFloat val = (XSFloat) at;
 
 		return new XSFloat(float_value() + val.float_value());
@@ -308,7 +308,7 @@ public class XSFloat extends NumericType {
 		ResultSequence carg = constructor(arg);
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSFloat))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		XSFloat val = (XSFloat) at;
 
 		return new XSFloat(float_value() - val.float_value());

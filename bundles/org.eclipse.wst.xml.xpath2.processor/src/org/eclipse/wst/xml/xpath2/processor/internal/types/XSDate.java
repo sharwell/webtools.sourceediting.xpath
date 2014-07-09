@@ -497,7 +497,7 @@ Cloneable {
 	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = arg.first();
 
@@ -525,8 +525,7 @@ Cloneable {
 						(int) (val.time_value() * 1000.0));
 				return res;
 			} else {
-				DynamicError.throw_type_error();
-				return null; // unreach
+				throw DynamicError.throw_type_error();
 			}
 		} catch (CloneNotSupportedException err) {
 			assert false;

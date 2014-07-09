@@ -81,7 +81,7 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 		}
 		
 		if (!(at instanceof AnyAtomicType))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		
 		if (!(at instanceof CmpEq))
 			throw DynamicError.not_cmp(null);
@@ -113,7 +113,7 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 
 		// sanity chex
 		if (arg2.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		
 		String collationUri = dc.getCollationProvider().getDefaultCollation();
 		if (citer.hasNext()) {

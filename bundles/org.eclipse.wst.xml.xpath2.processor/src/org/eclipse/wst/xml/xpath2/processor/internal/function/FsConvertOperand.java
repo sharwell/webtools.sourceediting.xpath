@@ -71,12 +71,12 @@ public class FsConvertOperand extends Function {
 		ResultSequence expected = iter.next();
 
 		if (expected.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = expected.first();
 
 		if (!(at instanceof AnyAtomicType))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		AnyAtomicType exp_aat = (AnyAtomicType) at;
 

@@ -91,7 +91,7 @@ public class XSLong extends XSInteger {
 
 			if (bigInt.compareTo(min) < 0 || bigInt.compareTo(max) > 0) {
 			   // invalid input
-			   DynamicError.throw_type_error();	
+			   throw DynamicError.throw_type_error();	
 			}
 			
 			return new XSLong(bigInt);

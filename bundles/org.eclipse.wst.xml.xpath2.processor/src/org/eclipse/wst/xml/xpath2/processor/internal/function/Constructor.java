@@ -60,7 +60,7 @@ public class Constructor extends Function {
 		ResultSequence arg = args.iterator().next();
 
 		if (arg.size() > 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		// do it
 		return _atomic_type.constructor(arg);

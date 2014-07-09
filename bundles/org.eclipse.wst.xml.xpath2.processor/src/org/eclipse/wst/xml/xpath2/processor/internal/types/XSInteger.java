@@ -229,7 +229,7 @@ public class XSInteger extends XSDecimal {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSInteger))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		
 		XSInteger val = (XSInteger)at;
 

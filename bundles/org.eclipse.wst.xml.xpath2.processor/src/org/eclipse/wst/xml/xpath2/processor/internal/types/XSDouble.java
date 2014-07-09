@@ -338,7 +338,7 @@ public class XSDouble extends NumericType {
 		Item at = get_single_arg(carg);
 		
 		if (!(at instanceof XSDouble))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		XSDouble val = (XSDouble) at;
 
 		return new XSDouble(double_value() + val.double_value());

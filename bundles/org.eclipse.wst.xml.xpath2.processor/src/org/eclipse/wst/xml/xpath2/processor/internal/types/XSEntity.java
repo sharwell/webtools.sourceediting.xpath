@@ -69,7 +69,7 @@ public class XSEntity extends XSNCName {
 		
 		if (!isConstraintSatisfied(strValue)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 
 		return new XSEntity(strValue);

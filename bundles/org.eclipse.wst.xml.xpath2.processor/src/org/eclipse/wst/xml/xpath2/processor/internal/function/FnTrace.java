@@ -64,7 +64,7 @@ public class FnTrace extends Function {
 
 		// sanity check args
 		if (args.size() != 2)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Iterator<ResultSequence> argsi = args.iterator();
 
@@ -72,11 +72,11 @@ public class FnTrace extends Function {
 		ResultSequence arg2 = argsi.next();
 
 		if (arg2.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = arg2.first();
 		if (!(at instanceof XSString))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		XSString label = (XSString) at;
 

@@ -845,13 +845,13 @@ Cloneable {
 	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = arg.first();
 
 		if (!(at instanceof XSDateTime) && !(at instanceof XSYearMonthDuration)
 				&& !(at instanceof XSDayTimeDuration)) {
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 
 		if (at instanceof XSDateTime) {
@@ -931,7 +931,7 @@ Cloneable {
 	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = arg.first();
 
@@ -957,8 +957,7 @@ Cloneable {
 				res = new XSDateTime(xmlCal.toGregorianCalendar(), res.tz());
 				return res;
 			} else {
-				DynamicError.throw_type_error();
-				return null; // unreach
+				throw DynamicError.throw_type_error();
 			}
 		} catch (CloneNotSupportedException err) {
 			assert false;

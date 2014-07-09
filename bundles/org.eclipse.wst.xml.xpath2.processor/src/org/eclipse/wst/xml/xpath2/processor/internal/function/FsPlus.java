@@ -161,15 +161,15 @@ public class FsPlus extends Function {
 
 		// make sure we got only one arg
 		if (args.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		ResultSequence arg = args.iterator().next();
 
 		// make sure we got only one numeric atom
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		Item at = arg.first();
 		if (!(at instanceof NumericType))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		// no-op
 		return arg;
@@ -196,7 +196,7 @@ public class FsPlus extends Function {
 
 		// sanity check args + convert em
 		if (args.size() != 2)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Collection<ResultSequence> cargs = convert_args(args);
 

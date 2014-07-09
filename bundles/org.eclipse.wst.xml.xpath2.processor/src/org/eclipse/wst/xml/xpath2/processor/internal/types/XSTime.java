@@ -379,7 +379,7 @@ Cloneable {
 	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = arg.first();
 		

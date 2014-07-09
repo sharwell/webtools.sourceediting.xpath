@@ -337,7 +337,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	@Override
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = arg.first();
 
@@ -387,8 +387,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 
 			return new XSDecimal(res);
 		} else {
-			DynamicError.throw_type_error();
-			return null; // unreach
+			throw DynamicError.throw_type_error();
 		}
 	}
 

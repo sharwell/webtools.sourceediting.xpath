@@ -82,7 +82,7 @@ public class XSNCName extends XSName {
 		
 		if (!isConstraintSatisfied(strValue)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 
 		return new XSNCName(strValue);

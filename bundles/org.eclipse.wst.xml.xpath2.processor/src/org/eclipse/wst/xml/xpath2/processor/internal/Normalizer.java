@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.processor.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.function.FnFunctionLibrary;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AndExpr;
@@ -86,7 +85,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 // XXX currently not supported anymore!
 public class Normalizer implements XPathVisitor<XPathNode> {
 
-	private StaticContext _sc;
+	private org.eclipse.wst.xml.xpath2.processor.StaticContext _sc;
 
 	/**
 	 * Static Context is set to sc
@@ -94,7 +93,8 @@ public class Normalizer implements XPathVisitor<XPathNode> {
 	 * @param sc
 	 *            is the StaticContext.
 	 */
-	public Normalizer(StaticContext sc) {
+	@Deprecated
+	public Normalizer(org.eclipse.wst.xml.xpath2.processor.StaticContext sc) {
 		_sc = sc;
 	}
 

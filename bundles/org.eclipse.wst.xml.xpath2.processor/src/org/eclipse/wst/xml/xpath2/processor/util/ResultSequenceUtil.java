@@ -13,8 +13,6 @@
 
 package org.eclipse.wst.xml.xpath2.processor.util;
 
-import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 
 /**
@@ -26,12 +24,12 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 public class ResultSequenceUtil {
 
 	@Deprecated
-	public static ResultSequence newToOld(
+	public static org.eclipse.wst.xml.xpath2.processor.ResultSequence newToOld(
 			org.eclipse.wst.xml.xpath2.api.ResultSequence result) {
-		if (result instanceof ResultSequence) 
-			return (ResultSequence)result;
+		if (result instanceof org.eclipse.wst.xml.xpath2.processor.ResultSequence) 
+			return (org.eclipse.wst.xml.xpath2.processor.ResultSequence)result;
 		
-		ResultSequence rs = ResultSequenceFactory.create_new();
+		org.eclipse.wst.xml.xpath2.processor.ResultSequence rs = org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory.create_new();
 		for (int i = 0; i < result.size(); ++i) {
 			rs.add((AnyType) result.item(i));
 		}

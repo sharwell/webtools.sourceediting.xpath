@@ -12,20 +12,17 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
-import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
-
 /**
  * Factory implementation which creates sequences of type DefaultResultSequence.
  * 
  */
 @Deprecated
-public class DefaultRSFactory extends ResultSequenceFactory {
-	private static final ResultSequence _rs_creator = new DefaultResultSequence();
+public class DefaultRSFactory extends org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory {
+	private static final org.eclipse.wst.xml.xpath2.processor.ResultSequence _rs_creator = new DefaultResultSequence();
 
 	public static final int POOL_SIZE = 50;
 
-	private ResultSequence[] _rs_pool = new ResultSequence[POOL_SIZE];
+	private org.eclipse.wst.xml.xpath2.processor.ResultSequence[] _rs_pool = new org.eclipse.wst.xml.xpath2.processor.ResultSequence[POOL_SIZE];
 	private int _head_pos;
 
 	/**
@@ -39,7 +36,7 @@ public class DefaultRSFactory extends ResultSequenceFactory {
 		_head_pos = POOL_SIZE - 1;
 	}
 
-	protected ResultSequence fact_create_new() {
+	protected org.eclipse.wst.xml.xpath2.processor.ResultSequence fact_create_new() {
 		if (_head_pos > 0) {
 			return _rs_pool[_head_pos--];
 		}
@@ -47,7 +44,7 @@ public class DefaultRSFactory extends ResultSequenceFactory {
 		return _rs_creator.create_new();
 	}
 
-	protected void fact_release(ResultSequence rs) {
+	protected void fact_release(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
 		int new_pos = _head_pos + 1;
 
 		if (new_pos < POOL_SIZE) {

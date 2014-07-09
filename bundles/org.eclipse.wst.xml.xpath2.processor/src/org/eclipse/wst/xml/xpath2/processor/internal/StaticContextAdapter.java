@@ -32,8 +32,6 @@ import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.StaticVariableResolver;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
-import org.eclipse.wst.xml.xpath2.processor.DefaultDynamicContext;
-import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeItemTypeImpl;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.SimpleAtomicItemTypeImpl;
@@ -84,8 +82,8 @@ public class StaticContextAdapter implements
 	}
 
 	public CollationProvider getCollationProvider() {
-		if (sc instanceof DynamicContext) {
-			final DynamicContext dc = (DynamicContext)sc;
+		if (sc instanceof org.eclipse.wst.xml.xpath2.processor.DynamicContext) {
+			final org.eclipse.wst.xml.xpath2.processor.DynamicContext dc = (org.eclipse.wst.xml.xpath2.processor.DynamicContext)sc;
 			return new CollationProvider() {
 				
 				public String getDefaultCollation() {

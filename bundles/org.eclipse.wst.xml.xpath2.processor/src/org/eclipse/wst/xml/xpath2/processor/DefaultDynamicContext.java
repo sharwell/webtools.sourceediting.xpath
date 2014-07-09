@@ -36,7 +36,6 @@ import java.util.TimeZone;
 import org.apache.xerces.xs.XSModel;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
-import org.eclipse.wst.xml.xpath2.processor.internal.DefaultStaticContext;
 import org.eclipse.wst.xml.xpath2.processor.internal.DynamicContextAdapter;
 import org.eclipse.wst.xml.xpath2.processor.internal.Focus;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticContextAdapter;
@@ -59,7 +58,7 @@ import org.w3c.dom.Node;
  * XPath 2.0 specification.
  */
 @Deprecated
-public class DefaultDynamicContext extends DefaultStaticContext implements
+public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.internal.DefaultStaticContext implements
 		DynamicContext {
 
 	private Focus _focus;

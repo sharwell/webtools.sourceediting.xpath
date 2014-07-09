@@ -23,8 +23,6 @@ import java.util.Map;
 
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
-import org.eclipse.wst.xml.xpath2.processor.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.function.FnFunctionLibrary;
 import org.eclipse.wst.xml.xpath2.processor.function.XSCtrLibrary;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.ConstructorFL;
@@ -43,7 +41,7 @@ import org.w3c.dom.Node;
  * specification.
  */
 @Deprecated
-public class DefaultStaticContext implements StaticContext {
+public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processor.StaticContext {
 
 	private boolean _xpath1_compatible;
 	private String _default_namespace;
@@ -554,7 +552,7 @@ public class DefaultStaticContext implements StaticContext {
 	/*
 	 * Set a XPath2 sequence into a variable.
 	 */
-	protected void set_variable(QName var, ResultSequence val) {
+	protected void set_variable(QName var, org.eclipse.wst.xml.xpath2.processor.ResultSequence val) {
 		Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = current_scope();
 
 		scope.put(var, val);

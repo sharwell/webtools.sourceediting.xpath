@@ -238,7 +238,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	 * @since 1.1
 	 */
 	public ResultSequence get_doc(URI resolved) {
-		Document doc = null;
+		Document doc;
 		if (_loaded_documents.containsKey(resolved)) {
 			 //tried before
 			doc = _loaded_documents.get(resolved);

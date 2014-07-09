@@ -977,10 +977,6 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	 * @return null.
 	 */
 	public Void visit(PITest e) {
-		String arg = e.arg();
-		if (arg == null)
-			arg = "";
-
 		return null;
 	}
 

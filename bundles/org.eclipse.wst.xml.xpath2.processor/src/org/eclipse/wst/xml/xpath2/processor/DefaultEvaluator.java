@@ -981,7 +981,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * @return a new function
 	 */
 	public ResultSequence visit(CastableExpr cexp) {
-		boolean castable = false;
+		boolean castable;
 		try {
 			CastExpr ce = new CastExpr((Expr) cexp.left(), (SingleType) cexp
 					.right());

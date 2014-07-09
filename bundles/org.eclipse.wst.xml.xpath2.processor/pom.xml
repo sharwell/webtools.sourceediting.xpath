@@ -218,6 +218,13 @@
         <!-- override the version inherited from the parent -->
         <version>2.9.1</version>
         <configuration>
+          <tags>
+            <tag>
+              <name>noimplement</name>
+              <placement>t</placement>
+              <head>Do Not Implement</head>
+            </tag>
+          </tags>
           <quiet>true</quiet>
         </configuration>
       </plugin>

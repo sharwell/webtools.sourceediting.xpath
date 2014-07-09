@@ -26,7 +26,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -140,16 +140,16 @@ public abstract class NodeType extends AnyType {
 	}
 
 	public static org.eclipse.wst.xml.xpath2.processor.ResultSequence eliminate_dups(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
-		Hashtable<Node, Boolean> added = new Hashtable<Node, Boolean>(rs.size());
+		HashSet<Node> added = new HashSet<Node>(rs.size());
 
 		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
 			NodeType node = (NodeType) i.next();
 			Node n = node.node_value();
 
-			if (added.containsKey(n))
+			if (added.contains(n))
 				i.remove();
 			else
-				added.put(n, Boolean.TRUE);
+				added.add(n);
 		}
 		return rs;
 	}

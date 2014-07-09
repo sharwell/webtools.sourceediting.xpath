@@ -14,7 +14,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
@@ -38,7 +38,7 @@ public class FunctionLibrary implements org.eclipse.wst.xml.xpath2.api.FunctionL
 	 */
 	public FunctionLibrary(String ns) {
 		_namespace = ns;
-		_functions = new Hashtable<String, Function>();
+		_functions = new HashMap<String, Function>();
 		_sc = null;
 		_dc = null;
 	}

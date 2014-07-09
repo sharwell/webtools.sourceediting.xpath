@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.CtrType;
@@ -22,7 +22,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  */
 public class ConstructorFL extends FunctionLibrary {
 
-	private Hashtable<QName, AnyAtomicType> _types;
+	private final HashMap<QName, AnyAtomicType> _types;
 
 	/**
 	 * Constructor for ConstructorFL.
@@ -33,7 +33,7 @@ public class ConstructorFL extends FunctionLibrary {
 	public ConstructorFL(String ns) {
 		super(ns);
 
-		_types = new Hashtable<QName, AnyAtomicType>();
+		_types = new HashMap<QName, AnyAtomicType>();
 	}
 
 	/**

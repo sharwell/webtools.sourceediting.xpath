@@ -15,11 +15,11 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
@@ -92,7 +92,7 @@ public class DefaultStaticContext implements StaticContext {
 	// or in more human terms:
 	// a stack of scopes each containing a symbol table
 	// XXX vars contain AnyType... should they be ResultSequence ?
-	private Stack<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>> _scopes;
+	private ArrayList<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>> _scopes;
 
 	/**
 	 * Constructor.
@@ -113,7 +113,7 @@ public class DefaultStaticContext implements StaticContext {
 
 		_cntxt_item_type = null;
 
-		_scopes = new Stack<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>>();
+		_scopes = new ArrayList<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>>();
 		new_scope();
 
 		if (_model != null)
@@ -486,18 +486,18 @@ public class DefaultStaticContext implements StaticContext {
 	public void new_scope() {
 		Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> vars = new HashMap<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>();
 
-		_scopes.push(vars);
+		_scopes.add(vars);
 	}
 
 	/**
 	 * Destroys a scope.
 	 */
 	public void destroy_scope() {
-		_scopes.pop();
+		_scopes.remove(_scopes.size() - 1);
 	}
 
 	private Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> current_scope() {
-		return _scopes.peek();
+		return _scopes.get(_scopes.size() - 1);
 	}
 
 	/**

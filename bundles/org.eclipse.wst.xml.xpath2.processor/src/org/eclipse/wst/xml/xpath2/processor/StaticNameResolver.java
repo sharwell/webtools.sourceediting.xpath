@@ -23,7 +23,6 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 
 import org.eclipse.wst.xml.xpath2.api.Function;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.ReverseAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticAttrNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticContextAdapter;
@@ -288,7 +287,8 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	 *            is the XPath.
 	 * @return null.
 	 */
-	public Void visit(XPath xp) {
+	@SuppressWarnings("deprecation")
+	public Void visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		for (Iterator<Expr> i = xp.iterator(); i.hasNext();) {
 			Expr e = i.next();
 

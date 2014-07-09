@@ -12,8 +12,6 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
-
 /**
  * This is an interface class for the XPath parser.
  */
@@ -28,7 +26,8 @@ public interface XPathParser {
 	 *             XPath parser exception.
 	 * @return The parsed XPath.
 	 */
-	public XPath parse(String xpath) throws XPathParserException;
+	@SuppressWarnings("deprecation")
+	public org.eclipse.wst.xml.xpath2.processor.ast.XPath parse(String xpath) throws XPathParserException;
 	
 	/**
 	 * Constructor for the XPath parser interface.
@@ -42,5 +41,6 @@ public interface XPathParser {
 	 * @return The parsed XPath.
 	 * @since 2.0
 	 */
-	public XPath parse(String xpath, boolean isRootlessAccess) throws XPathParserException;
+	@SuppressWarnings("deprecation")
+	public org.eclipse.wst.xml.xpath2.processor.ast.XPath parse(String xpath, boolean isRootlessAccess) throws XPathParserException;
 }

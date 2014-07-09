@@ -4,7 +4,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.XPath2Engine;
 import org.eclipse.wst.xml.xpath2.api.XPath2Expression;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnBoolean;
 
 /**
@@ -13,8 +12,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.function.FnBoolean;
 public class Engine implements XPath2Engine {
 
 	public XPath2Expression parseExpression(String expression, StaticContext context) {
-
-		XPath xPath = new JFlexCupParser().parse(expression);
+		@SuppressWarnings("deprecation")
+		org.eclipse.wst.xml.xpath2.processor.ast.XPath xPath = new JFlexCupParser().parse(expression);
 		xPath.setStaticContext(context);
 		StaticNameResolver name_check = new StaticNameResolver(context);
 		name_check.check(xPath);

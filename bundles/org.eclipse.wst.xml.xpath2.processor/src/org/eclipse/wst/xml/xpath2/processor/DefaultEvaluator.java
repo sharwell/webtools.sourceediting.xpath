@@ -38,7 +38,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.Axis;
 import org.eclipse.wst.xml.xpath2.processor.internal.DescendantOrSelfAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.DynamicContextAdapter;
@@ -362,7 +361,8 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the xpath.
 	 * @return result sequence.
 	 */
-	public ResultSequence visit(XPath xp) {
+	@SuppressWarnings("deprecation")
+	public ResultSequence visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		ResultSequence rs = do_expr(xp.iterator());
 
 		return rs;

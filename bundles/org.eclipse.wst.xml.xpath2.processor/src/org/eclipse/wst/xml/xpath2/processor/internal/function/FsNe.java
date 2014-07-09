@@ -77,7 +77,13 @@ public class FsNe extends Function {
 	 */
 	public static ResultSequence fs_ne_general(Collection<ResultSequence> args, DynamicContext ec)
 			throws DynamicError {
-		return FsEq.do_cmp_general_op(args, FsNe.class, "fs_ne_value", ec);
+		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
+			@Override
+			public ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
+				return fs_ne_value(args, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_general_op(args, op, ec);
 	}
 
 }

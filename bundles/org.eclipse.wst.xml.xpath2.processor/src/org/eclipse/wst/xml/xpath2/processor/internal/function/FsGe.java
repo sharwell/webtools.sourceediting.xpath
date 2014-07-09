@@ -88,6 +88,12 @@ public class FsGe extends Function {
 	 */
 	public static ResultSequence fs_ge_general(Collection<ResultSequence> args, DynamicContext dc)
 			throws DynamicError {
-		return FsEq.do_cmp_general_op(args, FsGe.class, "fs_ge_value", dc);
+		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
+			@Override
+			public ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
+				return fs_ge_value(args, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_general_op(args, op, dc);
 	}
 }

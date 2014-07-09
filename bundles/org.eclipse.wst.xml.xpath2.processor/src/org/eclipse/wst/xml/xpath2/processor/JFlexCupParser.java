@@ -12,7 +12,6 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.InternalXPathParser;
 
 /**
@@ -28,7 +27,8 @@ public class JFlexCupParser implements XPathParser {
 	 * @throws XPathParserException.
 	 * @return the xpath value.
 	 */
-	public XPath parse(String xpath) throws XPathParserException {
+	@SuppressWarnings("deprecation")
+	public org.eclipse.wst.xml.xpath2.processor.ast.XPath parse(String xpath) throws XPathParserException {
 
 		return new InternalXPathParser().parse(xpath, false);
 	}
@@ -44,7 +44,8 @@ public class JFlexCupParser implements XPathParser {
 	 * @return the xpath value.
 	 * @since 2.0
 	 */
-	public XPath parse(String xpath, boolean isRootlessAccess) throws XPathParserException {
+	@SuppressWarnings("deprecation")
+	public org.eclipse.wst.xml.xpath2.processor.ast.XPath parse(String xpath, boolean isRootlessAccess) throws XPathParserException {
 
 		return new InternalXPathParser().parse(xpath, isRootlessAccess);
 	}

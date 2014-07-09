@@ -21,7 +21,6 @@ import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
 
@@ -74,7 +73,7 @@ public class FsLe extends Function {
 		if (((XSBoolean) equal.first()).value())
 			return equal;
 
-		return ResultSequenceFactory.create_new(new XSBoolean(false));
+		return XSBoolean.FALSE;
 	}
 
 	/**

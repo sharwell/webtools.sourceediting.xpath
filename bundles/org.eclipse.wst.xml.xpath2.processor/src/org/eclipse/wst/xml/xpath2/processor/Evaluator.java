@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.ast.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathNode;
 
 /**
  * interface to Evaluator
@@ -27,5 +27,5 @@ public interface Evaluator {
 	 *             dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(XPathNode root) throws DynamicError;
+	public org.eclipse.wst.xml.xpath2.api.ResultSequence evaluate(XPathNode root) throws DynamicError;
 }

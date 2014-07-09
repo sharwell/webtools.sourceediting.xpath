@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.processor.StaticContext;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.function.FnFunctionLibrary;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AndExpr;
@@ -87,16 +85,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 // XXX currently not supported anymore!
 public class Normalizer implements XPathVisitor<XPathNode> {
 
-	private StaticContext _sc;
-
-	/**
-	 * Static Context is set to sc
-	 * 
-	 * @param sc
-	 *            is the StaticContext.
-	 */
-	public Normalizer(StaticContext sc) {
-		_sc = sc;
+	public Normalizer() {
 	}
 
 	/**
@@ -106,7 +95,8 @@ public class Normalizer implements XPathVisitor<XPathNode> {
 	 *            is the xpath expression.
 	 * @return the xpath expressions.
 	 */
-	public XPathNode visit(XPath xp) {
+	@SuppressWarnings("deprecation")
+	public XPathNode visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		Collection<Expr> exprs = new ArrayList<Expr>();
 
 		for (Iterator<Expr> i = xp.iterator(); i.hasNext();) {
@@ -117,7 +107,7 @@ public class Normalizer implements XPathVisitor<XPathNode> {
 			exprs.add(n);
 		}
 
-		return new XPath(exprs);
+		return new org.eclipse.wst.xml.xpath2.processor.ast.XPath(exprs);
 	}
 
 	private void printVarExprPairs(Iterator<VarExprPair> i) {

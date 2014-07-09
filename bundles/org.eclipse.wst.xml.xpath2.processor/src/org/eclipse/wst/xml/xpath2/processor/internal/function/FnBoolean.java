@@ -21,7 +21,6 @@ import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.CalendarType;
@@ -64,7 +63,7 @@ public class FnBoolean extends Function {
 
 		ResultSequence argument = args.iterator().next();
 
-		return ResultSequenceFactory.create_new(fn_boolean(argument));
+		return fn_boolean(argument);
 	}
 
 	/**

@@ -92,7 +92,7 @@ public class StaticContextBuilder implements StaticContext {
 				for (Iterator<Map.Entry<String, String>> it = _namespaces.entrySet().iterator(); it.hasNext(); ) {
 					Map.Entry<String, String> entry = it.next();					
 					if (entry.getValue().equals(ns)) {
-						return (String)entry.getKey();
+						return entry.getKey();
 					}
 				}
 				return null;

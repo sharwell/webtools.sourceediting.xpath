@@ -73,7 +73,7 @@ public class FsGe extends Function {
 		if (((XSBoolean) equal.first()).value())
 			return equal;
 
-		return ResultSequenceFactory.create_new(new XSBoolean(false));
+		return XSBoolean.FALSE;
 	}
 
 	/**

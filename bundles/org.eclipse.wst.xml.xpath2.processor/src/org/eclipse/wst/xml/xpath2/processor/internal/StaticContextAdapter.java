@@ -32,14 +32,13 @@ import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.StaticVariableResolver;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
-import org.eclipse.wst.xml.xpath2.processor.DefaultDynamicContext;
-import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeItemTypeImpl;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.SimpleAtomicItemTypeImpl;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 import org.w3c.dom.Node;
 
+@Deprecated
 public class StaticContextAdapter implements
 		org.eclipse.wst.xml.xpath2.api.StaticContext {
 	private final org.eclipse.wst.xml.xpath2.processor.StaticContext sc;
@@ -83,8 +82,8 @@ public class StaticContextAdapter implements
 	}
 
 	public CollationProvider getCollationProvider() {
-		if (sc instanceof DynamicContext) {
-			final DynamicContext dc = (DynamicContext)sc;
+		if (sc instanceof org.eclipse.wst.xml.xpath2.processor.DynamicContext) {
+			final org.eclipse.wst.xml.xpath2.processor.DynamicContext dc = (org.eclipse.wst.xml.xpath2.processor.DynamicContext)sc;
 			return new CollationProvider() {
 				
 				public String getDefaultCollation() {
@@ -121,7 +120,7 @@ public class StaticContextAdapter implements
 	public NamespaceContext getNamespaceContext() {
 		return new NamespaceContext() {
 			
-			public Iterator getPrefixes(String arg0) {
+			public Iterator<?> getPrefixes(String arg0) {
 				return Collections.emptyList().iterator();
 			}
 			

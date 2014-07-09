@@ -22,6 +22,7 @@ import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -112,9 +113,9 @@ public class FnCompare extends Function {
 
 		BigInteger result = compare_string(collationUri, xstr1, xstr2, context);
 		if (result != null) {
-			return ResultSequenceFactory.create_new(new XSInteger(result));
+			return new XSInteger(result);
 		} else {
-			return ResultSequenceFactory.create_new();			
+			return ResultBuffer.EMPTY;
 		}
 	}
 

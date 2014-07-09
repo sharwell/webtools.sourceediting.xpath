@@ -104,7 +104,7 @@ public class FnLang extends Function {
 		
 		NodeType an = (NodeType) arg2.first();
 
-		return new XSBoolean(test_lang(an.node_value(), lang));
+		return test_lang(an.node_value(), lang) ? XSBoolean.TRUE : XSBoolean.FALSE;
 	}
 
 	/**

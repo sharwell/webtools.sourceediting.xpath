@@ -6,7 +6,6 @@
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java.util.Iterator;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AndExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AnyKindTest;
@@ -67,7 +66,8 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
     public static final ExpressionPrinterVisitor DEFAULT = new ExpressionPrinterVisitor();
 
     @Override
-    public String visit(XPath xp) {
+	@SuppressWarnings("deprecation")
+    public String visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
         for (Iterator<Expr> exprIt = xp.iterator(); exprIt.hasNext(); ) {

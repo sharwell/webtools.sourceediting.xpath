@@ -227,8 +227,7 @@ public class XSInteger extends XSDecimal {
 		
 		XSInteger val = (XSInteger)at;
 
-		return ResultSequenceFactory.create_new(new 
-				                   XSInteger(int_value().add(val.int_value())));
+		return new XSInteger(int_value().add(val.int_value()));
 		
 	}
 
@@ -261,8 +260,7 @@ public class XSInteger extends XSDecimal {
 		ResultSequence carg = convertResultSequence(arg);
 		XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
 		
-		return ResultSequenceFactory.create_new(new 
-				                 XSInteger(int_value().subtract(val.int_value())));
+		return new XSInteger(int_value().subtract(val.int_value()));
 	}
 
 	/**
@@ -279,8 +277,7 @@ public class XSInteger extends XSDecimal {
 
 		XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
 		
-		return ResultSequenceFactory.create_new(new 
-				                 XSInteger(int_value().multiply(val.int_value())));
+		return new XSInteger(int_value().multiply(val.int_value()));
 	}
 
 	/**
@@ -297,7 +294,7 @@ public class XSInteger extends XSDecimal {
 		XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
 		BigInteger result = int_value().remainder(val.int_value()); 
 		
-		return ResultSequenceFactory.create_new(new XSInteger(result));
+		return new XSInteger(result);
 	}
 
 	/**
@@ -306,8 +303,7 @@ public class XSInteger extends XSDecimal {
 	 * @return New XSInteger representing the negation of the integer stored
 	 */
 	public ResultSequence unary_minus() {
-		return ResultSequenceFactory
-				.create_new(new XSInteger(int_value().multiply(BigInteger.valueOf(-1))));
+		return new XSInteger(int_value().multiply(BigInteger.valueOf(-1)));
 	}
 
 	/**
@@ -337,8 +333,7 @@ public class XSInteger extends XSDecimal {
 	}
 	
 	protected Item convertArg(AnyType arg) throws DynamicError {
-		ResultSequence rs = ResultSequenceFactory.create_new(arg);
-		rs = constructor(rs);
+		ResultSequence rs = constructor(arg);
 		Item carg = rs.first();
 		return carg;
 	}
@@ -370,7 +365,7 @@ public class XSInteger extends XSDecimal {
 		}
 		
 		BigDecimal result = getValue().divide(val.getValue(), 18, BigDecimal.ROUND_HALF_EVEN);
-		return ResultSequenceFactory.create_new(new XSDecimal(result));
+		return new XSDecimal(result);
 	}
 
 	public TypeDefinition getTypeDefinition() {

@@ -17,6 +17,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
 /**
  * Result sequence factory
  */
+@Deprecated
 public abstract class ResultSequenceFactory {
 	private static final ResultSequenceFactory _factory = new DefaultRSFactory();
 

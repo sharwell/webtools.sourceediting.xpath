@@ -11,8 +11,6 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
-
 /**
  * Visitor class for XPath expressions.
  */
@@ -20,7 +18,8 @@ public interface XPathVisitor<T> {
 	/**
 	 * Visit XPath.
 	 */
-	public T visit(XPath xp);
+	@SuppressWarnings("deprecation")
+	public T visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp);
 
 	/**
 	 * Visit ForExpr.

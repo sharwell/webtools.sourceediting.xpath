@@ -47,17 +47,14 @@ import org.eclipse.wst.xml.xpath2.api.typesystem.PrimitiveType;
 import org.eclipse.wst.xml.xpath2.api.typesystem.SimpleTypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.Axis;
 import org.eclipse.wst.xml.xpath2.processor.internal.DescendantOrSelfAxis;
-import org.eclipse.wst.xml.xpath2.processor.internal.DynamicContextAdapter;
 import org.eclipse.wst.xml.xpath2.processor.internal.Focus;
 import org.eclipse.wst.xml.xpath2.processor.internal.ForwardAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.ParentAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.ReverseAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.SelfAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
-import org.eclipse.wst.xml.xpath2.processor.internal.StaticContextAdapter;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticTypeNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
@@ -152,7 +149,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 import org.eclipse.wst.xml.xpath2.processor.util.ResultSequenceUtil;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -183,9 +179,9 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 	private Focus _focus = new Focus(ResultBuffer.EMPTY);
 
-	Focus focus() { return _focus ; }
+	public Focus focus() { return _focus ; }
 	
-	void set_focus(Focus f) { _focus = f; }
+	public void set_focus(Focus f) { _focus = f; }
 
 	static class Pair<T1, T2> {
 		public T1 _one;
@@ -217,14 +213,6 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		TypeDefinition nodeTd = _sc.getTypeModel().getType(at.node_value());
 		short method = TypeDefinition.DERIVATION_EXTENSION | TypeDefinition.DERIVATION_RESTRICTION;
 		return nodeTd != null && nodeTd.derivedFromType(td, method);
-	}
-
-	public DefaultEvaluator(org.eclipse.wst.xml.xpath2.processor.DynamicContext dynamicContext, Document doc) {
-		this(new StaticContextAdapter(dynamicContext), new DynamicContextAdapter(dynamicContext));
-		
-		ResultSequence focusSequence = (doc != null) ? new DocType(doc, _sc.getTypeModel()) : ResultBuffer.EMPTY;   
-		set_focus(new Focus(focusSequence));
-		dynamicContext.set_focus(focus());
 	}
 	
 	/**
@@ -327,8 +315,8 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *             error.
 	 * @return result sequence.
 	 */
-	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(XPathNode node) {
-		return ResultSequenceUtil.newToOld(evaluate2(node));
+	public ResultSequence evaluate(XPathNode node) {
+		return evaluate2(node);
 	}
 
 	/**
@@ -375,7 +363,8 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the xpath.
 	 * @return result sequence.
 	 */
-	public ResultSequence visit(XPath xp) {
+	@SuppressWarnings("deprecation")
+	public ResultSequence visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		ResultSequence rs = do_expr(xp.iterator());
 
 		return rs;
@@ -585,8 +574,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(OrExpr orex) {
 		boolean res[] = do_logic_exp(orex);
 
-		return ResultSequenceFactory
-				.create_new(new XSBoolean(res[0] || res[1]));
+		return (res[0] || res[1]) ? XSBoolean.TRUE : XSBoolean.FALSE;
 	}
 
 	/**
@@ -599,8 +587,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(AndExpr andex) {
 		boolean res[] = do_logic_exp(andex);
 
-		return ResultSequenceFactory
-				.create_new(new XSBoolean(res[0] && res[1]));
+		return (res[0] && res[1]) ? XSBoolean.TRUE : XSBoolean.FALSE;
 	}
 
 	private ResultSequence node_cmp(int type, Collection<ResultSequence> args) {
@@ -725,7 +712,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(RangeExpr rex) {
 		ResultSequence one = rex.left().accept(this);
 		ResultSequence two = rex.right().accept(this);
-		if (one.empty() || two.empty()) return ResultSequenceFactory.create_new(); 
+		if (one.empty() || two.empty()) return ResultBuffer.EMPTY; 
 		Collection<ResultSequence> args = new ArrayList<ResultSequence>();
 		args.add(one);
 		args.add(two);
@@ -943,7 +930,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 		// get the sequence type
 		SequenceType seqt = (SequenceType) ioexp.right();
-		return ResultSequenceFactory.create_new(new XSBoolean(isInstanceOf(rs, seqt)));
+		return isInstanceOf(rs, seqt) ? XSBoolean.TRUE : XSBoolean.FALSE;
 	}
 		
 	private boolean isInstanceOf(ResultSequence rs, SequenceType seqt) {
@@ -996,7 +983,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * @return a new function
 	 */
 	public ResultSequence visit(CastableExpr cexp) {
-		boolean castable = false;
+		boolean castable;
 		try {
 			CastExpr ce = new CastExpr((Expr) cexp.left(), (SingleType) cexp.right());
 			visit(ce);
@@ -1005,7 +992,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			castable = false;
 		}
 
-		return ResultSequenceFactory.create_new(new XSBoolean(castable));
+		return castable ? XSBoolean.TRUE : XSBoolean.FALSE;
 	}
 
 	/**
@@ -1048,7 +1035,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 		// prepare args from function
 		Collection<ResultSequence> args = new ArrayList<ResultSequence>();
-		args.add(ResultSequenceFactory.create_new(aat));
+		args.add(aat);
 
 		try {
 			Function function = cexp.function();

@@ -31,7 +31,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
@@ -221,8 +220,8 @@ public class FsEq extends Function {
 		// rule d
 		// if value comparison is true, return true.
 
-		ResultSequence one = ResultSequenceFactory.create_new(a);
-		ResultSequence two = ResultSequenceFactory.create_new(b);
+		ResultSequence one = a;
+		ResultSequence two = b;
 
 		Collection<ResultSequence> args = new ArrayList<ResultSequence>();
 		args.add(one);
@@ -287,7 +286,7 @@ public class FsEq extends Function {
 
 		// XXX ?
 		if (one.empty() || two.empty())
-			return ResultSequenceFactory.create_new(new XSBoolean(false));
+			return XSBoolean.FALSE;
 
 		// atomize
 		one = FnData.atomize(one);
@@ -300,12 +299,11 @@ public class FsEq extends Function {
 				AnyType b = (AnyType) j.next();
 
 				if (do_general_pair(a, b, op, staticContext, dynamicContext))
-					return ResultSequenceFactory
-							.create_new(new XSBoolean(true));
+					return XSBoolean.TRUE;
 			}
 		}
 
-		return ResultSequenceFactory.create_new(new XSBoolean(false));
+		return XSBoolean.FALSE;
 	}
 
 	public interface CmpValueOp<T> {
@@ -354,6 +352,6 @@ public class FsEq extends Function {
 			DynamicError.throw_type_error();
 
 		boolean cmpres = op.execute(op.getType().cast(arg), (AnyType)arg2.first(), staticContext, dynamicContext); // (Boolean) method.invoke(arg, margs);
-		return ResultSequenceFactory.create_new(new XSBoolean(cmpres));
+		return cmpres ? XSBoolean.TRUE : XSBoolean.FALSE;
 	}
 }

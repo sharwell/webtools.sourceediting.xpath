@@ -28,9 +28,9 @@ import javax.xml.datatype.DatatypeFactory;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
+import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
@@ -197,7 +197,7 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args)
+	public ResultSequence evaluate(Collection<ResultSequence> args)
 			throws DynamicError {
 		throw new UnsupportedOperationException();
 	}
@@ -214,7 +214,7 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 	 *             Dynamic error.
 	 * @return Converted argument.
 	 */
-	public static org.eclipse.wst.xml.xpath2.api.ResultSequence convert_argument(org.eclipse.wst.xml.xpath2.api.ResultSequence arg,
+	public static ResultSequence convert_argument(ResultSequence arg,
 			SeqType expected) throws DynamicError {
 		ResultBuffer result = new ResultBuffer();
 
@@ -226,7 +226,7 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 			AnyAtomicType expected_aat = (AnyAtomicType) expected_type;
 			
 			// atomize
-			org.eclipse.wst.xml.xpath2.api.ResultSequence rs = FnData.atomize(arg);
+			ResultSequence rs = FnData.atomize(arg);
 
 			// cast untyped to expected type
 			for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
@@ -236,13 +236,13 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 					// create a new item of the expected
 					// type initialized with from the string
 					// value of the item
-					org.eclipse.wst.xml.xpath2.processor.ResultSequence converted = null;
+					AnyType converted;
 					if (expected_aat instanceof XSString) {
 					   XSString strType = new XSString(item.getStringValue());
-					   converted = ResultSequenceFactory.create_new(strType);
+					   converted = strType;
 					}
 					else {
-					   converted = ResultSequenceFactory.create_new(item);
+					   converted = item;
 					}
 					
 					result.concat(converted);
@@ -285,13 +285,13 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 	 *             Dynamic error.
 	 * @return Converted arguments.
 	 */
-	public static Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> convert_arguments(Collection<? extends org.eclipse.wst.xml.xpath2.api.ResultSequence> args,
+	public static Collection<ResultSequence> convert_arguments(Collection<? extends ResultSequence> args,
 			Collection<? extends SeqType> expected) throws DynamicError {
-		Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> result = new ArrayList<org.eclipse.wst.xml.xpath2.api.ResultSequence>();
+		Collection<ResultSequence> result = new ArrayList<ResultSequence>();
 
 		assert args.size() <= expected.size();
 
-		Iterator<? extends org.eclipse.wst.xml.xpath2.api.ResultSequence> argi = args.iterator();
+		Iterator<? extends ResultSequence> argi = args.iterator();
 		Iterator<? extends SeqType> expi = expected.iterator();
 
 		// convert all arguments
@@ -303,7 +303,7 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 		return result;
 	}
 
-	protected static org.eclipse.wst.xml.xpath2.api.ResultSequence getResultSetForArityZero(EvaluationContext ec)
+	protected static ResultSequence getResultSetForArityZero(EvaluationContext ec)
 			throws DynamicError {
 		ResultBuffer rs = new ResultBuffer();
 		
@@ -394,10 +394,10 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 		
 	} // convertInputItem
 
-	public org.eclipse.wst.xml.xpath2.api.ResultSequence evaluate(Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args,
+	public ResultSequence evaluate(Collection<ResultSequence> args,
 			EvaluationContext evaluationContext) {
 		
-		org.eclipse.wst.xml.xpath2.processor.ResultSequence result = evaluate(args);
+		ResultSequence result = evaluate(args);
 		return result;
 	}
 

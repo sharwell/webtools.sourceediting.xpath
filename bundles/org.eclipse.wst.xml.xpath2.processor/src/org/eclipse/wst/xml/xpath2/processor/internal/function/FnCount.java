@@ -65,6 +65,6 @@ public class FnCount extends Function {
 		Iterator<ResultSequence> citer = args.iterator();
 		ResultSequence arg = citer.next();
 
-		return ResultSequenceFactory.create_new(new XSInteger(BigInteger.valueOf(arg.size())));
+		return new XSInteger(BigInteger.valueOf(arg.size()));
 	}
 }

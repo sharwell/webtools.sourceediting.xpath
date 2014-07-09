@@ -19,7 +19,6 @@ import java.util.Collection;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
 
@@ -68,7 +67,6 @@ public class FnPosition extends Function {
 			throw DynamicError.contextUndefined();
 		}
 		
-		return ResultSequenceFactory.create_new(new XSInteger(BigInteger.valueOf(ec
-				.getContextPosition())));
+		return new XSInteger(BigInteger.valueOf(ec.getContextPosition()));
 	}
 }

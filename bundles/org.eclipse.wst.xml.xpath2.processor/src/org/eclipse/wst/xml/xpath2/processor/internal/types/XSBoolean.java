@@ -31,9 +31,11 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
  */
 public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	private static final String XS_BOOLEAN = "xs:boolean";
+	@SuppressWarnings("deprecation")
 	public static final XSBoolean TRUE = new XSBoolean(true);
+	@SuppressWarnings("deprecation")
 	public static final XSBoolean FALSE = new XSBoolean(false);
-	private boolean _value;
+	private final boolean _value;
 
 	/**
 	 * Initiates the new representation to the boolean supplied
@@ -41,6 +43,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @param x
 	 *       Initializes this datatype to represent this boolean
 	 */
+	@Deprecated
 	public XSBoolean(boolean x) {
 		_value = x;
 	}
@@ -48,6 +51,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	/**
 	 * Initiates to a default representation of false.
 	 */
+	@Deprecated
 	public XSBoolean() {
 	  this(false);
 	}
@@ -63,7 +67,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 
 	@Override
 	public Object getNativeValue() {
-		return Boolean.valueOf(_value);
+		return _value;
 	}
 	
 	/**

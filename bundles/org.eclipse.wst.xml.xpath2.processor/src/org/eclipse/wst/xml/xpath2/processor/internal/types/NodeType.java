@@ -105,7 +105,7 @@ public abstract class NodeType extends AnyType {
 
 	// XXX element should override
 	public ResultSequence nilled() {
-		return ResultSequenceFactory.create_new();
+		return ResultBuffer.EMPTY;
 	}
 
 	// a little factory for converting from DOM to our representation

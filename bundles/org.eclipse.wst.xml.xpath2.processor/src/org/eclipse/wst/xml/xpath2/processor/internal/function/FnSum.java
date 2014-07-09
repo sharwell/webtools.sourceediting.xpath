@@ -89,7 +89,7 @@ public class FnSum extends Function {
 
 
 		if (arg.empty())
-			return ResultSequenceFactory.create_new(zero);
+			return zero;
 
 		MathPlus total = null;
 		
@@ -100,7 +100,7 @@ public class FnSum extends Function {
 				if (total == null) {
 					total = (MathPlus)conv; 
 				} else {
-					total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+					total = (MathPlus)total.plus(conv).first();
 				}
 			}
 		}
@@ -116,16 +116,16 @@ public class FnSum extends Function {
 				}
 
 				if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
-					return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
+					return tp.promote(new XSFloat(Float.NaN));
 				}
 				if (total == null) {
 					total = (MathPlus)conv; 
 				} else {
-					total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+					total = (MathPlus)total.plus(conv).first();
 				}
 			}
 		}
 		
-		return ResultSequenceFactory.create_new((AnyType) total);
+		return (AnyType) total;
 	}
 }

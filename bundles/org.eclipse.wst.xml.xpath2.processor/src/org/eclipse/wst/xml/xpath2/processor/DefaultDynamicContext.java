@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.xerces.xs.XSModel;
-import org.eclipse.wst.xml.xpath2.processor.internal.DefaultStaticContext;
+import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
 import org.eclipse.wst.xml.xpath2.processor.internal.Focus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.Function;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FunctionLibrary;
@@ -46,7 +46,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.xerces.XercesTypeModel;
 import org.eclipse.wst.xml.xpath2.processor.util.ResultSequenceUtil;
-import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -56,7 +55,8 @@ import org.w3c.dom.Node;
  * Initializes and provides functionality of a dynamic context according to the
  * XPath 2.0 specification.
  */
-public class DefaultDynamicContext extends DefaultStaticContext implements
+@Deprecated
+public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.internal.DefaultStaticContext implements
 		DynamicContext {
 
 	private Focus _focus;
@@ -201,7 +201,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	 */
 	public void add_function_library(FunctionLibrary fl) {
 		super.add_function_library(fl);
-		fl.set_dynamic_context(this);
+		fl.set_dynamic_context(new org.eclipse.wst.xml.xpath2.processor.internal.DynamicContextAdapter(this));
 	}
 
 	/**
@@ -211,7 +211,7 @@ public class DefaultDynamicContext extends DefaultStaticContext implements
 	 * @since 1.1
 	 */
 	public ResultSequence get_doc(URI resolved) {
-		Document doc = null;
+		Document doc;
 		if (_loaded_documents.containsKey(resolved)) {
 			 //tried before
 			doc = _loaded_documents.get(resolved);

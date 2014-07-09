@@ -233,9 +233,7 @@ public class XSDecimal extends NumericType {
 		   DynamicError.invalidType();
 		}
 		else if (!(at instanceof XSDecimal)) { 
-			ResultSequence rs = ResultSequenceFactory.create_new(at);
-			
-			ResultSequence crs = constructor(rs);
+			ResultSequence crs = constructor(at);
 			if (crs.empty()) {
 				throw DynamicError.throw_type_error();
 			}
@@ -266,8 +264,7 @@ public class XSDecimal extends NumericType {
 	}
 
 	protected Item convertArg(AnyType arg) throws DynamicError {
-		ResultSequence rs = ResultSequenceFactory.create_new(arg);
-		rs = constructor(rs);
+		ResultSequence rs = constructor(arg);
 		Item carg = rs.first();
 		return carg;
 	}
@@ -307,7 +304,7 @@ public class XSDecimal extends NumericType {
 		XSDecimal dt = (XSDecimal) at;
 
 		// own it
-		return ResultSequenceFactory.create_new(new XSDecimal(_value.add(dt.getValue())));
+		return new XSDecimal(_value.add(dt.getValue()));
 	}
 	
 	private ResultSequence convertResultSequence(ResultSequence arg)
@@ -343,7 +340,7 @@ public class XSDecimal extends NumericType {
 			DynamicError.throw_type_error();
 		XSDecimal dt = (XSDecimal) at;
 
-		return ResultSequenceFactory.create_new(new XSDecimal(_value.subtract(dt.getValue())));
+		return new XSDecimal(_value.subtract(dt.getValue()));
 	}
 
 	/**
@@ -360,7 +357,7 @@ public class XSDecimal extends NumericType {
 
 		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
 		BigDecimal result = _value.multiply(val.getValue());
-		return ResultSequenceFactory.create_new(new XSDecimal(result));
+		return new XSDecimal(result);
 	}
 
 	/**
@@ -380,7 +377,7 @@ public class XSDecimal extends NumericType {
 			throw DynamicError.div_zero(null);
 		}
 		BigDecimal result = getValue().divide(val.getValue(), 18, BigDecimal.ROUND_HALF_EVEN);
-		return ResultSequenceFactory.create_new(new XSDecimal(result));
+		return new XSDecimal(result);
 	}
 
 	/**
@@ -403,8 +400,7 @@ public class XSDecimal extends NumericType {
 		BigInteger _ivalue = _value.toBigInteger();
 		BigInteger ival =  val.getValue().toBigInteger();
 		BigInteger result = _ivalue.divide(ival);
-		return ResultSequenceFactory.create_new(new 
-				           XSInteger(result));
+		return new XSInteger(result);
 	}
 
 	/**
@@ -424,7 +420,7 @@ public class XSDecimal extends NumericType {
 		// BigDecimal result = _value.remainder(val.getValue());
 		BigDecimal result = remainder(_value, val.getValue()); 
 		
-		return ResultSequenceFactory.create_new(new XSDecimal(result));
+		return new XSDecimal(result);
 	}
 
 	public static BigDecimal remainder(BigDecimal value, BigDecimal divisor) {
@@ -444,7 +440,7 @@ public class XSDecimal extends NumericType {
 	 */
 	public ResultSequence unary_minus() {
 		BigDecimal result = _value.negate();
-		return ResultSequenceFactory.create_new(new XSDecimal(result));
+		return new XSDecimal(result);
 	}
 
 	// functions

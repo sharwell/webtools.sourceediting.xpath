@@ -71,6 +71,6 @@ public class FnCurrentDate extends Function {
 		XSDayTimeDuration tz = new XSDayTimeDuration(dc.getTimezoneOffset());
 		AnyType res = new XSDate(dc.getCurrentDateTime(), tz);
 
-		return ResultSequenceFactory.create_new(res);
+		return res;
 	}
 }

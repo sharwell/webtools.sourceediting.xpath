@@ -36,7 +36,7 @@ public class SchemaTypeValueFactory {
 		
 		if (typeDef == XSConstants.BOOLEAN_DT) {
 			String normalizedBooleanStrValue = ("1".equals(strValue) || "true".equals(strValue)) ? "true" : "false";
-			return new XSBoolean(Boolean.valueOf(normalizedBooleanStrValue).booleanValue());
+			return Boolean.valueOf(normalizedBooleanStrValue) ? XSBoolean.TRUE : XSBoolean.FALSE;
 		}
 		
 		if (typeDef == XSConstants.DATE_DT) {       

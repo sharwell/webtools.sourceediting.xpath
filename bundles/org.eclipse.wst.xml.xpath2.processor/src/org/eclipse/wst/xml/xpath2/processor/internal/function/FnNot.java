@@ -18,7 +18,6 @@ import java.util.Collection;
 
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
 
@@ -68,7 +67,7 @@ public class FnNot extends Function {
 		if (ret.value() == false)
 			answer = true;
 
-		return ResultSequenceFactory.create_new(new XSBoolean(answer));
+		return answer ? XSBoolean.TRUE : XSBoolean.FALSE;
 	}
 
 }

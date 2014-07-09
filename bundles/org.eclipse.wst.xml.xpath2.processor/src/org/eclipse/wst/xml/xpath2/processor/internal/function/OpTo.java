@@ -21,7 +21,6 @@ import java.util.Iterator;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.internal.RangeResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
@@ -92,7 +91,7 @@ public class OpTo extends Function {
 		 * 
 		 * return rs;
 		 */
-		return new RangeResultSequence(one, two);
+		return new org.eclipse.wst.xml.xpath2.processor.internal.RangeResultSequence(one, two);
 	}
 
 	/**

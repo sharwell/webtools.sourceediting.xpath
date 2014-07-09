@@ -23,16 +23,13 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 
 import org.eclipse.wst.xml.xpath2.api.Function;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.ReverseAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticAttrNameError;
-import org.eclipse.wst.xml.xpath2.processor.internal.StaticContextAdapter;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticElemNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticFunctNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticNsNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticTypeNameError;
-import org.eclipse.wst.xml.xpath2.processor.internal.StaticVarNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AndExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AnyKindTest;
@@ -107,23 +104,12 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 		private static final long serialVersionUID = 3898564402981741950L;
 	}
 
-	private org.eclipse.wst.xml.xpath2.api.StaticContext _sc;
+	private final org.eclipse.wst.xml.xpath2.api.StaticContext _sc;
 	private StaticNameError _err;
 	
-	private Set<javax.xml.namespace.QName> _resolvedFunctions = new HashSet<javax.xml.namespace.QName>();
-	private Set<String> _axes = new HashSet<String>();
-	private Set<javax.xml.namespace.QName> _freeVariables = new HashSet<javax.xml.namespace.QName>();
-	/**
-	 * Constructor for static name resolver
-	 * 
-	 * @param sc
-	 *            is the static context.
-	 * @since 2.0
-	 */
-	public StaticNameResolver(final org.eclipse.wst.xml.xpath2.processor.StaticContext sc) {
-		_sc = new StaticContextAdapter(sc);
-		_err = null;
-	}
+	private final Set<javax.xml.namespace.QName> _resolvedFunctions = new HashSet<javax.xml.namespace.QName>();
+	private final Set<String> _axes = new HashSet<String>();
+	private final Set<javax.xml.namespace.QName> _freeVariables = new HashSet<javax.xml.namespace.QName>();
 
 	/**
 	 * @since 2.0
@@ -288,7 +274,8 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	 *            is the XPath.
 	 * @return null.
 	 */
-	public Void visit(XPath xp) {
+	@SuppressWarnings("deprecation")
+	public Void visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		for (Iterator<Expr> i = xp.iterator(); i.hasNext();) {
 			Expr e = i.next();
 
@@ -980,9 +967,9 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	 * @return null.
 	 */
 	public Void visit(PITest e) {
-		String arg = e.arg();
-		if (arg == null)
-			arg = "";
+		//String arg = e.arg();
+		//if (arg == null)
+		//	arg = "";
 
 		return null;
 	}

@@ -68,6 +68,6 @@ public class FnImplicitTimezone extends Function {
 
 		AnyType res = new XSDayTimeDuration(dc.getTimezoneOffset());
 
-		return ResultSequenceFactory.create_new(res);
+		return res;
 	}
 }

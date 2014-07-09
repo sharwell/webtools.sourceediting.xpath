@@ -18,7 +18,6 @@ import java_cup.runtime.Symbol;
 
 import org.eclipse.wst.xml.xpath2.processor.StaticError;
 import org.eclipse.wst.xml.xpath2.processor.XPathParserException;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathExpr;
 
 /**
@@ -38,14 +37,14 @@ public class InternalXPathParser {
 	 * @return the xpath value.
 	 * @since 2.0
 	 */
-	public XPath parse(String xpath, boolean isRootlessAccess) throws XPathParserException {
+	public org.eclipse.wst.xml.xpath2.processor.ast.XPath parse(String xpath, boolean isRootlessAccess) throws XPathParserException {
 
 		XPathFlex lexer = new XPathFlex(new StringReader(xpath));
 
 		try {
 			XPathCup p = new XPathCup(lexer); 
 			Symbol res = p.parse();
-			XPath xPath2 = (XPath) res.value;
+			org.eclipse.wst.xml.xpath2.processor.ast.XPath xPath2 = (org.eclipse.wst.xml.xpath2.processor.ast.XPath) res.value;
 			if (isRootlessAccess) {
 				xPath2.accept(new DefaultVisitor() {
 					public Object visit(XPathExpr e) {

@@ -265,7 +265,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 		
 		double res = value() + val.value();
 
-		return ResultSequenceFactory.create_new(new XSDayTimeDuration(res));
+		return new XSDayTimeDuration(res);
 	}
 
 	/**
@@ -284,7 +284,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 
 		double res = value() - val.value();
 
-		return ResultSequenceFactory.create_new(new XSDayTimeDuration(res));
+		return new XSDayTimeDuration(res);
 	}
 
 	/**
@@ -303,7 +303,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 		if (arg.size() == 1) {
 			Item argValue = arg.first();
             if (argValue instanceof XSDecimal) {
-            	convertedRS = ResultSequenceFactory.create_new(new XSDouble(argValue.getStringValue()));	
+            	convertedRS = new XSDouble(argValue.getStringValue());	
             }
 		}
 		
@@ -315,7 +315,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 
 		double res = value() * val.double_value();
 
-		return ResultSequenceFactory.create_new(new XSDayTimeDuration(res));
+		return new XSDayTimeDuration(res);
 	}
 
 	/**
@@ -356,8 +356,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 				throw DynamicError.overflowUnderflow();
 			}
 
-			return ResultSequenceFactory
-					.create_new(new XSDayTimeDuration(retval));
+			return new XSDayTimeDuration(retval);
 		} else if (at instanceof XSDecimal) {
 			XSDecimal dt = (XSDecimal) at;
 			
@@ -370,8 +369,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 				throw DynamicError.overflowUnderflow();
 			}
 			
-			return ResultSequenceFactory.create_new(new XSDayTimeDuration(
-					ret.intValue()));	
+			return new XSDayTimeDuration(ret.intValue());
 		} else if (at instanceof XSDayTimeDuration) {
 			XSDuration md = (XSDuration) at;
 
@@ -380,7 +378,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 			BigDecimal l = new BigDecimal(md.value());
 			res = res.divide(l, 18, BigDecimal.ROUND_HALF_EVEN);
 
-			return ResultSequenceFactory.create_new(new XSDecimal(res));
+			return new XSDecimal(res);
 		} else {
 			DynamicError.throw_type_error();
 			return null; // unreach

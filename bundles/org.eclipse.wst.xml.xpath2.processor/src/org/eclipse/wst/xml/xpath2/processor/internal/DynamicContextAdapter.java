@@ -20,6 +20,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDuration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+@Deprecated
 public class DynamicContextAdapter implements
 		org.eclipse.wst.xml.xpath2.api.DynamicContext {
 	private final org.eclipse.wst.xml.xpath2.processor.DynamicContext dc;

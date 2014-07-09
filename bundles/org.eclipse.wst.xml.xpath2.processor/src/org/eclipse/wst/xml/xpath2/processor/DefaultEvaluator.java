@@ -315,7 +315,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * @return result sequence.
 	 */
 	@Deprecated
-	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(XPathNode node) {
+	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(XPathNode node) throws DynamicError {
 		return ResultSequenceUtil.newToOld(evaluate2(node));
 	}
 

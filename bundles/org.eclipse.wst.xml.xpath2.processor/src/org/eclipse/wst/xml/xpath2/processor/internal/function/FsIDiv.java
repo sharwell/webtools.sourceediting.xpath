@@ -55,6 +55,17 @@ public class FsIDiv extends Function {
 	 * @return Result of the operation.
 	 */
 	public static ResultSequence fs_idiv(Collection<ResultSequence> args) throws DynamicError {
-		return FsPlus.do_math_op(args, MathIDiv.class, "idiv");
+		FsPlus.MathOp<MathIDiv> op = new FsPlus.MathOp<MathIDiv>() {
+			@Override
+			public Class<? extends MathIDiv> getType() {
+				return MathIDiv.class;
+			}
+
+			@Override
+			public ResultSequence execute(MathIDiv obj, ResultSequence arg) throws DynamicError {
+				return obj.idiv(arg);
+			}
+		};
+		return FsPlus.do_math_op(args, op);
 	}
 }

@@ -14,8 +14,6 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -136,7 +134,18 @@ public class FsPlus extends Function {
 	 * @return Result of the operation.
 	 */
 	public static ResultSequence fs_plus(Collection<ResultSequence> args) throws DynamicError {
-		return do_math_op(args, MathPlus.class, "plus");
+		MathOp<MathPlus> op = new MathOp<MathPlus>() {
+			@Override
+			public Class<? extends MathPlus> getType() {
+				return MathPlus.class;
+			}
+
+			@Override
+			public ResultSequence execute(MathPlus obj, ResultSequence arg) throws DynamicError {
+				return obj.plus(arg);
+			}
+		};
+		return do_math_op(args, op);
 	}
 
 	/**
@@ -167,23 +176,24 @@ public class FsPlus extends Function {
 		return arg;
 	}
 
+	public interface MathOp<T> {
+		Class<? extends T> getType();
+
+		ResultSequence execute(T obj, ResultSequence arg) throws DynamicError;
+	}
+
 	// voodoo
 	/**
 	 * Mathematical operation on the arguments.
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param type
-	 *            type of arguments.
-	 * @param mname
-	 *            Method name for template simulation.
 	 * @param sc 
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of operation.
 	 */
-	public static ResultSequence do_math_op(Collection<ResultSequence> args, Class<?> type,
-			String mname) throws DynamicError {
+	public static <T> ResultSequence do_math_op(Collection<ResultSequence> args, MathOp<T> op) throws DynamicError {
 
 		// sanity check args + convert em
 		if (args.size() != 2)
@@ -196,36 +206,19 @@ public class FsPlus extends Function {
 
 		// make sure arugments are good [at least the first one]
 		Iterator<ResultSequence> argi = cargs.iterator();
-		Item arg = argi.next().item(0);
+
+		T arg;
+		try {
+			arg = op.getType().cast(argi.next().item(0));
+			if (arg == null) {
+				throw DynamicError.throw_type_error();
+			}
+		} catch (ClassCastException ex) {
+			throw DynamicError.throw_type_error();
+		}
+
 		ResultSequence arg2 = argi.next();
 
-		if (!(type.isInstance(arg)))
-			DynamicError.throw_type_error();
-
-		// here is da ownage
-		try {
-			Class<?> margsdef[] = { ResultSequence.class };
-			Method method = null;
-
-			method = type.getMethod(mname, margsdef);
-
-			Object margs[] = { arg2 };
-			return (ResultSequence) method.invoke(arg, margs);
-
-		} catch (NoSuchMethodException err) {
-			System.out.println("NoSuchMethodException: " + err.getMessage());
-			assert false;
-		} catch (IllegalAccessException err) {
-			System.out.println("IllegalAccessException: " + err.getMessage());
-			assert false;
-		} catch (InvocationTargetException err) {
-			Throwable ex = err.getTargetException();
-			if (ex instanceof DynamicError) {
-				throw (DynamicError) ex;
-			} else {
-				throw new RuntimeException(ex);
-			}
-		}
-		return null; // unreach!
+		return op.execute(arg, arg2);
 	}
 }

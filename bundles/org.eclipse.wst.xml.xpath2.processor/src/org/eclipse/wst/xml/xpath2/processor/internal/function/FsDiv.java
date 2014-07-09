@@ -56,6 +56,17 @@ public class FsDiv extends Function {
 	 * @return Result of fs:div operation.
 	 */
 	public static ResultSequence fs_div(Collection<ResultSequence> args) throws DynamicError {
-		return FsPlus.do_math_op(args, MathDiv.class, "div");
+		FsPlus.MathOp<MathDiv> op = new FsPlus.MathOp<MathDiv>() {
+			@Override
+			public Class<? extends MathDiv> getType() {
+				return MathDiv.class;
+			}
+
+			@Override
+			public ResultSequence execute(MathDiv obj, ResultSequence arg) throws DynamicError {
+				return obj.div(arg);
+			}
+		};
+		return FsPlus.do_math_op(args, op);
 	}
 }

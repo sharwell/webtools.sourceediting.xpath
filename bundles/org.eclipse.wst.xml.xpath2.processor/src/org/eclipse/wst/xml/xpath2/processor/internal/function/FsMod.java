@@ -55,6 +55,17 @@ public class FsMod extends Function {
 	 * @return Result of the operation.
 	 */
 	public static ResultSequence fs_mod(Collection<ResultSequence> args) throws DynamicError {
-		return FsPlus.do_math_op(args, MathMod.class, "mod");
+		FsPlus.MathOp<MathMod> op = new FsPlus.MathOp<MathMod>() {
+			@Override
+			public Class<? extends MathMod> getType() {
+				return MathMod.class;
+			}
+
+			@Override
+			public ResultSequence execute(MathMod obj, ResultSequence arg) throws DynamicError {
+				return obj.mod(arg);
+			}
+		};
+		return FsPlus.do_math_op(args, op);
 	}
 }

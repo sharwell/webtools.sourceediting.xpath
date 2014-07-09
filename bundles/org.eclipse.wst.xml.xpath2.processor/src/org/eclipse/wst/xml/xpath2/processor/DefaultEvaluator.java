@@ -1121,9 +1121,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		boolean node_types = false;
 
 		// check the results
-		for (Iterator<ResultSequence> i = results.iterator(); i.hasNext();) {
-			ResultSequence result = i.next();
-
+		for (ResultSequence result : results) {
 			// make sure results are of same type, and add them in
 			for (Iterator<Item> j = result.iterator(); j.hasNext();) {
 				AnyType item = (AnyType) j.next();

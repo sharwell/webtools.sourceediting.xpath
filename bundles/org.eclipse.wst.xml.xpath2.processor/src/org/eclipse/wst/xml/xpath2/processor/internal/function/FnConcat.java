@@ -89,9 +89,7 @@ public class FnConcat extends Function {
 
 		// go through args
 		StringBuilder buf = new StringBuilder();
-		for (Iterator<ResultSequence> argi = args.iterator(); argi.hasNext();) {
-			ResultSequence arg = argi.next();
-
+		for (ResultSequence arg : args) {
 			int size = arg.size();
 
 			// sanity check

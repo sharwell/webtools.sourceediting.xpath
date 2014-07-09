@@ -521,9 +521,7 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	 */
 	public boolean variable_in_scope(QName var) {
 		// order doesn't matter..
-		for (Iterator<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>> i = _scopes.iterator(); i.hasNext();) {
-			Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = i.next();
-
+		for (Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope : _scopes) {
 			if (scope.containsKey(var))
 				return true;
 		}
@@ -602,13 +600,11 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 	public void debug_print_vars() {
 		int level = 0;
 
-		for (Iterator<Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>> i = _scopes.iterator(); i.hasNext();) {
-			Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope = i.next();
-
+		for (Map<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> scope : _scopes) {
 			System.out.println("Scope level " + level);
 //			scope.entrySet().iterator();
-			for (Iterator<Map.Entry<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence>> j = scope.entrySet().iterator(); j.hasNext();) {
-				QName varname = j.next().getKey();
+			for (Map.Entry<QName, org.eclipse.wst.xml.xpath2.api.ResultSequence> entry : scope.entrySet()) {
+				QName varname = entry.getKey();
 
 				org.eclipse.wst.xml.xpath2.api.ResultSequence val = scope.get(varname);
 

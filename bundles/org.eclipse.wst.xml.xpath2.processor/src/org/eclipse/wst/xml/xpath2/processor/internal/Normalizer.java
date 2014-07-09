@@ -162,8 +162,7 @@ public class Normalizer implements XPathVisitor<XPathNode> {
 		}
 
 		// add variables to scope
-		for (Iterator<QName> i = vars.iterator(); i.hasNext();) {
-			QName var = i.next();
+		for (QName var : vars) {
 		}
 
 		// do the bounded expression

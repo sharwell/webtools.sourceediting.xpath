@@ -80,17 +80,14 @@ public class StaticContextBuilder implements StaticContext {
 			
 			public Iterator<String> getPrefixes(String ns) {
 				List<String> prefixes = new LinkedList<String>();
-				for (Iterator<Map.Entry<String, String>> it = _namespaces.entrySet().iterator(); it.hasNext(); ) {
-					Map.Entry<String, String> entry = it.next();
-					
+				for (Map.Entry<String, String> entry : _namespaces.entrySet()) {
 					if (entry.getValue().equals(ns)) prefixes.add(entry.getKey());
 				}
 				return prefixes.iterator();
 			}
 			
 			public String getPrefix(String ns) {
-				for (Iterator<Map.Entry<String, String>> it = _namespaces.entrySet().iterator(); it.hasNext(); ) {
-					Map.Entry<String, String> entry = it.next();					
+				for (Map.Entry<String, String> entry : _namespaces.entrySet()) {
 					if (entry.getValue().equals(ns)) {
 						return entry.getKey();
 					}

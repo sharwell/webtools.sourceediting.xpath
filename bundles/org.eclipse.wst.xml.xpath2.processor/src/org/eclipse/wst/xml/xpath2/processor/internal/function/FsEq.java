@@ -77,9 +77,7 @@ public class FsEq extends Function {
 		Collection<Item> result = new ArrayList<Item>(args.size());
 
 		// atomize arguments
-		for (Iterator<ResultSequence> i = args.iterator(); i.hasNext();) {
-			ResultSequence rs = i.next();
-
+		for (ResultSequence rs : args) {
 			//FnData.fast_atomize(rs);
 			rs = FnData.atomize(rs);
 

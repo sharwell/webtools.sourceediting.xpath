@@ -102,9 +102,7 @@ public class FsPlus extends Function {
 			Collection<ResultSequence> result2 = new ArrayList<ResultSequence>();
 
 			// promote arguments
-			for (Iterator<ResultSequence> i = result.iterator(); i.hasNext();) {
-				ResultSequence rs = i.next();
-
+			for (ResultSequence rs : result) {
 				Item arg = rs.item(0);
 				
 				if (has_double && (arg instanceof XSFloat)) {

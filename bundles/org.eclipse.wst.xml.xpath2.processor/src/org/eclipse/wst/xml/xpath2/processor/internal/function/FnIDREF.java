@@ -121,8 +121,8 @@ public class FnIDREF extends Function {
 	
 	private static ArrayList<XSID> createIDs(String[] idtokens) {
 		ArrayList<XSID> xsid = new ArrayList<XSID>();
-		for (int i = 0; i < idtokens.length; i++) {
-			XSID id = new XSID(idtokens[i]);
+		for (String idtoken : idtokens) {
+			XSID id = new XSID(idtoken);
 			xsid.add(id);
 		}
 		return xsid;
@@ -174,8 +174,7 @@ public class FnIDREF extends Function {
 	}
 	
 	private static boolean hasID(List<XSID> ids, Node node) {
-		for (int i = 0; i < ids.size(); i++) {
-			XSID idref = ids.get(i);
+		for (XSID idref : ids) {
 			if (idref.getStringValue().equals(node.getNodeValue())) {
 				return true;
 			}

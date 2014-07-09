@@ -121,8 +121,8 @@ public class FnID extends Function {
 	
 	private static ArrayList<XSIDREF> createIDRefs(String[] idReftokens) {
 		ArrayList<XSIDREF> xsidRef = new ArrayList<XSIDREF>();
-		for (int i = 0; i < idReftokens.length; i++) {
-			XSIDREF idref = new XSIDREF(idReftokens[i]);
+		for (String idReftoken : idReftokens) {
+			XSIDREF idref = new XSIDREF(idReftoken);
 			xsidRef.add(idref);
 		}
 		return xsidRef;
@@ -171,8 +171,7 @@ public class FnID extends Function {
 	}
 	
 	private static boolean hasIDREF(List<XSIDREF> idrefs, Node node) {
-		for (int i = 0; i < idrefs.size(); i++) {
-			XSIDREF idref = idrefs.get(i);
+		for (XSIDREF idref : idrefs) {
 			if (idref.getStringValue().equals(node.getNodeValue())) {
 				return true;
 			}

@@ -12,11 +12,17 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
-import org.xml.sax.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * The DOM builder loads an DOM from an InputStream. The loading is always namespace aware.

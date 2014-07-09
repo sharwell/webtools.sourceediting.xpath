@@ -17,7 +17,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 

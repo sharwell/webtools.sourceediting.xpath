@@ -14,7 +14,6 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;

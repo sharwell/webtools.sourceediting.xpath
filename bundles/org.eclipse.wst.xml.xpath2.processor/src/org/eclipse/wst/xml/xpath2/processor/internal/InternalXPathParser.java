@@ -15,7 +15,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 import java.io.StringReader;
 
 import java_cup.runtime.Symbol;
-
 import org.eclipse.wst.xml.xpath2.processor.StaticError;
 import org.eclipse.wst.xml.xpath2.processor.XPathParserException;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathExpr;

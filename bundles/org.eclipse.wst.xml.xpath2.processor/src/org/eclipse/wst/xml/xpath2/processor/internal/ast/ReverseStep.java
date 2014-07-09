@@ -12,7 +12,12 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.AncestorAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.AncestorOrSelfAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.ParentAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.PrecedingAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.PrecedingSiblingAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.ReverseAxis;
 
 /**
  * Class for Reverse stepping support for Step operations.

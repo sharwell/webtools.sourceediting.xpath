@@ -119,7 +119,7 @@ public abstract class AbstractURIFunction extends Function {
 		String str = aat.getStringValue();
 
 		ByteBuffer buffer = UTF_8.encode(str);
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 	
 		for (int i = 0; i < buffer.limit(); i++) {
 			byte x = buffer.get(i);

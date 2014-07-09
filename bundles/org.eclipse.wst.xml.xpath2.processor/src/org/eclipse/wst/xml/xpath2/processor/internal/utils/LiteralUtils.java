@@ -39,7 +39,7 @@ public class LiteralUtils {
 			return quotedString.substring(1, inputLength-1);
 		}
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 1; i < inputLength-1; ++i) {
 			char ch = quotedString.charAt(i);
 			sb.append(ch);

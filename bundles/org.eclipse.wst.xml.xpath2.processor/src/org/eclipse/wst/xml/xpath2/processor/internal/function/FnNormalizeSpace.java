@@ -109,7 +109,7 @@ public class FnNormalizeSpace extends Function {
 	 */
 	// XXX fix this
 	public static String normalize(String str) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		int state = 0; // 0 begin
 		// 1 middle

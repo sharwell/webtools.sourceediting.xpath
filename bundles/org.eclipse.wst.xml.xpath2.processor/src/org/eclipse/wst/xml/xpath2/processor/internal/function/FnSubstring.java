@@ -126,7 +126,7 @@ public class FnSubstring extends Function {
 		
 		
 		// could guess too short in cases supplementary chars 
-		StringBuffer sb = new StringBuffer((int) Math.min(str.length(), ilength));
+		StringBuilder sb = new StringBuilder((int) Math.min(str.length(), ilength));
 
 		// This looks like an inefficient way to iterate, but due to surrogate handling,
 		// string indexes are no good here. Welcome to UTF-16!

@@ -644,7 +644,7 @@ Cloneable {
 			pad++;
 		}
 
-		StringBuffer buf = new StringBuffer(ret);
+		StringBuilder buf = new StringBuilder(ret);
 		for (int i = 0; i < pad; i++) {
 			buf.append("0");
 		}

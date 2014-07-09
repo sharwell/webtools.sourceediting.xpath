@@ -143,7 +143,7 @@ public class ElementType extends NodeType {
 
 		NodeList nl = node.getChildNodes();
 
-		StringBuffer buf = new StringBuffer(result);
+		StringBuilder buf = new StringBuilder(result);
 		// concatenate children
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node n = nl.item(i);

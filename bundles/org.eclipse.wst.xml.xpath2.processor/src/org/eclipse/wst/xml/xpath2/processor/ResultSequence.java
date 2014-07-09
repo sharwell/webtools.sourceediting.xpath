@@ -104,13 +104,13 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 		String result = "";
 		int num = 1;
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (Iterator<Item> i = iterator(); i.hasNext();) {
 			AnyType elem = (AnyType) i.next();
 
-			buf.append(num + ") ");
+			buf.append(num).append(") ");
 
-			buf.append(elem.string_type() + ": ");
+			buf.append(elem.string_type()).append(": ");
 
 			String value = elem.getStringValue();
 
@@ -120,7 +120,7 @@ public abstract class ResultSequence implements org.eclipse.wst.xml.xpath2.api.R
 				if (tmp != null)
 					value = tmp.expanded_name();
 			}
-			buf.append(value + "\n");
+			buf.append(value).append("\n");
 
 			num++;
 		}

@@ -120,7 +120,7 @@ public class FnTranslate extends Function {
 
 		Map<Integer, Integer> replacements = buildReplacementMap(mapstr, transstr);
 		
-		StringBuffer sb = new StringBuffer(str.length());
+		StringBuilder sb = new StringBuilder(str.length());
 		CodePointIterator strIter = new StringCodePointIterator(str);
 		for (int input = strIter.current(); input != CodePointIterator.DONE; input = strIter.next()) {
 			Integer inputCodepoint = input;

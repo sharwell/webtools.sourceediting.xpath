@@ -71,7 +71,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 
 	@Override
 	public Object getNativeValue() {
-		return Boolean.valueOf(_value);
+		return _value;
 	}
 	
 	/**

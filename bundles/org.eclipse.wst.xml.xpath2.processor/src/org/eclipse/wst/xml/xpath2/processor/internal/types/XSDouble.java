@@ -46,7 +46,7 @@ public class XSDouble extends NumericType {
 	 *            Number to be stored
 	 */
 	public XSDouble(double x) {
-		_value = new Double(x);
+		_value = x;
 	}
 
 	/**
@@ -65,9 +65,9 @@ public class XSDouble extends NumericType {
 	public XSDouble(String init) throws DynamicError {
 		try {
 			if (init.equals("-INF")) {
-				_value = new Double(Double.NEGATIVE_INFINITY);
+				_value = Double.NEGATIVE_INFINITY;
 			} else if (init.equals("INF")) {
-				_value = new Double(Double.POSITIVE_INFINITY);
+				_value = Double.POSITIVE_INFINITY;
 			} else {
 				_value = new Double(init);
 			}
@@ -87,13 +87,13 @@ public class XSDouble extends NumericType {
 		try {
 			Double d = null;
 			if (i.equals("INF")) {
-				d = new Double(Double.POSITIVE_INFINITY);
+				d = Double.POSITIVE_INFINITY;
 			} else if (i.equals("-INF")) {
-				d = new Double(Double.NEGATIVE_INFINITY);
+				d = Double.NEGATIVE_INFINITY;
 			} else {
 				d = new Double(i);
 			}
-			return new XSDouble(d.doubleValue());
+			return new XSDouble(d);
 		} catch (NumberFormatException e) {
 			return null;
 		}
@@ -201,7 +201,7 @@ public class XSDouble extends NumericType {
 	 * @return True if this XSDouble represents NaN. False otherwise.
 	 */
 	public boolean nan() {
-		return Double.isNaN(_value.doubleValue());
+		return Double.isNaN(_value);
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class XSDouble extends NumericType {
 	 * @return True if this XSDouble represents infinity. False otherwise.
 	 */
 	public boolean infinite() {
-		return Double.isInfinite(_value.doubleValue());
+		return Double.isInfinite(_value);
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class XSDouble extends NumericType {
 	 * @return True if this XSDouble represents 0. False otherwise.
 	 */
 	public boolean zero() {
-		return (Double.compare(_value.doubleValue(), 0.0E0) == 0);
+		return (Double.compare(_value, 0.0E0) == 0);
 	}
 
 	/*
@@ -230,7 +230,7 @@ public class XSDouble extends NumericType {
 	 * @since 1.1
 	 */
 	public boolean negativeZero() {
-		return (Double.compare(_value.doubleValue(), -0.0E0) == 0);
+		return (Double.compare(_value, -0.0E0) == 0);
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class XSDouble extends NumericType {
 	 * @return The actual value of the number stored
 	 */
 	public double double_value() {
-		return _value.doubleValue();
+		return _value;
 	}
 
 	/**
@@ -260,13 +260,17 @@ public class XSDouble extends NumericType {
 		}
 		Item cat = crs.first();
 
+		/* Note: as implemented, this comparison returns false for (NaN eq NaN),
+		 * but true for (+0.0 eq -0.0). As such, it is not precisely the same
+		 * operation as either Double.equals or the == operator for double values.
+		 */
 		XSDouble d = (XSDouble) cat;
 		if (d.nan() && nan()) {
 			return false;
 		}
 		
-		Double thatvalue = new Double(d.double_value());
-		Double thisvalue = new Double(double_value());
+		Double thatvalue = d._value;
+		Double thisvalue = _value;
 		
 		return thisvalue.equals(thatvalue);
 	}
@@ -483,7 +487,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble representing the closest long of the number stored.
 	 */
 	public NumericType round() {
-		BigDecimal value = new BigDecimal(_value.doubleValue());
+		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(0, BigDecimal.ROUND_HALF_UP);
 		return new XSDouble(round.doubleValue());
 	}
@@ -507,7 +511,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble representing the closest long of the number stored.
 	 */
 	public NumericType round_half_to_even(int precision) {
-		BigDecimal value = new BigDecimal(_value.doubleValue());
+		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
 		return new XSDouble(round.doubleValue());
 	}

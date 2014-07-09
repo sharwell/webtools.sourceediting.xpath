@@ -44,7 +44,7 @@ public class XSFloat extends NumericType {
 	 *            The number to be stored
 	 */
 	public XSFloat(float x) {
-		_value = new Float(x);
+		_value = x;
 	}
 
 	/**
@@ -63,9 +63,9 @@ public class XSFloat extends NumericType {
 	public XSFloat(String init) throws DynamicError {
 		try {
 			if (init.equals("-INF")) {
-				_value = new Float(Float.NEGATIVE_INFINITY);
+				_value = Float.NEGATIVE_INFINITY;
 			} else if (init.equals("INF")) {
-				_value = new Float(Float.POSITIVE_INFINITY);
+				_value = Float.POSITIVE_INFINITY;
 			} else {
 				_value = new Float(init);
 			}
@@ -117,7 +117,7 @@ public class XSFloat extends NumericType {
 	 * @return True is this datatype represents NaN. False otherwise
 	 */
 	public boolean nan() {
-		return Float.isNaN(_value.floatValue());
+		return Float.isNaN(_value);
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class XSFloat extends NumericType {
 	 * @return True is this datatype represents infinity. False otherwise
 	 */
 	public boolean infinite() {
-		return Float.isInfinite(_value.floatValue());
+		return Float.isInfinite(_value);
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class XSFloat extends NumericType {
 	 * @return True if this datatype represents 0. False otherwise
 	 */
 	public boolean zero() {
-	   return (Float.compare(_value.floatValue(), 0) == 0);
+	   return (Float.compare(_value, 0) == 0);
 	}
 	
 	/*
@@ -145,7 +145,7 @@ public class XSFloat extends NumericType {
 	 * @since 1.1
 	 */
 	public boolean negativeZero() {
-	   return (Float.compare(_value.floatValue(), -0.0f) == 0);
+	   return (Float.compare(_value, -0.0f) == 0);
 	}
 	
 	/**
@@ -205,7 +205,7 @@ public class XSFloat extends NumericType {
 	 * @return The actual float value stored
 	 */
 	public float float_value() {
-		return _value.floatValue();
+		return _value;
 	}
 
 	/**
@@ -222,13 +222,17 @@ public class XSFloat extends NumericType {
 		if (!(carg instanceof XSFloat))
 			DynamicError.throw_type_error();
 
+		/* Note: as implemented, this comparison returns false for (NaN eq NaN),
+		 * but true for (+0.0f eq -0.0f). As such, it is not precisely the same
+		 * operation as either Float.equals or the == operator for float values.
+		 */
 		XSFloat f = (XSFloat) carg;
 		if (nan() && f.nan()) {
 			return false;
 		}
 		
-		Float thatvalue = new Float(f.float_value());
-		Float thisvalue = new Float(float_value());
+		Float thatvalue = f._value;
+		Float thisvalue = _value;
 
 		return thisvalue.equals(thatvalue);
 	}
@@ -436,7 +440,7 @@ public class XSFloat extends NumericType {
 	 * @return A XSFloat representing the closest long of the number stored.
 	 */
 	public NumericType round_half_to_even(int precision) {
-		BigDecimal value = new BigDecimal(_value.floatValue());
+		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
 		return new XSFloat(round.floatValue());
 	}

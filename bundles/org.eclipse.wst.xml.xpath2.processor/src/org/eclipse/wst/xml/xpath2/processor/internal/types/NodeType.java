@@ -327,7 +327,7 @@ public abstract class NodeType extends AnyType {
 		    // here the list items may have different atomic types
 			for (int listItemIdx = 0; listItemIdx < listItemsStrValues.length; listItemIdx++) {
 				String listItem = listItemsStrValues[listItemIdx];
-				rs.add(SchemaTypeValueFactory.newSchemaTypeValue(itemValueTypes.get(listItemIdx).shortValue(), listItem));
+				rs.add(SchemaTypeValueFactory.newSchemaTypeValue(itemValueTypes.get(listItemIdx), listItem));
 			}
 		}
 		

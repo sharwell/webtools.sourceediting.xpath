@@ -92,7 +92,7 @@ public class FnAbs extends Function {
 		if (nt instanceof XSFloat) {
 			XSFloat dat = (XSFloat) nt;
 			if (dat.zero() || dat.negativeZero()) {
-				return new XSFloat((new Float(0)).floatValue());
+				return new XSFloat(0f);
 			}
 			if (dat.infinite()) {
 				return new XSFloat(Float.POSITIVE_INFINITY);

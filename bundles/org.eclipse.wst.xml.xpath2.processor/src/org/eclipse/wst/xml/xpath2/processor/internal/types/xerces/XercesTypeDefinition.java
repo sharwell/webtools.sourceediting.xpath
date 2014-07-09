@@ -87,7 +87,7 @@ public abstract class XercesTypeDefinition implements TypeDefinition {
 		if (valueTypes == null) return null;
 		List<Short> types = new LinkedList<Short>();
 		int limit = valueTypes.getLength();
-		for (int i = 0; i < limit; ++i) types.add(Short.valueOf(valueTypes.item(i)));
+		for (int i = 0; i < limit; ++i) types.add(valueTypes.item(i));
 		return types;
 	}
 	

@@ -83,8 +83,7 @@ public class XercesLoader implements DOMLoader {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		factory.setNamespaceAware(true);
-		factory.setAttribute(SCHEMA_VALIDATION_FEATURE,
-				Boolean.valueOf(_validating));
+		factory.setAttribute(SCHEMA_VALIDATION_FEATURE, _validating);
 		factory.setAttribute(LOAD_EXTERNAL_DTD_FEATURE, Boolean.TRUE);
 		factory.setAttribute(NONVALIDATING_LOAD_DTD_GRAMMAR, Boolean.TRUE);
 		factory.setAttribute(DOCUMENT_IMPLEMENTATION_PROPERTY,

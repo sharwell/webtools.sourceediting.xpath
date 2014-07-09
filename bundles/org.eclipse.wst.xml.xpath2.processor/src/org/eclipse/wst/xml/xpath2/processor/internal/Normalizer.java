@@ -85,8 +85,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 // XXX currently not supported anymore!
 public class Normalizer implements XPathVisitor<XPathNode> {
 
-	private org.eclipse.wst.xml.xpath2.processor.StaticContext _sc;
-
 	/**
 	 * Static Context is set to sc
 	 * 
@@ -95,7 +93,6 @@ public class Normalizer implements XPathVisitor<XPathNode> {
 	 */
 	@Deprecated
 	public Normalizer(org.eclipse.wst.xml.xpath2.processor.StaticContext sc) {
-		_sc = sc;
 	}
 
 	/**

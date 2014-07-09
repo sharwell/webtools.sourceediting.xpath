@@ -23,7 +23,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathExpr;
 /**
  * JFlexCupParser parses the xpath expression
  */
-@SuppressWarnings("deprecation")
 public class InternalXPathParser {
 
 	/**
@@ -37,6 +36,7 @@ public class InternalXPathParser {
 	 * @return the xpath value.
 	 * @since 2.0
 	 */
+	@SuppressWarnings("deprecation")
 	public org.eclipse.wst.xml.xpath2.processor.ast.XPath parse(String xpath, boolean isRootlessAccess) throws XPathParserException {
 
 		XPathFlex lexer = new XPathFlex(new StringReader(xpath));

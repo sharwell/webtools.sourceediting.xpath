@@ -40,6 +40,7 @@ import org.w3c.dom.Node;
 
 public class StaticContextAdapter implements
 		org.eclipse.wst.xml.xpath2.api.StaticContext {
+	@SuppressWarnings("deprecation")
 	private final org.eclipse.wst.xml.xpath2.processor.StaticContext sc;
 
 	@Deprecated
@@ -73,6 +74,7 @@ public class StaticContextAdapter implements
 		return BuiltinTypeLibrary.XS_UNTYPED;
 	}
 
+	@SuppressWarnings("deprecation")
 	public Map<String, FunctionLibrary> getFunctionLibraries() {
 		if (sc instanceof DefaultStaticContext) {
 			DefaultStaticContext dsc = (DefaultStaticContext)sc;
@@ -81,6 +83,7 @@ public class StaticContextAdapter implements
 		return Collections.emptyMap();
 	}
 
+	@SuppressWarnings("deprecation")
 	public CollationProvider getCollationProvider() {
 		if (sc instanceof org.eclipse.wst.xml.xpath2.processor.DynamicContext) {
 			final org.eclipse.wst.xml.xpath2.processor.DynamicContext dc = (org.eclipse.wst.xml.xpath2.processor.DynamicContext)sc;

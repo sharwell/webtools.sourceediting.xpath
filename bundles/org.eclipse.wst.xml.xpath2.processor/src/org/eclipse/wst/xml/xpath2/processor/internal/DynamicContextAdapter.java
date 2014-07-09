@@ -22,6 +22,7 @@ import org.w3c.dom.Node;
 
 public class DynamicContextAdapter implements
 		org.eclipse.wst.xml.xpath2.api.DynamicContext {
+	@SuppressWarnings("deprecation")
 	private final org.eclipse.wst.xml.xpath2.processor.DynamicContext dc;
 	private StaticContextAdapter sca;
 

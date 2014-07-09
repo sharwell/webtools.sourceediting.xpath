@@ -712,7 +712,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(RangeExpr rex) {
 		ResultSequence one = rex.left().accept(this);
 		ResultSequence two = rex.right().accept(this);
-		if (one.empty() || two.empty()) return ResultSequenceFactory.create_new(); 
+		if (one.empty() || two.empty()) return ResultBuffer.EMPTY; 
 		Collection<ResultSequence> args = new ArrayList<ResultSequence>();
 		args.add(one);
 		args.add(two);

@@ -22,6 +22,7 @@ import java.util.Iterator;
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
+import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
@@ -75,7 +76,7 @@ public class FnMax extends Function {
 
 		ResultSequence arg = get_arg(args, CmpGt.class);
 		if (arg.empty())
-			return ResultSequenceFactory.create_new();
+			return ResultBuffer.EMPTY;
 
 		CmpGt max = null;
 

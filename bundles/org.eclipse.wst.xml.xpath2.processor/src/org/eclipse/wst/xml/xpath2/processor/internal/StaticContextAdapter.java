@@ -121,7 +121,7 @@ public class StaticContextAdapter implements
 	public NamespaceContext getNamespaceContext() {
 		return new NamespaceContext() {
 			
-			public Iterator getPrefixes(String arg0) {
+			public Iterator<?> getPrefixes(String arg0) {
 				return Collections.emptyList().iterator();
 			}
 			

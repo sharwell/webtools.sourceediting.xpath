@@ -89,8 +89,8 @@ public class StaticContextBuilder implements StaticContext {
 			}
 			
 			public String getPrefix(String ns) {
-				for (Iterator it = _namespaces.entrySet().iterator(); it.hasNext(); ) {
-					Map.Entry entry = (Map.Entry)it.next();					
+				for (Iterator<Map.Entry<String, String>> it = _namespaces.entrySet().iterator(); it.hasNext(); ) {
+					Map.Entry<String, String> entry = it.next();					
 					if (entry.getValue().equals(ns)) {
 						return (String)entry.getKey();
 					}

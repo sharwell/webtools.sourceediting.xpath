@@ -244,7 +244,7 @@ public class ResultBuffer {
 				return false;
 			}
 
-			public boolean addAll(Collection arg0) {
+			public boolean addAll(Collection<? extends Item> arg0) {
 				return false;
 			}
 
@@ -255,7 +255,7 @@ public class ResultBuffer {
 				return false;
 			}
 
-			public boolean containsAll(Collection arg0) {
+			public boolean containsAll(Collection<?> arg0) {
 				return false;
 			}
 
@@ -271,11 +271,11 @@ public class ResultBuffer {
 				return false;
 			}
 
-			public boolean removeAll(Collection arg0) {
+			public boolean removeAll(Collection<?> arg0) {
 				return false;
 			}
 
-			public boolean retainAll(Collection arg0) {
+			public boolean retainAll(Collection<?> arg0) {
 				return false;
 			}
 

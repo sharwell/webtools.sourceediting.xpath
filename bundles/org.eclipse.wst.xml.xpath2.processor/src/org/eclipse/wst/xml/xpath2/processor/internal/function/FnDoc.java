@@ -20,9 +20,9 @@ import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
+import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -84,7 +84,7 @@ public class FnDoc extends Function {
 		ResultSequence arg1 = argiter.next();
 
 		if (arg1.empty())
-			return ResultSequenceFactory.create_new();
+			return ResultBuffer.EMPTY;
 
 		String uri = ((XSString) arg1.item(0)).value();
 

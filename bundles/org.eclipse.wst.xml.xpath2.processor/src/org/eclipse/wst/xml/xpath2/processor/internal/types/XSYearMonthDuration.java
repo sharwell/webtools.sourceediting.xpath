@@ -24,7 +24,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
@@ -347,7 +346,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 
 		int res = monthValue() + val.monthValue();
 
-		return ResultSequenceFactory.create_new(new XSYearMonthDuration(res));
+		return new XSYearMonthDuration(res);
 	}
 
 	/**
@@ -366,7 +365,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 
 		int res = monthValue() - val.monthValue();
 
-		return ResultSequenceFactory.create_new(new XSYearMonthDuration(res));
+		return new XSYearMonthDuration(res);
 	}
 
 	/**
@@ -384,7 +383,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 		if (arg.size() == 1) {
 			Item argValue = arg.first();
             if (argValue instanceof XSDecimal) {
-            	convertedRS = ResultSequenceFactory.create_new(new XSDouble(argValue.getStringValue()));	
+            	convertedRS = new XSDouble(argValue.getStringValue());
             }
 		}
 		
@@ -401,7 +400,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 		
 		int res = (int) Math.round(monthValue() * val.double_value());
 
-		return ResultSequenceFactory.create_new(new XSYearMonthDuration(res));
+		return new XSYearMonthDuration(res);
 	}
 
 	/**
@@ -428,8 +427,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 			if (!dt.zero())
 				ret = (int) Math.round(monthValue() / dt.double_value());
 
-			return ResultSequenceFactory.create_new(new XSYearMonthDuration(
-					ret));
+			return new XSYearMonthDuration(ret);
 		} else if (at instanceof XSDecimal) {
 			XSDecimal dt = (XSDecimal) at;
 			
@@ -438,14 +436,13 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 			if (!dt.zero())
 				ret = (int) Math.round(monthValue() / dt.getValue().doubleValue());
 			
-			return ResultSequenceFactory.create_new(new XSYearMonthDuration(
-					ret));	
+			return new XSYearMonthDuration(ret);	
 		} else if (at instanceof XSYearMonthDuration) {
 			XSYearMonthDuration md = (XSYearMonthDuration) at;
 
 			double res = (double) monthValue() / md.monthValue();
 
-			return ResultSequenceFactory.create_new(new XSDecimal(new BigDecimal(res)));
+			return new XSDecimal(new BigDecimal(res));
 		} else {
 			DynamicError.throw_type_error();
 			return null; // unreach

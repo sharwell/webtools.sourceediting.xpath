@@ -27,7 +27,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -279,8 +278,7 @@ public class XSFloat extends NumericType {
 			DynamicError.throw_type_error();
 		XSFloat val = (XSFloat) at;
 
-		return ResultSequenceFactory.create_new(new XSFloat(float_value()
-				+ val.float_value()));
+		return new XSFloat(float_value() + val.float_value());
 	}
 
 	/**
@@ -299,8 +297,7 @@ public class XSFloat extends NumericType {
 			DynamicError.throw_type_error();
 		XSFloat val = (XSFloat) at;
 
-		return ResultSequenceFactory.create_new(new XSFloat(float_value()
-				- val.float_value()));
+		return new XSFloat(float_value() - val.float_value());
 	}
 
 	/**
@@ -315,8 +312,7 @@ public class XSFloat extends NumericType {
 	public ResultSequence times(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = constructor(arg);
 		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
-		return ResultSequenceFactory.create_new(new XSFloat(float_value()
-				* val.float_value()));
+		return new XSFloat(float_value() * val.float_value());
 	}
 
 	/**
@@ -330,8 +326,7 @@ public class XSFloat extends NumericType {
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
-		return ResultSequenceFactory.create_new(new XSFloat(float_value()
-				/ val.float_value()));
+		return new XSFloat(float_value() / val.float_value());
 	}
 
 	/**
@@ -358,7 +353,7 @@ public class XSFloat extends NumericType {
 
 		BigDecimal result = BigDecimal.valueOf((new Float((float_value() / 
 				                                 val.float_value()))).longValue());
-		return ResultSequenceFactory.create_new(new XSInteger(result.toBigInteger()));
+		return new XSInteger(result.toBigInteger());
 	}
 
 	/**
@@ -373,8 +368,7 @@ public class XSFloat extends NumericType {
 	public ResultSequence mod(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
-		return ResultSequenceFactory.create_new(new XSFloat(float_value()
-				% val.float_value()));
+		return new XSFloat(float_value() % val.float_value());
 	}
 
 	/**
@@ -383,8 +377,7 @@ public class XSFloat extends NumericType {
 	 * @return A XSFloat representing the negation of the number stored
 	 */
 	public ResultSequence unary_minus() {
-		return ResultSequenceFactory
-				.create_new(new XSFloat(-1 * float_value()));
+		return new XSFloat(-1 * float_value());
 	}
 
 	/**
@@ -449,8 +442,7 @@ public class XSFloat extends NumericType {
 	}
 	
 	protected Item convertArg(AnyType arg) throws DynamicError {
-		ResultSequence rs = ResultSequenceFactory.create_new(arg);
-		rs = constructor(rs);
+		ResultSequence rs = constructor(arg);
 		Item carg = rs.first();
 		return carg;
 	}

@@ -30,23 +30,32 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
  */
 public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	private static final String XS_BOOLEAN = "xs:boolean";
+	@SuppressWarnings("deprecation")
 	public static final XSBoolean TRUE = new XSBoolean(true);
+	@SuppressWarnings("deprecation")
 	public static final XSBoolean FALSE = new XSBoolean(false);
-	private boolean _value;
+	private final boolean _value;
 
 	/**
 	 * Initiates the new representation to the boolean supplied
 	 * 
 	 * @param x
 	 *       Initializes this datatype to represent this boolean
+	 *
+	 * @deprecated Use {@link #TRUE}, {@link #FALSE}, or {@link #valueOf}
+	 * instead.
 	 */
+	@Deprecated
 	public XSBoolean(boolean x) {
 		_value = x;
 	}
 
 	/**
 	 * Initiates to a default representation of false.
+	 *
+	 * @deprecated Use {@link #FALSE} instead.
 	 */
+	@Deprecated
 	public XSBoolean() {
 	  this(false);
 	}
@@ -205,8 +214,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 		return BuiltinTypeLibrary.XS_BOOLEAN;
 	}
 
-	public static org.eclipse.wst.xml.xpath2.api.ResultSequence valueOf(
-			boolean answer) {
+	public static XSBoolean valueOf(boolean answer) {
 		return answer ? TRUE : FALSE;
 	}
 

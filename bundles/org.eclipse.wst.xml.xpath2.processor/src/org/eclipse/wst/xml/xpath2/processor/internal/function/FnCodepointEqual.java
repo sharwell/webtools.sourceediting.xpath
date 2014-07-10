@@ -99,7 +99,7 @@ public class FnCodepointEqual extends Function {
 
 		// This delegates to FnCompare
 		BigInteger result = FnCompare.compare_string(CollationProvider.CODEPOINT_COLLATION, xstr1, xstr2, dynamicContext);
-		if (result != null) rs.add(new XSBoolean(BigInteger.ZERO.equals(result)));
+		if (result != null) rs.add(XSBoolean.valueOf(BigInteger.ZERO.equals(result)));
 		
 		return rs.getSequence();
 	}

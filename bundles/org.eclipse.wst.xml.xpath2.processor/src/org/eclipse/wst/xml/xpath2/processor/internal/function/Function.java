@@ -220,13 +220,13 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 					// create a new item of the expected
 					// type initialized with from the string
 					// value of the item
-					ResultSequence converted = null;
+					AnyType converted;
 					if (expected_aat instanceof XSString) {
 					   XSString strType = new XSString(item.getStringValue());
-					   converted = ResultSequenceFactory.create_new(strType);
+					   converted = strType;
 					}
 					else {
-					   converted = ResultSequenceFactory.create_new(item);
+					   converted = item;
 					}
 					
 					result.concat(converted);

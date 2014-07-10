@@ -22,7 +22,6 @@ import java.util.Iterator;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
@@ -88,7 +87,7 @@ public class FnSum extends Function {
 
 
 		if (arg.empty())
-			return ResultSequenceFactory.create_new(zero);
+			return zero;
 
 		MathPlus total = null;
 
@@ -103,15 +102,15 @@ public class FnSum extends Function {
 			}
 			
 			if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
-				return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
+				return tp.promote(new XSFloat(Float.NaN));
 			}
 			if (total == null) {
 				total = (MathPlus)conv; 
 			} else {
-				total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+				total = (MathPlus)total.plus(conv).first();
 			}
 		}
 		
-		return ResultSequenceFactory.create_new((AnyType) total);
+		return (AnyType) total;
 	}
 }

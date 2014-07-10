@@ -25,10 +25,10 @@ import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
+import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -77,7 +77,7 @@ public class FnAvg extends Function {
 		ResultSequence arg = args.iterator().next();
 
 		if (arg.empty())
-			return ResultSequenceFactory.create_new();
+			return ResultBuffer.EMPTY;
 
 		int elems = 0;
 
@@ -92,12 +92,12 @@ public class FnAvg extends Function {
 			if( conv != null ){
 				
 				if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
-					return ResultSequenceFactory.create_new(tp.promote(new XSFloat(Float.NaN)));
+					return tp.promote(new XSFloat(Float.NaN));
 				}
 				if (total == null) {
 					total = (MathPlus)conv; 
 				} else {
-					total = (MathPlus)total.plus(ResultSequenceFactory.create_new(conv)).first();
+					total = (MathPlus)total.plus(conv).first();
 				}
 			}
 		}
@@ -105,7 +105,7 @@ public class FnAvg extends Function {
 		if (!(total instanceof MathDiv))
 			DynamicError.throw_type_error();
 
-		return ((MathDiv)total).div(ResultSequenceFactory.create_new(new XSInteger(BigInteger.valueOf(elems))));
+		return ((MathDiv)total).div(new XSInteger(BigInteger.valueOf(elems)));
 	}
 	
 	@Override

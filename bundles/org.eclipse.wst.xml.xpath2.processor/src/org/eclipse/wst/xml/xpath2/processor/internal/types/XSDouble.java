@@ -27,7 +27,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -254,8 +253,7 @@ public class XSDouble extends NumericType {
 	 * @since 1.1
 	 */
 	public boolean eq(AnyType aa, DynamicContext dynamicContext) throws DynamicError {
-		ResultSequence rs = ResultSequenceFactory.create_new(aa);
-		ResultSequence crs = constructor(rs);
+		ResultSequence crs = constructor(aa);
 		
 		if (crs.empty()) {
 			throw DynamicError.throw_type_error();
@@ -290,8 +288,7 @@ public class XSDouble extends NumericType {
 	}
 
 	protected Item convertArg(AnyType arg) throws DynamicError {
-		ResultSequence rs = ResultSequenceFactory.create_new(arg);
-		rs = constructor(rs);
+		ResultSequence rs = constructor(arg);
 		Item carg = rs.first();
 		return carg;
 	}
@@ -331,8 +328,7 @@ public class XSDouble extends NumericType {
 			DynamicError.throw_type_error();
 		XSDouble val = (XSDouble) at;
 
-		return ResultSequenceFactory.create_new(new XSDouble(double_value()
-				+ val.double_value()));
+		return new XSDouble(double_value() + val.double_value());
 	}
 
 	private ResultSequence convertResultSequence(ResultSequence arg)
@@ -365,8 +361,7 @@ public class XSDouble extends NumericType {
 		
 		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
 
-		return ResultSequenceFactory.create_new(new XSDouble(double_value()
-				- val.double_value()));
+		return new XSDouble(double_value() - val.double_value());
 	}
 
 	/**
@@ -383,8 +378,7 @@ public class XSDouble extends NumericType {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
-		return ResultSequenceFactory.create_new(new XSDouble(double_value()
-				* val.double_value()));
+		return new XSDouble(double_value() * val.double_value());
 	}
 
 	/**
@@ -399,8 +393,7 @@ public class XSDouble extends NumericType {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
-		return ResultSequenceFactory.create_new(new XSDouble(double_value()
-				/ val.double_value()));
+		return new XSDouble(double_value() / val.double_value());
 	}
 
 	/**
@@ -427,7 +420,7 @@ public class XSDouble extends NumericType {
 			throw DynamicError.div_zero(null);
 
 		BigDecimal result = new BigDecimal((double_value() / val.double_value()));
-		return ResultSequenceFactory.create_new(new XSInteger(result.toBigInteger()));
+		return new XSInteger(result.toBigInteger());
 	}
 
 	/**
@@ -442,8 +435,7 @@ public class XSDouble extends NumericType {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
-		return ResultSequenceFactory.create_new(new XSDouble(double_value()
-				% val.double_value()));
+		return new XSDouble(double_value() % val.double_value());
 	}
 
 	/**
@@ -452,8 +444,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble representing the negation of this XSDecimal
 	 */
 	public ResultSequence unary_minus() {
-		return ResultSequenceFactory.create_new(new XSDouble(-1
-				* double_value()));
+		return new XSDouble(-1 * double_value());
 	}
 
 	// functions

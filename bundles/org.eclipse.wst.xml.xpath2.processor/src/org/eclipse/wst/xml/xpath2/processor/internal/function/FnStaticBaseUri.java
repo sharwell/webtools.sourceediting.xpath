@@ -18,7 +18,6 @@ import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequenceFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 
@@ -66,6 +65,6 @@ public class FnStaticBaseUri extends Function {
 		assert sc != null;
 
 		// make a copy prolly
-		return ResultSequenceFactory.create_new(new XSAnyURI(sc.getBaseUri().toString()));
+		return new XSAnyURI(sc.getBaseUri().toString());
 	}
 }

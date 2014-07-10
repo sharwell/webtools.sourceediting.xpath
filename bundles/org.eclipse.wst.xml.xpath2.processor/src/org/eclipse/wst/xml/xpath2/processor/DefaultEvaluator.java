@@ -38,7 +38,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.Axis;
 import org.eclipse.wst.xml.xpath2.processor.internal.DescendantOrSelfAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.DynamicContextAdapter;
@@ -207,6 +206,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		return nodeTd != null && nodeTd.derivedFromType(td, method);
 	}
 
+	@Deprecated
 	public DefaultEvaluator(org.eclipse.wst.xml.xpath2.processor.DynamicContext dynamicContext, Document doc) {
 		this(new StaticContextAdapter(dynamicContext), new DynamicContextAdapter(dynamicContext));
 		
@@ -314,6 +314,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *             error.
 	 * @return result sequence.
 	 */
+	@Deprecated
 	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(XPathNode node) {
 		return ResultSequenceUtil.newToOld(evaluate2(node));
 	}
@@ -362,7 +363,8 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 *            is the xpath.
 	 * @return result sequence.
 	 */
-	public ResultSequence visit(XPath xp) {
+	@SuppressWarnings("deprecation")
+	public ResultSequence visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		ResultSequence rs = do_expr(xp.iterator());
 
 		return rs;
@@ -981,7 +983,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 * @return a new function
 	 */
 	public ResultSequence visit(CastableExpr cexp) {
-		boolean castable = false;
+		boolean castable;
 		try {
 			CastExpr ce = new CastExpr((Expr) cexp.left(), (SingleType) cexp
 					.right());

@@ -9,7 +9,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.*;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
 
@@ -3251,6 +3250,7 @@ class CUP$XPathCup$actions {
   }
 
   /** Method with the actual generated action code. */
+  @SuppressWarnings("deprecation")
   public final java_cup.runtime.Symbol CUP$XPathCup$do_action(
     int                        CUP$XPathCup$act_num,
     java_cup.runtime.lr_parser CUP$XPathCup$parser,
@@ -6772,7 +6772,7 @@ class CUP$XPathCup$actions {
               Object RESULT = null;
 		int start_valleft = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-1)).left;
 		int start_valright = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-1)).right;
-		XPath start_val = (XPath)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-1)).value;
+		org.eclipse.wst.xml.xpath2.processor.ast.XPath start_val = (org.eclipse.wst.xml.xpath2.processor.ast.XPath)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-1)).value;
 		RESULT = start_val;
               CUP$XPathCup$result = new java_cup.runtime.Symbol(0/*$START*/, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-1)).left, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right, RESULT);
             }
@@ -6783,11 +6783,11 @@ class CUP$XPathCup$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 0: // XPath ::= Expr 
             {
-              XPath RESULT = null;
+              org.eclipse.wst.xml.xpath2.processor.ast.XPath RESULT = null;
 		int expsleft = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).left;
 		int expsright = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right;
 		Collection exps = (Collection)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).value;
-		 RESULT = new XPath(exps); 
+		 RESULT = new org.eclipse.wst.xml.xpath2.processor.ast.XPath(exps); 
               CUP$XPathCup$result = new java_cup.runtime.Symbol(74/*XPath*/, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).left, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right, RESULT);
             }
           return CUP$XPathCup$result;

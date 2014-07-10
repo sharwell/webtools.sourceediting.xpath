@@ -14,7 +14,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AndExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AnyKindTest;
@@ -77,7 +76,8 @@ public class DefaultVisitor implements XPathVisitor<Object> {
 	 *            is the xpath expression.
 	 * @return the xpath expressions.
 	 */
-	public Object visit(XPath xp) {
+	@SuppressWarnings("deprecation")
+	public Object visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		for (Iterator<Expr> i = xp.iterator(); i.hasNext();) {
 			Expr e = i.next();
 			e.accept(this);

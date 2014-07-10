@@ -11,12 +11,16 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
+import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.processor.internal.DefaultRSFactory;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
 
 /**
  * Result sequence factory
+ *
+ * @deprecated Use {@link ResultBuffer} instead.
  */
+@Deprecated
 public abstract class ResultSequenceFactory {
 	private static final ResultSequenceFactory _factory = new DefaultRSFactory();
 

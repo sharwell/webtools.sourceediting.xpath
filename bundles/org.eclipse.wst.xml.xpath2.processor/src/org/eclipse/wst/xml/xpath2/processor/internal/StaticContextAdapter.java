@@ -32,8 +32,6 @@ import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.StaticVariableResolver;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
-import org.eclipse.wst.xml.xpath2.processor.DefaultDynamicContext;
-import org.eclipse.wst.xml.xpath2.processor.DynamicContext;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeItemTypeImpl;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.SimpleAtomicItemTypeImpl;
@@ -42,8 +40,10 @@ import org.w3c.dom.Node;
 
 public class StaticContextAdapter implements
 		org.eclipse.wst.xml.xpath2.api.StaticContext {
+	@SuppressWarnings("deprecation")
 	private final org.eclipse.wst.xml.xpath2.processor.StaticContext sc;
 
+	@Deprecated
 	public StaticContextAdapter(
 			org.eclipse.wst.xml.xpath2.processor.StaticContext sc) {
 		this.sc = sc;
@@ -74,6 +74,7 @@ public class StaticContextAdapter implements
 		return BuiltinTypeLibrary.XS_UNTYPED;
 	}
 
+	@SuppressWarnings("deprecation")
 	public Map<String, FunctionLibrary> getFunctionLibraries() {
 		if (sc instanceof DefaultStaticContext) {
 			DefaultStaticContext dsc = (DefaultStaticContext)sc;
@@ -82,9 +83,10 @@ public class StaticContextAdapter implements
 		return Collections.emptyMap();
 	}
 
+	@SuppressWarnings("deprecation")
 	public CollationProvider getCollationProvider() {
-		if (sc instanceof DynamicContext) {
-			final DynamicContext dc = (DynamicContext)sc;
+		if (sc instanceof org.eclipse.wst.xml.xpath2.processor.DynamicContext) {
+			final org.eclipse.wst.xml.xpath2.processor.DynamicContext dc = (org.eclipse.wst.xml.xpath2.processor.DynamicContext)sc;
 			return new CollationProvider() {
 				
 				public String getDefaultCollation() {
@@ -150,9 +152,9 @@ public class StaticContextAdapter implements
 
 	public Function resolveFunction(javax.xml.namespace.QName name, int arity) {
 		if (sc.function_exists(new QName(name), arity)) {
-			if (sc instanceof DefaultStaticContext) {
-				DefaultStaticContext dc = (DefaultStaticContext)sc;
-				return dc.function(new QName(name), arity);
+			FunctionLibrary functionLibrary = getFunctionLibraries().get(name.getNamespaceURI());
+			if (functionLibrary != null) {
+				return functionLibrary.resolveFunction(name.getLocalPart(), arity);
 			}
 		}
 		throw new IllegalArgumentException("Function not found "+name);

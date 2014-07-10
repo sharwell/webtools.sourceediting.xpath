@@ -22,9 +22,11 @@ import org.w3c.dom.Node;
 
 public class DynamicContextAdapter implements
 		org.eclipse.wst.xml.xpath2.api.DynamicContext {
+	@SuppressWarnings("deprecation")
 	private final org.eclipse.wst.xml.xpath2.processor.DynamicContext dc;
 	private StaticContextAdapter sca;
 
+	@Deprecated
 	public DynamicContextAdapter(
 			org.eclipse.wst.xml.xpath2.processor.DynamicContext dc) {
 		this.dc = dc;
@@ -60,9 +62,9 @@ public class DynamicContextAdapter implements
 	}
 
 	public Document getDocument(URI uri) {
-		org.eclipse.wst.xml.xpath2.processor.ResultSequence rs = dc.get_doc(uri);
+		ResultSequence rs = dc.get_doc(uri);
 		if (rs == null || rs.empty()) return null;
-		return ((DocType)(rs.get(0))).value();
+		return ((DocType)(rs.item(0))).value();
 	}
 
 	public Map<String, List<Document>> getCollections() {

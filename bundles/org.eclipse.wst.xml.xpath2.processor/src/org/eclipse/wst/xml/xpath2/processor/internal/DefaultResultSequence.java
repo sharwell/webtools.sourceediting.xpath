@@ -21,7 +21,6 @@ import java.util.ListIterator;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.typesystem.ItemType;
-import org.eclipse.wst.xml.xpath2.processor.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.SimpleAtomicItemTypeImpl;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
@@ -31,7 +30,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
  * @deprecated use {@link ResultBuffer} instead
  */
 @Deprecated
-public class DefaultResultSequence extends ResultSequence {
+public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.ResultSequence {
 
 	private List<Item> _seq;
 
@@ -66,7 +65,7 @@ public class DefaultResultSequence extends ResultSequence {
 	 * @param rs
 	 *            ResultSequence
 	 */
-	public void concat(ResultSequence rs) {
+	public void concat(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
 		for (Iterator<Item> i = rs.iterator(); i.hasNext();)
 			_seq.add(i.next());
 	}
@@ -136,7 +135,7 @@ public class DefaultResultSequence extends ResultSequence {
 	 * 
 	 * @return The new sequence.
 	 */
-	public ResultSequence create_new() {
+	public org.eclipse.wst.xml.xpath2.processor.ResultSequence create_new() {
 		return new DefaultResultSequence();
 	}
 	

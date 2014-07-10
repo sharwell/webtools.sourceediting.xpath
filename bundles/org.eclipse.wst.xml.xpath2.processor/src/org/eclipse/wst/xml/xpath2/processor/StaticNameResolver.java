@@ -23,7 +23,6 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 
 import org.eclipse.wst.xml.xpath2.api.Function;
-import org.eclipse.wst.xml.xpath2.processor.ast.XPath;
 import org.eclipse.wst.xml.xpath2.processor.internal.ReverseAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticAttrNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticContextAdapter;
@@ -120,6 +119,7 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	 *            is the static context.
 	 * @since 2.0
 	 */
+	@Deprecated
 	public StaticNameResolver(final org.eclipse.wst.xml.xpath2.processor.StaticContext sc) {
 		_sc = new StaticContextAdapter(sc);
 		_err = null;
@@ -288,7 +288,8 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	 *            is the XPath.
 	 * @return null.
 	 */
-	public Void visit(XPath xp) {
+	@SuppressWarnings("deprecation")
+	public Void visit(org.eclipse.wst.xml.xpath2.processor.ast.XPath xp) {
 		for (Iterator<Expr> i = xp.iterator(); i.hasNext();) {
 			Expr e = i.next();
 
@@ -977,10 +978,6 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	 * @return null.
 	 */
 	public Void visit(PITest e) {
-		String arg = e.arg();
-		if (arg == null)
-			arg = "";
-
 		return null;
 	}
 

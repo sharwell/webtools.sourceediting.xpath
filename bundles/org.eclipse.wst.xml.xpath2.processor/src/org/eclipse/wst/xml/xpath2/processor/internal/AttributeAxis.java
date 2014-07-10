@@ -33,6 +33,7 @@ public class AttributeAxis extends ForwardAxis {
 	 * @param node
 	 *            is the type of node.
 	 */
+	@Override
 	public void iterate(NodeType node, ResultBuffer copyInto, Node limitNode) {
 		// only elements have attributes
 		if (!(node instanceof ElementType))
@@ -55,10 +56,12 @@ public class AttributeAxis extends ForwardAxis {
 	 * 
 	 * @return The type of node.
 	 */
+	@Override
 	public NodeType principal_node_kind() {
 		return new AttrType();
 	}
 
+	@Override
 	public String name() {
 		return "attribute";
 	}

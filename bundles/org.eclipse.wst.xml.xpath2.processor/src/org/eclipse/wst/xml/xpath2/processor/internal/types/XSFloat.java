@@ -35,8 +35,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSFloat extends NumericType {
 
 	private static final String XS_FLOAT = "xs:float";
-	private Float _value;
-	private XPathDecimalFormat format = new XPathDecimalFormat("0.#######E0");
+	private final Float _value;
+	private final XPathDecimalFormat format = new XPathDecimalFormat("0.#######E0");
 	/**
 	 * Initiates a representation of the supplied number
 	 * 
@@ -44,7 +44,7 @@ public class XSFloat extends NumericType {
 	 *            The number to be stored
 	 */
 	public XSFloat(float x) {
-		_value = new Float(x);
+		_value = x;
 	}
 
 	/**
@@ -63,9 +63,9 @@ public class XSFloat extends NumericType {
 	public XSFloat(String init) throws DynamicError {
 		try {
 			if (init.equals("-INF")) {
-				_value = new Float(Float.NEGATIVE_INFINITY);
+				_value = Float.NEGATIVE_INFINITY;
 			} else if (init.equals("INF")) {
-				_value = new Float(Float.POSITIVE_INFINITY);
+				_value = Float.POSITIVE_INFINITY;
 			} else {
 				_value = new Float(init);
 			}
@@ -78,6 +78,7 @@ public class XSFloat extends NumericType {
 	 * 
 	 * @return "xs:float" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_FLOAT;
 	}
@@ -87,6 +88,7 @@ public class XSFloat extends NumericType {
 	 * 
 	 * @return "float" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "float";
 	}
@@ -96,6 +98,7 @@ public class XSFloat extends NumericType {
 	 * 
 	 * @return String representation of the stored number
 	 */
+	@Override
 	public String getStringValue() {
 		if (zero()) {
 		   return "0";
@@ -117,7 +120,7 @@ public class XSFloat extends NumericType {
 	 * @return True is this datatype represents NaN. False otherwise
 	 */
 	public boolean nan() {
-		return Float.isNaN(_value.floatValue());
+		return Float.isNaN(_value);
 	}
 
 	/**
@@ -126,7 +129,7 @@ public class XSFloat extends NumericType {
 	 * @return True is this datatype represents infinity. False otherwise
 	 */
 	public boolean infinite() {
-		return Float.isInfinite(_value.floatValue());
+		return Float.isInfinite(_value);
 	}
 
 	/**
@@ -134,8 +137,9 @@ public class XSFloat extends NumericType {
 	 * 
 	 * @return True if this datatype represents 0. False otherwise
 	 */
+	@Override
 	public boolean zero() {
-	   return (Float.compare(_value.floatValue(), 0) == 0);
+	   return (Float.compare(_value, 0) == 0);
 	}
 	
 	/*
@@ -145,7 +149,7 @@ public class XSFloat extends NumericType {
 	 * @since 1.1
 	 */
 	public boolean negativeZero() {
-	   return (Float.compare(_value.floatValue(), -0.0f) == 0);
+	   return (Float.compare(_value, -0.0f) == 0);
 	}
 	
 	/**
@@ -157,6 +161,7 @@ public class XSFloat extends NumericType {
 	 * @return New ResultSequence consisting of the float supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -205,7 +210,7 @@ public class XSFloat extends NumericType {
 	 * @return The actual float value stored
 	 */
 	public float float_value() {
-		return _value.floatValue();
+		return _value;
 	}
 
 	/**
@@ -217,18 +222,23 @@ public class XSFloat extends NumericType {
 	 *         otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType aa, DynamicContext dynamicContext) throws DynamicError {
 		Item carg = convertArg(aa);
 		if (!(carg instanceof XSFloat))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
+		/* Note: as implemented, this comparison returns false for (NaN eq NaN),
+		 * but true for (+0.0f eq -0.0f). As such, it is not precisely the same
+		 * operation as either Float.equals or the == operator for float values.
+		 */
 		XSFloat f = (XSFloat) carg;
 		if (nan() && f.nan()) {
 			return false;
 		}
 		
-		Float thatvalue = new Float(f.float_value());
-		Float thisvalue = new Float(float_value());
+		Float thatvalue = f._value;
+		Float thisvalue = _value;
 
 		return thisvalue.equals(thatvalue);
 	}
@@ -242,6 +252,7 @@ public class XSFloat extends NumericType {
 	 *         one stored. False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
 		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
@@ -257,6 +268,7 @@ public class XSFloat extends NumericType {
 	 *         one stored. False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
 		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
@@ -271,11 +283,12 @@ public class XSFloat extends NumericType {
 	 *            The ResultSequence to perform an addition with
 	 * @return A XSFloat consisting of the result of the mathematical addition.
 	 */
+	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSFloat))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		XSFloat val = (XSFloat) at;
 
 		return new XSFloat(float_value() + val.float_value());
@@ -290,11 +303,12 @@ public class XSFloat extends NumericType {
 	 * @return A XSFloat consisting of the result of the mathematical
 	 *         subtraction.
 	 */
+	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = constructor(arg);
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSFloat))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		XSFloat val = (XSFloat) at;
 
 		return new XSFloat(float_value() - val.float_value());
@@ -309,6 +323,7 @@ public class XSFloat extends NumericType {
 	 * @return A XSFloat consisting of the result of the mathematical
 	 *         multiplication.
 	 */
+	@Override
 	public ResultSequence times(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = constructor(arg);
 		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
@@ -323,6 +338,7 @@ public class XSFloat extends NumericType {
 	 *            The ResultSequence to perform a division with
 	 * @return A XSFloat consisting of the result of the mathematical division.
 	 */
+	@Override
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
@@ -338,6 +354,7 @@ public class XSFloat extends NumericType {
 	 * @return A XSInteger consisting of the result of the mathematical integer
 	 *         division.
 	 */
+	@Override
 	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
@@ -365,6 +382,7 @@ public class XSFloat extends NumericType {
 	 *            The ResultSequence to perform a modulus with
 	 * @return A XSFloat consisting of the result of the mathematical modulus.
 	 */
+	@Override
 	public ResultSequence mod(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
@@ -376,6 +394,7 @@ public class XSFloat extends NumericType {
 	 * 
 	 * @return A XSFloat representing the negation of the number stored
 	 */
+	@Override
 	public ResultSequence unary_minus() {
 		return new XSFloat(-1 * float_value());
 	}
@@ -385,6 +404,7 @@ public class XSFloat extends NumericType {
 	 * 
 	 * @return A XSFloat representing the absolute value of the number stored
 	 */
+	@Override
 	public NumericType abs() {
 		return new XSFloat(Math.abs(float_value()));
 	}
@@ -395,6 +415,7 @@ public class XSFloat extends NumericType {
 	 * @return A XSFloat representing the smallest integer greater than the
 	 *         number stored
 	 */
+	@Override
 	public NumericType ceiling() {
 		return new XSFloat((float) Math.ceil(float_value()));
 	}
@@ -405,6 +426,7 @@ public class XSFloat extends NumericType {
 	 * @return A XSFloat representing the largest integer smaller than the
 	 *         number stored
 	 */
+	@Override
 	public NumericType floor() {
 		return new XSFloat((float) Math.floor(float_value()));
 	}
@@ -414,6 +436,7 @@ public class XSFloat extends NumericType {
 	 * 
 	 * @return A XSFloat representing the closest long of the number stored.
 	 */
+	@Override
 	public NumericType round() {
 		BigDecimal value = new BigDecimal(float_value());
 		BigDecimal round = value.setScale(0, BigDecimal.ROUND_HALF_UP);
@@ -425,6 +448,7 @@ public class XSFloat extends NumericType {
 	 * 
 	 * @return A XSFloat representing the closest long of the number stored.
 	 */
+	@Override
 	public NumericType round_half_to_even() {
 		return round_half_to_even(0);
 	}
@@ -435,8 +459,9 @@ public class XSFloat extends NumericType {
 	 * @param precision An integer precision 
 	 * @return A XSFloat representing the closest long of the number stored.
 	 */
+	@Override
 	public NumericType round_half_to_even(int precision) {
-		BigDecimal value = new BigDecimal(_value.floatValue());
+		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
 		return new XSFloat(round.floatValue());
 	}
@@ -463,10 +488,12 @@ public class XSFloat extends NumericType {
 		return carg;
 	}	
 	
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_FLOAT;
 	}
 	
+	@Override
 	public Object getNativeValue() {
 		return float_value();
 	}

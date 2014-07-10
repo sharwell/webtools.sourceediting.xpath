@@ -50,47 +50,48 @@ public class StaticContextBuilder implements StaticContext {
 
 	private boolean _xpath1_compatible = false;
 	private String _default_namespace = "";
-	private String _default_function_namespace = XPATH_FUNCTIONS_NS;
-	private TypeDefinition _initialContextType = null; 
+	private final String _default_function_namespace = XPATH_FUNCTIONS_NS;
+	private final TypeDefinition _initialContextType = null; 
 	private String _defaultCollation = CollationProvider.CODEPOINT_COLLATION;
 
 	// key: String prefix, contents: String namespace
-	private Map<String, String> _namespaces = new HashMap<String, String>();
-	private Map<String, FunctionLibrary> _functionLibraries = new HashMap<String, FunctionLibrary>();
+	private final Map<String, String> _namespaces = new HashMap<String, String>();
+	private final Map<String, FunctionLibrary> _functionLibraries = new HashMap<String, FunctionLibrary>();
 	{
 		_functionLibraries.put(XPATH_FUNCTIONS_NS, new FnFunctionLibrary());
 		_functionLibraries.put(XSCtrLibrary.XML_SCHEMA_NS, new XSCtrLibrary());
 	}
 
 	private URI _base_uri;
-	private Map<QName, ItemType> _variableTypes = new HashMap<QName, ItemType>();
-	private Map<String, Short> _variableCardinality = new HashMap<String, Short>();
-	private Map<String, TypeDefinition> _collectionTypes = new HashMap<String, TypeDefinition>();
+	private final Map<QName, ItemType> _variableTypes = new HashMap<QName, ItemType>();
+	private final Map<String, Short> _variableCardinality = new HashMap<String, Short>();
+	private final Map<String, TypeDefinition> _collectionTypes = new HashMap<String, TypeDefinition>();
 
-	private Set<QName> _hiddenFunctions = new HashSet<QName>();
+	private final Set<QName> _hiddenFunctions = new HashSet<QName>();
 
 	private TypeModel _typeModel;
 	
+	@Override
 	public boolean isXPath1Compatible() {
 		return _xpath1_compatible;
 	}
 
+	@Override
 	public NamespaceContext getNamespaceContext() {
 		return new NamespaceContext() {
 			
+			@Override
 			public Iterator<String> getPrefixes(String ns) {
 				List<String> prefixes = new LinkedList<String>();
-				for (Iterator<Map.Entry<String, String>> it = _namespaces.entrySet().iterator(); it.hasNext(); ) {
-					Map.Entry<String, String> entry = it.next();
-					
+				for (Map.Entry<String, String> entry : _namespaces.entrySet()) {
 					if (entry.getValue().equals(ns)) prefixes.add(entry.getKey());
 				}
 				return prefixes.iterator();
 			}
 			
+			@Override
 			public String getPrefix(String ns) {
-				for (Iterator<Map.Entry<String, String>> it = _namespaces.entrySet().iterator(); it.hasNext(); ) {
-					Map.Entry<String, String> entry = it.next();					
+				for (Map.Entry<String, String> entry : _namespaces.entrySet()) {
 					if (entry.getValue().equals(ns)) {
 						return entry.getKey();
 					}
@@ -98,6 +99,7 @@ public class StaticContextBuilder implements StaticContext {
 				return null;
 			}
 			
+			@Override
 			public String getNamespaceURI(String prefix) {
 				String ns = _namespaces.get(prefix);
 				if (ns == null) ns = XMLConstants.NULL_NS_URI;
@@ -106,36 +108,44 @@ public class StaticContextBuilder implements StaticContext {
 		};
 	}
 
+	@Override
 	public String getDefaultNamespace() {
 		return _default_namespace;
 	}
 
+	@Override
 	public String getDefaultFunctionNamespace() {
 		return _default_function_namespace;
 	}
 
+	@Override
 	public TypeModel getTypeModel() {
 		if (_typeModel != null) return _typeModel;
 		
 		return new TypeModel() {
 
+			@Override
 			public TypeDefinition getType(Node node) {
 				return null;
 			}
 
+			@Override
 			public TypeDefinition lookupType(String namespace, String typeName) {
 				return null;
 			}
 
+			@Override
 			public TypeDefinition lookupElementDeclaration(String namespace, String elementName) {
 				return null;
 			}
 
+			@Override
 			public TypeDefinition lookupAttributeDeclaration(String namespace, String attributeName) {
 				return null;
 			}};
 	}
 
+	@Override
 	public Function resolveFunction(QName name, int arity) {
 		if (_hiddenFunctions.contains(name)) return null;
 		FunctionLibrary flib = _functionLibraries.get(name.getNamespaceURI());
@@ -145,18 +155,22 @@ public class StaticContextBuilder implements StaticContext {
 		return null;
 	}
 
+	@Override
 	public URI getBaseUri() {
 		return _base_uri;
 	}
 
+	@Override
 	public Map<String, FunctionLibrary> getFunctionLibraries() {
 		return _functionLibraries;
 	}
 
+	@Override
 	public TypeDefinition getCollectionType(String collectionName) {
 		return _collectionTypes.get(collectionName);
 	}
 
+	@Override
 	public TypeDefinition getInitialContextType() {
 		return _initialContextType;
 	}
@@ -191,25 +205,30 @@ public class StaticContextBuilder implements StaticContext {
 		return this;
 	}
 	
+	@Override
 	public TypeDefinition getDefaultCollectionType() {
 		return BuiltinTypeLibrary.XS_UNTYPED;
 	}
 
+	@Override
 	public StaticVariableResolver getInScopeVariables() {
 		return new StaticVariableResolver() {
 
+			@Override
 			public boolean isVariablePresent(QName name) {
 				return _variableTypes.containsKey(name);
 			}
 
+			@Override
 			public ItemType getVariableType(QName name) {
 				return _variableTypes.get(name);
 			}
 		};
 	}
 
-	private static Comparator<String> CODEPOINT_COMPARATOR = new Comparator<String>() {
+	private static final Comparator<String> CODEPOINT_COMPARATOR = new Comparator<String>() {
 		
+		@Override
 		public int compare(String o1, String o2) {
 			return o1.compareTo(o2);
 		}
@@ -217,16 +236,19 @@ public class StaticContextBuilder implements StaticContext {
 	
 	private CollationProvider _collationProvider = new CollationProvider() {
 		
+		@Override
 		public String getDefaultCollation() {
 			return _defaultCollation;
 		}
 		
+		@Override
 		public Comparator<String> getCollation(String uri) {
 			if (CollationProvider.CODEPOINT_COLLATION.equals(uri)) return CODEPOINT_COMPARATOR;
 			return null;
 		}
 	};
 
+	@Override
 	public CollationProvider getCollationProvider() {
 		return _collationProvider;
 	}
@@ -259,6 +281,7 @@ public class StaticContextBuilder implements StaticContext {
 		return this;
 	}
 
+	@Override
 	public ItemType getDocumentType(URI documentUri) {
 		return null;
 	}

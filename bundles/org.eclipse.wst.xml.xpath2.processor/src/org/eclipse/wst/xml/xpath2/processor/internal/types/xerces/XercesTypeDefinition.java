@@ -25,10 +25,12 @@ public abstract class XercesTypeDefinition implements TypeDefinition {
 		xsTypeDefinition = typeDef;
 	}
 
+	@Override
 	public String getNamespace() {
 		return xsTypeDefinition.getNamespace();
 	}
 
+	@Override
 	public String getName() {
 		return xsTypeDefinition.getName();
 	}
@@ -37,6 +39,7 @@ public abstract class XercesTypeDefinition implements TypeDefinition {
 		return (xsTypeDefinition.getTypeCategory() & XSConstants.PARTICLE) != 0;
 	}
 
+	@Override
 	public TypeDefinition getBaseType() {
 		// TODO: Cache per-model??
 		if (baseType == null && xsTypeDefinition.getBaseType() != null)
@@ -44,6 +47,7 @@ public abstract class XercesTypeDefinition implements TypeDefinition {
 		return baseType;
 	}
 
+	@Override
 	public boolean derivedFromType(TypeDefinition ancestorType,
 			short derivationMethod) {
 
@@ -55,6 +59,7 @@ public abstract class XercesTypeDefinition implements TypeDefinition {
 		}
 	}
 
+	@Override
 	public boolean derivedFrom(String namespace, String name,
 			short derivationMethod) {
 
@@ -73,11 +78,13 @@ public abstract class XercesTypeDefinition implements TypeDefinition {
 		return xercesFlags;
 	}
 	
+	@Override
 	public List<Short> getSimpleTypes(Attr attr) {
 		PSVIAttrNSImpl psviAttr= (PSVIAttrNSImpl)attr;
 		return mapList(psviAttr.getItemValueTypes());
 	}
 
+	@Override
 	public List<Short> getSimpleTypes(Element element) {
 		PSVIElementNSImpl psviElement= (PSVIElementNSImpl)element;
 		return mapList(psviElement.getItemValueTypes());
@@ -87,7 +94,7 @@ public abstract class XercesTypeDefinition implements TypeDefinition {
 		if (valueTypes == null) return null;
 		List<Short> types = new LinkedList<Short>();
 		int limit = valueTypes.getLength();
-		for (int i = 0; i < limit; ++i) types.add(Short.valueOf(valueTypes.item(i)));
+		for (int i = 0; i < limit; ++i) types.add(valueTypes.item(i));
 		return types;
 	}
 	

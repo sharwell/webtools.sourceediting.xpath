@@ -48,6 +48,7 @@ public class XSName extends XSToken {
 	 * 
 	 * @return "xs:Name" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_NAME;
 	}
@@ -57,6 +58,7 @@ public class XSName extends XSToken {
 	 * 
 	 * @return "Name" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "Name";
 	}
@@ -70,6 +72,7 @@ public class XSName extends XSToken {
 	 * @return New ResultSequence consisting of the Name supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -79,12 +82,13 @@ public class XSName extends XSToken {
 		
 		if (!XMLChar.isValidName(strValue)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 
 		return new XSName(strValue);
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_NAME;
 	}

@@ -12,7 +12,12 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.AncestorAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.AncestorOrSelfAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.ParentAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.PrecedingAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.PrecedingSiblingAxis;
+import org.eclipse.wst.xml.xpath2.processor.internal.ReverseAxis;
 
 /**
  * Class for Reverse stepping support for Step operations.
@@ -43,36 +48,32 @@ public class ReverseStep extends Step {
 	 */
 	public static final int DOTDOT = 5;
 
-	private int _axis;
-	private ReverseAxis _iterator;
+	private final int _axis;
+	private final ReverseAxis _iterator;
 
-	private void update_iterator() {
-		switch (_axis) {
+	private static ReverseAxis update_iterator(int axis) {
+		switch (axis) {
 		case PARENT:
-			_iterator = new ParentAxis();
-			break;
+			return new ParentAxis();
+
 		case ANCESTOR:
-			_iterator = new AncestorAxis();
-			break;
+			return new AncestorAxis();
 
 		case PRECEDING_SIBLING:
-			_iterator = new PrecedingSiblingAxis();
-			break;
+			return new PrecedingSiblingAxis();
 
 		case PRECEDING:
-			_iterator = new PrecedingAxis();
-			break;
+			return new PrecedingAxis();
 
 		case ANCESTOR_OR_SELF:
-			_iterator = new AncestorOrSelfAxis();
-			break;
+			return new AncestorOrSelfAxis();
 
 		case DOTDOT:
-			_iterator = null;
-			break;
+			return null;
 
 		default:
 			assert false;
+			return null;
 		}
 	}
 
@@ -88,7 +89,7 @@ public class ReverseStep extends Step {
 		super(node_test);
 
 		_axis = axis;
-		update_iterator();
+		_iterator = update_iterator(axis);
 	}
 
 	/**
@@ -96,6 +97,7 @@ public class ReverseStep extends Step {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

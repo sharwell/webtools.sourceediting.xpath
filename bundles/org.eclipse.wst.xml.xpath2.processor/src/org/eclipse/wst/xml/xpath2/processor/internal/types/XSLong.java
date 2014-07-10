@@ -48,6 +48,7 @@ public class XSLong extends XSInteger {
 	 * 
 	 * @return "xs:long" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_LONG;
 	}
@@ -57,6 +58,7 @@ public class XSLong extends XSInteger {
 	 * 
 	 * @return "long" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "long";
 	}
@@ -70,6 +72,7 @@ public class XSLong extends XSInteger {
 	 * @return New ResultSequence consisting of the 'long' supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 
 		if (arg.empty())
@@ -88,7 +91,7 @@ public class XSLong extends XSInteger {
 
 			if (bigInt.compareTo(min) < 0 || bigInt.compareTo(max) > 0) {
 			   // invalid input
-			   DynamicError.throw_type_error();	
+			   throw DynamicError.throw_type_error();	
 			}
 			
 			return new XSLong(bigInt);
@@ -98,6 +101,7 @@ public class XSLong extends XSInteger {
 
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_LONG;
 	}

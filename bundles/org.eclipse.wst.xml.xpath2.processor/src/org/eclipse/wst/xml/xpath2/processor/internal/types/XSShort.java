@@ -47,6 +47,7 @@ public class XSShort extends XSInt {
 	 * 
 	 * @return "xs:short" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_SHORT;
 	}
@@ -56,6 +57,7 @@ public class XSShort extends XSInt {
 	 * 
 	 * @return "short" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "short";
 	}
@@ -69,6 +71,7 @@ public class XSShort extends XSInt {
 	 * @return New ResultSequence consisting of the 'short' supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -86,7 +89,7 @@ public class XSShort extends XSInt {
 
 			if (bigInt.compareTo(min) < 0 || bigInt.compareTo(max) > 0) {
 			   // invalid input
-			   DynamicError.throw_type_error();	
+			   throw DynamicError.throw_type_error();	
 			}
 			
 			return new XSShort(bigInt);
@@ -96,10 +99,12 @@ public class XSShort extends XSInt {
 
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_SHORT;
 	}
 
+	@Override
 	public Short getNativeValue() {
 		return getValue().shortValue();
 	}

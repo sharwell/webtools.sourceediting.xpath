@@ -8,9 +8,67 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
-import org.eclipse.wst.xml.xpath2.processor.internal.ast.*;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.AndExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.AnyKindTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.AttributeTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.AxisStep;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.CastExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.CastableExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.CmpExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.CntxItemExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.CommentTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.DecimalLiteral;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.DivExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.DocumentTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.DoubleLiteral;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ElementTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ExceptExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.Expr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.FilterExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ForExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ForwardStep;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.FunctionCall;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.IDivExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.IfExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.InstOfExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.IntegerLiteral;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.IntersectExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ItemType;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.KindTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.Literal;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.MinusExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ModExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.MulExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.NameTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.NodeTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.NumericLiteral;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.OrExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.PITest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ParExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.PipeExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.PlusExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.PrimaryExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.QuantifiedExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.RangeExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.ReverseStep;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.SchemaAttrTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.SchemaElemTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.SequenceType;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.SingleType;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.StepExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.StringLiteral;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.SubExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.TextTest;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.TreatAsExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.UnionExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.VarExprPair;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.VarRef;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathExpr;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /** CUP v0.10k generated parser.
   * @version Thu Apr 04 11:19:53 CEST 2013
@@ -117,6 +175,7 @@ public class XPathCup extends java_cup.runtime.lr_parser {
     "\002\004\003\000\002\004\003\000\002\004\003" });
 
   /** Access to production table. */
+  @Override
   public short[][] production_table() {return _production_table;}
 
   /** Parse-action table. */
@@ -2735,6 +2794,7 @@ public class XPathCup extends java_cup.runtime.lr_parser {
     "\121\uffad\122\uffad\123\uffad\124\uffad\131\uffad\001\002" });
 
   /** Access to parse-action table. */
+  @Override
   public short[][] action_table() {return _action_table;}
 
   /** <code>reduce_goto</code> table. */
@@ -3187,18 +3247,21 @@ public class XPathCup extends java_cup.runtime.lr_parser {
     "" });
 
   /** Access to <code>reduce_goto</code> table. */
+  @Override
   public short[][] reduce_table() {return _reduce_table;}
 
   /** Instance of action encapsulation class. */
   protected CUP$XPathCup$actions action_obj;
 
   /** Action encapsulation object initializer. */
+  @Override
   protected void init_actions()
     {
       action_obj = new CUP$XPathCup$actions(this);
     }
 
   /** Invoke a user supplied parse action. */
+  @Override
   public java_cup.runtime.Symbol do_action(
     int                        act_num,
     java_cup.runtime.lr_parser parser,
@@ -3211,19 +3274,24 @@ public class XPathCup extends java_cup.runtime.lr_parser {
   }
 
   /** Indicates start state. */
+  @Override
   public int start_state() {return 0;}
   /** Indicates start production. */
+  @Override
   public int start_production() {return 1;}
 
   /** <code>EOF</code> Symbol index. */
+  @Override
   public int EOF_sym() {return 0;}
 
   /** <code>error</code> Symbol index. */
+  @Override
   public int error_sym() {return 1;}
 
 
 
 
+@Override
 public void report_error(String message, Object info) {
 	String err = "Parser error: ";
 

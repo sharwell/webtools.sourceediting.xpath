@@ -66,10 +66,12 @@ public class RangeResultSequence implements ResultSequence {
 		return new Iterator<Item>() {
 			private int _next = _start;
 
+			@Override
 			public void remove() {
 				throw new UnsupportedOperationException("ResultSequences are immutable");
 			}
 
+			@Override
 			public Item next() {
 				if (_next == _end) {
 					throw new IllegalStateException("Reached the end of the ResultSequence");
@@ -78,6 +80,7 @@ public class RangeResultSequence implements ResultSequence {
 				return new XSInteger(BigInteger.valueOf(_next++));
 			}
 
+			@Override
 			public boolean hasNext() {
 				return _next < _end;
 			}

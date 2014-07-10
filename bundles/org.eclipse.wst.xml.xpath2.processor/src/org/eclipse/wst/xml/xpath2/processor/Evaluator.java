@@ -12,7 +12,7 @@
 package org.eclipse.wst.xml.xpath2.processor;
 
 import org.eclipse.wst.xml.xpath2.api.XPath2Expression;
-import org.eclipse.wst.xml.xpath2.processor.internal.ast.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathNode;
 
 /**
  * interface to Evaluator

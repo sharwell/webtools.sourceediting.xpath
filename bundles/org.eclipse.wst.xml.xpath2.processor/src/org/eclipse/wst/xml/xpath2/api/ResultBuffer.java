@@ -28,7 +28,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.SingleItemSeq
  */
 public class ResultBuffer {
 
-	private ArrayList<Item> values = new ArrayList<Item>();
+	private final ArrayList<Item> values = new ArrayList<Item>();
 	
 	public ResultSequence getSequence() {
 		if (values.size() == 0) return EMPTY;
@@ -67,6 +67,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#getLength()
 		 */
+		@Override
 		public int size() {
 			return 1;
 		}
@@ -74,6 +75,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#getItem(int)
 		 */
+		@Override
 		public Item item(int index) {
 			if (index != 0) throw new IndexOutOfBoundsException("Length is one, you looked up number "+ index);
 			return value;
@@ -82,6 +84,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#first()
 		 */
+		@Override
 		public Item first() {
 			return item(0);
 		}
@@ -89,6 +92,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#getItem(int)
 		 */
+		@Override
 		public Object value(int index) {
 			if (index != 0) throw new IndexOutOfBoundsException("Length is one, you looked up number "+ index);
 			return value.getNativeValue();
@@ -97,6 +101,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#empty()
 		 */
+		@Override
 		public boolean empty() {
 			return false;
 		}
@@ -104,6 +109,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#first()
 		 */
+		@Override
 		public Object firstValue() {
 			return value.getNativeValue();
 		}
@@ -111,14 +117,17 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#iterator()
 		 */
+		@Override
 		public Iterator<Item> iterator() {
 			return new Iterator<Item>() {
 				boolean seenIt = false;
 				
+				@Override
 				public final void remove() {
 					throw new UnsupportedOperationException("ResultSequences are immutable");
 				}
 				
+				@Override
 				public final Item next() {
 					if (! seenIt) {
 						seenIt = true;
@@ -127,16 +136,19 @@ public class ResultBuffer {
 					throw new IllegalStateException("This iterator is at its end");
 				}
 				
+				@Override
 				public final boolean hasNext() {
 					return !seenIt;
 				}
 			};
 		}
 
+		@Override
 		public ItemType itemType(int index) {
 			return item(index).getItemType();
 		}
 		
+		@Override
 		public ItemType sequenceType() {
 			return value.getItemType();
 		}
@@ -153,6 +165,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#getLength()
 		 */
+		@Override
 		public int size() {
 			return results.length;
 		}
@@ -160,6 +173,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#getItem(int)
 		 */
+		@Override
 		public Item item(int index) {
 			if (index < 0 && index >= results.length) throw new IndexOutOfBoundsException("Index " + index + " is out of alllowed bounds (less that " + results.length);
 			return results[index];
@@ -168,6 +182,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#empty()
 		 */
+		@Override
 		public boolean empty() {
 			return false;
 		}
@@ -175,6 +190,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#first()
 		 */
+		@Override
 		public Object firstValue() {
 			return item(0).getNativeValue();
 		}
@@ -182,6 +198,7 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#first()
 		 */
+		@Override
 		public Item first() {
 			return item(0);
 		}
@@ -189,14 +206,17 @@ public class ResultBuffer {
 		/* (non-Javadoc)
 		 * @see org.eclipse.wst.xml.xpath2.api.ResultSequence#iterator()
 		 */
+		@Override
 		public Iterator<Item> iterator() {
 			return new Iterator<Item>() {
 				int nextIndex = 0;
 				
+				@Override
 				public final void remove() {
 					throw new UnsupportedOperationException("ResultSequences are immutable");
 				}
 				
+				@Override
 				public final Item next() {
 					if (nextIndex < results.length) {
 						return results[nextIndex++];
@@ -204,21 +224,25 @@ public class ResultBuffer {
 					throw new IllegalStateException("This iterator is at its end");
 				}
 				
+				@Override
 				public final boolean hasNext() {
 					return nextIndex < results.length;
 				}
 			};
 		}
 
+		@Override
 		public ItemType itemType(int index) {
 			if (index < 0 && index >= results.length) throw new IndexOutOfBoundsException("Index " + index + " is out of alllowed bounds (less that " + results.length);
 			return results[index].getItemType();
 		}
 
+		@Override
 		public ItemType sequenceType() {
 			return new SimpleAtomicItemTypeImpl(BuiltinTypeLibrary.XS_ANYTYPE, ItemType.OCCURRENCE_ONE_OR_MANY);
 		}
 
+		@Override
 		public Object value(int index) {
 			return item(index).getNativeValue();
 		}
@@ -240,54 +264,67 @@ public class ResultBuffer {
 		// This is a dummy collections, solely exists for faster inserts into our array
 		return new Collection<Item>() {
 
+			@Override
 			public boolean add(Item arg0) {
 				return false;
 			}
 
+			@Override
 			public boolean addAll(Collection<? extends Item> arg0) {
 				return false;
 			}
 
+			@Override
 			public void clear() {
 			}
 
+			@Override
 			public boolean contains(Object arg0) {
 				return false;
 			}
 
+			@Override
 			public boolean containsAll(Collection<?> arg0) {
 				return false;
 			}
 
+			@Override
 			public boolean isEmpty() {
 				return rs.empty();
 			}
 
+			@Override
 			public Iterator<Item> iterator() {
 				return rs.iterator();
 			}
 
+			@Override
 			public boolean remove(Object arg0) {
 				return false;
 			}
 
+			@Override
 			public boolean removeAll(Collection<?> arg0) {
 				return false;
 			}
 
+			@Override
 			public boolean retainAll(Collection<?> arg0) {
 				return false;
 			}
 
+			@Override
 			public int size() {
 				return rs.size();
 			}
 
+			@Override
 			public Object[] toArray() {
 				return toArray(new Item[size()]);
 			}
 
 			@SuppressWarnings("unchecked")
+			@Override
 			public <T> T[] toArray(T[] arg0) {
 				if (arg0.length < size())
 					arg0 = Arrays.copyOf(arg0, size());
@@ -301,49 +338,61 @@ public class ResultBuffer {
 	
 	public final static ResultSequence EMPTY = new ResultSequence() {
 
+		@Override
 		public int size() {
 			return 0;
 		}
 
+		@Override
 		public Item item(int index) {
 			throw new IndexOutOfBoundsException("Sequence is empty!");
 		}
 
+		@Override
 		public boolean empty() {
 			return true;
 		}
 		
+		@Override
 		public ItemType itemType(int index) {
 			throw new IndexOutOfBoundsException("Sequence is empty!");
 		}
 		
+		@Override
 		public ItemType sequenceType() {
 			return new SimpleAtomicItemTypeImpl(BuiltinTypeLibrary.XS_ANYTYPE, ItemType.OCCURRENCE_ONE_OR_MANY);
 		}
 		
+		@Override
 		public Object value(int index) {
 			throw new IndexOutOfBoundsException("Sequence is empty!");
 		}
 		
+		@Override
 		public Object firstValue() {
 			throw new IndexOutOfBoundsException("Sequence is empty!");
 		}
 
+		@Override
 		public Item first() {
 			throw new IndexOutOfBoundsException("Sequence is empty!");
 		}
 		
+		@Override
 		public Iterator<Item> iterator() {
 			return new Iterator<Item>() {
 				
+				@Override
 				public void remove() {
 					throw new UnsupportedOperationException("ResultSequences are immutable");
 				}
 				
+				@Override
 				public Item next() {
 					throw new IllegalStateException("This ResultSequence is empty");
 				}
 				
+				@Override
 				public boolean hasNext() {
 					return false;
 				}

@@ -17,7 +17,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.ast;
  */
 public class XPathExpr extends Expr {
 	private int _slashes;
-	private StepExpr _expr;
+	private final StepExpr _expr;
 
 	// single linked list
 	private XPathExpr _next;
@@ -39,6 +39,7 @@ public class XPathExpr extends Expr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

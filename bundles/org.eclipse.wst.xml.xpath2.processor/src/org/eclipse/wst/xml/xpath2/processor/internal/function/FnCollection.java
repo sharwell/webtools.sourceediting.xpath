@@ -81,6 +81,7 @@ public class FnCollection extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return collection(args, ec);
 	}
@@ -151,8 +152,7 @@ public class FnCollection extends Function {
 		ResultBuffer rs = new ResultBuffer();
 		Map<String, List<Document>> collectionMap = ec.getDynamicContext().getCollections();
 		List<Document> docList = collectionMap.get(uri);
-		for (int i = 0; i < docList.size(); i++) {
-			Document doc = docList.get(i);
+		for (Document doc : docList) {
 			rs.add(new DocType(doc, ec.getStaticContext().getTypeModel()));
 		}
 		return rs.getSequence();

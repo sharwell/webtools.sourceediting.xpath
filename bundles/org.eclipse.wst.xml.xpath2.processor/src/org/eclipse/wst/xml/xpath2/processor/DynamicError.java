@@ -32,11 +32,11 @@ public class DynamicError extends XPathException {
 	private static final long serialVersionUID = -6146830764753685791L;
 
 	// errorcode specified in http://www.w3.org/2004/10/xqt-errors i fink
-	private String _code;
+	private final String _code;
 
 	// XXX dirty... should fix the error stuff
 	// have a type error encapsulated in a dynamic error
-	private TypeError _te;
+	private final TypeError _te;
 
 	/**
 	 * Constructor for Dynamic Error.

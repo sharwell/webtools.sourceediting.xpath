@@ -55,6 +55,7 @@ public class FnInScopePrefixes extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return inScopePrefixes(args, ec.getDynamicContext());
 	}
@@ -92,8 +93,7 @@ public class FnInScopePrefixes extends Function {
 	}
 
 	private static void createPrefixResultSet(ResultBuffer rs, List<String> prefixList) {
-		for (int i = 0; i < prefixList.size(); i++) {
-			String prefix = prefixList.get(i);
+		for (String prefix : prefixList) {
 			rs.add(new XSString(prefix));
 		}
 	}

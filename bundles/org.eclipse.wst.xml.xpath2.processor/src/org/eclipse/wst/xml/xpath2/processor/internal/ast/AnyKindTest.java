@@ -28,22 +28,27 @@ public class AnyKindTest extends KindTest {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}
 
+	@Override
 	public AnyType createTestType(ResultSequence rs, StaticContext sc) {
 		return null;
 	}
 
+	@Override
 	public QName name() {
 		return null;
 	}
 
+	@Override
 	public boolean isWild() {
 		return false;
 	}
 
+	@Override
 	public Class<? extends NodeType> getXDMClassType() {
 		return NodeType.class;
 	}

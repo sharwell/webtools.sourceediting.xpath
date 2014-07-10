@@ -18,6 +18,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSYearMonthDuration;
 
 public class ScalarTypePromoter extends NumericTypePromoter {
 
+	@Override
 	protected boolean checkCombination(Class<? extends AnyType> newType) {
 
 		Class<? extends AnyType> targetType = getTargetType();
@@ -27,6 +28,7 @@ public class ScalarTypePromoter extends NumericTypePromoter {
 		return super.checkCombination(newType);
 	}
 
+	@Override
 	protected Class<? extends AnyType> substitute(Class<? extends AnyType> typeToConsider) {
 		if (typeToConsider == XSDayTimeDuration.class || typeToConsider == XSYearMonthDuration.class) {
 			return typeToConsider;

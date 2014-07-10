@@ -29,6 +29,7 @@ public class AncestorAxis extends ParentAxis {
 	 *            is the type of node.
 	 */
 	// XXX unify this with descendants axis ?
+	@Override
 	public void iterate(NodeType node, ResultBuffer copyInto, Node limitNode) {
 
 		if (limitNode != null && limitNode.isSameNode(node.node_value())) return;
@@ -47,6 +48,7 @@ public class AncestorAxis extends ParentAxis {
 		iterate(parent, copyInto, limitNode);
 	}
 
+	@Override
 	public String name() {
 		return "ancestor";
 	}

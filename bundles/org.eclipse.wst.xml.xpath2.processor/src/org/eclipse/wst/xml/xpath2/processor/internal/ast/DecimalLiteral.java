@@ -14,7 +14,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
 import java.math.BigDecimal;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal;
 
 /**
  *The value of a numeric literal containing "." but no e or E character is an
@@ -22,7 +22,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * 
  */
 public class DecimalLiteral extends NumericLiteral {
-	private XSDecimal _value;
+	private final XSDecimal _value;
 
 	/**
 	 * Constructor for DecimalLiteral
@@ -39,6 +39,7 @@ public class DecimalLiteral extends NumericLiteral {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

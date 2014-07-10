@@ -59,17 +59,17 @@ public class DynamicContextBuilder implements DynamicContext {
 			throw new RuntimeException("Cannot initialize XML datatypes", e);
 		}
 	}
-	private TimeZone _systemTimezone = TimeZone.getDefault();
+	private final TimeZone _systemTimezone = TimeZone.getDefault();
 	
 	private Duration _tz = _datatypeFactory.newDuration(_systemTimezone.getRawOffset());
 	private GregorianCalendar _currentDateTime;
 	
-	private Map<QName,ResultSequence> _variables = new HashMap<QName,ResultSequence>();
+	private final Map<QName,ResultSequence> _variables = new HashMap<QName,ResultSequence>();
 	private final StaticContext _staticContext;
 
 	private Map<String, List<Document>> _collections;
 
-	private Map<URI, Document> _loaded_documents = new HashMap<URI, Document>();
+	private final Map<URI, Document> _loaded_documents = new HashMap<URI, Document>();
 
 	public DynamicContextBuilder(StaticContext sc) {
 		_staticContext = sc;
@@ -80,6 +80,7 @@ public class DynamicContextBuilder implements DynamicContext {
 	 * 
 	 * @return an xs:integer _tz
 	 */
+	@Override
 	public Duration getTimezoneOffset() {
 		return _tz;
 	}
@@ -87,6 +88,7 @@ public class DynamicContextBuilder implements DynamicContext {
 	/**
 	 * Gets the Current stable date time from the dynamic context.
 	 */
+	@Override
 	public GregorianCalendar getCurrentDateTime() {
 		if (_currentDateTime == null) {
 			_currentDateTime = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
@@ -94,14 +96,17 @@ public class DynamicContextBuilder implements DynamicContext {
 		return _currentDateTime;
 	}
 
+	@Override
 	public Node getLimitNode() {
 		return null;
 	}
 
+	@Override
 	public ResultSequence getVariable(QName name) {
 		return _variables.get(name);
 	}
 
+	@Override
 	public Document getDocument(URI resolved) {
 		Document doc = null;
 		if (_loaded_documents.containsKey(resolved)) {
@@ -132,6 +137,7 @@ public class DynamicContextBuilder implements DynamicContext {
 		}
 	}
 
+	@Override
 	public URI resolveUri(String uri) {
 		try {
 			URI realURI = URI.create(uri);
@@ -144,10 +150,12 @@ public class DynamicContextBuilder implements DynamicContext {
 		}
 	}
 
+	@Override
 	public Map<String, List<Document>> getCollections() {
 		return _collections;
 	}
 
+	@Override
 	public List<Document> getDefaultCollection() {
 		return getCollections().get(FnCollection.DEFAULT_COLLECTION_URI);
 	}
@@ -166,6 +174,7 @@ public class DynamicContextBuilder implements DynamicContext {
 		this._collections = map;
 	}
 	
+	@Override
 	public CollationProvider getCollationProvider() {
 		return _staticContext.getCollationProvider();
 	}

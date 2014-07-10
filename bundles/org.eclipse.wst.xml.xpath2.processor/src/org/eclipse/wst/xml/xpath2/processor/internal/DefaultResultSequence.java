@@ -56,6 +56,7 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	 * @param item
 	 *            is added to array _seq
 	 */
+	@Override
 	public void add(AnyType item) {
 		assert item != null;
 		_seq.add(item);
@@ -65,6 +66,7 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	 * @param rs
 	 *            ResultSequence
 	 */
+	@Override
 	public void concat(org.eclipse.wst.xml.xpath2.processor.ResultSequence rs) {
 		for (Iterator<Item> i = rs.iterator(); i.hasNext();)
 			_seq.add(i.next());
@@ -73,6 +75,7 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * @return the next iteration of array _seq
 	 */
+	@Override
 	public ListIterator<Item> iterator() {
 		return _seq.listIterator();
 	}
@@ -80,6 +83,7 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * @return integer of the size of array _seq
 	 */
+	@Override
 	public int size() {
 		return _seq.size();
 	}
@@ -89,6 +93,7 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	 *            is the position of the array item that is wanted.
 	 * @return item i from array _seq
 	 */
+	@Override
 	public AnyType get(int i) {
 		return (AnyType) _seq.get(i);
 	}
@@ -96,6 +101,7 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * @return first item from array _seq
 	 */
+	@Override
 	public AnyType first() {
 		if (_seq.size() == 0)
 			return null;
@@ -106,6 +112,7 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * @return first item from array _seq
 	 */
+	@Override
 	public Object firstValue() {
 		return get(0).getNativeValue();
 	}
@@ -115,10 +122,12 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	 * 
 	 * @return a boolean
 	 */
+	@Override
 	public boolean empty() {
 		return _seq.isEmpty();
 	}
 
+	@Override
 	public ItemType sequenceType() {
 		return new SimpleAtomicItemTypeImpl(BuiltinTypeLibrary.XS_ANYTYPE, ItemType.OCCURRENCE_NONE_OR_MANY);
 	}
@@ -126,6 +135,7 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	/**
 	 * Clears the sequence.
 	 */
+	@Override
 	public void clear() {
 		_seq.clear();
 	}
@@ -135,6 +145,7 @@ public class DefaultResultSequence extends org.eclipse.wst.xml.xpath2.processor.
 	 * 
 	 * @return The new sequence.
 	 */
+	@Override
 	public org.eclipse.wst.xml.xpath2.processor.ResultSequence create_new() {
 		return new DefaultResultSequence();
 	}

@@ -33,6 +33,7 @@ public class NodeItemTypeImpl implements NodeItemType {
 	private final QName name;
 	private final boolean wildcard;
 
+	@Override
 	public short getOccurrence() {
 		return occurrence;
 	}
@@ -41,14 +42,17 @@ public class NodeItemTypeImpl implements NodeItemType {
 		return typeDefinition;
 	}
 
+	@Override
 	public boolean isWildcard() {
 		return wildcard;
 	}
 
+	@Override
 	public QName getName() {
 		return name;
 	}
 
+	@Override
 	public short getNodeType() {
 		return nodeType;
 	}

@@ -12,7 +12,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 
 /**
  * The value of a string literal is an atomic value whose type is xs:string and
@@ -25,7 +25,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * 
  */
 public class StringLiteral extends Literal {
-	private XSString _value;
+	private final XSString _value;
 
 	/**
 	 * Constructor for StringLiteral
@@ -42,6 +42,7 @@ public class StringLiteral extends Literal {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

@@ -37,10 +37,12 @@ public class XSEntity extends XSNCName {
 		super(value);
 	}
 	
+	@Override
 	public String string_type() {
 		return XS_ENTITY;
 	}
 	
+	@Override
 	public String type_name() {
 		return "ENTITY";
 	}
@@ -57,6 +59,7 @@ public class XSEntity extends XSNCName {
 	 * @return New ResultSequence consisting of the ENTITY supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -66,13 +69,14 @@ public class XSEntity extends XSNCName {
 		
 		if (!isConstraintSatisfied(strValue)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 
 		return new XSEntity(strValue);
 	}
 	
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_ENTITY;
 	}

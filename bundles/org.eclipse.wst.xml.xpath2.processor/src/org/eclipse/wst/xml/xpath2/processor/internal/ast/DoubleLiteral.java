@@ -12,7 +12,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 
 /**
  *The value of a numeric literal containing an e or E character is an atomic
@@ -20,7 +20,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
  * 
  */
 public class DoubleLiteral extends NumericLiteral {
-	private XSDouble _value;
+	private final XSDouble _value;
 
 	/**
 	 * Constructor for Doubleiteral
@@ -37,6 +37,7 @@ public class DoubleLiteral extends NumericLiteral {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

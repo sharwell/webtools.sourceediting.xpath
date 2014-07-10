@@ -19,7 +19,7 @@ public class XPathError extends Error {
 	 * 
 	 */
 	private static final long serialVersionUID = 6624631792087303209L;
-	private String _reason;
+	private final String _reason;
 
 	/**
 	 * Constructor for XPathError

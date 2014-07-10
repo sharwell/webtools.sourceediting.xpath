@@ -12,14 +12,14 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Support for Variable Reference. A QName preceded by a $-sign is a variable
  * reference.
  */
 public class VarRef extends PrimaryExpr {
-	private QName _varname;
+	private final QName _varname;
 
 	/**
 	 * Constructor for VarRef.
@@ -36,6 +36,7 @@ public class VarRef extends PrimaryExpr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

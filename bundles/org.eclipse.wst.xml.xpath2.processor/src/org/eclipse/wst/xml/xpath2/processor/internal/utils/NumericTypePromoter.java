@@ -24,6 +24,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
 
 public class NumericTypePromoter extends TypePromoter {
 
+	@Override
 	protected boolean checkCombination(Class<? extends AnyType> newType) {
 		// Note: Double or float will override everything
 		if (newType == XSDouble.class || getTargetType() == XSDouble.class) {
@@ -40,6 +41,7 @@ public class NumericTypePromoter extends TypePromoter {
 		return true;
 	}
 
+	@Override
 	public AnyAtomicType doPromote(AnyAtomicType value) throws DynamicError {
 		if (getTargetType() == XSFloat.class) {
 			return new XSFloat(value.getStringValue());
@@ -53,6 +55,7 @@ public class NumericTypePromoter extends TypePromoter {
 		return null;
 	}
 
+	@Override
 	protected Class<? extends AnyType> substitute(Class<? extends AnyType> typeToConsider) {
 		if (typeToConsider == XSUntypedAtomic.class) return XSDouble.class;
 		if (isDerivedFrom(typeToConsider, XSFloat.class)) return XSFloat.class;

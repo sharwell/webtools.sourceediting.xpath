@@ -15,6 +15,7 @@ public class ComplexXercesTypeDefinition extends XercesTypeDefinition implements
 		this.complexTypeDefinition = ad;
 	}
 
+	@Override
 	public SimpleTypeDefinition getSimpleType() {
 		XSSimpleTypeDefinition simpleType = complexTypeDefinition.getSimpleType();
 		if (simpleType != null) {
@@ -22,27 +23,33 @@ public class ComplexXercesTypeDefinition extends XercesTypeDefinition implements
 		} else return null;
 	}
 
+	@Override
 	public short getDerivationMethod() {
 		// TODO: Map it
 		return complexTypeDefinition.getDerivationMethod();
 	}
 
+	@Override
 	public boolean getAbstract() {
 		return complexTypeDefinition.getAbstract();
 	}
 
+	@Override
 	public short getContentType() {
 		return complexTypeDefinition.getContentType();
 	}
 
+	@Override
 	public boolean isProhibitedSubstitution(short restriction) {
 		return complexTypeDefinition.isProhibitedSubstitution(restriction);
 	}
 
+	@Override
 	public short getProhibitedSubstitutions() {
 		return complexTypeDefinition.getProhibitedSubstitutions();
 	}
 
+	@Override
 	public Class<?> getNativeType() {
 		return NodeList.class;
 	}

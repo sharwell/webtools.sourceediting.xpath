@@ -12,13 +12,14 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Class for parethesized expressions support.
  */
 public class ParExpr extends PrimaryExpr {
-	private Collection<Expr> _exprs;
+	private final Collection<Expr> _exprs;
 
 	/**
 	 * Constructor for ParExpr.
@@ -35,6 +36,7 @@ public class ParExpr extends PrimaryExpr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

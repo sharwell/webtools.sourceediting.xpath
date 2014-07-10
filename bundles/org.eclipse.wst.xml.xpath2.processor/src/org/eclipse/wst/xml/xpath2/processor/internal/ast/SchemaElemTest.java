@@ -14,13 +14,15 @@ package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Support for Schema Element Test.
  */
 public class SchemaElemTest extends KindTest {
-	private QName _arg;
+	private final QName _arg;
 
 	/**
 	 * Constructor for SchemaElemTest.
@@ -37,6 +39,7 @@ public class SchemaElemTest extends KindTest {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}
@@ -46,19 +49,23 @@ public class SchemaElemTest extends KindTest {
 	 * 
 	 * @return Result of QName operation.
 	 */
+	@Override
 	public QName name() {
 		return _arg;
 	}
 
+	@Override
 	public AnyType createTestType(ResultSequence rs, StaticContext sc) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
 	public boolean isWild() {
 		return false;
 	}
 
+	@Override
 	public Class<? extends NodeType> getXDMClassType() {
 		// TODO Auto-generated method stub
 		return null;

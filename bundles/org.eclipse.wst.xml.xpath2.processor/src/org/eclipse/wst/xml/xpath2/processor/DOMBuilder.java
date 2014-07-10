@@ -12,11 +12,17 @@
 
 package org.eclipse.wst.xml.xpath2.processor;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
-import org.xml.sax.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * The DOM builder loads an DOM from an InputStream. The loading is always namespace aware.
@@ -42,6 +48,7 @@ public class DOMBuilder implements DOMLoader {
 	 * @return The loaded document.
 	 */
 	// XXX: fix error reporting
+	@Override
 	public Document load(InputStream in) throws DOMLoaderException {
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -54,14 +61,17 @@ public class DOMBuilder implements DOMLoader {
 
 			// if(_validating) {
 			builder.setErrorHandler(new ErrorHandler() {
+				@Override
 				public void fatalError(SAXParseException e) throws SAXException {
 					throw e;
 				}
 
+				@Override
 				public void error(SAXParseException e) throws SAXParseException {
 					throw e;
 				}
 
+				@Override
 				public void warning(SAXParseException e)
 						throws SAXParseException {
 					throw e; // XXX
@@ -85,6 +95,7 @@ public class DOMBuilder implements DOMLoader {
 	 * @param x
 	 *            is the value to set the validating boolean to.
 	 */
+	@Override
 	public void set_validating(boolean x) {
 		_validating = x;
 	}

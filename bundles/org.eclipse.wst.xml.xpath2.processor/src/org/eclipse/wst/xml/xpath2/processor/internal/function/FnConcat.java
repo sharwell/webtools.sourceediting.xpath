@@ -14,7 +14,6 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
@@ -64,6 +63,7 @@ public class FnConcat extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the concatenation of the arguments.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return concat(args);
 	}
@@ -81,22 +81,20 @@ public class FnConcat extends Function {
 
 		// sanity check
 		if (args.size() < 2)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		ResultBuffer rs = new ResultBuffer();
 
 		String result = "";
 
 		// go through args
-		StringBuffer buf = new StringBuffer();
-		for (Iterator<ResultSequence> argi = args.iterator(); argi.hasNext();) {
-			ResultSequence arg = argi.next();
-
+		StringBuilder buf = new StringBuilder();
+		for (ResultSequence arg : args) {
 			int size = arg.size();
 
 			// sanity check
 			if (size > 1)
-				DynamicError.throw_type_error();
+				throw DynamicError.throw_type_error();
 
 			if (size == 0) {
 				continue;

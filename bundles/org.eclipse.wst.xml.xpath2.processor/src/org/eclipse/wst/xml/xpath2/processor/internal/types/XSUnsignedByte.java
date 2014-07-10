@@ -49,6 +49,7 @@ public class XSUnsignedByte extends XSUnsignedShort {
 	 * 
 	 * @return "xs:unsignedByte" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_UNSIGNED_BYTE;
 	}
@@ -58,6 +59,7 @@ public class XSUnsignedByte extends XSUnsignedShort {
 	 * 
 	 * @return "unsignedByte" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "unsignedByte";
 	}
@@ -71,6 +73,7 @@ public class XSUnsignedByte extends XSUnsignedShort {
 	 * @return New ResultSequence consisting of the 'unsignedByte' supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -100,10 +103,12 @@ public class XSUnsignedByte extends XSUnsignedShort {
 
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_UNSIGNEDBYTE;
 	}
 
+	@Override
 	public Number getNativeValue() {
 		return getValue().shortValue();
 	}

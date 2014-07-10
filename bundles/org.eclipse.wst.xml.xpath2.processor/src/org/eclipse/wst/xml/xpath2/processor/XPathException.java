@@ -21,7 +21,7 @@ public class XPathException extends RuntimeException {
 	 * 
 	 */
 	private static final long serialVersionUID = 1380394170163983863L;
-	private String _reason;
+	private final String _reason;
 
 	/**
 	 * Constructor for XPathException
@@ -43,6 +43,7 @@ public class XPathException extends RuntimeException {
 		return _reason;
 	}
 	
+	@Override
 	public String getMessage() {
 		return _reason;
 	}

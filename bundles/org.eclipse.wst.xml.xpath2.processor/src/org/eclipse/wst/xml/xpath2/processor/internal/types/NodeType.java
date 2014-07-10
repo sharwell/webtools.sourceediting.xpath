@@ -56,10 +56,11 @@ public abstract class NodeType extends AnyType {
 	
 	protected static final String SCHEMA_TYPE_IDREF = "IDREF";
 	protected static final String SCHEMA_TYPE_ID = "ID";
-	private Node _node;
-	protected TypeModel _typeModel;
+	private final Node _node;
+	protected final TypeModel _typeModel;
 
 	public static final Comparator<NodeType> NODE_COMPARATOR = new Comparator<NodeType>() {
+		@Override
 		public int compare(NodeType o1, NodeType o2) {
 			return compare_node(o1, o2);
 		}
@@ -174,9 +175,7 @@ public abstract class NodeType extends AnyType {
 		}
 
 		ResultBuffer result = new ResultBuffer();
-		for (Iterator<NodeType> i = res.iterator(); i.hasNext();) {
-			NodeType node = i.next();
-
+		for (NodeType node : res) {
 			result.add(node);
 		}
 
@@ -316,18 +315,18 @@ public abstract class NodeType extends AnyType {
 		
 		SimpleTypeDefinition itemType = (SimpleTypeDefinition) simpType.getItemType();		
 		if (itemType.getVariety() == SimpleTypeDefinition.VARIETY_ATOMIC) {
-			for (int listItemIdx = 0; listItemIdx < listItemsStrValues.length; listItemIdx++) {
+			for (String listItemsStrValue : listItemsStrValues) {
 			   // add an atomic typed value (whose type is the "item  type" of the list, and "string value" is the "string 
 			   // value of the list item") to the "result sequence".
 		       rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathTypeHelper.getXSDTypeShortCode(itemType), 
-		                                                        listItemsStrValues[listItemIdx]));
+		                                                        listItemsStrValue));
 			}
 		}
 		else if (itemType.getVariety() == SimpleTypeDefinition.VARIETY_UNION) {
 		    // here the list items may have different atomic types
 			for (int listItemIdx = 0; listItemIdx < listItemsStrValues.length; listItemIdx++) {
 				String listItem = listItemsStrValues[listItemIdx];
-				rs.add(SchemaTypeValueFactory.newSchemaTypeValue(itemValueTypes.get(listItemIdx).shortValue(), listItem));
+				rs.add(SchemaTypeValueFactory.newSchemaTypeValue(itemValueTypes.get(listItemIdx), listItem));
 			}
 		}
 		
@@ -343,8 +342,8 @@ public abstract class NodeType extends AnyType {
 		
 		List<SimpleTypeDefinition> memberTypes = simpType.getMemberTypes();
 		// check member types in order, to find that which one can successfully validate the string value.
-		for (int memTypeIdx = 0; memTypeIdx < memberTypes.size(); memTypeIdx++) {
-			PrimitiveType memSimpleType = (PrimitiveType) memberTypes.get(memTypeIdx);
+		for (SimpleTypeDefinition memberType : memberTypes) {
+			PrimitiveType memSimpleType = (PrimitiveType) memberType;
 		   if (isValueValidForSimpleType(getStringValue(), memSimpleType)) {
 			  
 			   rs.add(SchemaTypeValueFactory.newSchemaTypeValue(PsychoPathTypeHelper.getXSDTypeShortCode(memSimpleType), getStringValue()));
@@ -402,6 +401,7 @@ public abstract class NodeType extends AnyType {
 		}
 	}
 
+	@Override
 	public Object getNativeValue() {
 		return node_value();
 	}

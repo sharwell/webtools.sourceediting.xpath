@@ -23,7 +23,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
  * 
  */
 public class IntegerLiteral extends NumericLiteral {
-	private XSInteger _value;
+	private final XSInteger _value;
 
 	/**
 	 * Constructor for IntegerLiteral
@@ -40,6 +40,7 @@ public class IntegerLiteral extends NumericLiteral {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

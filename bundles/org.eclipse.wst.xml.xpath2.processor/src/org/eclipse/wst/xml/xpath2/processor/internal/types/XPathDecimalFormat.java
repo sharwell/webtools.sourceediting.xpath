@@ -56,30 +56,29 @@ public class XPathDecimalFormat extends DecimalFormat {
 		String curPattern = toPattern();
 		String newPattern = curPattern.replaceAll("E0", "");
 		if (obj instanceof Float) {
-            return formatFloatValue(obj, curPattern, newPattern);
+            return formatFloatValue((Float) obj, curPattern, newPattern);
 		}
 		if (obj instanceof Double) {
-			return formatDoubleValue(obj, curPattern, newPattern);
+			return formatDoubleValue((Double) obj, curPattern, newPattern);
 		}
 		return super.format(obj, new StringBuffer(), new FieldPosition(0)).toString();
 	}
 
-	private String formatDoubleValue(Object obj, String curPattern,
+	private String formatDoubleValue(Double doubleValue, String curPattern,
 			String newPattern) {
-		Double doubleValue = (Double) obj;
 		if (isDoubleNegativeInfinity(doubleValue)) {
 			return NEG_INFINITY;
 		}
 		if (isDoublePositiveInfinity(doubleValue)) {
 			return POS_INFINITY;
 		}
-		doubleXPathPattern(obj, curPattern, newPattern);
-		return format(obj, new StringBuffer(), new FieldPosition(0)).toString();
+		doubleXPathPattern(doubleValue, curPattern, newPattern);
+		return format(doubleValue, new StringBuffer(), new FieldPosition(0)).toString();
 	}
 
-	private void doubleXPathPattern(Object obj, String curPattern,
+	private void doubleXPathPattern(Double doubleValue, String curPattern,
 			String newPattern) {
-		BigDecimal doubValue = new BigDecimal((((Double) obj)).doubleValue());
+		BigDecimal doubValue = new BigDecimal(doubleValue);
 		BigDecimal minValue = new BigDecimal("-1E6");
 		BigDecimal maxValue = new BigDecimal("1E6");
 		if (doubValue.compareTo(minValue) > 0 && doubValue.compareTo(maxValue) < 0) {
@@ -89,17 +88,16 @@ public class XPathDecimalFormat extends DecimalFormat {
 		}
 	}
 
-	private boolean isDoublePositiveInfinity(Double doubleValue) {
-		return doubleValue.doubleValue() == Double.POSITIVE_INFINITY;
+	private boolean isDoublePositiveInfinity(double doubleValue) {
+		return doubleValue == Double.POSITIVE_INFINITY;
 	}
 
-	private boolean isDoubleNegativeInfinity(Double doubleValue) {
-		return doubleValue.doubleValue() == Double.NEGATIVE_INFINITY;
+	private boolean isDoubleNegativeInfinity(double doubleValue) {
+		return doubleValue == Double.NEGATIVE_INFINITY;
 	}
 
-	private String formatFloatValue(Object obj, String curPattern,
+	private String formatFloatValue(Float floatValue, String curPattern,
 			String newPattern) {
-		Float floatValue = (Float) obj;
 		if (isFloatNegInfinity(floatValue)) {
 			return NEG_INFINITY;
 		}
@@ -107,23 +105,23 @@ public class XPathDecimalFormat extends DecimalFormat {
 			return POS_INFINITY;
 		}
 		floatXPathPattern(curPattern, newPattern, floatValue);
-		return format(obj, new StringBuffer(), new FieldPosition(0)).toString();
+		return format(floatValue, new StringBuffer(), new FieldPosition(0)).toString();
 	}
 
-	private boolean isFloatPosInfinity(Float floatValue) {
-		return floatValue.floatValue() == Float.POSITIVE_INFINITY;
+	private boolean isFloatPosInfinity(float floatValue) {
+		return floatValue == Float.POSITIVE_INFINITY;
 	}
 
-	private boolean isFloatNegInfinity(Float floatValue) {
-		return floatValue.floatValue() == Float.NEGATIVE_INFINITY;
+	private boolean isFloatNegInfinity(float floatValue) {
+		return floatValue == Float.NEGATIVE_INFINITY;
 	}
 
 	private void floatXPathPattern(String curPattern, String newPattern,
-			Float floatValue) {
-		if (floatValue.floatValue() > -1E6f && floatValue.floatValue() < 1E6f) {
+			float floatValue) {
+		if (floatValue > -1E6f && floatValue < 1E6f) {
 			
 			applyPattern(newPattern);
-		} else if (floatValue.floatValue() <= -1E6f) {
+		} else if (floatValue <= -1E6f) {
 			applyPattern(curPattern.replaceAll("0\\.#", "0.0" ));
 		}
 	}

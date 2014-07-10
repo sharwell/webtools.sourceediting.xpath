@@ -53,6 +53,7 @@ public class FnAbs extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		// 1 argument only!
 		assert args.size() >= min_arity() && args.size() <= max_arity();
@@ -92,7 +93,7 @@ public class FnAbs extends Function {
 		if (nt instanceof XSFloat) {
 			XSFloat dat = (XSFloat) nt;
 			if (dat.zero() || dat.negativeZero()) {
-				return new XSFloat((new Float(0)).floatValue());
+				return new XSFloat(0f);
 			}
 			if (dat.infinite()) {
 				return new XSFloat(Float.POSITIVE_INFINITY);
@@ -116,7 +117,7 @@ public class FnAbs extends Function {
 			throws DynamicError {
 		int size = arg.size();
 		if (size > 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		if (size == 0)
 			return null;

@@ -305,43 +305,53 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 		return _min_arity != _max_arity;
 	}
 
+	@Override
 	public String getName() {
 		return name().local();
 	}
 
+	@Override
 	public int getMinArity() {
 		return min_arity();
 	}
 
+	@Override
 	public int getMaxArity() {
 		return max_arity();
 	}
 
+	@Override
 	public boolean isVariableArgument() {
 		return this.is_vararg();
 	}
 
+	@Override
 	public boolean canMatchArity(int actualArity) {
 		return matches_arity(actualArity);
 	}
 
+	@Override
 	public TypeDefinition getResultType() {
 		return BuiltinTypeLibrary.XS_UNTYPED;
 	}
 
+	@Override
 	public TypeDefinition getArgumentType(int index) {
 		return BuiltinTypeLibrary.XS_UNTYPED;
 	}
 
+	@Override
 	public String getArgumentNameHint(int index) {
 		return "argument_"  + index;
 	}
 
+	@Override
 	public TypeDefinition computeReturnType(Collection<TypeDefinition> args,
 			org.eclipse.wst.xml.xpath2.api.StaticContext sc) {
 		return BuiltinTypeLibrary.XS_UNTYPED;
 	}
 
+	@Override
 	public abstract ResultSequence evaluate(Collection<ResultSequence> args,
 			EvaluationContext evaluationContext);
 

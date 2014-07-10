@@ -70,6 +70,7 @@ public class FnCodepointEqual extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the comparison of the arguments.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return codepoint_equals(args, ec.getDynamicContext());
 	}

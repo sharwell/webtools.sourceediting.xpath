@@ -59,6 +59,7 @@ public interface PrimitiveType/*<Type extends AnyType, NativeType>*/ extends Typ
     /**
      * @return              The expected native type (class or interface) to expect when calling getValue. 
      */
+    @Override
     public Class<?> getNativeType();
 
     /**

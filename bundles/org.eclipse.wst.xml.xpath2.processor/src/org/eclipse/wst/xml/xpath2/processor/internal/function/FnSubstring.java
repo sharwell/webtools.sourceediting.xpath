@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.ibm.icu.lang.UCharacter;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
@@ -28,8 +29,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.CodePointIterator;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.StringCodePointIterator;
-
-import com.ibm.icu.lang.UCharacter;
 
 /**
  * <p>
@@ -75,6 +74,7 @@ public class FnSubstring extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the substring obtained from the arguments.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return substring(args);
 	}
@@ -126,7 +126,7 @@ public class FnSubstring extends Function {
 		
 		
 		// could guess too short in cases supplementary chars 
-		StringBuffer sb = new StringBuffer((int) Math.min(str.length(), ilength));
+		StringBuilder sb = new StringBuilder((int) Math.min(str.length(), ilength));
 
 		// This looks like an inefficient way to iterate, but due to surrogate handling,
 		// string indexes are no good here. Welcome to UTF-16!

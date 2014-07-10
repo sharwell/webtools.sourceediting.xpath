@@ -57,6 +57,7 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
@@ -77,9 +78,7 @@ public class FsEq extends Function {
 		Collection<Item> result = new ArrayList<Item>(args.size());
 
 		// atomize arguments
-		for (Iterator<ResultSequence> i = args.iterator(); i.hasNext();) {
-			ResultSequence rs = i.next();
-
+		for (ResultSequence rs : args) {
 			//FnData.fast_atomize(rs);
 			rs = FnData.atomize(rs);
 
@@ -149,7 +148,7 @@ public class FsEq extends Function {
 			two = new XSString(two.getStringValue());
 
 		if (!(one instanceof CmpEq))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		CmpEq cmpone = (CmpEq) one;
 
@@ -275,7 +274,7 @@ public class FsEq extends Function {
 
 		// sanity check args and get them
 		if (args.size() != 2)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Iterator<ResultSequence> argiter = args.iterator();
 
@@ -331,7 +330,7 @@ public class FsEq extends Function {
 
 		// sanity check args + convert em
 		if (args.size() != 2)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Collection<Item> cargs = value_convert_args(args);
 
@@ -344,10 +343,10 @@ public class FsEq extends Function {
 		ResultSequence arg2 = (ResultSequence) argi.next();
 
 		if (arg2.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		if (!(op.getType().isInstance(arg)))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		boolean cmpres = op.execute(op.getType().cast(arg), (AnyType)arg2.first(), context);
 		return XSBoolean.valueOf(cmpres);

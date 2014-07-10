@@ -14,6 +14,7 @@ package org.eclipse.wst.xml.xpath2.api;
 import java.util.Collection;
 
 import javax.xml.namespace.QName;
+
 import org.w3c.dom.Node;
 
 /**

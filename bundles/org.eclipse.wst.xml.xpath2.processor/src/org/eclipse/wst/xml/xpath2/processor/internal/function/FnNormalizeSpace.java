@@ -66,6 +66,7 @@ public class FnNormalizeSpace extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the space in the arguments being normalized.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return normalize_space(args, ec);
 	}
@@ -109,7 +110,7 @@ public class FnNormalizeSpace extends Function {
 	 */
 	// XXX fix this
 	public static String normalize(String str) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		int state = 0; // 0 begin
 		// 1 middle

@@ -59,6 +59,7 @@ public class FnAvg extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		return avg(args);
 	}
@@ -103,7 +104,7 @@ public class FnAvg extends Function {
 		}
 
 		if (!(total instanceof MathDiv))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		return ((MathDiv)total).div(new XSInteger(BigInteger.valueOf(elems)));
 	}

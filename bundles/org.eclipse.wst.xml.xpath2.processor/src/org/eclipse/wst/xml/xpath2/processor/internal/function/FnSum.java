@@ -41,7 +41,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.utils.TypePromoter;
  */
 public class FnSum extends Function {
 
-	static private XSInteger ZERO = new XSInteger(BigInteger.ZERO);
+	private static final XSInteger ZERO = new XSInteger(BigInteger.ZERO);
 
 	/**
 	 * Constructor for FnSum.
@@ -59,6 +59,7 @@ public class FnSum extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		Iterator<ResultSequence> argIterator = args.iterator();
 		ResultSequence argSequence = argIterator.next();

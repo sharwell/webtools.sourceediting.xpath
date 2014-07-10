@@ -27,10 +27,12 @@ public class DescendantAxis extends ChildAxis {
 	 * @param node
 	 *            is the type of node.
 	 */
+	@Override
 	public void iterate(NodeType node, ResultBuffer copyInto, Node limitNode) {
 		addChildren(node, copyInto, true);
 	}
 
+	@Override
 	public String name() {
 		return "descendant";
 	}

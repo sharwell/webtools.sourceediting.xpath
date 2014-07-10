@@ -79,7 +79,7 @@ public class CmpExpr extends BinExpr {
 	 */
 	public static final int GREATER_GREATER = 14;
 
-	private int _type;
+	private final int _type;
 
 	/**
 	 * Constructor for CmpExpr
@@ -102,6 +102,7 @@ public class CmpExpr extends BinExpr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

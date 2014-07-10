@@ -24,6 +24,7 @@ public abstract class ReverseAxis implements Axis {
 	 * @return new element type
 	 */
 	// should always be element i fink
+	@Override
 	public NodeType principal_node_kind() {
 		return new ElementType();
 	}

@@ -33,6 +33,7 @@ public class PrecedingAxis extends ReverseAxis {
 	 * @throws dc
 	 *             is the Dynamic context.
 	 */
+	@Override
 	public void iterate(NodeType node, ResultBuffer result, Node limitNode) {
 
 		if (limitNode != null && limitNode.isSameNode(node.node_value())) {
@@ -64,6 +65,7 @@ public class PrecedingAxis extends ReverseAxis {
 		}
 	}
 	
+	@Override
 	public String name() {
 		return "preceding";
 	}

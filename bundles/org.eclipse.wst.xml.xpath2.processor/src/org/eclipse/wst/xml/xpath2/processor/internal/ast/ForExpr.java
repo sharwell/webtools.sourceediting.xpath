@@ -12,13 +12,14 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Class for the For expression.
  */
 public class ForExpr extends Expr {
-	private Collection<VarExprPair> _var_expr_pairs;
+	private final Collection<VarExprPair> _var_expr_pairs;
 	private Expr _return;
 
 	/**
@@ -39,6 +40,7 @@ public class ForExpr extends Expr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

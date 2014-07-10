@@ -11,14 +11,14 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Class for Variable Expression Pairs.
  */
 public class VarExprPair {
-	private QName _var;
-	private Expr _expr;
+	private final QName _var;
+	private final Expr _expr;
 
 	/**
 	 * Constructor for VarExprPair.

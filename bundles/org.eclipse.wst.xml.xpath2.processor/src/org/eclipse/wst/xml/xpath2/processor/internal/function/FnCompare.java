@@ -79,6 +79,7 @@ public class FnCompare extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the comparison of the arguments.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return compare(args, ec.getDynamicContext());
 	}

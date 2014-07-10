@@ -48,6 +48,7 @@ public class XSNormalizedString extends XSString {
 	 * 
 	 * @return "xs:normalizedString" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_NORMALIZEDSTRING;
 	}
@@ -57,6 +58,7 @@ public class XSNormalizedString extends XSString {
 	 * 
 	 * @return "normalizedString" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "normalizedString";
 	}
@@ -70,6 +72,7 @@ public class XSNormalizedString extends XSString {
 	 * @return New ResultSequence consisting of the supplied String
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 		   return ResultBuffer.EMPTY;
@@ -79,7 +82,7 @@ public class XSNormalizedString extends XSString {
 		String srcString = aat.getStringValue();
 		if (!isSatisfiesConstraints(srcString)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 		
 		return new XSNormalizedString(srcString);
@@ -102,6 +105,7 @@ public class XSNormalizedString extends XSString {
 		  
 	} // isSatisfiesConstraints
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_NORMALIZEDSTRING;
 	}

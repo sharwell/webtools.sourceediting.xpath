@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.ibm.icu.lang.UCharacter;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
@@ -27,8 +28,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.CodePointIterator;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.StringCodePointIterator;
-
-import com.ibm.icu.lang.UCharacter;
 
 /**
  * <p>
@@ -89,6 +88,7 @@ public class FnTranslate extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the arguments being translated.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return translate(args);
 	}
@@ -120,14 +120,14 @@ public class FnTranslate extends Function {
 
 		Map<Integer, Integer> replacements = buildReplacementMap(mapstr, transstr);
 		
-		StringBuffer sb = new StringBuffer(str.length());
+		StringBuilder sb = new StringBuilder(str.length());
 		CodePointIterator strIter = new StringCodePointIterator(str);
 		for (int input = strIter.current(); input != CodePointIterator.DONE; input = strIter.next()) {
-			Integer inputCodepoint = new Integer(input);
+			Integer inputCodepoint = input;
 			if (replacements.containsKey(inputCodepoint)) {
 				Integer replaceWith = replacements.get(inputCodepoint);
 				if (replaceWith != null) {
-					sb.append(UCharacter.toChars(replaceWith.intValue()));
+					sb.append(UCharacter.toChars(replaceWith));
 				}					
 			} else {
 				sb.append(UCharacter.toChars(input));
@@ -155,10 +155,10 @@ public class FnTranslate extends Function {
 		int mapFrom = mapIter.current();
 		int mapTo = transIter.current();
 		while (mapFrom != CodePointIterator.DONE) {
-			Integer codepointFrom = new Integer(mapFrom);
+			Integer codepointFrom = mapFrom;
 			if (! replacements.containsKey(codepointFrom)) {
 				// only overwrite if it doesn't exist already
-				Integer replacement = mapTo != CodePointIterator.DONE ? new Integer(mapTo) : null;
+				Integer replacement = mapTo != CodePointIterator.DONE ? mapTo : null;
 				replacements.put(codepointFrom, replacement);
 			}
 			mapFrom = mapIter.next();

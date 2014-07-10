@@ -12,7 +12,8 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 // mite wanna do two separate classes at the end
 /**
@@ -28,9 +29,9 @@ public class QuantifiedExpr extends Expr {
 	 */
 	public static final int ALL = 1;
 
-	private Collection<VarExprPair> _var_expr_pairs;
+	private final Collection<VarExprPair> _var_expr_pairs;
 	private Expr _return;
-	private int _type;
+	private final int _type;
 
 	/**
 	 * Constructor for QuantifiedExpr.
@@ -53,6 +54,7 @@ public class QuantifiedExpr extends Expr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

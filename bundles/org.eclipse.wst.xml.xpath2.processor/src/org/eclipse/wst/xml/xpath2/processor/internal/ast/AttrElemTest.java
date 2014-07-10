@@ -11,8 +11,8 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Common base class for Attribute and Element tests.
@@ -74,6 +74,7 @@ public abstract class AttrElemTest extends KindTest {
 	 * 
 	 * @return Result of name test.
 	 */
+	@Override
 	public QName name() {
 		return _name;
 	}

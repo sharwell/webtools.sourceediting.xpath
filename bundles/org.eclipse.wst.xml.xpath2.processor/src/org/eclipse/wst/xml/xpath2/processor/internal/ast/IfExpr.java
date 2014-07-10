@@ -12,15 +12,16 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Support for IF expressions.
  */
 public class IfExpr extends Expr {
-	private Collection<Expr> _exprs;
-	private Expr _then;
-	private Expr _else;
+	private final Collection<Expr> _exprs;
+	private final Expr _then;
+	private final Expr _else;
 
 	/**
 	 * Constructor for IfExpr.
@@ -43,6 +44,7 @@ public class IfExpr extends Expr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

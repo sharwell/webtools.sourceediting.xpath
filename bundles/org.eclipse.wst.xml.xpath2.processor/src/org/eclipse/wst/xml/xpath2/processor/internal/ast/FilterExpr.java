@@ -12,7 +12,8 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A filter expression consists simply of a primary expression followed by zero
@@ -27,7 +28,7 @@ import java.util.*;
  */
 public class FilterExpr extends StepExpr {
 	private PrimaryExpr _pexpr;
-	private Collection<Collection<Expr>> _exprs;
+	private final Collection<Collection<Expr>> _exprs;
 
 	/**
 	 * Constructor of FilterExpr.
@@ -47,6 +48,7 @@ public class FilterExpr extends StepExpr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

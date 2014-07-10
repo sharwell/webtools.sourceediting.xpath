@@ -57,6 +57,7 @@ public abstract class CalendarType extends CtrType {
 		return false;
 	}
 	
+	@Override
 	public Object getNativeValue() {
 		return _datatypeFactory.newXMLGregorianCalendar((GregorianCalendar)calendar());
 	}

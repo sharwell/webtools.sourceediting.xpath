@@ -62,6 +62,7 @@ public class AttrType extends NodeType {
 	 * 
 	 * @return "attribute" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return ATTRIBUTE;
 	}
@@ -71,6 +72,7 @@ public class AttrType extends NodeType {
 	 * 
 	 * @return String representation of the attribute being stored
 	 */
+	@Override
 	public String getStringValue() {
 		return _value.getValue();
 	}
@@ -80,6 +82,7 @@ public class AttrType extends NodeType {
 	 * 
 	 * @return New ResultSequence consisting of the attribute being stored
 	 */
+	@Override
 	public ResultSequence typed_value() {
 		TypeDefinition typeDef = getType();
 
@@ -97,6 +100,7 @@ public class AttrType extends NodeType {
 	 * 
 	 * @return Name of the node
 	 */
+	@Override
 	public QName node_name() {
 		QName name = new QName(_value.getPrefix(), _value.getLocalName(),
 				_value.getNamespaceURI());
@@ -108,6 +112,7 @@ public class AttrType extends NodeType {
 	 * Checks if the current node is of type ID
 	 * @since 1.1;
 	 */
+	@Override
 	public boolean isID() {
 		return isAttrType(SCHEMA_TYPE_ID);
 	}
@@ -116,6 +121,7 @@ public class AttrType extends NodeType {
 	 * 
 	 * @since 1.1
 	 */
+	@Override
 	public boolean isIDREF() {
 		return isAttrType(SCHEMA_TYPE_IDREF);
 	}
@@ -132,6 +138,7 @@ public class AttrType extends NodeType {
 		return isType(typeInfo, typeName);
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_UNTYPEDATOMIC;
 	}

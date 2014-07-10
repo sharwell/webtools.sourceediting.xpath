@@ -15,7 +15,7 @@ public class XercesTypeModel implements TypeModel {
 	/**
 	 * 
 	 */
-	private XSModel _schema;
+	private final XSModel _schema;
 
 	public XercesTypeModel(Document doc) {
 		_schema = ((ElementPSVI) doc.getDocumentElement()).getSchemaInformation();
@@ -26,24 +26,28 @@ public class XercesTypeModel implements TypeModel {
 	}
 
 
+	@Override
 	public TypeDefinition lookupType(String namespace, String typeName) {
 		XSTypeDefinition ad = _schema.getTypeDefinition(typeName, namespace);
 
 		return XercesTypeDefinition.createTypeDefinition(ad);
 	}
 
+	@Override
 	public TypeDefinition lookupElementDeclaration(String namespace, String elementName) {
 		XSElementDeclaration ad = _schema.getElementDeclaration(elementName, namespace);
 
 		return XercesTypeDefinition.createTypeDefinition(ad.getTypeDefinition());
 	}
 
+	@Override
 	public TypeDefinition lookupAttributeDeclaration(String namespace, String attributeName) {
 		XSAttributeDeclaration ad = _schema.getAttributeDeclaration(attributeName, namespace);
 
 		return XercesTypeDefinition.createTypeDefinition(ad.getTypeDefinition());
 	}
 
+	@Override
 	public TypeDefinition getType(Node node) {
 		if (node instanceof ItemPSVI) {
 			XSTypeDefinition typeDefinition = ((ItemPSVI)node).getTypeDefinition();

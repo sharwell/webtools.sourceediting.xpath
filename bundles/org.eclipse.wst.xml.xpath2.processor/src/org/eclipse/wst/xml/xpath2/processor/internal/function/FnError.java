@@ -56,6 +56,7 @@ public class FnError extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		// Differentiate depending on whether there is one (required) argument or whatever.
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, args.size() == 1 ? expected_args1() : expected_args());

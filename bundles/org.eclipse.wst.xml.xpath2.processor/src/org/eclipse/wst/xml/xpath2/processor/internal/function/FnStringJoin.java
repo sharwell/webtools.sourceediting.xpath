@@ -63,6 +63,7 @@ public class FnStringJoin extends Function {
 	 *             Dynamic error.
 	 * @return The evaluation of the joining of the arguments.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		return string_join(args);
 	}
@@ -87,7 +88,7 @@ public class FnStringJoin extends Function {
 		String result = "";
 		String separator = ((XSString) arg2.first()).value();
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (Iterator<Item> i = arg1.iterator(); i.hasNext();) {
 			XSString item = (XSString) i.next();
 			buf.append(item.value());

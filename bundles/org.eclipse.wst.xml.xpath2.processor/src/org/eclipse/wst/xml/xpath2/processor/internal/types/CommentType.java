@@ -25,7 +25,7 @@ import org.w3c.dom.Comment;
  */
 public class CommentType extends NodeType {
 	private static final String COMMENT = "comment";
-	private Comment _value;
+	private final Comment _value;
 
 	/**
 	 * Initialise according to the supplied parameters
@@ -43,6 +43,7 @@ public class CommentType extends NodeType {
 	 * 
 	 * @return "comment" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return COMMENT;
 	}
@@ -52,6 +53,7 @@ public class CommentType extends NodeType {
 	 * 
 	 * @return String representation of the comment being stored
 	 */
+	@Override
 	public String getStringValue() {
 		return _value.getNodeValue();
 	}
@@ -61,6 +63,7 @@ public class CommentType extends NodeType {
 	 * 
 	 * @return New ResultSequence consisting of the comment stored
 	 */
+	@Override
 	public ResultSequence typed_value() {
 		return new XSString(_value.getData());
 	}
@@ -70,6 +73,7 @@ public class CommentType extends NodeType {
 	 * 
 	 * @return null
 	 */
+	@Override
 	public QName node_name() {
 		return null;
 	}
@@ -77,6 +81,7 @@ public class CommentType extends NodeType {
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	public boolean isID() {
 		return false;
 	}
@@ -84,10 +89,12 @@ public class CommentType extends NodeType {
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	public boolean isIDREF() {
 		return false;
 	}
 	
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_UNTYPEDATOMIC;
 	}

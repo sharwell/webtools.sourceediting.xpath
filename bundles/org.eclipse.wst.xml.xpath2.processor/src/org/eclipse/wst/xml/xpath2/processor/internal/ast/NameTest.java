@@ -12,13 +12,13 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Class for Name test operation.
  */
 public class NameTest extends NodeTest {
-	private QName _name;
+	private final QName _name;
 
 	/**
 	 * Constructor for NameTest.
@@ -35,6 +35,7 @@ public class NameTest extends NodeTest {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

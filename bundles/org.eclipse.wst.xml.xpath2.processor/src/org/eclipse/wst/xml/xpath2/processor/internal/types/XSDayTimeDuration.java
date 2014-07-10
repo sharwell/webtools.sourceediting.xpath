@@ -96,11 +96,13 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @return New XSDayTimeDuration representing the duration of time stored
 	 * @throws CloneNotSupportedException
 	 */
+	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return new XSDayTimeDuration(days(), hours(), minutes(), seconds(),
 				negative());
 	}
 
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -235,6 +237,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * 
 	 * @return "dayTimeDuration" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "dayTimeDuration";
 	}
@@ -244,6 +247,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * 
 	 * @return "xs:dayTimeDuration" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_DAY_TIME_DURATION;
 	}
@@ -258,6 +262,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 *         the addition
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
 		XSDuration val = (XSDuration) NumericType
 				.get_single_type(arg, XSDayTimeDuration.class);
@@ -277,6 +282,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 *         the subtraction
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		XSDuration val = (XSDuration) NumericType
 				.get_single_type(arg, XSDayTimeDuration.class);
@@ -296,6 +302,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 *         the multiplication
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence times(ResultSequence arg) throws DynamicError {
 		ResultSequence convertedRS = arg;
 		
@@ -327,9 +334,10 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 *         the division
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = arg.first();
 
@@ -379,11 +387,11 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 
 			return new XSDecimal(res);
 		} else {
-			DynamicError.throw_type_error();
-			return null; // unreach
+			throw DynamicError.throw_type_error();
 		}
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_DAYTIMEDURATION;
 	}

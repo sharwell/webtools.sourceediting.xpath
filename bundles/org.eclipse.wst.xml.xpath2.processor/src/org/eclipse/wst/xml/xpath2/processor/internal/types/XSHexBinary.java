@@ -53,6 +53,7 @@ public class XSHexBinary extends CtrType implements CmpEq {
 	 * 
 	 * @return "xs:hexBinary" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_HEX_BINARY;
 	}
@@ -62,6 +63,7 @@ public class XSHexBinary extends CtrType implements CmpEq {
 	 * 
 	 * @return "hexBinary" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "hexBinary";
 	}
@@ -72,6 +74,7 @@ public class XSHexBinary extends CtrType implements CmpEq {
 	 * 
 	 * @return The hexBinary stored
 	 */
+	@Override
 	public String getStringValue() {
 		return _value.toUpperCase();
 	}
@@ -94,6 +97,7 @@ public class XSHexBinary extends CtrType implements CmpEq {
 	 * @return New ResultSequence representing hexBinary value 
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -163,6 +167,7 @@ public class XSHexBinary extends CtrType implements CmpEq {
 	 *         
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
       String valToCompare = arg.getStringValue();
       
@@ -185,10 +190,12 @@ public class XSHexBinary extends CtrType implements CmpEq {
       
       return true;
 	}
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_HEXBINARY;
 	}
 	
+	@Override
 	public Object getNativeValue() {
 		return HexBin.decode(_value);
 	}

@@ -14,10 +14,10 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
 import org.eclipse.wst.xml.xpath2.api.Item;
-import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
-import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
+import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
+import org.eclipse.wst.xml.xpath2.api.typesystem.TypeModel;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
  * Class for Element testing.
  */
 public class ElementTest extends AttrElemTest {
-	private boolean _qmark = false;
+	private final boolean _qmark;
 
 	private AnyType anyType = null;
 
@@ -66,6 +66,7 @@ public class ElementTest extends AttrElemTest {
 	 */
 	public ElementTest(QName name, boolean wild, QName type) {
 		super(name, wild, type);
+		_qmark = false;
 	}
 
 	/**
@@ -79,6 +80,7 @@ public class ElementTest extends AttrElemTest {
 	 */
 	public ElementTest(QName name, boolean wild) {
 		super(name, wild);
+		_qmark = false;
 	}
 
 	/**
@@ -86,6 +88,7 @@ public class ElementTest extends AttrElemTest {
 	 */
 	public ElementTest() {
 		super();
+		_qmark = false;
 	}
 
 	/**
@@ -93,6 +96,7 @@ public class ElementTest extends AttrElemTest {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}
@@ -106,6 +110,7 @@ public class ElementTest extends AttrElemTest {
 		return _qmark;
 	}
 
+	@Override
 	public AnyType createTestType(ResultSequence rs, StaticContext sc) {
 
 		if (name() == null && !wild()) {
@@ -166,24 +171,28 @@ public class ElementTest extends AttrElemTest {
 		return anyType;
 	}
 
+	@Override
 	public boolean isWild() {
 		return wild();
 	}
 
+	@Override
 	public Class<? extends NodeType> getXDMClassType() {
 		return ElementType.class;
 	}
 	
 	private static class SingleItemNodeListImpl implements NodeList {
-		private Node node;
+		private final Node node;
 		public SingleItemNodeListImpl(Node node) {
 			this.node = node;
 		}
 
+		@Override
 		public Node item(int index) {
 			return node;
 		}
 
+		@Override
 		public int getLength() {
 			if (node != null) {
 				return 1;

@@ -48,6 +48,7 @@ public class XSNCName extends XSName {
 	 * 
 	 * @return "xs:NCName" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_NC_NAME;
 	}
@@ -57,6 +58,7 @@ public class XSNCName extends XSName {
 	 * 
 	 * @return "NCName" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "NCName";
 	}
@@ -70,6 +72,7 @@ public class XSNCName extends XSName {
 	 * @return New ResultSequence consisting of the NCName supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -79,7 +82,7 @@ public class XSNCName extends XSName {
 		
 		if (!isConstraintSatisfied(strValue)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 
 		return new XSNCName(strValue);
@@ -100,6 +103,7 @@ public class XSNCName extends XSName {
 		
 	} // isConstraintSatisfied
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_NCNAME;
 	}

@@ -21,6 +21,7 @@ public class CntxItemExpr extends PrimaryExpr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

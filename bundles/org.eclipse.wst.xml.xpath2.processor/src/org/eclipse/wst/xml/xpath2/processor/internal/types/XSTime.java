@@ -82,6 +82,7 @@ Cloneable {
 	 * @return New XSTime representing the copy of the time and timezone
 	 * @throws CloneNotSupportedException
 	 */
+	@Override
 	public Object clone() throws CloneNotSupportedException {
 		Calendar c = (Calendar) calendar().clone();
 		XSDuration t = tz();
@@ -97,6 +98,7 @@ Cloneable {
 	 * 
 	 * @return "time" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "time";
 	}
@@ -128,6 +130,7 @@ Cloneable {
 	 * @return New ResultSequence consisting of the supplied time
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -220,6 +223,7 @@ Cloneable {
 	 * 
 	 * @return String representation of the time stored
 	 */
+	@Override
 	public String getStringValue() {
 		String ret = "";
 		
@@ -274,6 +278,7 @@ Cloneable {
 	 * 
 	 * @return "xs:time" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_TIME;
 	}
@@ -283,6 +288,7 @@ Cloneable {
 	 * 
 	 * @return Calendar representation of the time stored
 	 */
+	@Override
 	public Calendar calendar() {
 		return _calendar;
 	}
@@ -315,6 +321,7 @@ Cloneable {
 	 * @return True if both XSTime's represent the same time. False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		XSTime val = (XSTime) NumericType.get_single_type(arg, XSTime.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
@@ -331,6 +338,7 @@ Cloneable {
 	 * @return True if the supplied time represnts a point in time after that
 	 *         represented by the time stored. False otherwise
 	 */
+	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSTime val = (XSTime) NumericType.get_single_type(arg, XSTime.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
@@ -347,6 +355,7 @@ Cloneable {
 	 *         represented by the time stored. False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		XSTime val = (XSTime) NumericType.get_single_type(arg, XSTime.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
@@ -367,9 +376,10 @@ Cloneable {
 	 *            XDTDayTimeDuration)
 	 * @return A ResultSequence representing the result of the subtraction
 	 */
+	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = arg.first();
 		
@@ -425,6 +435,7 @@ Cloneable {
 	 * @return A XSTime representing the result of this addition.
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
 		XSDuration val = (XSDuration) NumericType
 				.get_single_type(arg, XSDayTimeDuration.class);
@@ -443,10 +454,12 @@ Cloneable {
 		}
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_TIME;
 	}
 
+	@Override
 	public Object getNativeValue() {
 		return _calendar.clone();
 	}	

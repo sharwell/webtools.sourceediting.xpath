@@ -52,6 +52,7 @@ public class FsPlus extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
@@ -102,9 +103,7 @@ public class FsPlus extends Function {
 			Collection<ResultSequence> result2 = new ArrayList<ResultSequence>();
 
 			// promote arguments
-			for (Iterator<ResultSequence> i = result.iterator(); i.hasNext();) {
-				ResultSequence rs = i.next();
-
+			for (ResultSequence rs : result) {
 				Item arg = rs.item(0);
 				
 				if (has_double && (arg instanceof XSFloat)) {
@@ -162,15 +161,15 @@ public class FsPlus extends Function {
 
 		// make sure we got only one arg
 		if (args.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		ResultSequence arg = args.iterator().next();
 
 		// make sure we got only one numeric atom
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		Item at = arg.first();
 		if (!(at instanceof NumericType))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		// no-op
 		return arg;
@@ -197,7 +196,7 @@ public class FsPlus extends Function {
 
 		// sanity check args + convert em
 		if (args.size() != 2)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Collection<ResultSequence> cargs = convert_args(args);
 

@@ -28,6 +28,7 @@ public class AncestorOrSelfAxis extends ReverseAxis {
 	 * @param node
 	 *            is the type of node.
 	 */
+	@Override
 	public void iterate(NodeType node, ResultBuffer copyInto, Node limitNode) {
 		// get ancestors
 		AncestorAxis aa = new AncestorAxis();
@@ -37,6 +38,7 @@ public class AncestorOrSelfAxis extends ReverseAxis {
 		copyInto.add(node);
 	}
 
+	@Override
 	public String name() {
 		return "ancestor-or-self";
 	}

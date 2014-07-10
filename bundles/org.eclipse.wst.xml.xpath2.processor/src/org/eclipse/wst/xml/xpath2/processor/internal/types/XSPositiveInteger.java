@@ -49,6 +49,7 @@ public class XSPositiveInteger extends XSNonNegativeInteger {
 	 * 
 	 * @return "xs:positiveInteger" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_POSITIVE_INTEGER;
 	}
@@ -58,6 +59,7 @@ public class XSPositiveInteger extends XSNonNegativeInteger {
 	 * 
 	 * @return "positiveInteger" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "positiveInteger";
 	}
@@ -71,6 +73,7 @@ public class XSPositiveInteger extends XSNonNegativeInteger {
 	 * @return New ResultSequence consisting of the 'positiveInteger' supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -99,6 +102,7 @@ public class XSPositiveInteger extends XSNonNegativeInteger {
 
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_POSITIVEINTEGER;
 	}

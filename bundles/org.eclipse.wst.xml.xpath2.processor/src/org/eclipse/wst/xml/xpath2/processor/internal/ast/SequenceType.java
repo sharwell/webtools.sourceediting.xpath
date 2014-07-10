@@ -38,8 +38,8 @@ public class SequenceType extends XPathNode {
 	 */
 	public static final int PLUS = 4;
 
-	private int _occ;
-	private ItemType _it;
+	private final int _occ;
+	private final ItemType _it;
 
 	/**
 	 * Constructor for SequenceType.
@@ -59,6 +59,7 @@ public class SequenceType extends XPathNode {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

@@ -48,6 +48,7 @@ public class XSNMTOKEN extends XSToken {
 	 * 
 	 * @return "xs:NMTOKEN" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_NMTOKEN;
 	}
@@ -57,6 +58,7 @@ public class XSNMTOKEN extends XSToken {
 	 * 
 	 * @return "NMTOKEN" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "NMTOKEN";
 	}
@@ -70,6 +72,7 @@ public class XSNMTOKEN extends XSToken {
 	 * @return New ResultSequence consisting of the NMTOKEN supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
@@ -79,12 +82,13 @@ public class XSNMTOKEN extends XSToken {
 		
 		if (!XMLChar.isValidNmtoken(strValue)) {
 			// invalid input
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		}
 
 		return new XSNMTOKEN(strValue);
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_NMTOKEN;
 	}

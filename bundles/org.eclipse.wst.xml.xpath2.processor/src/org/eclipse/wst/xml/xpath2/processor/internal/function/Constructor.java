@@ -26,7 +26,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
  * Constructor class for functions.
  */
 public class Constructor extends Function {
-	private CtrType _atomic_type;
+	private final CtrType _atomic_type;
 
 	/**
 	 * Constructor for Constructor class.
@@ -52,6 +52,7 @@ public class Constructor extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
@@ -59,7 +60,7 @@ public class Constructor extends Function {
 		ResultSequence arg = args.iterator().next();
 
 		if (arg.size() > 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		// do it
 		return _atomic_type.constructor(arg);

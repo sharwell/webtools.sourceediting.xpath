@@ -20,28 +20,34 @@ public class XSNotation extends CtrType {
 
 	private static final String XS_NOTATION = "xs:NOTATION";
 
+	@Override
 	public String string_type() {
 		return XS_NOTATION;
 	}
 
+	@Override
 	public String getStringValue() {
 		return null;
 	}
 
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		throw new DynamicError("XPST0080", "Can't Cast to NOTATION", null);
 	}
 
+	@Override
 	public String type_name() {
 		return "NOTATION";
 	}
 
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_NOTATION;
 	}
 
+	@Override
 	public Object getNativeValue() {
 		return getStringValue();
 	}

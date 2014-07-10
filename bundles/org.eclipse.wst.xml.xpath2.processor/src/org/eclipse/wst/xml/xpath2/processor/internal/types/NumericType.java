@@ -91,7 +91,7 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 
 	protected Item get_single_arg(ResultSequence rs) throws DynamicError {
 		if (rs.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		return rs.first();
 	}
@@ -111,7 +111,7 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 			throws DynamicError {
 
 		if (!type.isInstance(at))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		return at;
 	}
@@ -136,12 +136,12 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 	public static AnyType get_single_type(ResultSequence rs, Class<? extends AnyType> type)
 			throws DynamicError {
 		if (rs.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		Item at = rs.first();
 
 		if (!type.isInstance(at))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		return (AnyType) at;
 	}

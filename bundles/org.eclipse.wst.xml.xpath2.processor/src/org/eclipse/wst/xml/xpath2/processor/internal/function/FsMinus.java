@@ -42,6 +42,7 @@ public class FsMinus extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
@@ -85,15 +86,15 @@ public class FsMinus extends Function {
 			throws DynamicError {
 		// make sure we got only one arg
 		if (args.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		ResultSequence arg = args.iterator().next();
 
 		// make sure we got only one numeric atom
 		if (arg.size() != 1)
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		Item at = arg.first();
 		if (!(at instanceof NumericType))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		NumericType nt = (NumericType) at;
 

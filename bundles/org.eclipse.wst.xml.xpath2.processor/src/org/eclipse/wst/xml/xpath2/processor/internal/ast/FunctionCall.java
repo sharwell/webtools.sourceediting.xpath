@@ -12,17 +12,18 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.ast;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.Function;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.*;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
  * Class for Function Call support.
  */
 public class FunctionCall extends PrimaryExpr {
-	private QName _name;
-	private Collection<Expr> _args;
+	private final QName _name;
+	private final Collection<Expr> _args;
 	private Function _function;
 
 	/**
@@ -51,6 +52,7 @@ public class FunctionCall extends PrimaryExpr {
 	 * 
 	 * @return Result of Visitor operation.
 	 */
+	@Override
 	public <T> T accept(XPathVisitor<T> v) {
 		return v.visit(this);
 	}

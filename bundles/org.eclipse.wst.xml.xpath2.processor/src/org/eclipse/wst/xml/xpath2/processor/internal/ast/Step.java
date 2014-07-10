@@ -16,7 +16,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.ast;
  */
 public abstract class Step extends XPathNode {
 
-	private NodeTest _node_test;
+	private final NodeTest _node_test;
 
 	/**
 	 * Constructor for Step.

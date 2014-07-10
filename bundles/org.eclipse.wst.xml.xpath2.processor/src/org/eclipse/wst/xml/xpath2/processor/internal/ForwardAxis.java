@@ -27,6 +27,7 @@ public abstract class ForwardAxis implements Axis {
 	 */
 	// "default" type is element....
 	// remember to override for attribute and namespce axis tho!
+	@Override
 	public NodeType principal_node_kind() {
 		return new ElementType();
 	}

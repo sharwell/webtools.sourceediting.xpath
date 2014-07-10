@@ -59,6 +59,7 @@ public class FnAdjustDateToTimeZone extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
+	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
 		return adjustDate(args, ec.getDynamicContext());
 	}

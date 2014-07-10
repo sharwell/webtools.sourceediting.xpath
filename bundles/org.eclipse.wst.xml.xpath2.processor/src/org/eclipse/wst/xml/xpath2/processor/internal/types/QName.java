@@ -131,14 +131,15 @@ public class QName extends CtrType implements CmpEq {
 	 * @return New ResultSequence consisting of the QName supplied
 	 * @throws DynamicError
 	 */
+	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
 		if (arg.empty())
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
 
 		if (!(aat instanceof XSString) && !(aat instanceof QName))
-			DynamicError.throw_type_error();
+			throw DynamicError.throw_type_error();
 		
 		String sarg = aat.getStringValue();
 
@@ -154,6 +155,7 @@ public class QName extends CtrType implements CmpEq {
 	 * 
 	 * @return String representation of the node name
 	 */
+	@Override
 	public String getStringValue() {
 		return string();
 	}
@@ -163,6 +165,7 @@ public class QName extends CtrType implements CmpEq {
 	 * 
 	 * @return "xs:QName" which is the datatype's full pathname
 	 */
+	@Override
 	public String string_type() {
 		return XS_Q_NAME;
 	}
@@ -172,6 +175,7 @@ public class QName extends CtrType implements CmpEq {
 	 * 
 	 * @return "QName" which is the datatype's name
 	 */
+	@Override
 	public String type_name() {
 		return "QName";
 	}
@@ -267,6 +271,7 @@ public class QName extends CtrType implements CmpEq {
 	 *            The object to compare with. Should be of type QName
 	 * @return True if the two represent the same node. False otherwise
 	 */
+	@Override
 	public boolean equals(Object obj) {
 
 		// make sure we are comparing a qname
@@ -309,6 +314,7 @@ public class QName extends CtrType implements CmpEq {
 	 * 
 	 * @return The hashcode for the full pathname
 	 */
+	@Override
 	public int hashCode() {
 		int namespace = 3;
 		int local = 4;
@@ -338,15 +344,18 @@ public class QName extends CtrType implements CmpEq {
 	 * @return True if the two represent the same node. False otherwise
 	 * @throws DynamicError
 	 */
+	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		QName val = (QName) NumericType.get_single_type(arg, QName.class);
 		return equals(val);
 	}
 	
+	@Override
 	public String toString() {
 		return string();
 	}
 	
+	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_QNAME;
 	}

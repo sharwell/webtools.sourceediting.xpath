@@ -186,20 +186,6 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 		return n;
 	}
 
-	/**
-	 * Evaluate arguments.
-	 * 
-	 * @param args
-	 *            argument expressions.
-	 * @throws DynamicError
-	 *             Dynamic error.
-	 * @return Result of evaluation.
-	 */
-	public org.eclipse.wst.xml.xpath2.processor.ResultSequence evaluate(Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args)
-			throws DynamicError {
-		throw new UnsupportedOperationException();
-	}
-
 	// convert argument according to section 3.1.5 of xpath 2.0 spec
 	/**
 	 * Convert the input argument according to section 3.1.5 of specification.
@@ -357,11 +343,7 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 		return BuiltinTypeLibrary.XS_UNTYPED;
 	}
 
-	public org.eclipse.wst.xml.xpath2.api.ResultSequence evaluate(Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args,
-			EvaluationContext evaluationContext) {
-		
-		org.eclipse.wst.xml.xpath2.processor.ResultSequence result = evaluate(args);
-		return result;
-	}
+	public abstract org.eclipse.wst.xml.xpath2.api.ResultSequence evaluate(Collection<org.eclipse.wst.xml.xpath2.api.ResultSequence> args,
+			EvaluationContext evaluationContext);
 
 }

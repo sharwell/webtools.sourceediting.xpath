@@ -17,6 +17,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.Collection;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -41,10 +42,10 @@ public class FsNe extends Function {
 	 *             Dynamic error.
 	 * @return Result of evaluation.
 	 */
-	public ResultSequence evaluate(Collection<ResultSequence> args, DynamicContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_ne_value(args, ec);
+		return fs_ne_value(args, ec.getDynamicContext());
 	}
 
 	/**

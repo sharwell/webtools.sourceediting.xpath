@@ -26,6 +26,7 @@ import org.eclipse.wst.xml.xpath2.processor.DefaultEvaluator;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.Expr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathNode;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.XPathVisitor;
+import org.w3c.dom.Node;
 
 /**
  * Support for XPath.
@@ -128,7 +129,7 @@ public class XPath extends XPathNode implements XPath2Expression {
 	/**
 	 * @since 2.0
 	 */
-	public ResultSequence evaluate(DynamicContext dynamicContext, Object[] contextItems) {
+	public ResultSequence evaluate(DynamicContext dynamicContext, Node[] contextItems) {
 		if (_staticContext == null) throw new IllegalStateException("Static Context not set yet!");
 		return new DefaultEvaluator(_staticContext, dynamicContext, contextItems).evaluate2(this);
 	}

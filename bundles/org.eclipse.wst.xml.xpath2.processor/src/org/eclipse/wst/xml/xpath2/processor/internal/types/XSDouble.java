@@ -266,19 +266,19 @@ public class XSDouble extends NumericType {
 		}
 		Item cat = crs.first();
 
-		/* Note: as implemented, this comparison returns false for (NaN eq NaN),
-		 * but true for (+0.0 eq -0.0). As such, it is not precisely the same
-		 * operation as either Double.equals or the == operator for double values.
-		 */
 		XSDouble d = (XSDouble) cat;
-		if (d.nan() && nan()) {
-			return false;
-		}
-		
-		Double thatvalue = d._value;
-		Double thisvalue = _value;
-		
-		return thisvalue.equals(thatvalue);
+		/* [XQuery 1.0 and XPath 2.0 Functions and Operators (Second Edition)]
+		 * op:numeric-equal($arg1 as numeric, $arg2 as numeric) as xs:boolean
+		 *
+		 *   Summary: Returns true if and only if the value of $arg1 is equal to
+		 *   the value of $arg2. For xs:float and xs:double values, positive
+		 *   zero and negative zero compare equal. INF equals INF and -INF
+		 *   equals -INF. NaN does not equal itself.
+		 */
+
+		// Operator == for double values in Java performs as described above.
+		// Note that this is NOT equivalent to the Double.equals method.
+		return _value == d._value;
 	}
 
 	/**

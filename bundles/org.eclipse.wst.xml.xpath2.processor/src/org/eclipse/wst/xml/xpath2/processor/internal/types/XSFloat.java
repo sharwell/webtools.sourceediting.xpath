@@ -228,19 +228,19 @@ public class XSFloat extends NumericType {
 		if (!(carg instanceof XSFloat))
 			throw DynamicError.throw_type_error();
 
-		/* Note: as implemented, this comparison returns false for (NaN eq NaN),
-		 * but true for (+0.0f eq -0.0f). As such, it is not precisely the same
-		 * operation as either Float.equals or the == operator for float values.
-		 */
 		XSFloat f = (XSFloat) carg;
-		if (nan() && f.nan()) {
-			return false;
-		}
-		
-		Float thatvalue = f._value;
-		Float thisvalue = _value;
+		/* [XQuery 1.0 and XPath 2.0 Functions and Operators (Second Edition)]
+		 * op:numeric-equal($arg1 as numeric, $arg2 as numeric) as xs:boolean
+		 *
+		 *   Summary: Returns true if and only if the value of $arg1 is equal to
+		 *   the value of $arg2. For xs:float and xs:double values, positive
+		 *   zero and negative zero compare equal. INF equals INF and -INF
+		 *   equals -INF. NaN does not equal itself.
+		 */
 
-		return thisvalue.equals(thatvalue);
+		// Operator == for float values in Java performs as described above.
+		// Note that this is NOT equivalent to the Float.equals method.
+		return _value == f._value;
 	}
 
 	/**

@@ -47,4 +47,9 @@ public class LiteralUtils {
 		}
 		return sb.toString();
 	}
+
+	public static String quote(String unquotedString) {
+		String quotedContent = unquotedString.replace("\"", "\"\"");
+		return "\"" + quotedContent + "\"";
+	}
 }

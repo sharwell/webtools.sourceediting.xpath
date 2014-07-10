@@ -58,7 +58,18 @@ public class FsMinus extends Function {
 	 * @return Result of the operation.
 	 */
 	public static ResultSequence fs_minus(Collection<ResultSequence> args) throws DynamicError {
-		return FsPlus.do_math_op(args, MathMinus.class, "minus");
+		FsPlus.MathOp<MathMinus> op = new FsPlus.MathOp<MathMinus>() {
+			@Override
+			public Class<? extends MathMinus> getType() {
+				return MathMinus.class;
+			}
+
+			@Override
+			public ResultSequence execute(MathMinus obj, ResultSequence arg) throws DynamicError {
+				return obj.minus(arg);
+			}
+		};
+		return FsPlus.do_math_op(args, op);
 	}
 
 	/**

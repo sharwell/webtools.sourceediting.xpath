@@ -20,6 +20,7 @@ import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
@@ -61,7 +62,18 @@ public class FsGt extends Function {
 	 */
 	public static ResultSequence fs_gt_value(Collection<ResultSequence> args, DynamicContext dynamic)
 			throws DynamicError {
-		return FsEq.do_cmp_value_op(args, CmpGt.class, "gt", dynamic);
+		FsEq.CmpValueOp<CmpGt> op = new FsEq.CmpValueOp<CmpGt>() {
+			@Override
+			public Class<? extends CmpGt> getType() {
+				return CmpGt.class;
+			}
+
+			@Override
+			public boolean execute(CmpGt obj, AnyType arg, DynamicContext dynamicContext) throws DynamicError {
+				return obj.gt(arg, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_value_op(args, op, dynamic);
 	}
 
 	/**
@@ -77,7 +89,13 @@ public class FsGt extends Function {
 	 */
 	public static ResultSequence fs_gt_general(Collection<ResultSequence> args, DynamicContext dc)
 			throws DynamicError {
-		return FsEq.do_cmp_general_op(args, FsGt.class, "fs_gt_value", dc);
+		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
+			@Override
+			public ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
+				return fs_gt_value(args, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_general_op(args, op, dc);
 	}
 
 }

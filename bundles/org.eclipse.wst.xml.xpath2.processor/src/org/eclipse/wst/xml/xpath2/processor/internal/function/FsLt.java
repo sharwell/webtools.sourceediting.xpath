@@ -20,6 +20,7 @@ import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 /**
@@ -58,7 +59,18 @@ public class FsLt extends Function {
 	 * @return Result of the operation.
 	 */
 	public static ResultSequence fs_lt_value(Collection<ResultSequence> args, DynamicContext dc) {
-		return FsEq.do_cmp_value_op(args, CmpLt.class, "lt", dc);
+		FsEq.CmpValueOp<CmpLt> op = new FsEq.CmpValueOp<CmpLt>() {
+			@Override
+			public Class<? extends CmpLt> getType() {
+				return CmpLt.class;
+			}
+
+			@Override
+			public boolean execute(CmpLt obj, AnyType arg, DynamicContext dynamicContext) throws DynamicError {
+				return obj.lt(arg, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_value_op(args, op, dc);
 	}
 
 	/**
@@ -74,6 +86,12 @@ public class FsLt extends Function {
 	 */
 	public static ResultSequence fs_lt_general(Collection<ResultSequence> args, DynamicContext dc)
 			throws DynamicError {
-		return FsEq.do_cmp_general_op(args, FsLt.class, "fs_lt_value", dc);
+		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
+			@Override
+			public ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
+				return fs_lt_value(args, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_general_op(args, op, dc);
 	}
 }

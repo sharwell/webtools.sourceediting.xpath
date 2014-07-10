@@ -88,6 +88,12 @@ public class FsLe extends Function {
 	 * @return Result of the operation.
 	 */
 	public static ResultSequence fs_le_general(Collection<ResultSequence> args, DynamicContext dc) {
-		return FsEq.do_cmp_general_op(args, FsLe.class, "fs_le_value", dc);
+		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
+			@Override
+			public ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
+				return fs_le_value(args, dynamicContext);
+			}
+		};
+		return FsEq.do_cmp_general_op(args, op, dc);
 	}
 }

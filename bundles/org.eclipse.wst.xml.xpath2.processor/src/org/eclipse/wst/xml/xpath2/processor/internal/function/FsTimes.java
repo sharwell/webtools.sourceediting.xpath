@@ -55,6 +55,17 @@ public class FsTimes extends Function {
 	 * @return Result of the operation.
 	 */
 	public static ResultSequence fs_times(Collection<ResultSequence> args) throws DynamicError {
-		return FsPlus.do_math_op(args, MathTimes.class, "times");
+		FsPlus.MathOp<MathTimes> op = new FsPlus.MathOp<MathTimes>() {
+			@Override
+			public Class<? extends MathTimes> getType() {
+				return MathTimes.class;
+			}
+
+			@Override
+			public ResultSequence execute(MathTimes obj, ResultSequence arg) throws DynamicError {
+				return obj.times(arg);
+			}
+		};
+		return FsPlus.do_math_op(args, op);
 	}
 }

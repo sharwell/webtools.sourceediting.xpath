@@ -46,9 +46,8 @@ MathMinus, MathPlus,
 
 Cloneable {
 	private static final String XS_DATE_TIME = "xs:dateTime";
-	private Calendar _calendar;
-	private boolean _timezoned;
-	private XSDuration _tz;
+	private final Calendar _calendar;
+	private final boolean _timezoned;
 
 	/**
 	 * Initiates a new representation of a supplied date and time
@@ -58,15 +57,18 @@ Cloneable {
 	 * @param tz
 	 *            The timezone of the date to be stored.
 	 */
+	@Deprecated
 	public XSDateTime(Calendar cal, XSDuration tz) {
+		assert TimeZone.getTimeZone("UTC").equals(cal.getTimeZone());
+
 		_calendar = cal;
-
 		_tz = tz;
+		_timezoned = _tz != null;
+	}
 
-		if (tz == null)
-			_timezoned = false;
-		else
-			_timezoned = true;
+	public XSDateTime(Calendar cal, boolean hasTimeZone) {
+		_calendar = cal;
+		_timezoned = hasTimeZone;
 	}
 
 	/**
@@ -89,7 +91,7 @@ Cloneable {
 	 * Inititates a new representation of the current date and time
 	 */
 	public XSDateTime() {
-		this(new GregorianCalendar(), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
 	}
 
 	/**
@@ -296,7 +298,7 @@ Cloneable {
 		ret[2] = Double.parseDouble(token);
 
 		if (ret[0] == 24.0) {
-			ret[0] = 00.0;
+			//ret[0] = 00.0;
 		}
 
 		// XXX sanity check args...
@@ -314,7 +316,7 @@ Cloneable {
 	 * @param str
 	 *            The String representation of the date (and optional timezone)
 	 * @return Integer array of size 3. Element 1 represents whether the
-	 *         timezone is ahead or behind GMT, element 2 is the hour
+	 *         timezone is ahead or behind UTC, element 2 is the hour
 	 *         displacement and element 3 is the minute displacement.
 	 */
 	public static int[] parse_timezone(String str) {
@@ -459,8 +461,12 @@ Cloneable {
 		if (t == null)
 			return null;
 
-		if (!set_item(cal, Calendar.HOUR_OF_DAY, (int) t[0]))
+		if ((int) t[0] == 24) {
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.add(Calendar.HOUR_OF_DAY, 24);
+		} else if (!set_item(cal, Calendar.HOUR_OF_DAY, (int) t[0])) {
 			return null;
+		}
 
 		if (!set_item(cal, Calendar.MINUTE, (int) t[1]))
 			return null;
@@ -521,6 +527,10 @@ Cloneable {
 
 		if (dt == null)
 			throw DynamicError.cant_cast(null);
+
+		if (dt.calendar() != null && dt.calendar().getTimeZone() != null) {
+			assert !dt.calendar().getTimeZone().getID().startsWith("GMT");
+		}
 
 		return dt;
 	}
@@ -620,6 +630,7 @@ Cloneable {
 		return s;
 	}
 
+	@Override
 	public boolean timezoned() {
 		return _timezoned;
 	}
@@ -701,14 +712,15 @@ Cloneable {
 		}
 
 		if (timezoned()) {
-			int hrs = _tz.hours();
-			int min = _tz.minutes();
-			double secs = _tz.seconds();
+			XSDuration tz = tz();
+			int hrs = tz.hours();
+			int min = tz.minutes();
+			double secs = tz.seconds();
 			if (hrs == 0 && min == 0 && secs == 0) {
 				ret += "Z";
 			} else {
 				String tZoneStr = "";
-				if (_tz.negative()) {
+				if (tz.negative()) {
 					tZoneStr += "-";
 				} else {
 					tZoneStr += "+";
@@ -762,7 +774,7 @@ Cloneable {
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 
-		return thiscal.equals(thatcal);
+		return thiscal.compareTo(thatcal) == 0;
 	}
 
 	/**
@@ -891,7 +903,7 @@ Cloneable {
 			Duration dtduration = _datatypeFactory
 					.newDuration(val.getStringValue());
 			xmlCal.add(dtduration.negate());
-			res = new XSDateTime(xmlCal.toGregorianCalendar(), res.tz());
+			res = new XSDateTime(xmlCal.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), res.tz());
 
 			return res;
 		} catch (CloneNotSupportedException ex) {
@@ -954,7 +966,7 @@ Cloneable {
 				Duration dtduration = _datatypeFactory
 						.newDuration(val.getStringValue());
 				xmlCal.add(dtduration);
-				res = new XSDateTime(xmlCal.toGregorianCalendar(), res.tz());
+				res = new XSDateTime(xmlCal.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), res.tz());
 				return res;
 			} else {
 				throw DynamicError.throw_type_error();

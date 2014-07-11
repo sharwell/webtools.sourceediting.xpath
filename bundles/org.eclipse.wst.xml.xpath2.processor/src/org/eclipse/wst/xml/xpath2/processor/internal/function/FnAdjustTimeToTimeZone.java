@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.TimeZone;
 
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -87,14 +89,14 @@ public class FnAdjustTimeToTimeZone extends Function {
 		if (arg1.empty()) {
 			return ResultBuffer.EMPTY;
 		}
-		ResultSequence arg2 = ResultBuffer.EMPTY;
+		ResultSequence arg2 = null;
 		if (argiter.hasNext()) {
 			arg2 = argiter.next();
 		}
 		XSTime time = (XSTime) arg1.first();
-		XSDayTimeDuration timezone = null;
+		XSDayTimeDuration timezone;
 		
-		if (arg2.empty()) {
+		if (arg2 != null && arg2.empty()) {
 			if (time.timezoned()) {
 				XSTime localized = new XSTime(time.calendar(), null);
 				return localized;
@@ -103,16 +105,22 @@ public class FnAdjustTimeToTimeZone extends Function {
 			}
 		}
 
-
-		XMLGregorianCalendar xmlCalendar = null;
-		
+		XMLGregorianCalendar xmlCalendar;
 		if (time.tz() != null) {
 			xmlCalendar = _datatypeFactory.newXMLGregorianCalendar((GregorianCalendar)time.normalizeCalendar(time.calendar(), time.tz()));
+			xmlCalendar.setYear(DatatypeConstants.FIELD_UNDEFINED);
+			xmlCalendar.setMonth(DatatypeConstants.FIELD_UNDEFINED);
+			xmlCalendar.setDay(DatatypeConstants.FIELD_UNDEFINED);
 		} else {
 			xmlCalendar = _datatypeFactory.newXMLGregorianCalendarTime(time.hour(), time.minute(), (int)time.second(), 0);
 		}
 
-		timezone = (XSDayTimeDuration) arg2.first();
+		if (arg2 == null) {
+			timezone = new XSDayTimeDuration(dc.getTimezoneOffset());
+		} else {
+			timezone = (XSDayTimeDuration) arg2.first();
+		}
+
 		if (timezone.lt(minDuration, dc) || timezone.gt(maxDuration, dc)) {
 			throw DynamicError.invalidTimezone();
 		}
@@ -124,7 +132,7 @@ public class FnAdjustTimeToTimeZone extends Function {
 		Duration duration = _datatypeFactory.newDuration(timezone.getStringValue());
 		xmlCalendar.add(duration);
 
-		return new XSTime(xmlCalendar.toGregorianCalendar(), timezone);
+		return new XSTime(xmlCalendar.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), timezone);
 	}
 
 	/**

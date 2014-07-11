@@ -156,13 +156,6 @@ public class XSDecimal extends NumericType {
 	}
 
 	protected boolean isLexicalValue(String value) {
-		if (value.equalsIgnoreCase("inf")) {
-			return false;
-		}
-		
-		if (value.equalsIgnoreCase("-inf")) {
-			return false;
-		}
 		return true;
 	}
 	

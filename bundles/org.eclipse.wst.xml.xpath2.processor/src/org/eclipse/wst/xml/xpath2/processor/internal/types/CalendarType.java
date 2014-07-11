@@ -15,6 +15,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 // common base for anything that uses a calendar... basically stuff doing with
 // time... hopefully in the future this may be factored out here
@@ -23,24 +24,29 @@ import java.util.GregorianCalendar;
  */
 public abstract class CalendarType extends CtrType {
 
+	/**
+	 * Gets the {@link Calendar} representing a date or time.
+	 */
 	public abstract Calendar calendar();
-	
-	public Calendar normalizeCalendar(Calendar cal, XSDuration timezone) {
-		Calendar adjusted = (Calendar) cal.clone();
-		
-		if (timezone != null) {
-			int hours = timezone.hours();
-			int minutes = timezone.minutes();
-			if (!timezone.negative()) {
-				hours *= -1;
-				minutes *= -1;
-			}
-			adjusted.add(Calendar.HOUR_OF_DAY, hours);
-			adjusted.add(Calendar.MINUTE, minutes);
-		}
-		
-		return adjusted;
-		
+
+	/**
+	 * Determines if the time zone included with the {@link Calendar} should be
+	 * treated as unspecified.
+	 *
+	 * @return {@code true} if the time zone included in the {@link Calendar}
+	 * should be used as the time zone for this object; otherwise, {@code false}
+	 * if the time zone should be treated as unspecified.
+	 */
+	public abstract boolean timezoned();
+
+	/**
+	 * Gets a {@link Calendar} representing the {@link CalendarType} in the UTC
+	 * time zone.
+	 */
+	public static Calendar normalizeCalendar(Calendar cal) {
+		Calendar normalized = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		normalized.setTimeInMillis(cal.getTimeInMillis());
+		return normalized;
 	}
 
 	protected boolean isGDataType(AnyType aat) {

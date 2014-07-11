@@ -17,6 +17,8 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -32,9 +34,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSGYearMonth extends CalendarType implements CmpEq {
 
 	private static final String XS_G_YEAR_MONTH = "xs:gYearMonth";
-	private Calendar _calendar;
-	private boolean _timezoned;
-	private XSDuration _tz;
+	private final Calendar _calendar;
+	private final boolean _timezoned;
 
 
 	/**
@@ -45,6 +46,7 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 	 * @param tz
 	 *            Timezone associated with this year and month
 	 */
+	@Deprecated
 	public XSGYearMonth(Calendar cal, XSDuration tz) {
 		_calendar = cal;
 		if (tz != null) {
@@ -57,7 +59,7 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 	 * Initialises a representation of the current year and month
 	 */
 	public XSGYearMonth() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("GMT")), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
 	}
 
 	/**
@@ -80,28 +82,28 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 	 * @return The XSGYearMonth representation of the supplied date
 	 */
 	public static XSGYearMonth parse_gYearMonth(String str) {
+		/* The lexical representation for gYearMonth is the reduced (right
+		 * truncated) lexical representation for dateTime: CCYY-MM. No left
+		 * truncation is allowed. An optional following time zone qualifier is
+		 * allowed. To accommodate year values outside the range from 0001 to
+		 * 9999, additional digits can be added to the left of this
+		 * representation and a preceding "-" sign is allowed.
+		 */
+		str = str.trim();
 
-		String yearMonth = "";
-		String dayTime = "-01T00:00:00.0";
-
-		int index = str.indexOf('+', 1);
-		if (index == -1) {
-			index = str.indexOf('-', 1);
-			if (index == -1)
-				return null;
-			index = str.indexOf('-', index + 1);
-		}
-		if (index == -1)
-			index = str.indexOf('Z', 1);
-		if (index != -1) {
-			yearMonth = str.substring(0, index);
-			yearMonth += dayTime;
-			yearMonth += str.substring(index, str.length());
-		} else {
-			yearMonth = str + dayTime;
+		Pattern pattern = Pattern.compile("^-?[0-9]{4,}-[0-9]{2}");
+		Matcher matcher = pattern.matcher(str);
+		if (!matcher.find()) {
+			return null;
 		}
 
-		XSDateTime dt = XSDateTime.parseDateTime(yearMonth);
+		String yearmonth = matcher.group();
+		String timezone = str.substring(yearmonth.length());
+
+		String daytime = "-01T00:00:00.0";
+		String datetime = yearmonth + daytime + timezone;
+
+		XSDateTime dt = XSDateTime.parseDateTime(datetime);
 		if (dt == null)
 			return null;
 
@@ -226,6 +228,7 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 	 * 
 	 * @return True if a timezone was specified. False otherwise
 	 */
+	@Override
 	public boolean timezoned() {
 		return _timezoned;
 	}
@@ -308,7 +311,7 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 
-		return thiscal.equals(thatcal);
+		return thiscal.compareTo(thatcal) == 0;
 	}
 	
 	/**

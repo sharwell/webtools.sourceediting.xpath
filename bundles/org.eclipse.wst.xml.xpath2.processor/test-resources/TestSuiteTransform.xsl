@@ -10,8 +10,13 @@
       <xsl:text><![CDATA[package org.eclipse.wst.xml.xpath2.test;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.IOException;]]></xsl:text><xsl:if test="x:test-case[@is-XPath2='true']/x:expected-error[text() != '*']"><xsl:text><![CDATA[
+import java.util.ArrayList;
+import java.util.List;]]></xsl:text></xsl:if><xsl:text><![CDATA[
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,9 +40,12 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;]]></xsl:text></xsl:if>
 import org.eclipse.wst.xml.xpath2.processor.Engine;]]></xsl:text><xsl:if test="x:test-case[@is-XPath2='true']/x:expected-error"><xsl:text><![CDATA[
 import org.eclipse.wst.xml.xpath2.processor.StaticError;]]></xsl:text></xsl:if><xsl:text><![CDATA[
 import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;]]></xsl:text><xsl:if test="x:test-case[@is-XPath2='true']/x:input-URI"><xsl:text><![CDATA[
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;]]></xsl:text></xsl:if><xsl:text><![CDATA[
 import org.eclipse.wst.xml.xpath2.processor.util.DynamicContextBuilder;
-import org.eclipse.wst.xml.xpath2.processor.util.StaticContextBuilder;
+import org.eclipse.wst.xml.xpath2.processor.util.StaticContextBuilder;]]></xsl:text><xsl:if test="x:test-case[@is-XPath2='true']/x:expected-error[text() != '*']"><xsl:text><![CDATA[
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;]]></xsl:text></xsl:if><xsl:text><![CDATA[
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -67,14 +75,24 @@ public class ]]></xsl:text>
     Transformer transformer = TransformerFactory.newInstance().newTransformer();
     transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 
-<xsl:apply-templates select="x:input-file" mode="read"/>
+<xsl:apply-templates select="x:input-file | x:input-URI" mode="read"/>
+
+    Duration defaultTimezoneOffset;
+    try {
+      defaultTimezoneOffset = DatatypeFactory.newInstance().newDuration(false, 0, 0, 0, 5, 0, 0);
+    } catch (DatatypeConfigurationException e) {
+      throw new RuntimeException(e);
+    }
 
     Engine engine = new Engine();
     StaticContext staticContext = new StaticContextBuilder()
-          .withNamespace("fn", "http://www.w3.org/2005/xpath-functions")
-          .withNamespace("xs", "http://www.w3.org/2001/XMLSchema")<xsl:for-each select="x:input-file">
+    .withNamespace("fn", "http://www.w3.org/2005/xpath-functions")
+    .withNamespace("xs", "http://www.w3.org/2001/XMLSchema")<xsl:for-each select="x:input-URI">
+          .withVariable(new QName("<xsl:value-of select="@variable"/>"), new XSAnyURI().getItemType())</xsl:for-each><xsl:for-each select="x:input-file">
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new ElementType().getItemType())</xsl:for-each>;
-    DynamicContext dynamicContext = new DynamicContextBuilder(staticContext)<xsl:for-each select="x:input-file">
+    DynamicContext dynamicContext = new DynamicContextBuilder(staticContext)
+          .withTimezoneOffset(defaultTimezoneOffset)<xsl:for-each select="x:input-URI">
+          .withVariable(new QName("<xsl:value-of select="@variable"/>"), new XSAnyURI(<xsl:value-of select="replace(@variable,'-','_')"/>))</xsl:for-each><xsl:for-each select="x:input-file">
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new DocType(<xsl:value-of select="replace(@variable,'-','_')"/>, staticContext.getTypeModel()))</xsl:for-each>;
 
 <xsl:apply-templates select="x:query">
@@ -84,6 +102,11 @@ public class ]]></xsl:text>
   <xsl:with-param name="expectedError" select="x:expected-error/text()"/>
 </xsl:apply-templates>
   }
+  </xsl:template>
+
+  <xsl:template match="x:input-URI" mode="read">
+    <xsl:variable name="variableName" select="replace(@variable,'-','_')"/>
+    String <xsl:value-of select="$variableName"/> = "<xsl:value-of select="text()"/>.xml";
   </xsl:template>
 
   <xsl:template match="x:input-file" mode="read">
@@ -99,19 +122,43 @@ public class ]]></xsl:text>
     <xsl:param name="expectedError"/>
     String query = readFile("Queries/XQuery/" + filePath, "<xsl:value-of select="@name"/>", ".xq");
     query = query.replaceAll("declare\\s+variable\\s+\\$[a-zA-Z_-][a-zA-Z0-9_-]*\\s+external\\s*;", "");<xsl:if test="$outputName">
-    String expected = readFile("ExpectedTestResults/" + filePath, "<xsl:value-of select="$outputName"/>", "");</xsl:if>
+    String expected = readFile("ExpectedTestResults/" + filePath, "<xsl:value-of select="$outputName[1]"/>", "");</xsl:if>
 
 <xsl:choose>
-<xsl:when test="$expectedError">
+<xsl:when test="$expectedError"><xsl:if test="$expectedError!='*'">
+	List&lt;Matcher&lt;? super String&gt;&gt; matchers = new ArrayList&lt;Matcher&lt;? super String&gt;&gt;();<xsl:for-each select="$expectedError">
+	matchers.add(CoreMatchers.is(CoreMatchers.equalTo("<xsl:value-of select="."/>")));</xsl:for-each></xsl:if>
 	try {
 		XPath2Expression expression = engine.parseExpression(query, staticContext);
 		Node[] contextItems = new Node[] { };
-		ResultSequence result = expression.evaluate(dynamicContext, contextItems);
-		Assert.fail("Expected an exception: <xsl:value-of select="$expectedError"/>");
+		ResultSequence result = expression.evaluate(dynamicContext, contextItems);<xsl:choose><xsl:when test="$outputName">
+
+		String actual = serializeResultSequence(result);
+<xsl:choose>
+	<xsl:when test="$compare='XML'">
+		XMLAssert.assertXMLEqual(expected, actual);
+	</xsl:when>
+	<xsl:when test="$compare='Fragment'">
+		XMLAssert.assertXMLEqual("&lt;dummy&gt;" + expected + "&lt;/dummy&gt;", "&lt;dummy&gt;" + actual + "&lt;/dummy&gt;");
+	</xsl:when>
+	<xsl:when test="$compare='Text'">
+		Assert.assertEquals(expected, actual);
+	</xsl:when>
+	<xsl:when test="$compare='Inspect'">
+		XMLAssert.assertXMLEqual("&lt;dummy&gt;" + expected + "&lt;/dummy&gt;", "&lt;dummy&gt;" + actual + "&lt;/dummy&gt;");
+	</xsl:when>
+	<xsl:when test="$compare='Ignore'">
+	</xsl:when>
+	<xsl:otherwise>
+		Assert.fail("Shouldn't reach this point.");
+	</xsl:otherwise>
+</xsl:choose>
+		</xsl:when><xsl:otherwise>
+		Assert.fail("Expected an exception: <xsl:for-each select="$expectedError"><xsl:value-of select="."/><xsl:if test="position() != last()"> or </xsl:if></xsl:for-each>");</xsl:otherwise></xsl:choose>
 	} catch (DynamicError ex) {<xsl:if test="$expectedError!='*'">
-		Assert.assertEquals("<xsl:value-of select="$expectedError"/>", ex.code());</xsl:if>
+		Assert.assertThat(ex.code(), CoreMatchers.anyOf(matchers));</xsl:if>
 	} catch (StaticError ex) {<xsl:if test="$expectedError!='*'">
-		Assert.assertEquals("<xsl:value-of select="$expectedError"/>", ex.code());</xsl:if>
+		Assert.assertThat(ex.code(), CoreMatchers.anyOf(matchers));</xsl:if>
 	}
 </xsl:when>
 <xsl:otherwise>

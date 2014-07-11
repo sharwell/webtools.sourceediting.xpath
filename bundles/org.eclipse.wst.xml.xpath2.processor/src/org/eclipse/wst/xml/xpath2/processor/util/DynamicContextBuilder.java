@@ -91,7 +91,7 @@ public class DynamicContextBuilder implements DynamicContext {
 	@Override
 	public GregorianCalendar getCurrentDateTime() {
 		if (_currentDateTime == null) {
-			_currentDateTime = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+			_currentDateTime = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
 		}
 		return _currentDateTime;
 	}

@@ -12,10 +12,12 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -86,23 +88,29 @@ public class FnAdjustDateToTimeZone extends Function {
 		if (arg1.empty()) {
 			return ResultBuffer.EMPTY;
 		}
-		ResultSequence arg2 = ResultBuffer.EMPTY;
+
+		ResultSequence arg2 = null;
 		if (argiter.hasNext()) {
 			arg2 = argiter.next();
 		}
 		
 		XSDate date = (XSDate) arg1.item(0);
-		XSDayTimeDuration timezone = null;
+		XSDayTimeDuration timezone;
 
-		if (arg2.empty()) {
+		if (arg2 != null && arg2.empty()) {
 			if (date.timezoned()) {
 				XSDate localized = new XSDate(date.calendar(), null);
 				return localized;
 			}
 			return arg1;
 		}
-		
-		timezone = (XSDayTimeDuration) arg2.item(0);
+
+		if (arg2 == null) {
+			timezone = new XSDayTimeDuration(dc.getTimezoneOffset());
+		} else {
+			timezone = (XSDayTimeDuration) arg2.item(0);
+		}
+
 		if (timezone.lt(minDuration, dc) || timezone.gt(maxDuration, dc)) {
 			throw DynamicError.invalidTimezone();
 		}
@@ -115,8 +123,9 @@ public class FnAdjustDateToTimeZone extends Function {
 		
 		Duration duration = _datatypeFactory.newDuration(timezone.getStringValue());
 		xmlCalendar.add(duration);
+		xmlCalendar.setTime(0, 0, 0, BigDecimal.ZERO);
 		
-		return new XSDate(xmlCalendar.toGregorianCalendar(), timezone);
+		return new XSDate(xmlCalendar.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), timezone);
 	}
 
 	/**

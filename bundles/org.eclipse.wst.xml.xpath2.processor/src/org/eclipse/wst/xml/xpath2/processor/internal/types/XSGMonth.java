@@ -32,9 +32,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSGMonth extends CalendarType implements CmpEq {
 
 	private static final String XS_G_MONTH = "xs:gMonth";
-	private Calendar _calendar;
-	private boolean _timezoned;
-	private XSDuration _tz;
+	private final Calendar _calendar;
+	private final boolean _timezoned;
 
 	/**
 	 * Initializes a representation of the supplied month
@@ -44,6 +43,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * @param tz
 	 *            Timezone associated with this month
 	 */
+	@Deprecated
 	public XSGMonth(Calendar cal, XSDuration tz) {
 		_calendar = cal;
 		if (tz != null) {
@@ -56,7 +56,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * Initialises a representation of the current month
 	 */
 	public XSGMonth() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("GMT")), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
 	}
 
 	/**
@@ -78,54 +78,26 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * @return The XSGMonth representation of the supplied date
 	 */
 	public static XSGMonth parse_gMonth(String str) {
+		/* The lexical representation for gMonth is the left and right truncated
+		 * lexical representation for date: --MM. An optional following time
+		 * zone qualifier is allowed as for date. No preceding sign is allowed.
+		 * No other formats are allowed. See also ISO 8601 Date and Time
+		 * Formats.
+		 */
 
+		str = str.trim();
+		if (str.length() < 4 || !str.startsWith("--")) {
+			return null;
+		}
+
+		String month = str.substring(2, 4);
+		String timezone = str.substring(4);
 		String startdate = "1972-";
 		String starttime = "T00:00:00";
 
-		int index = str.lastIndexOf('+', str.length());
-		
-		if (index == -1)
-			index = str.lastIndexOf('-');
-		if (index == -1)
-			index = str.lastIndexOf('Z', str.length());
-		if (index != -1) {
-			int zIndex = str.lastIndexOf('Z', str.length());
-			if (zIndex == -1) {
-				if (index > 3) {
-					zIndex = index;
-				}
-			}
-			
-			String[] split = str.split("-");
-			startdate += split[2].replaceAll("Z", "") + "-01";
-			
-			if (str.indexOf('T') != -1) { 
-				if (split.length > 3) {
-					String[] timesplit = split[3].split(":");
-					if (timesplit.length < 3) {
-						starttime = "T";
-						StringBuilder buf = new StringBuilder(starttime);
-						for (String timesplit1 : timesplit) {
-							buf.append(timesplit1).append(":");
-						}
-						buf.append("00");
-						starttime = buf.toString();
-					} else {
-						starttime += timesplit[0] + ":" + timesplit[1] + ":" + timesplit[2];
-					}
-				}
-			}
-			startdate = startdate.trim();
-			startdate += starttime;
+		String datetime = startdate + month + "-01" + starttime + timezone;
 
-			if (zIndex != -1) {
-				startdate += str.substring(zIndex);
-			}
-		} else {
-			startdate += str + starttime;
-		}
-
-		XSDateTime dt = XSDateTime.parseDateTime(startdate);
+		XSDateTime dt = XSDateTime.parseDateTime(datetime);
 		if (dt == null)
 			return null;
 
@@ -227,6 +199,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * 
 	 * @return True if a timezone was specified. False otherwise
 	 */
+	@Override
 	public boolean timezoned() {
 		return _timezoned;
 	}
@@ -306,7 +279,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 
-		return thiscal.equals(thatcal);
+		return thiscal.compareTo(thatcal) == 0;
 	}
 	
 	/**

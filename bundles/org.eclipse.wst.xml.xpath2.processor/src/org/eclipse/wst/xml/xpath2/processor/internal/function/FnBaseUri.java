@@ -96,8 +96,11 @@ public class FnBaseUri extends Function {
 		else if (cargs.size() == 1) {
 	      // support for arity 1
 		  ResultSequence arg1 = cargs.iterator().next();
-		  Item att = arg1.empty() ? null : arg1.first();
+		  if (arg1.empty()) {
+			  return ResultBuffer.EMPTY;
+		  }
 
+		  Item att = arg1.first();
 		  rs = getBaseUri(att);
 		}
 		else {
@@ -118,17 +121,19 @@ public class FnBaseUri extends Function {
 		  // if base-uri property in DOM is null, we set the base-uri as string "null". This
 		  // avoids null pointer exception while comparing xs:anyURI values.
 		
-		  if (att instanceof NodeType) {
-			  NodeType node = (NodeType) att;
-			  Node domNode = node.node_value();
-			  String buri = domNode.getBaseURI();
-			  if (buri != null) {
-				  baseUri = new XSAnyURI(buri);
-			  } else {
-				  baseUri = new XSAnyURI("null");
-			  }
-		  }
-		  	        
+		if (!(att instanceof NodeType)) {
+			throw DynamicError.throw_type_error();
+		}
+
+		NodeType node = (NodeType) att;
+		Node domNode = node.node_value();
+		String buri = domNode.getBaseURI();
+		if (buri != null) {
+			baseUri = new XSAnyURI(buri);
+		} else {
+			baseUri = new XSAnyURI("null");
+		}
+
 	      if (baseUri != null) {
 	        rs.add(baseUri);	
 	      }

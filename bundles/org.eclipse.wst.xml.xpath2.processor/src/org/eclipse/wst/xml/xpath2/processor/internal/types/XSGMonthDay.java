@@ -34,9 +34,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSGMonthDay extends CalendarType implements CmpEq {
 
 	private static final String XS_G_MONTH_DAY = "xs:gMonthDay";
-	private Calendar _calendar;
-	private boolean _timezoned;
-	private XSDuration _tz;
+	private final Calendar _calendar;
+	private final boolean _timezoned;
 	
 
 	/**
@@ -47,6 +46,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 * @param tz
 	 *            Timezone associated with this month and day
 	 */
+	@Deprecated
 	public XSGMonthDay(Calendar cal, XSDuration tz) {
 		_calendar = cal;
 		if (tz != null) {
@@ -59,7 +59,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 * Initialises a representation of the current month and day
 	 */
 	public XSGMonthDay() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("GMT")), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
 	}
 
 	/**
@@ -243,6 +243,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 * 
 	 * @return True if a timezone was specified. False otherwise
 	 */
+	@Override
 	public boolean timezoned() {
 		return _timezoned;
 	}
@@ -325,7 +326,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 		XSGMonthDay val = (XSGMonthDay) NumericType.get_single_type(arg,
 				XSGMonthDay.class);
 
-		return calendar().equals(val.calendar());
+		return calendar().compareTo(val.calendar()) == 0;
 	}
 	
 	/**

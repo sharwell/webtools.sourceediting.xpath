@@ -115,7 +115,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	@Override
 	public GregorianCalendar current_date_time() {
 		if (_current_date_time == null) {
-			_current_date_time = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+			_current_date_time = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
 		}
 		return _current_date_time;
 	}

@@ -17,6 +17,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -33,6 +34,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnAdjustTimeToTimeZone;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathMinus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathPlus;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
@@ -73,7 +75,7 @@ Cloneable {
 	 * Initialises to the current time
 	 */
 	public XSTime() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("GMT")), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
 	}
 
 	/**
@@ -324,10 +326,10 @@ Cloneable {
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		XSTime val = (XSTime) NumericType.get_single_type(arg, XSTime.class);
-		Calendar thiscal = normalizeCalendar(calendar(), tz());
-		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
+		XSTime thisTime = (XSTime)FnAdjustTimeToTimeZone.adjustTime(Arrays.<ResultSequence>asList(this, new XSDayTimeDuration(0, 0, 0, 0, false)), dynamicContext).item(0);
+		XSTime otherTime = (XSTime)FnAdjustTimeToTimeZone.adjustTime(Arrays.<ResultSequence>asList(val, new XSDayTimeDuration(0, 0, 0, 0, false)), dynamicContext).item(0);
 
-		return thiscal.equals(thatcal);
+		return thisTime.calendar().compareTo(otherTime.calendar()) == 0;
 	}
 
 	/**
@@ -410,7 +412,7 @@ Cloneable {
 		XMLGregorianCalendar xmlCal = _datatypeFactory.newXMLGregorianCalendar((GregorianCalendar)calendar());
 		Duration dtduration = _datatypeFactory.newDuration(val.getStringValue());
 		xmlCal.add(dtduration.negate());
-		res = new XSTime(xmlCal.toGregorianCalendar(), res.tz());
+		res = new XSTime(xmlCal.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), res.tz());
 
 		return res;
 	}

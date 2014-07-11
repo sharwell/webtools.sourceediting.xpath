@@ -18,6 +18,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -34,6 +35,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnAdjustDateToTimeZone;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathMinus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathPlus;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
@@ -47,9 +49,8 @@ MathMinus, MathPlus,
 
 Cloneable {
 	private static final String XS_DATE = "xs:date";
-	private Calendar _calendar;
-	private boolean _timezoned;
-	private XSDuration _tz;
+	private final Calendar _calendar;
+	private final boolean _timezoned;
 
 	/**
 	 * Initializes a new representation of a supplied date
@@ -59,21 +60,25 @@ Cloneable {
 	 * @param tz
 	 *            The time zone of the date to be stored.
 	 */
+	@Deprecated
 	public XSDate(Calendar cal, XSDuration tz) {
-		_calendar = cal;
+		assert TimeZone.getTimeZone("UTC").equals(cal.getTimeZone());
 
+		_calendar = cal;
 		_tz = tz;
-		if (tz == null)
-			_timezoned = false;
-		else
-			_timezoned = true;
+		_timezoned = _tz != null;
+	}
+
+	public XSDate(Calendar cal, boolean hasTimeZone) {
+		_calendar = cal;
+		_timezoned = hasTimeZone;
 	}
 
 	/**
 	 * Initializes a new representation of the current date
 	 */
 	public XSDate() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("GMT")), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
 	}
 
 	/**
@@ -248,6 +253,7 @@ Cloneable {
 	 * @return True if there is a timezone associated with this date. False
 	 *         otherwise.
 	 */
+	@Override
 	public boolean timezoned() {
 		return _timezoned;
 	}
@@ -277,14 +283,15 @@ Cloneable {
 				2);
 
 		if (timezoned()) {
-			int hrs = _tz.hours();
-			int min = _tz.minutes();
-			double secs = _tz.seconds();
+			XSDuration tz = tz();
+			int hrs = tz.hours();
+			int min = tz.minutes();
+			double secs = tz.seconds();
 			if (hrs == 0 && min == 0 && secs == 0) {
 				ret += "Z";
 			} else {
 				String tZoneStr = "";
-				if (_tz.negative()) {
+				if (tz.negative()) {
 					tZoneStr += "-";
 				} else {
 					tZoneStr += "+";
@@ -326,7 +333,13 @@ Cloneable {
 	 * @return the timezone associated with the date stored
 	 */
 	public XSDuration tz() {
-		return _tz;
+		if (!hasTimeZone()) {
+			return null;
+		}
+
+		TimeZone timeZone = calendar().getTimeZone();
+		double rawOffset = timeZone.getRawOffset() / 1000;
+		return new XSDuration(rawOffset);
 	}
 
 	// comparisons
@@ -343,10 +356,10 @@ Cloneable {
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
 		XSDate val = (XSDate) NumericType.get_single_type((Item)arg, XSDate.class);
-		Calendar thiscal = normalizeCalendar(calendar(), tz());
-		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
+		XSDate thisDate = (XSDate)FnAdjustDateToTimeZone.adjustDate(Arrays.<ResultSequence>asList(this, new XSDayTimeDuration(0, 0, 0, 0, false)), dynamicContext).item(0);
+		XSDate otherDate = (XSDate)FnAdjustDateToTimeZone.adjustDate(Arrays.<ResultSequence>asList(val, new XSDayTimeDuration(0, 0, 0, 0, false)), dynamicContext).item(0);
 
-		return thiscal.equals(thatcal);
+		return thisDate.calendar().compareTo(otherDate.calendar()) == 0;
 	}
 
 	/**
@@ -450,7 +463,7 @@ Cloneable {
 			Duration dtduration = _datatypeFactory
 					.newDuration(val.getStringValue());
 			xmlCal.add(dtduration.negate());
-			res = new XSDate(xmlCal.toGregorianCalendar(), res.tz());
+			res = new XSDate(xmlCal.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), res.tz());
 			return res;
 		} catch (CloneNotSupportedException ex) {
 		}

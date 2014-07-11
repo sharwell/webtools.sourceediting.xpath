@@ -33,9 +33,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSGDay extends CalendarType implements CmpEq {
 
 	private static final String XS_G_DAY = "xs:gDay";
-	private Calendar _calendar;
-	private boolean _timezoned;
-	private XSDuration _tz;
+	private final Calendar _calendar;
+	private final boolean _timezoned;
 
 	/**
 	 * Initializes a representation of the supplied day
@@ -45,6 +44,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * @param tz
 	 *            Timezone associated with this day
 	 */
+	@Deprecated
 	public XSGDay(Calendar cal, XSDuration tz) {
 		_calendar = cal;
 		if (tz != null) {
@@ -57,7 +57,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * Initialises a representation of the current day
 	 */
 	public XSGDay() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("GMT")), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
 	}
 
 	/**
@@ -79,57 +79,24 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * @return The XSGDay representation of the supplied date
 	 */
 	public static XSGDay parse_gDay(String str) {
-		
+		/* The lexical representation for gDay is the left truncated lexical
+		 * representation for date: ---DD . An optional following time zone
+		 * qualifier is allowed as for date. No preceding sign is allowed. No
+		 * other formats are allowed. See also ISO 8601 Date and Time Formats.
+		 */
+		str = str.trim();
+		if (str.length() < 5 || !str.startsWith("---")) {
+			return null;
+		}
+
+		String day = str.substring(3, 5);
+		String timezone = str.substring(5);
 		String startdate = "1972-12-";
 		String starttime = "T00:00:00";
 
-		int index = str.lastIndexOf('+', str.length());
-		
-		if (index == -1)
-			index = str.lastIndexOf('-');
-		if (index == -1)
-			index = str.lastIndexOf('Z', str.length());
-		if (index != -1) {
-			int zIndex = str.lastIndexOf('Z', str.length());
-			if (zIndex == -1) {
-				if (index > 4)
-					zIndex = index;
-			}
-			if (zIndex == -1) {
-				zIndex = str.lastIndexOf('+');
-			}
-			
-			String[] split = str.split("-");
-			startdate += split[3].replaceAll("Z", "");
-			
-			if (str.indexOf('T') != -1) {
-				if (split.length > 4) {
-					String[] timesplit = split[4].split(":");
-					if (timesplit.length < 3) {
-						starttime = "T";
-						StringBuilder buf = new StringBuilder(starttime);
-						for (String timesplit1 : timesplit) {
-							buf.append(timesplit1).append(":");
-						}
-						buf.append("00");
-						starttime = buf.toString();
-					} else {
-						starttime += timesplit[0] + ":" + timesplit[1] + ":" + timesplit[2];
-					}
-				}
-			}
-			startdate = startdate.trim();
-			startdate += starttime;
+		String datetime = startdate + day + starttime + timezone;
 
-			if (zIndex != -1) {
-				
-				startdate += str.substring(zIndex);
-			}
-		} else {
-			startdate += str + starttime;
-		}
-
-		XSDateTime dt = XSDateTime.parseDateTime(startdate);
+		XSDateTime dt = XSDateTime.parseDateTime(datetime);
 		if (dt == null)
 			return null;
 
@@ -231,6 +198,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * 
 	 * @return True if a timezone was specified. False otherwise
 	 */
+	@Override
 	public boolean timezoned() {
 		return _timezoned;
 	}
@@ -249,15 +217,16 @@ public class XSGDay extends CalendarType implements CmpEq {
 		ret += XSDateTime.pad_int(adjustFortimezone.get(Calendar.DAY_OF_MONTH), 2);
 		
 		if (timezoned()) {
-			int hrs = tz().hours();
-			int min = tz().minutes();
-			double secs = tz().seconds();
+			XSDuration tz = tz();
+			int hrs = tz.hours();
+			int min = tz.minutes();
+			double secs = tz.seconds();
 			if (hrs == 0 && min == 0 && secs == 0) {
 			  ret += "Z";
 			}
 			else {
 			  String tZoneStr = "";
-			  if (tz().negative()) {
+			  if (tz.negative()) {
 				tZoneStr += "-";  
 			  }
 			  else {
@@ -310,7 +279,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 		
-		return thiscal.equals(thatcal);
+		return thiscal.compareTo(thatcal) == 0;
 	}
 	
 	/**

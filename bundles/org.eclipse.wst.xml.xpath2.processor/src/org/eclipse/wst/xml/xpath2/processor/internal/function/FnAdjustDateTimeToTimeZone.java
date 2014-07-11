@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -95,17 +96,19 @@ public class FnAdjustDateTimeToTimeZone extends Function {
 		
 		if (arg2 != null && arg2.empty()) {
 			if (dateTime.timezoned()) {
-				CalendarType localized = new XSDateTime(dateTime.calendar(), null);
+				CalendarType localized = new XSDateTime(dateTime.calendar(), false);
 				return localized;
 			} else {
 				return arg1;
 			}
-		} else if (arg2 == null) {
-			CalendarType localized = new XSDateTime(dateTime.normalizeCalendar(dateTime.calendar(), dateTime.tz()), null);
-			return localized;
 		}
 
-		timezone = (XSDayTimeDuration) arg2.item(0);
+		if (arg2 == null) {
+			timezone = new XSDayTimeDuration(dynamicContext.getTimezoneOffset());
+		} else {
+			timezone = (XSDayTimeDuration) arg2.item(0);
+		}
+
 		if (timezone.lt(minDuration, dynamicContext) || timezone.gt(maxDuration, dynamicContext)) {
 			throw DynamicError.invalidTimezone();
 		}
@@ -119,7 +122,7 @@ public class FnAdjustDateTimeToTimeZone extends Function {
 		Duration duration = _datatypeFactory.newDuration(timezone.getStringValue());
 		xmlCalendar.add(duration);
 
-		return new XSDateTime(xmlCalendar.toGregorianCalendar(), timezone);
+		return new XSDateTime(xmlCalendar.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), timezone);
 	}
 
 	/**

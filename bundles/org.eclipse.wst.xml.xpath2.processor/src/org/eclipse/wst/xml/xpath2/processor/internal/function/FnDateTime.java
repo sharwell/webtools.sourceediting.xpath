@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -88,30 +89,33 @@ public class FnDateTime extends Function {
 		XSDate param1 = (XSDate)arg1.first();
 		XSTime param2 = (XSTime)arg2.first();
 		
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.set(param1.year(), param1.month() - 1, param1.day());
 		cal.set(Calendar.HOUR_OF_DAY, param2.hour());
 		cal.set(Calendar.MINUTE, param2.minute());
 		cal.set(Calendar.SECOND, (new Double(Math.floor(param2.second())).intValue()));
 		cal.set(Calendar.MILLISECOND, 0);
-		
 		XSDuration dateTimeZone = param1.tz();
 		XSDuration timeTimeZone = param2.tz();
 		if ((dateTimeZone != null && timeTimeZone != null) &&
 		     !dateTimeZone.getStringValue().equals(timeTimeZone.getStringValue())) {
 		  // it's an error, if the arguments have different timezones
 		  throw DynamicError.inconsistentTimeZone();
-		} else if (dateTimeZone == null && timeTimeZone != null) {
-           return new XSDateTime(cal, timeTimeZone);
-		} else if (dateTimeZone != null && timeTimeZone == null) {
-		   return new XSDateTime(cal, dateTimeZone);
-		}
-		else if ((dateTimeZone != null && timeTimeZone != null) &&
-			     dateTimeZone.getStringValue().equals(timeTimeZone.getStringValue())) {
-		   return new XSDateTime(cal, dateTimeZone);
+		} else if (timeTimeZone != null) {
+			// convert calendar to UTC before creating the XSDateTime
+			int multiplier = timeTimeZone.negative() ? 1 : -1;
+			cal.add(Calendar.HOUR_OF_DAY, multiplier * (timeTimeZone.days() * 24 + timeTimeZone.hours()));
+			cal.add(Calendar.MINUTE, multiplier * timeTimeZone.minutes());
+			return new XSDateTime(cal, timeTimeZone);
+		} else if (dateTimeZone != null) {
+			// convert calendar to UTC before creating the XSDateTime
+			int multiplier = dateTimeZone.negative() ? 1 : -1;
+			cal.add(Calendar.HOUR_OF_DAY, multiplier * (dateTimeZone.days() * 24 + dateTimeZone.hours()));
+			cal.add(Calendar.MINUTE, multiplier * dateTimeZone.minutes());
+			return new XSDateTime(cal, dateTimeZone);
 		}
 		else {
-		   return new XSDateTime(cal, null);
+			return new XSDateTime(cal, null);
 		}
 	}
 

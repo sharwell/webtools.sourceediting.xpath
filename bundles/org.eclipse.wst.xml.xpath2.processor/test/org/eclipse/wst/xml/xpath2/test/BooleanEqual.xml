@@ -362,7 +362,7 @@
       <input-file role="principal-data" variable="input-context">emptydoc</input-file>
       <output-file role="principal" compare="Text">K-BooleanEqual-5.txt</output-file>
    </test-case>
-   <test-case is-XPath2="true" Creator="Frans Englich" name="K2-BooleanEqual-1" FilePath="Operators/CompExpr/ValComp/BooleanOp/BooleanEqual/" scenario="runtime-error">
+   <test-case is-XPath2="false" Creator="Frans Englich" name="K2-BooleanEqual-1" FilePath="Operators/CompExpr/ValComp/BooleanOp/BooleanEqual/" scenario="runtime-error">
       <description>Cannot compare xs:boolean and xs:untypedAtomic.</description>
       <query name="K2-BooleanEqual-1" date="2007-11-26+01:00"/>
       <input-file role="principal-data" variable="input-context">emptydoc</input-file>

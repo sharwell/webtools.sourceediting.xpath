@@ -27,10 +27,12 @@ import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSYearMonthDuration;
 
 /**
  * Class for Plus function.
@@ -75,6 +77,7 @@ public class FsPlus extends Function {
 		// Keep track of numeric types for promotion
 		boolean has_float = false;
 		boolean has_double = false;
+		boolean has_duration = false;
 		
 		// atomize arguments
 		for (Iterator<ResultSequence> i = args.iterator(); i.hasNext();) {
@@ -94,21 +97,22 @@ public class FsPlus extends Function {
 
 			if (arg instanceof XSDouble) has_double = true;
 			if (arg instanceof XSFloat) has_float = true;
+			if (arg instanceof XSDayTimeDuration || arg instanceof XSYearMonthDuration) has_duration = true;
 			result.add(ResultBuffer.wrap(arg));
 		}
 
 		if (has_double) has_float = false;
 		
-		if (has_double || has_float) {
+		if (has_double || has_float || has_duration) {
 			Collection<ResultSequence> result2 = new ArrayList<ResultSequence>();
 
 			// promote arguments
 			for (ResultSequence rs : result) {
 				Item arg = rs.item(0);
 				
-				if (has_double && (arg instanceof XSFloat)) {
+				if ((has_double || has_duration) && (arg instanceof XSFloat)) {
 					arg = new XSDouble(((XSFloat)arg).float_value());
-				} else if (has_double && (arg instanceof XSDecimal)) {
+				} else if ((has_double || has_duration) && (arg instanceof XSDecimal)) {
 					arg = new XSDouble(((XSDecimal)arg).getValue().doubleValue());
 				} else if (has_float && (arg instanceof XSDecimal)) {
 					arg = new XSFloat(((XSDecimal)arg).getValue().floatValue());

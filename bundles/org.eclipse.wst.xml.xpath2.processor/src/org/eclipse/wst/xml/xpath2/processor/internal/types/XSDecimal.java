@@ -22,7 +22,10 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
@@ -38,6 +41,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSDecimal extends NumericType {
 
 	private static final String XS_DECIMAL = "xs:decimal";
+
 	private BigDecimal _value;
 	private final XPathDecimalFormat format = new XPathDecimalFormat("0.####################");
 
@@ -126,15 +130,14 @@ public class XSDecimal extends NumericType {
 			return ResultBuffer.EMPTY;
 
 		Item aat = arg.first();
-		
-		if (aat instanceof XSDuration || aat instanceof CalendarType ||
-			aat instanceof XSBase64Binary || aat instanceof XSHexBinary ||
-			aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSFloat
+			|| aat instanceof XSDouble
+			|| aat instanceof XSDecimal
+			|| aat instanceof XSBoolean))
+		{
 			throw DynamicError.invalidType();
-		}
-		
-		if (aat.getStringValue().contains("-INF")) {
-			throw DynamicError.cant_cast(null);
 		}
 		
 		if (!isLexicalValue(aat.getStringValue())) {
@@ -184,7 +187,16 @@ public class XSDecimal extends NumericType {
 				return new XSDecimal(new BigDecimal("0"));
 			}
 		}
-		return new XSDecimal(aat.getStringValue());
+
+		if (aat instanceof XSFloat && (((XSFloat)aat).nan() || ((XSFloat)aat).infinite())) {
+			throw DynamicError.invalidLexicalValue(null);
+		}
+
+		if (aat instanceof XSDouble && (((XSDouble)aat).nan() || ((XSDouble)aat).infinite())) {
+			throw DynamicError.invalidLexicalValue(null);
+		}
+
+		return new XSDecimal(aat.getStringValue().trim());
 	}
 	
 	/**
@@ -488,18 +500,18 @@ public class XSDecimal extends NumericType {
 	 */
 	@Override
 	public NumericType round() {
-		BigDecimal round = _value.setScale(0, BigDecimal.ROUND_UP);
-		return new XSDecimal(round);
-	}
+		if (_value.scale() <= 0) {
+			return this;
+		}
 
-	/**
-	 * Returns the closest integer of the number stored.
-	 * 
-	 * @return A XSDecimal representing the closest long of the number stored.
-	 */
-	@Override
-	public NumericType round_half_to_even() {
-		return round_half_to_even(0);
+		BigDecimal round;
+		if (_value.compareTo(BigDecimal.ZERO) < 0) {
+			round = _value.setScale(0, RoundingMode.HALF_DOWN);
+		} else {
+			round = _value.setScale(0, RoundingMode.HALF_UP);
+		}
+
+		return new XSDecimal(round);
 	}
 
 	/**

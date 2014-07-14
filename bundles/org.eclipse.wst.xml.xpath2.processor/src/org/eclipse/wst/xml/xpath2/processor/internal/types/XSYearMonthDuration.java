@@ -55,7 +55,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 *            through time. False otherwise
 	 */
 	public XSYearMonthDuration(int year, int month, boolean negative) {
-		super(year, month, 0, 0, 0, 0, negative);
+		super(year, month, 0, 0, 0, BigDecimal.ZERO, negative);
 	}
 
 	/**
@@ -84,85 +84,23 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @return New XSYearMonthDuration representing the duration of time
 	 *         supplied
 	 */
-	public static XSDuration parseYMDuration(String str) {
-		boolean negative = false;
-		int year = 0;
-		int month = 0;
-
-		int state = 0; // 0 beginning
-		// 1 year
-		// 2 month
-		// 3 done
-		// 4 expecting P
-		// 5 expecting Y or M
-		// 6 expecting M or end
-		// 7 expecting end
-
-		String digits = "";
-		for (int i = 0; i < str.length(); i++) {
-			char x = str.charAt(i);
-
-			switch (state) {
-			// beginning
-			case 0:
-				if (x == '-') {
-					negative = true;
-					state = 4;
-				} else if (x == 'P')
-					state = 5;
-				else
-					return null;
-				break;
-
-			case 4:
-				if (x == 'P')
-					state = 5;
-				else
-					return null;
-				break;
-
-			case 5:
-				if ('0' <= x && x <= '9')
-					digits += x;
-				else if (x == 'Y') {
-					if (digits.length() == 0)
-						return null;
-					year = Integer.parseInt(digits);
-					digits = "";
-					state = 6;
-				} else if (x == 'M') {
-					if (digits.length() == 0)
-						return null;
-					month = Integer.parseInt(digits);
-					state = 7;
-				} else
-					return null;
-				break;
-
-			case 6:
-				if ('0' <= x && x <= '9')
-					digits += x;
-				else if (x == 'M') {
-					if (digits.length() == 0)
-						return null;
-					month = Integer.parseInt(digits);
-					state = 7;
-
-				} else
-					return null;
-				break;
-
-			case 7:
-				return null;
-
-			default:
-				assert false;
-				return null;
-
-			}
+	public static XSYearMonthDuration parseYMDuration(String str) {
+		/* <xs:simpleType name='yearMonthDuration'>
+		 *   <xs:restriction base='xs:duration'>
+		 *     <xs:pattern value="[^DT]*"/>
+		 *   </xs:restriction>
+		 * </xs:simpleType>
+		 */
+		if (str.indexOf('D') >= 0 || str.indexOf('T') >= 0) {
+			return null;
 		}
 
-		return new XSYearMonthDuration(year, month, negative);
+		XSDuration duration = XSDuration.parseDTDuration(str);
+		if (duration == null) {
+			return null;
+		}
+
+		return new XSYearMonthDuration(duration.year(), duration.month(), duration.negative());
 	}
 
 	/**
@@ -191,9 +129,12 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 			return ResultBuffer.EMPTY;
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof CalendarType ||
-			aat instanceof XSBoolean || aat instanceof XSBase64Binary ||
-			aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSDuration
+			|| aat instanceof XSYearMonthDuration
+			|| aat instanceof XSDayTimeDuration))
+		{
 			throw DynamicError.invalidType();
 		}
 
@@ -269,20 +210,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	}
 
 	/**
-	 * Retrieves the duration of time stored as the number of months within it
-	 * 
-	 * @return Number of months making up this duration of time
-	 */
-	public int monthValue() {
-		int ret = year() * 12 + month();
-
-		if (negative())
-			ret *= -1;
-
-		return ret;
-	}
-
-	/**
 	 * Equality comparison between this and the supplied duration of time.
 	 * 
 	 * @param arg
@@ -294,7 +221,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg instanceof XSDayTimeDuration) {
 			XSDayTimeDuration dayTimeDuration = (XSDayTimeDuration)arg;
-			return (monthValue() == 0 && dayTimeDuration.value() == 0.0);
+			return (monthValue() == 0 && dayTimeDuration.value().compareTo(BigDecimal.ZERO) == 0);
 		} else if (arg instanceof XSYearMonthDuration) {
 			XSYearMonthDuration yearMonthDuration = (XSYearMonthDuration)arg;
 			return monthValue() == yearMonthDuration.monthValue();
@@ -347,6 +274,15 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 */
 	@Override
 	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		if (arg.size() == 1) {
+			Item first = arg.first();
+			if (first instanceof XSDate || first instanceof XSDateTime) {
+				// This is a special case for xs:date and xs:dateTime
+				// http://www.w3.org/TR/xquery-semantics/#sec_operators
+				return ((MathPlus)first).plus(this, evaluationContext);
+			}
+		}
+
 		XSYearMonthDuration val = NumericType.get_single_type(arg, XSYearMonthDuration.class);
 
 		int res = monthValue() + val.monthValue();
@@ -400,7 +336,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 		}
 		
 		if (val.infinite()) {
-			throw DynamicError.overflowDateTime();
+			throw DynamicError.overflowUnderflow();
 		}
 		
 		int res = (int) Math.round(monthValue() * val.double_value());
@@ -429,26 +365,34 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 			XSDouble dt = (XSDouble) at;
 
 			int ret = 0;
+			if (dt.zero()) {
+				throw DynamicError.overflowUnderflow();
+			} else if (dt.nan()) {
+				throw DynamicError.nan();
+			}
 
-			if (!dt.zero())
-				ret = (int) Math.round(monthValue() / dt.double_value());
-
+			ret = (int) Math.round(monthValue() / dt.double_value());
 			return new XSYearMonthDuration(ret);
 		} else if (at instanceof XSDecimal) {
 			XSDecimal dt = (XSDecimal) at;
 			
 			int ret = 0;
-			
-			if (!dt.zero())
-				ret = (int) Math.round(monthValue() / dt.getValue().doubleValue());
-			
+			if (dt.zero()) {
+				throw DynamicError.overflowUnderflow();
+			}
+
+			ret = (int) Math.round(monthValue() / dt.getValue().doubleValue());
 			return new XSYearMonthDuration(ret);	
 		} else if (at instanceof XSYearMonthDuration) {
 			XSYearMonthDuration md = (XSYearMonthDuration) at;
 
-			double res = (double) monthValue() / md.monthValue();
-
-			return new XSDecimal(new BigDecimal(res));
+			try {
+				BigDecimal result = new BigDecimal(monthValue()).divide(new BigDecimal(md.monthValue()));
+				return new XSDecimal(result);
+			} catch (ArithmeticException ex) {
+				double res = (double) monthValue() / md.monthValue();
+				return new XSDecimal(new BigDecimal(res));
+			}
 		} else {
 			throw DynamicError.throw_type_error();
 		}

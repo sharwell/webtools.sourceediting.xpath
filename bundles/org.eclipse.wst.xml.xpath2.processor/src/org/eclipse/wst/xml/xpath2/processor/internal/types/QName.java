@@ -98,6 +98,11 @@ public class QName extends CtrType implements CmpEq {
 	 * @return null
 	 */
 	public static QName parse_QName(String str) {
+		str = str.trim();
+		if (str.isEmpty()) {
+			return null;
+		}
+
 		int occurs = 0;
 		
 		char[] strChrArr = str.toCharArray();		
@@ -146,7 +151,8 @@ public class QName extends CtrType implements CmpEq {
 
 		QName qname = parse_QName(sarg);
 		if (qname == null)
-			return null;
+			throw DynamicError.cant_cast(null);
+
 		return qname;
 	}
 
@@ -349,11 +355,6 @@ public class QName extends CtrType implements CmpEq {
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		QName val = NumericType.get_single_type(arg, QName.class);
 		return equals(val);
-	}
-	
-	@Override
-	public String toString() {
-		return string();
 	}
 	
 	@Override

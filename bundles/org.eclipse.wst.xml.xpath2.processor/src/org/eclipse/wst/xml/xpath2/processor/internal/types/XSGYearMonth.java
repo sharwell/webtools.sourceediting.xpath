@@ -14,6 +14,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -68,7 +69,7 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 	 * Initializes a representation of the current year and month
 	 */
 	public XSGYearMonth() {
-		GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+		GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 		_year = XSGYear.getYear(calendar);
 		_month = calendar.get(Calendar.MONTH) - 1;
 		_timeZone = calendar.getTimeZone();
@@ -138,10 +139,12 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 			return ResultBuffer.EMPTY;
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration ||
-			aat instanceof XSTime || isGDataType(aat) ||
-			aat instanceof XSBoolean || aat instanceof XSBase64Binary ||
-			aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSDateTime
+			|| aat instanceof XSDate
+			|| aat instanceof XSGYearMonth))
+		{
 			throw DynamicError.invalidType();
 		}
 
@@ -259,8 +262,8 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 			
 			int hrs = tz().hours();
 			int min = tz().minutes();
-			double secs = tz().seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = tz().seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 			  ret += "Z";
 			}
 			else {
@@ -334,7 +337,7 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 			return null;
 		}
 
-		double rawOffset = _timeZone.getRawOffset() / 1000.0;
+		BigDecimal rawOffset = new BigDecimal(_timeZone.getRawOffset()).divide(new BigDecimal(1000));
 		return new XSDayTimeDuration(rawOffset);
 	}
 	

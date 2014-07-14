@@ -82,7 +82,7 @@ public class FnAbs extends Function {
 		
 		if (nt instanceof XSDouble) {
 			XSDouble dat = (XSDouble) nt;
-			if (dat.zero() || dat.negativeZero()) {
+			if (dat.zero()) {
 				return new XSDouble("0");
 			}
 			if (dat.infinite()) {

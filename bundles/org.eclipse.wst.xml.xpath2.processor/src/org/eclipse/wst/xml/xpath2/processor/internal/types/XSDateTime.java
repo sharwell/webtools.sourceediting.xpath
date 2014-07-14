@@ -17,13 +17,13 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import javax.xml.datatype.Duration;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
@@ -60,7 +60,7 @@ Cloneable {
 	 */
 //	@Deprecated
 //	public XSDateTime(Calendar cal, XSDuration tz) {
-//		assert TimeZone.getTimeZone("UTC").equals(cal.getTimeZone());
+//		assert TimeZone.getTimeZone("GMT").equals(cal.getTimeZone());
 //
 //		_calendar = cal;
 //		_tz = tz;
@@ -87,7 +87,7 @@ Cloneable {
 	 * Inititates a new representation of the current date and time
 	 */
 	public XSDateTime() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), true);
+		this(new GregorianCalendar(TimeZone.getTimeZone("GMT")), true);
 	}
 
 	/**
@@ -230,13 +230,13 @@ Cloneable {
 	 * @return Integer array of size 3. Element 1 is the hour, element 2 is the
 	 *         minute and element 3 is the seconds
 	 */
-	public static double[] parse_time(String str) {
+	public static BigDecimal[] parse_time(String str) {
 		int state = 0; // 0 getting minute
 		// 1 getting hour
 		// 2 getting seconds [the whole part]
 		// 3 getting fraction of seconds
 
-		double[] ret = new double[3];
+		BigDecimal[] ret = new BigDecimal[3];
 
 		String token = "";
 
@@ -250,7 +250,7 @@ Cloneable {
 				if (x == ':') {
 					if (token.length() != 2)
 						return null;
-					ret[state] = Integer.parseInt(token);
+					ret[state] = new BigDecimal(Integer.parseInt(token));
 					state++;
 					token = "";
 				} else if (is_digit(x))
@@ -291,11 +291,7 @@ Cloneable {
 		if (token.length() == 3)
 			return null;
 
-		ret[2] = Double.parseDouble(token);
-
-		if (ret[0] == 24.0) {
-			//ret[0] = 00.0;
-		}
+		ret[2] = new BigDecimal(token);
 
 		// XXX sanity check args...
 		return ret;
@@ -312,7 +308,7 @@ Cloneable {
 	 * @param str
 	 *            The String representation of the date (and optional timezone)
 	 * @return Integer array of size 3. Element 1 represents whether the
-	 *         timezone is ahead or behind UTC, element 2 is the hour
+	 *         timezone is ahead or behind GMT, element 2 is the hour
 	 *         displacement and element 3 is the minute displacement.
 	 */
 	public static int[] parse_timezone(String str) {
@@ -397,6 +393,7 @@ Cloneable {
 
 		// ok its three things:
 		// date T time timezone
+		str = str.trim();
 
 		int index = str.indexOf('T');
 		if (index == -1)
@@ -430,18 +427,19 @@ Cloneable {
 			if (tz == null)
 				return null;
 
-			XSDuration tzd = new XSDayTimeDuration(0, tz[1], tz[2], 0.0, tz[0] < 0);
+			XSDuration tzd = new XSDayTimeDuration(0, tz[1], tz[2], BigDecimal.ZERO, tz[0] < 0);
 			calendarTimeZone = getTimeZone(tz[1], tz[2], tz[0] < 0);
 		} else {
-			calendarTimeZone = TimeZone.getTimeZone("UTC");
+			calendarTimeZone = TimeZone.getTimeZone("GMT");
 		}
 
 		GregorianCalendar cal = new GregorianCalendar(calendarTimeZone);
+		cal.setGregorianChange(new Date(Long.MIN_VALUE));
 
 		// year
 		int year = d[0];
-		if (year < 0) {
-			year *= -1;
+		if (year <= 0) {
+			year = 1 - year;
 			cal.set(Calendar.ERA, GregorianCalendar.BC);
 		} else {
 			cal.set(Calendar.ERA, GregorianCalendar.AD);
@@ -464,26 +462,30 @@ Cloneable {
 			return null;
 
 		// get time
-		double t[] = parse_time(time);
+		BigDecimal[] t = parse_time(time);
 		if (t == null)
 			return null;
 
-		if ((int) t[0] == 24) {
+		if (t[0].intValueExact() == 24) {
+			// '24' is permitted if the minutes and seconds represented are zero
+			if (t[1].compareTo(BigDecimal.ZERO) != 0 || t[2].compareTo(BigDecimal.ZERO) != 0) {
+				return null;
+			}
+
 			cal.set(Calendar.HOUR_OF_DAY, 0);
 			cal.add(Calendar.HOUR_OF_DAY, 24);
-		} else if (!set_item(cal, Calendar.HOUR_OF_DAY, (int) t[0])) {
+		} else if (!set_item(cal, Calendar.HOUR_OF_DAY, t[0].intValueExact())) {
 			return null;
 		}
 
-		if (!set_item(cal, Calendar.MINUTE, (int) t[1]))
+		if (!set_item(cal, Calendar.MINUTE, t[1].intValueExact()))
 			return null;
 
-		if (!set_item(cal, Calendar.SECOND, (int) t[2]))
+		int totalMilliseconds = t[2].multiply(new BigDecimal(1000)).intValue();
+		if (!set_item(cal, Calendar.SECOND, totalMilliseconds / 1000))
 			return null;
 
-		double ms = t[2] - ((int) t[2]);
-		ms *= 1000;
-		if (!set_item(cal, Calendar.MILLISECOND, (int) ms))
+		if (!set_item(cal, Calendar.MILLISECOND, totalMilliseconds % 1000))
 			return null;
 
 		return new XSDateTime(cal, timezone != null);
@@ -510,10 +512,11 @@ Cloneable {
 			return ResultBuffer.EMPTY;
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration
-				|| aat instanceof XSTime || isGDataType(aat)
-				|| aat instanceof XSBoolean || aat instanceof XSBase64Binary
-				|| aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSDateTime
+			|| aat instanceof XSDate))
+		{
 			throw DynamicError.invalidType();
 		}
 
@@ -552,7 +555,7 @@ Cloneable {
 		}
 
 		if (aat instanceof XSDateTime) {
-			return clone();
+			return (XSDateTime)aat;
 		}
 
 		return parseDateTime(aat.getStringValue());
@@ -566,7 +569,7 @@ Cloneable {
 	public int year() {
 		int y = _calendar.get(Calendar.YEAR);
 		if (_calendar.get(Calendar.ERA) == GregorianCalendar.BC)
-			y *= -1;
+			y = 1 - y;
 
 		return y;
 	}
@@ -612,14 +615,14 @@ Cloneable {
 	 * 
 	 * @return the seconds value of the date stored
 	 */
-	public double second() {
-		double s = _calendar.get(Calendar.SECOND);
+	public BigDecimal second() {
+		BigDecimal s = new BigDecimal(_calendar.get(Calendar.SECOND));
 
-		double ms = _calendar.get(Calendar.MILLISECOND);
+		int ms = _calendar.get(Calendar.MILLISECOND);
+		if (ms != 0) {
+			s = s.add(new BigDecimal(ms).divide(new BigDecimal(1000)));
+		}
 
-		ms /= 1000;
-
-		s += ms;
 		return s;
 	}
 
@@ -671,11 +674,13 @@ Cloneable {
 
 		Calendar adjustFortimezone = calendar();
 
+		int year = adjustFortimezone.get(Calendar.YEAR);
 		if (adjustFortimezone.get(Calendar.ERA) == GregorianCalendar.BC) {
+			year--;
 			ret += "-";
 		}
 
-		ret += pad_int(adjustFortimezone.get(Calendar.YEAR), 4);
+		ret += pad_int(year, 4);
 
 		ret += "-";
 		ret += pad_int(month(), 2);
@@ -692,24 +697,25 @@ Cloneable {
 		ret += pad_int(adjustFortimezone.get(Calendar.MINUTE), 2);
 
 		ret += ":";
-		int isecond = (int) second();
-		double sec = second();
+		BigDecimal sec = second();
+		int isecond = sec.intValue();
 
-		if ((sec - (isecond)) == 0.0)
+		if (sec.compareTo(new BigDecimal(isecond)) == 0) {
 			ret += pad_int(isecond, 2);
-		else {
-			if (sec < 10.0)
-				ret += "0" + sec;
-			else
-				ret += sec;
+		} else {
+			if (sec.compareTo(new BigDecimal(10)) < 0) {
+				ret += 0;
+			}
+
+			ret += sec;
 		}
 
 		if (timezoned()) {
 			XSDuration tz = tz();
 			int hrs = tz.hours();
 			int min = tz.minutes();
-			double secs = tz.seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = tz.seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 				ret += "Z";
 			} else {
 				String tZoneStr = "";
@@ -821,7 +827,7 @@ Cloneable {
 		}
 
 		TimeZone timeZone = calendar().getTimeZone();
-		double rawOffset = timeZone.getRawOffset() / 1000.0;
+		BigDecimal rawOffset = new BigDecimal(timeZone.getRawOffset()).divide(new BigDecimal(1000));
 		return new XSDayTimeDuration(rawOffset);
 	}
 
@@ -892,10 +898,12 @@ Cloneable {
 
 	private ResultSequence minusXSDayTimeDuration(XSDayTimeDuration val) {
 		Calendar resultCalendar = (Calendar)calendar().clone();
+		// multiplier is negated due to this being a 'minus' operation
 		int multiplier = val.negative() ? 1 : -1;
+		resultCalendar.add(Calendar.DAY_OF_YEAR, multiplier * val.days());
 		resultCalendar.add(Calendar.HOUR_OF_DAY, multiplier * val.hours());
 		resultCalendar.add(Calendar.MINUTE, multiplier * val.minutes());
-		resultCalendar.add(Calendar.MILLISECOND, multiplier * (int)(val.seconds() * 1000));
+		resultCalendar.add(Calendar.MILLISECOND, multiplier * val.seconds().multiply(new BigDecimal(1000)).intValue());
 		return new XSDateTime(resultCalendar, timezoned());
 	}
 
@@ -929,10 +937,9 @@ Cloneable {
 		if (at instanceof XSYearMonthDuration) {
 			XSYearMonthDuration val = (XSYearMonthDuration) at;
 			
-			XSDateTime res = clone();
-			
-			res.calendar().add(Calendar.MONTH, val.monthValue());
-			return res;
+			Calendar adjusted = (Calendar)calendar().clone();
+			adjusted.add(Calendar.MONTH, val.monthValue());
+			return new XSDateTime(adjusted, timezoned());
 		} else if (at instanceof XSDayTimeDuration) {
 			XSDayTimeDuration duration = (XSDayTimeDuration)at;
 			XSDayTimeDuration negatedDuration = new XSDayTimeDuration(duration.days(), duration.hours(), duration.minutes(), duration.seconds(), !duration.negative());

@@ -206,7 +206,7 @@
             </goals>
             <configuration>
               <xslTemplate>test-resources/TestSuiteTransform.xsl</xslTemplate>
-              <srcDir>test</srcDir>
+              <srcDir>test/catalog/cat</srcDir>
             </configuration>
           </execution>
         </executions>

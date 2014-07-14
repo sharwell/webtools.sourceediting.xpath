@@ -78,11 +78,11 @@ public class XSName extends XSToken {
 			return ResultBuffer.EMPTY;
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		String strValue = aat.getStringValue();
+		String strValue = aat.getStringValue().trim();
 		
 		if (!XMLChar.isValidName(strValue)) {
 			// invalid input
-			throw DynamicError.throw_type_error();
+			throw DynamicError.cant_cast(null);
 		}
 
 		return new XSName(strValue);

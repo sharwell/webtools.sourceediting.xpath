@@ -19,6 +19,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
@@ -100,11 +101,12 @@ public class XSFloat extends NumericType {
 	 */
 	@Override
 	public String getStringValue() {
-		if (zero()) {
-		   return "0";
-		}
 		if (negativeZero()) {
 		   return "-0";	
+		}
+
+		if (zero()) {
+		   return "0";
 		}
 		
 		if (nan()) {
@@ -139,7 +141,7 @@ public class XSFloat extends NumericType {
 	 */
 	@Override
 	public boolean zero() {
-	   return (Float.compare(_value, 0) == 0);
+	   return float_value() == 0.0f;
 	}
 	
 	/*
@@ -168,34 +170,31 @@ public class XSFloat extends NumericType {
 
 		AnyType aat = (AnyType) arg.first();
 		
-		if (aat instanceof XSDuration || aat instanceof CalendarType ||
-			aat instanceof XSBase64Binary || aat instanceof XSHexBinary ||
-			aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSFloat
+			|| aat instanceof XSDouble
+			|| aat instanceof XSDecimal
+			|| aat instanceof XSBoolean))
+		{
 			throw DynamicError.invalidType();
 		}
-		
-		if (!(aat.string_type().equals("xs:string") || aat instanceof NodeType ||
-			aat.string_type().equals("xs:untypedAtomic") ||
-			aat.string_type().equals("xs:boolean") ||
-			aat instanceof NumericType)) {
-			throw DynamicError.cant_cast(null);
-		}
-		
 
 		try {
+			String stringValue = aat.getStringValue().trim();
 			float f;
-			if (aat.getStringValue().equals("INF")) {
+			if (stringValue.equals("INF")) {
 				f = Float.POSITIVE_INFINITY;
-			} else if (aat.getStringValue().equals("-INF")) {
+			} else if (stringValue.equals("-INF")) {
 				f = Float.NEGATIVE_INFINITY;
 			} else if (aat instanceof XSBoolean) {
-				if (aat.getStringValue().equals("true")) {
+				if (stringValue.equals("true")) {
 					f = 1.0f;
 				} else {
 					f = 0.0f;
 				}
 			} else {
-			    f = Float.valueOf(aat.getStringValue());
+			    f = Float.valueOf(stringValue);
 			}
 			return new XSFloat(f);
 		} catch (NumberFormatException e) {
@@ -438,19 +437,28 @@ public class XSFloat extends NumericType {
 	 */
 	@Override
 	public NumericType round() {
-		BigDecimal value = new BigDecimal(float_value());
-		BigDecimal round = value.setScale(0, BigDecimal.ROUND_HALF_UP);
-		return new XSFloat(round.floatValue());
-	}
+		if (nan() || infinite() || zero()) {
+			return this;
+		}
 
-	/**
-	 * Returns the closest integer of the number stored.
-	 * 
-	 * @return A XSFloat representing the closest long of the number stored.
-	 */
-	@Override
-	public NumericType round_half_to_even() {
-		return round_half_to_even(0);
+		BigDecimal value = new BigDecimal(float_value());
+
+		BigDecimal round;
+		if (value.compareTo(BigDecimal.ZERO) < 0) {
+			round = value.setScale(0, RoundingMode.HALF_DOWN);
+		} else {
+			round = value.setScale(0, RoundingMode.HALF_UP);
+		}
+
+		float result;
+		if (round.compareTo(BigDecimal.ZERO) == 0) {
+			// preserve the sign of the input
+			result = float_value() < 0 ? -0.0f : 0.0f;
+		} else {
+			result = round.floatValue();
+		}
+
+		return new XSFloat(result);
 	}
 
 	/**
@@ -461,6 +469,10 @@ public class XSFloat extends NumericType {
 	 */
 	@Override
 	public NumericType round_half_to_even(int precision) {
+		if (nan() || infinite() || zero()) {
+			return this;
+		}
+
 		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
 		return new XSFloat(round.floatValue());

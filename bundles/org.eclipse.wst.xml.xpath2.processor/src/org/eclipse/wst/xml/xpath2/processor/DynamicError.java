@@ -110,7 +110,7 @@ public class DynamicError extends XPathException {
 	 * @return the DynamicError.
 	 */
 	public static DynamicError throw_type_error() throws DynamicError {
-		throw argument_type_error(null);
+		throw invalidType();
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError argument_type_error(Class<?> type) {
-		return new DynamicError("XPTY0004", type != null ?
+		return new DynamicError("FORG0006", type != null ?
 				"Invalid argument type :" + type.getName() : "Invalid argument type", null);
 	}
 

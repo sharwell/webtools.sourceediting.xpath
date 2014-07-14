@@ -6421,13 +6421,13 @@
       <description>Casting to xs:notation is not allowed.</description>
       <query name="K-SeqExprCast-65" date="2007-11-26+01:00"/>
       <input-file role="principal-data" variable="input-context">emptydoc</input-file>
-      <expected-error>XPST0017</expected-error>
+      <expected-error>XPST0080</expected-error>
    </test-case>
    <test-case is-XPath2="true" Creator="Frans Englich" name="K-SeqExprCast-66" FilePath="Expressions/exprSeqTypes/SeqExprCast/" scenario="runtime-error">
       <description>Casting to xs:notation is not allowed.</description>
       <query name="K-SeqExprCast-66" date="2007-11-26+01:00"/>
       <input-file role="principal-data" variable="input-context">emptydoc</input-file>
-      <expected-error>XPST0017</expected-error>
+      <expected-error>XPST0080</expected-error>
    </test-case>
    <test-case is-XPath2="true" Creator="Frans Englich" name="K-SeqExprCast-67" FilePath="Expressions/exprSeqTypes/SeqExprCast/" scenario="runtime-error">
       <description>Casting to xs:QName where the cardinality is wrong.</description>

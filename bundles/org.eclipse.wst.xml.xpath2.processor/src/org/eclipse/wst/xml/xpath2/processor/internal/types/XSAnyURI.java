@@ -99,14 +99,14 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 			return ResultBuffer.EMPTY;
 
 		AnyType aat = (AnyType) arg.first();
-
-		if (!(aat.string_type().equals("xs:string")
-				|| aat.string_type().equals(XS_ANY_URI) || aat.string_type()
-				.equals("xs:untypedAtomic"))) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSAnyURI))
+		{
 			throw DynamicError.invalidType();
 		}
 
-		return new XSAnyURI(aat.string_value());
+		return new XSAnyURI(aat.string_value().trim().replaceAll("\\s+", " "));
 	}
 
 	/**

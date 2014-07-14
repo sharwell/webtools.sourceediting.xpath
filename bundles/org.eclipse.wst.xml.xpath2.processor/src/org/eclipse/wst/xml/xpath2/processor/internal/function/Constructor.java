@@ -66,4 +66,8 @@ public class Constructor extends Function {
 		return _atomic_type.constructor(arg);
 	}
 
+	@Override
+	public String toString() {
+		return _atomic_type.string_type() + "()";
+	}
 }

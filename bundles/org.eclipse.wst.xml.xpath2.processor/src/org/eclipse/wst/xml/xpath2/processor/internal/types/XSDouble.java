@@ -19,6 +19,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
@@ -27,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.MathTimes;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -116,9 +118,13 @@ public class XSDouble extends NumericType {
 
 		Item aat = arg.first();
 
-		if (aat instanceof XSDuration || aat instanceof CalendarType ||
-			aat instanceof XSBase64Binary || aat instanceof XSHexBinary ||
-			aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSFloat
+			|| aat instanceof XSDouble
+			|| aat instanceof XSDecimal
+			|| aat instanceof XSBoolean))
+		{
 			throw DynamicError.invalidType();
 		}
 		
@@ -146,14 +152,15 @@ public class XSDouble extends NumericType {
 	}
 	
 	private XSDouble castDouble(Item aat) {
+		String stringValue = aat.getStringValue().trim();
 		if (aat instanceof XSBoolean) {
-			if (aat.getStringValue().equals("true")) {
+			if (stringValue.equals("true")) {
 				return new XSDouble(1.0E0);
 			} else {
 				return new XSDouble(0.0E0);
 			}
 		}
-		return parse_double(aat.getStringValue());
+		return parse_double(stringValue);
 		
 	}
 
@@ -184,12 +191,12 @@ public class XSDouble extends NumericType {
 	 */
 	@Override
 	public String getStringValue() {
-		if (zero()) {
-			return "0";
-		}
-
 		if (negativeZero()) {
 			return "-0";
+		}
+
+		if (zero()) {
+			return "0";
 		}
 
 		if (nan()) {
@@ -224,7 +231,7 @@ public class XSDouble extends NumericType {
 	 */
 	@Override
 	public boolean zero() {
-		return (Double.compare(_value, 0.0E0) == 0);
+		return double_value() == 0;
 	}
 
 	/*
@@ -390,6 +397,15 @@ public class XSDouble extends NumericType {
 	 */
 	@Override
 	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		if (arg.size() == 1) {
+			Item first = arg.first();
+			if (first instanceof XSDuration && first instanceof MathTimes) {
+				// This is a special case for xs:dayTimeDuration and xs:yearMonthDuration
+				// http://www.w3.org/TR/xquery-semantics/#sec_operators
+				return ((MathTimes)first).times(this, evaluationContext);
+			}
+		}
+
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDouble val = get_single_type(carg, XSDouble.class);
@@ -506,20 +522,28 @@ public class XSDouble extends NumericType {
 	 */
 	@Override
 	public NumericType round() {
-		BigDecimal value = new BigDecimal(_value);
-		BigDecimal round = value.setScale(0, BigDecimal.ROUND_HALF_UP);
-		return new XSDouble(round.doubleValue());
-	}
+		if (nan() || infinite() || zero()) {
+			return this;
+		}
 
-	/**
-	 * Returns the closest integer of the number stored.
-	 * 
-	 * @return A XSDouble representing the closest long of the number stored.
-	 */
-	@Override
-	public NumericType round_half_to_even() {
+		BigDecimal value = new BigDecimal(double_value());
 
-		return round_half_to_even(0);
+		BigDecimal round;
+		if (value.compareTo(BigDecimal.ZERO) < 0) {
+			round = value.setScale(0, RoundingMode.HALF_DOWN);
+		} else {
+			round = value.setScale(0, RoundingMode.HALF_UP);
+		}
+
+		double result;
+		if (round.compareTo(BigDecimal.ZERO) == 0) {
+			// preserve the sign of the input
+			result = double_value() < 0 ? -0.0f : 0.0f;
+		} else {
+			result = round.doubleValue();
+		}
+
+		return new XSDouble(result);
 	}
 
 	/**
@@ -532,6 +556,10 @@ public class XSDouble extends NumericType {
 	 */
 	@Override
 	public NumericType round_half_to_even(int precision) {
+		if (nan() || infinite() || zero()) {
+			return this;
+		}
+
 		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
 		return new XSDouble(round.doubleValue());

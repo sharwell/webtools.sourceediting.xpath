@@ -18,6 +18,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -60,7 +61,7 @@ Cloneable {
 	 */
 //	@Deprecated
 //	public XSDate(Calendar cal, XSDuration tz) {
-//		assert TimeZone.getTimeZone("UTC").equals(cal.getTimeZone());
+//		assert TimeZone.getTimeZone("GMT").equals(cal.getTimeZone());
 //
 //		_calendar = cal;
 //		_tz = tz;
@@ -81,7 +82,7 @@ Cloneable {
 	 * Initializes a new representation of the current date
 	 */
 	public XSDate() {
-		this(getDate(new GregorianCalendar(TimeZone.getTimeZone("UTC"))), true);
+		this(getDate(new GregorianCalendar(TimeZone.getTimeZone("GMT"))), true);
 	}
 
 	public static Calendar getDate(Calendar calendar) {
@@ -126,6 +127,7 @@ Cloneable {
 	 * @return The XSDate representation of the supplied date
 	 */
 	public static XSDate parse_date(String str) {
+		str = str.trim();
 
 		String date = "";
 		String time = "T00:00:00.0";
@@ -174,6 +176,13 @@ Cloneable {
 			return ResultBuffer.EMPTY;
 
 		Item aat = arg.first();
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSDateTime
+			|| aat instanceof XSDate))
+		{
+			throw DynamicError.invalidType();
+		}
 
 		if (!isCastable(aat)) {
 			throw DynamicError.invalidType();
@@ -232,7 +241,7 @@ Cloneable {
 	public int year() {
 		int y = _calendar.get(Calendar.YEAR);
 		if (_calendar.get(Calendar.ERA) == GregorianCalendar.BC)
-			y *= -1;
+			y = 1 - y;
 
 		return y;
 	}
@@ -277,11 +286,13 @@ Cloneable {
 
 		Calendar adjustFortimezone = calendar();
 
+		int year = adjustFortimezone.get(Calendar.YEAR);
 		if (adjustFortimezone.get(Calendar.ERA) == GregorianCalendar.BC) {
+			year--;
 			ret += "-";
 		}
 
-		ret += XSDateTime.pad_int(adjustFortimezone.get(Calendar.YEAR), 4);
+		ret += XSDateTime.pad_int(year, 4);
 
 		ret += "-";
 		ret += XSDateTime.pad_int(month(), 2);
@@ -294,8 +305,8 @@ Cloneable {
 			XSDuration tz = tz();
 			int hrs = tz.hours();
 			int min = tz.minutes();
-			double secs = tz.seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = tz.seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 				ret += "Z";
 			} else {
 				String tZoneStr = "";
@@ -346,7 +357,7 @@ Cloneable {
 		}
 
 		TimeZone timeZone = calendar().getTimeZone();
-		double rawOffset = timeZone.getRawOffset() / 1000.0;
+		BigDecimal rawOffset = new BigDecimal(timeZone.getRawOffset()).divide(new BigDecimal(1000));
 		return new XSDayTimeDuration(rawOffset);
 	}
 
@@ -465,10 +476,12 @@ Cloneable {
 
 	private ResultSequence minusXSDayTimeDuration(XSDayTimeDuration val) {
 		Calendar resultCalendar = (Calendar)calendar().clone();
-		int multiplier = val.negative() ? -1 : 1;
+		// multiplier is negated due to this being a 'minus' operation
+		int multiplier = val.negative() ? 1 : -1;
+		resultCalendar.add(Calendar.DAY_OF_YEAR, multiplier * val.days());
 		resultCalendar.add(Calendar.HOUR_OF_DAY, multiplier * val.hours());
 		resultCalendar.add(Calendar.MINUTE, multiplier * val.minutes());
-		resultCalendar.add(Calendar.MILLISECOND, multiplier * (int)(val.seconds() * 1000));
+		resultCalendar.add(Calendar.MILLISECOND, multiplier * val.time_value().multiply(new BigDecimal(1000)).intValue());
 		return new XSDate(getDate(resultCalendar), timezoned());
 	}
 
@@ -511,25 +524,22 @@ Cloneable {
 		if (at instanceof XSYearMonthDuration) {
 			XSYearMonthDuration val = (XSYearMonthDuration) at;
 			
-			XSDate res = clone();
-			
-			res.calendar().add(Calendar.MONTH, val.monthValue());
-			return res;
+			Calendar adjusted = (Calendar)calendar().clone();
+			adjusted.add(Calendar.MONTH, val.monthValue());
+			return new XSDate(adjusted, timezoned());
 		} else if (at instanceof XSDayTimeDuration) {
 			XSDayTimeDuration val = (XSDayTimeDuration) at;
-			
-			XSDate res = clone();
 			
 			// We only need to add the Number of days dropping the rest.
 			int days = val.days();
 			if (val.negative()) {
 				days *= -1;
 			}
-			res.calendar().add(Calendar.DAY_OF_MONTH, days);
-			
-			res.calendar().add(Calendar.MILLISECOND,
-					(int) (val.time_value() * 1000.0));
-			return res;
+
+			Calendar adjusted = (Calendar)calendar().clone();
+			adjusted.add(Calendar.DAY_OF_MONTH, days);
+			adjusted.add(Calendar.MILLISECOND, val.time_value().multiply(new BigDecimal(1000)).intValue());
+			return new XSDate(getDate(adjusted), timezoned());
 		} else {
 			throw DynamicError.throw_type_error();
 		}

@@ -25,7 +25,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSTime;
 /**
  * Returns the timezone component of $arg if any. If $arg has a timezone
  * component, then the result is an xdt:dayTimeDuration that indicates deviation
- * from UTC; its value may range from +14:00 to -14:00 hours, both inclusive.
+ * from GMT; its value may range from +14:00 to -14:00 hours, both inclusive.
  * Otherwise, the result is the empty sequence. If $arg is the empty sequence,
  * returns the empty sequence.
  */

@@ -103,9 +103,11 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 			return ResultBuffer.EMPTY;
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration ||
-			aat instanceof CalendarType || aat instanceof XSBoolean ||
-			aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSBase64Binary
+			|| aat instanceof XSHexBinary))
+		{
 			throw DynamicError.invalidType();
 		}
 
@@ -116,20 +118,24 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 		String str_value = aat.getStringValue();
 		
 		//byte[] decodedValue = Base64.decode(str_value);
+
 		byte[] decodedValue;
-		
 		if (aat instanceof XSHexBinary) {
 			decodedValue = HexBin.decode(str_value);
-			decodedValue = Base64.encode(decodedValue).getBytes();
 		} else {
-			decodedValue = str_value.getBytes();
+			decodedValue = Base64.decode(str_value);
 		}
+
 		if (decodedValue != null) {
-		  return new XSBase64Binary(new String(decodedValue));
+			return new XSBase64Binary(Base64.encode(decodedValue));
 		}
 		else {
-		  // invalid base64 string
-		  throw DynamicError.throw_type_error();	
+			// invalid base64 string
+			if (aat instanceof XSHexBinary) {
+				throw DynamicError.throw_type_error();
+			} else {
+				throw DynamicError.cant_cast(null);
+			}
 		}
 	}
 

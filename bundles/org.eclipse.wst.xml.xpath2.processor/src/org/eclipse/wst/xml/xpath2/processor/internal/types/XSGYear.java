@@ -14,6 +14,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -67,7 +68,7 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 * Initialises a representation of the current year
 	 */
 	public XSGYear() {
-		this(getYear(new GregorianCalendar(TimeZone.getTimeZone("UTC"))), TimeZone.getTimeZone("UTC"));
+		this(getYear(new GregorianCalendar(TimeZone.getTimeZone("GMT"))), TimeZone.getTimeZone("GMT"));
 	}
 
 	static int getYear(Calendar calendar) {
@@ -156,13 +157,15 @@ public class XSGYear extends CalendarType implements CmpEq {
 			return ResultBuffer.EMPTY;
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration ||
-			aat instanceof XSTime || isGDataType(aat) ||
-			aat instanceof XSBoolean || aat instanceof XSBase64Binary ||
-			aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSDateTime
+			|| aat instanceof XSDate
+			|| aat instanceof XSGYear))
+		{
 			throw DynamicError.invalidType();
 		}
-		
+
 		if (!isCastable(aat)) {
 			throw DynamicError.cant_cast(null);
 		}
@@ -256,8 +259,8 @@ public class XSGYear extends CalendarType implements CmpEq {
 			
 			int hrs = tz().hours();
 			int min = tz().minutes();
-			double secs = tz().seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = tz().seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 			  ret += "Z";
 			}
 			else {
@@ -296,7 +299,7 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public Calendar calendar() {
-		GregorianCalendar calendar = new GregorianCalendar(_timeZone != null ? _timeZone : TimeZone.getTimeZone("UTC"));
+		GregorianCalendar calendar = new GregorianCalendar(_timeZone != null ? _timeZone : TimeZone.getTimeZone("GMT"));
 		calendar.clear();
 		calendar.setGregorianChange(new Date(Long.MIN_VALUE));
 
@@ -340,7 +343,7 @@ public class XSGYear extends CalendarType implements CmpEq {
 			return null;
 		}
 
-		double rawOffset = _timeZone.getRawOffset() / 1000.0;
+		BigDecimal rawOffset = new BigDecimal(_timeZone.getRawOffset()).divide(new BigDecimal(1000));
 		return new XSDayTimeDuration(rawOffset);
 	}	
 

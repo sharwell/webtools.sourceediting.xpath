@@ -25,6 +25,10 @@ public class ComparableTypePromoter extends ScalarTypePromoter {
 	protected boolean checkCombination(Class<? extends AnyType> newType) {
 
 		Class<? extends AnyType> targetType = getTargetType();
+		if (newType == targetType) {
+			return true;
+		}
+
 		if (newType == XSString.class || newType == XSTime.class || targetType == XSString.class || targetType == XSTime.class) {
 			return targetType == newType;	
 		}
@@ -41,7 +45,7 @@ public class ComparableTypePromoter extends ScalarTypePromoter {
 	@Override
 	protected Class<? extends AnyType> substitute(Class<? extends AnyType> typeToConsider) {
 		if (typeToConsider == XSAnyURI.class || typeToConsider == XSString.class) {
-			return XSString.class;
+			return typeToConsider;
 		}
 		if (typeToConsider == XSDateTime.class || typeToConsider == XSDate.class || typeToConsider == XSTime.class) {
 			return typeToConsider;

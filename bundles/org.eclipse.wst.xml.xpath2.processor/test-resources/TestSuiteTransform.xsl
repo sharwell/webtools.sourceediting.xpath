@@ -69,29 +69,13 @@ public class ]]></xsl:text>
   @Test
   public void <xsl:value-of select="$methodName"/>() throws IOException, ParserConfigurationException, SAXException, TransformerException {
     String filePath = "<xsl:value-of select="@FilePath"/>";
-    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-    documentBuilderFactory.setNamespaceAware(true);
-    DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-    Transformer transformer = TransformerFactory.newInstance().newTransformer();
-    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 
 <xsl:apply-templates select="x:input-file | x:input-URI" mode="read"/>
 
-    Duration defaultTimezoneOffset;
-    try {
-      defaultTimezoneOffset = DatatypeFactory.newInstance().newDuration(false, 0, 0, 0, 5, 0, 0);
-    } catch (DatatypeConfigurationException e) {
-      throw new RuntimeException(e);
-    }
-
-    Engine engine = new Engine();
-    StaticContext staticContext = new StaticContextBuilder()
-    .withNamespace("fn", "http://www.w3.org/2005/xpath-functions")
-    .withNamespace("xs", "http://www.w3.org/2001/XMLSchema")<xsl:for-each select="x:input-URI">
+    StaticContext staticContext = createStaticContextBuilder()<xsl:for-each select="x:input-URI">
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new XSAnyURI().getItemType())</xsl:for-each><xsl:for-each select="x:input-file">
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new ElementType().getItemType())</xsl:for-each>;
-    DynamicContext dynamicContext = new DynamicContextBuilder(staticContext)
-          .withTimezoneOffset(defaultTimezoneOffset)<xsl:for-each select="x:input-URI">
+    DynamicContext dynamicContext = createDynamicContextBuilder(staticContext)<xsl:for-each select="x:input-URI">
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new XSAnyURI(<xsl:value-of select="replace(@variable,'-','_')"/>))</xsl:for-each><xsl:for-each select="x:input-file">
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new DocType(<xsl:value-of select="replace(@variable,'-','_')"/>, staticContext.getTypeModel()))</xsl:for-each>;
 
@@ -111,8 +95,17 @@ public class ]]></xsl:text>
 
   <xsl:template match="x:input-file" mode="read">
     <xsl:variable name="variableName" select="replace(@variable,'-','_')"/>
-    String raw_<xsl:value-of select="$variableName"/> = readFile("TestSources/", "<xsl:value-of select="text()"/>", ".xml");
-    Document <xsl:value-of select="$variableName"/> = documentBuilder.parse(new ByteArrayInputStream(raw_<xsl:value-of select="$variableName"/>.getBytes("UTF-8")));
+    <xsl:variable name="inputId" select="text()"/>
+    <xsl:variable name="fileName" select="doc('../XQTSCatalog.xml')/x:test-suite/x:sources/x:source[@ID=$inputId]/@FileName"/>
+    <xsl:choose>
+      <xsl:when test="ends-with($fileName, '.xml')">
+        String raw_<xsl:value-of select="$variableName"/> = readFile("<xsl:value-of select="$fileName"/>");
+        Document <xsl:value-of select="$variableName"/> = getDocumentBuilder().parse(new ByteArrayInputStream(raw_<xsl:value-of select="$variableName"/>.getBytes("UTF-8")));
+      </xsl:when>
+      <xsl:otherwise>
+        String <xsl:value-of select="$variableName"/> = readFile("<xsl:value-of select="$fileName"/>");
+    </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="x:query">
@@ -120,12 +113,15 @@ public class ]]></xsl:text>
     <xsl:param name="outputName"/>
     <xsl:param name="compare"/>
     <xsl:param name="expectedError"/>
-    String query = readFile("Queries/XQuery/" + filePath, "<xsl:value-of select="@name"/>", ".xq");
+    String query = readFile("Queries/XQuery/" + filePath + "<xsl:value-of select="@name"/>.xq");
+    if (isDebug()) {
+      System.out.println(query);
+    }
     query = query.replaceAll("declare\\s+variable\\s+\\$[a-zA-Z_-][a-zA-Z0-9_-]*\\s+external\\s*;", "");<xsl:if test="$outputName">
     List&lt;Matcher&lt;? super String&gt;&gt; expectedMatchers = new ArrayList&lt;Matcher&lt;? super String&gt;&gt;();<xsl:for-each select="$outputName"><xsl:choose><xsl:when test="$compare='XML'">
-    expectedMatchers.add(CoreMatchers.is(xmlEqualTo(readFile("ExpectedTestResults/" + filePath, "<xsl:value-of select="."/>", ""))));</xsl:when><xsl:when test="$compare='Fragment' or $compare='Inspect'">
-    expectedMatchers.add(CoreMatchers.is(xmlFragmentEqualTo(readFile("ExpectedTestResults/" + filePath, "<xsl:value-of select="."/>", ""))));</xsl:when><xsl:when test="$compare='Text'">
-    expectedMatchers.add(CoreMatchers.is(CoreMatchers.equalTo(readFile("ExpectedTestResults/" + filePath, "<xsl:value-of select="."/>", ""))));</xsl:when><xsl:when test="$compare='Ignore'"/><xsl:otherwise>
+    expectedMatchers.add(CoreMatchers.is(xmlEqualTo(readFile("ExpectedTestResults/" + filePath + "<xsl:value-of select="."/>"))));</xsl:when><xsl:when test="$compare='Fragment' or $compare='Inspect'">
+    expectedMatchers.add(CoreMatchers.is(xmlFragmentEqualTo(readFile("ExpectedTestResults/" + filePath + "<xsl:value-of select="."/>"))));</xsl:when><xsl:when test="$compare='Text'">
+    expectedMatchers.add(CoreMatchers.is(CoreMatchers.equalTo(readFile("ExpectedTestResults/" + filePath + "<xsl:value-of select="."/>"))));</xsl:when><xsl:when test="$compare='Ignore'"/><xsl:otherwise>
     Assert.fail("Shouldn't reach this point.");</xsl:otherwise></xsl:choose></xsl:for-each></xsl:if>
 
 <xsl:choose>
@@ -133,7 +129,7 @@ public class ]]></xsl:text>
 	List&lt;Matcher&lt;? super String&gt;&gt; matchers = new ArrayList&lt;Matcher&lt;? super String&gt;&gt;();<xsl:for-each select="$expectedError">
 	matchers.add(CoreMatchers.is(CoreMatchers.equalTo("<xsl:value-of select="."/>")));</xsl:for-each></xsl:if>
 	try {
-		XPath2Expression expression = engine.parseExpression(query, staticContext);
+		XPath2Expression expression = getEngine().parseExpression(query, staticContext);
 		Node[] contextItems = new Node[] { };
 		ResultSequence result = expression.evaluate(dynamicContext, contextItems);<xsl:choose><xsl:when test="$outputName">
 
@@ -150,7 +146,7 @@ public class ]]></xsl:text>
 	}
 </xsl:when>
 <xsl:otherwise>
-    XPath2Expression expression = engine.parseExpression(query, staticContext);
+    XPath2Expression expression = getEngine().parseExpression(query, staticContext);
     Node[] contextItems = new Node[] { };
     ResultSequence result = expression.evaluate(dynamicContext, contextItems);
 

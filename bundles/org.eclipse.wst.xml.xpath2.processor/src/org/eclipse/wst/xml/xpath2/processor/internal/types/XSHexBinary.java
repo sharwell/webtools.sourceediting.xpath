@@ -13,6 +13,8 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.util.regex.Pattern;
+
 import org.apache.xerces.impl.dv.util.Base64;
 import org.apache.xerces.impl.dv.util.HexBin;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
@@ -89,6 +91,8 @@ public class XSHexBinary extends CtrType implements CmpEq {
 		return _value;
 	}
 
+	private static final Pattern _lexicalPattern = Pattern.compile("(?:[A-Fa-f0-9]{2})*");
+
 	/**
 	 * Creates a new ResultSequence consisting of the hexBinary value
 	 * 
@@ -103,13 +107,15 @@ public class XSHexBinary extends CtrType implements CmpEq {
 			return ResultBuffer.EMPTY;
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration ||
-			aat instanceof CalendarType || aat instanceof XSBoolean ||
-			aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSBase64Binary
+			|| aat instanceof XSHexBinary))
+		{
 			throw DynamicError.invalidType();
 		}
 
-		String str_value = aat.getStringValue();
+		String str_value = aat.getStringValue().trim();
 		
 		if (!(aat instanceof XSHexBinary ||
 				  aat instanceof XSString ||
@@ -119,42 +125,25 @@ public class XSHexBinary extends CtrType implements CmpEq {
 			}
 		
 		if (aat instanceof XSUntypedAtomic || aat instanceof XSString) {
-			String[] nonHexValues = null;
-			try {
-				nonHexValues = str_value.split("[0-9a-fA-F]");
-			} catch (Exception ex) {
-				throw DynamicError.throw_type_error();
+			if (!_lexicalPattern.matcher(str_value).matches()) {
+				throw DynamicError.cant_cast(null);
 			}
-			
-			String[] binValues = null;
-			try {
-				binValues = str_value.split("[0-1]");
-			} catch (Exception ex) {
-				throw DynamicError.throw_type_error();
-			}
-			
-			if (nonHexValues.length > 0 || binValues.length == 0) {
-				throw DynamicError.invalidForCastConstructor();
-			}			
 		}
 
-		
-		byte[] decodedValue;
+		String hexValue;
 		
 		if (aat instanceof XSBase64Binary) {
-			decodedValue = Base64.decode(str_value);
-			decodedValue = HexBin.encode(decodedValue).getBytes();
+			byte[] decodedValue = Base64.decode(str_value);
+			hexValue = HexBin.encode(decodedValue);
 		} else {
-			decodedValue = str_value.getBytes();
+			hexValue = str_value;
  		}
-		
-		if (decodedValue != null) {
-		  return new XSHexBinary(new String(decodedValue));
+
+		if (hexValue == null) {
+			throw DynamicError.cant_cast(null);
 		}
-		else {
-		  // invalid hexBinary string
-		  throw DynamicError.throw_type_error();	
-		}
+
+		return new XSHexBinary(hexValue);
 	}
 
 	/**

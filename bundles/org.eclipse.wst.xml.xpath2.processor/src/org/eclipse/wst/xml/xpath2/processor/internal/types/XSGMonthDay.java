@@ -16,10 +16,13 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.datatype.Duration;
 
@@ -70,7 +73,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 * Initializes a representation of the current month and day
 	 */
 	public XSGMonthDay() {
-		GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+		GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 		_month = calendar.get(Calendar.MONTH) - 1;
 		_day = calendar.get(Calendar.DAY_OF_MONTH);
 		_timeZone = calendar.getTimeZone();
@@ -96,62 +99,32 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 * @return The XSGMonthDay representation of the supplied date
 	 */
 	public static XSGMonthDay parse_gMonthDay(String str) {
+		/* The lexical representation for gMonthDay is the left truncated
+		 * lexical representation for date: --MM-DD. An optional following time
+		 * zone qualifier is allowed as for date. No preceding sign is allowed.
+		 * No other formats are allowed.
+		 */
 
-		String startdate = "1972-";
-		String starttime = "T00:00:00";
+		str = str.trim();
 
-		int index = str.lastIndexOf('+', str.length());
-				
-		if (index == -1)
-			index = str.lastIndexOf('-');
-		if (index == -1)
-			index = str.lastIndexOf('Z', str.length());
-		if (index != -1) {
-			int zIndex = str.lastIndexOf('Z', str.length());
-			if (zIndex == -1) {
-				if (index > 5)
-					zIndex = index;
-			}
-			if (zIndex == -1) {
-				zIndex = str.lastIndexOf('+');
-			}
-
-			
-			String[] split = str.split("-");
-			startdate += split[2].replaceAll("Z", "") + "-" + split[3].replaceAll("Z", "").substring(0, 2);
-			
-			if (split.length > 4) {
-				String[] timesplit = split[4].split(":");
-				if (timesplit.length < 3) {
-					starttime = "T";
-					StringBuilder buf = new StringBuilder(starttime);
-					for (String timesplit1 : timesplit) {
-						buf.append(timesplit1).append(":");
-					}
-					buf.append("00");
-					starttime = buf.toString();
-				} else {
-					starttime += timesplit[0] + ":" + timesplit[1] + ":" + timesplit[2];
-				}
-			}
-
-			startdate = startdate.trim();
-			startdate += starttime;
-
-			
-			if (zIndex != -1) {
-				startdate += str.substring(zIndex);
-			}
-		} else {
-			startdate += starttime;
+		Pattern pattern = Pattern.compile("^--[0-9]{2}-[0-9]{2}");
+		Matcher matcher = pattern.matcher(str);
+		if (!matcher.find()) {
+			return null;
 		}
 
-		XSDateTime dt = XSDateTime.parseDateTime(startdate);
+		String monthday = matcher.group();
+		String timezone = str.substring(monthday.length());
+
+		String year = "1972";
+		String time = "T00:00:00.0";
+		String datetime =  year + monthday.substring(1) + time + timezone;
+
+		XSDateTime dt = XSDateTime.parseDateTime(datetime);
 		if (dt == null)
 			return null;
 
-		Calendar calendar = dt.calendar();
-		return new XSGMonthDay(calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH), dt.timezoned() ? calendar.getTimeZone() : null);
+		return new XSGMonthDay(dt.calendar().get(Calendar.MONTH) + 1, dt.calendar().get(Calendar.DAY_OF_MONTH), dt.timezoned() ? dt.calendar().getTimeZone() : null);
 	}
 
 	/**
@@ -169,10 +142,12 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 			return ResultBuffer.EMPTY;
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration || 
-			aat instanceof XSTime || isGDataType(aat) ||
-			aat instanceof XSBoolean || aat instanceof XSBase64Binary ||
-			aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSDateTime
+			|| aat instanceof XSDate
+			|| aat instanceof XSGMonthDay))
+		{
 			throw DynamicError.invalidType();
 		}
 
@@ -283,8 +258,8 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 			
 			int hrs = tz().hours();
 			int min = tz().minutes();
-			double secs = tz().seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = tz().seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 			  ret += "Z";
 			}
 			else {
@@ -323,7 +298,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public Calendar calendar() {
-		GregorianCalendar calendar = new GregorianCalendar(_timeZone != null ? _timeZone : TimeZone.getTimeZone("UTC"));
+		GregorianCalendar calendar = new GregorianCalendar(_timeZone != null ? _timeZone : TimeZone.getTimeZone("GMT"));
 		calendar.clear();
 		calendar.setGregorianChange(new Date(Long.MIN_VALUE));
 		calendar.set(Calendar.MONTH, _month - 1);
@@ -361,7 +336,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 			return null;
 		}
 
-		double rawOffset = _timeZone.getRawOffset() / 1000.0;
+		BigDecimal rawOffset = new BigDecimal(_timeZone.getRawOffset()).divide(new BigDecimal(1000));
 		return new XSDayTimeDuration(rawOffset);
 	}	
 

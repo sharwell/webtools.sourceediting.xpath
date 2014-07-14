@@ -1,17 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2010 Andrea Bittau, University College London, and others
+ * Copyright (c) 2011 Mukul Gandhi, and others
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Andrea Bittau - initial API and implementation from the PsychoPath XPath 2.0
- *     Mukul Gandhi - bug 334842 - improving support for the data types Name, NCName, ENTITY, 
- *                                 ID, IDREF and NMTOKEN. 
  *******************************************************************************/
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
+
+import java.util.regex.Pattern;
 
 import org.apache.xerces.util.XMLChar;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -21,10 +20,11 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
- * A representation of the NCName datatype
+ * A representation of the language datatype
  */
-public class XSNCName extends XSName {
-	private static final String XS_NC_NAME = "xs:NCName";
+public class XSLanguage extends XSToken {
+	private static final String XS_NAME = "xs:language";
+	private static final Pattern _lexicalPattern = Pattern.compile("[a-zA-Z]{1,8}(?:-[a-zA-Z0-9]{1,8})*");
 
 	/**
 	 * Initialises using the supplied String
@@ -32,79 +32,64 @@ public class XSNCName extends XSName {
 	 * @param x
 	 *            String to be stored
 	 */
-	public XSNCName(String x) {
+	public XSLanguage(String x) {
 		super(x);
 	}
 
 	/**
 	 * Initialises to null
 	 */
-	public XSNCName() {
+	public XSLanguage() {
 		this(null);
 	}
 
 	/**
 	 * Retrieves the datatype's full pathname
 	 * 
-	 * @return "xs:NCName" which is the datatype's full pathname
+	 * @return "xs:language" which is the datatype's full pathname
 	 */
 	@Override
 	public String string_type() {
-		return XS_NC_NAME;
+		return XS_NAME;
 	}
 
 	/**
 	 * Retrieves the datatype's name
 	 * 
-	 * @return "NCName" which is the datatype's name
+	 * @return "language" which is the datatype's name
 	 */
 	@Override
 	public String type_name() {
-		return "NCName";
+		return "language";
 	}
 
 	/**
-	 * Creates a new ResultSequence consisting of the extractable NCName within
+	 * Creates a new ResultSequence consisting of the extractable language within
 	 * the supplied ResultSequence
 	 * 
 	 * @param arg
-	 *            The ResultSequence from which to extract the NCName
-	 * @return New ResultSequence consisting of the NCName supplied
+	 *            The ResultSequence from which to extract the language
+	 * @return New ResultSequence consisting of the language supplied
 	 * @throws DynamicError
 	 */
 	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
-		if (arg.empty())
-			return ResultBuffer.EMPTY;
+		ResultSequence result = super.constructor(arg);
+		if (result.empty()) {
+			return result;
+		}
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		String strValue = aat.getStringValue();
-		
-		if (!isConstraintSatisfied(strValue)) {
-			// invalid input
+		XSToken token = (XSToken)result;
+		String value = token.getStringValue();
+		if (!_lexicalPattern.matcher(value).matches()) {
 			throw DynamicError.cant_cast(null);
 		}
 
-		return new XSNCName(strValue);
+		return new XSLanguage(value);
 	}
-	
-	/*
-	 * Check if a string satisfies the constraints of NCName data type.
-	 */
-	protected boolean isConstraintSatisfied(String strValue) {
-		
-		boolean isValidNCName = true;
-		
-		if (!XMLChar.isValidNCName(strValue)) {
-			isValidNCName = false;
-		}
-		
-		return isValidNCName;
-		
-	} // isConstraintSatisfied
 
 	@Override
 	public TypeDefinition getTypeDefinition() {
-		return BuiltinTypeLibrary.XS_NCNAME;
+		return BuiltinTypeLibrary.XS_LANGUAGE;
 	}
 }

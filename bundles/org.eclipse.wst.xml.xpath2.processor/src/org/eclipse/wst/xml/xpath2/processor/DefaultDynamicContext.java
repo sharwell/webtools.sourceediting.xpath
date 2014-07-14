@@ -23,6 +23,7 @@ package org.eclipse.wst.xml.xpath2.processor;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -93,7 +94,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 		super(schema);
 
 		_focus = null;
-		_tz = new XSDayTimeDuration(0, 5, 0, 0, true);
+		_tz = new XSDayTimeDuration(0, 5, 0, BigDecimal.ZERO, true);
 		_loaded_documents = new HashMap<URI, Document>();
 	}
 	/**
@@ -115,7 +116,7 @@ public class DefaultDynamicContext extends org.eclipse.wst.xml.xpath2.processor.
 	@Override
 	public GregorianCalendar current_date_time() {
 		if (_current_date_time == null) {
-			_current_date_time = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+			_current_date_time = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 		}
 		return _current_date_time;
 	}

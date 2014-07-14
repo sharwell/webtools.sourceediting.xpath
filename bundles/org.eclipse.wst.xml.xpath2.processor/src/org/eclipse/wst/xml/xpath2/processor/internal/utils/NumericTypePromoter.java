@@ -20,12 +20,17 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
 
 public class NumericTypePromoter extends TypePromoter {
 
 	@Override
 	protected boolean checkCombination(Class<? extends AnyType> newType) {
+		if (newType == getTargetType()) {
+			return true;
+		}
+
 		// Note: Double or float will override everything
 		if (newType == XSDouble.class || getTargetType() == XSDouble.class) {
 			setTargetType(XSDouble.class);
@@ -43,6 +48,10 @@ public class NumericTypePromoter extends TypePromoter {
 
 	@Override
 	public AnyAtomicType doPromote(AnyAtomicType value) throws DynamicError {
+		if (getTargetType().isInstance(value)) {
+			return value;
+		}
+
 		if (getTargetType() == XSFloat.class) {
 			return new XSFloat(value.getStringValue());
 		} else if (getTargetType() == XSDouble.class) {
@@ -51,7 +60,10 @@ public class NumericTypePromoter extends TypePromoter {
 			return new XSInteger(value.getStringValue());
 		} else if (getTargetType() == XSDecimal.class) {
 			return new XSDecimal(value.getStringValue());
+		} else if (getTargetType() == XSString.class) {
+			return new XSString(value.getStringValue());
 		}
+
 		return null;
 	}
 

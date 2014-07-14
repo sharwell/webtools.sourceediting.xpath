@@ -17,6 +17,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -82,13 +83,14 @@ Cloneable {
 	 * Initializes to the current time
 	 */
 	public XSTime() {
-		this(getTime(new GregorianCalendar(TimeZone.getTimeZone("UTC"))), true);
+		this(getTime(new GregorianCalendar(TimeZone.getTimeZone("GMT"))), true);
 	}
 
 	public static Calendar getTime(Calendar calendar) {
 		GregorianCalendar time = new GregorianCalendar(calendar.getTimeZone());
 		time.setGregorianChange(new Date(Long.MIN_VALUE));
 		time.setTimeInMillis(calendar.getTimeInMillis());
+		time.set(Calendar.ERA, GregorianCalendar.AD);
 		time.set(Calendar.YEAR, 1970);
 		time.set(Calendar.DAY_OF_YEAR, 1);
 		return time;
@@ -124,6 +126,7 @@ Cloneable {
 	 * @return New XSTime representing the supplied time
 	 */
 	public static CalendarType parse_time(String str) {
+		str = str.trim();
 
 		String startdate = "1983-11-29T";
 		
@@ -149,6 +152,14 @@ Cloneable {
 			return ResultBuffer.EMPTY;
 
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSDateTime
+			|| aat instanceof XSTime))
+		{
+			throw DynamicError.invalidType();
+		}
+
 		if (!isCastable(aat)) {
 			throw DynamicError.invalidType();
 		}
@@ -265,8 +276,8 @@ Cloneable {
 			XSDuration tz = tz();
 			int hrs = tz.hours();
 			int min = tz.minutes();
-			double secs = tz.seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = tz.seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 			  ret += "Z";
 			}
 			else {
@@ -321,7 +332,7 @@ Cloneable {
 		}
 
 		TimeZone timeZone = calendar().getTimeZone();
-		double rawOffset = timeZone.getRawOffset() / 1000.0;
+		BigDecimal rawOffset = new BigDecimal(timeZone.getRawOffset()).divide(new BigDecimal(1000));
 		return new XSDayTimeDuration(rawOffset);
 	}
 
@@ -424,10 +435,12 @@ Cloneable {
 
 	private ResultSequence minusXSDayTimeDuration(XSDayTimeDuration val) {
 		Calendar resultCalendar = (Calendar)calendar().clone();
-		int multiplier = val.negative() ? -1 : 1;
+		// multiplier is negated due to this being a 'minus' operation
+		int multiplier = val.negative() ? 1 : -1;
+		resultCalendar.add(Calendar.DAY_OF_YEAR, multiplier * val.days());
 		resultCalendar.add(Calendar.HOUR_OF_DAY, multiplier * val.hours());
 		resultCalendar.add(Calendar.MINUTE, multiplier * val.minutes());
-		resultCalendar.add(Calendar.MILLISECOND, multiplier * (int)(val.seconds() * 1000));
+		resultCalendar.add(Calendar.MILLISECOND, multiplier * val.seconds().multiply(new BigDecimal(1000)).intValue());
 		return new XSTime(getTime(resultCalendar), timezoned());
 	}
 
@@ -454,10 +467,10 @@ Cloneable {
 	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
-		double ms = val.time_value() * 1000.0;
-		XSTime res = clone();
-		res.calendar().add(Calendar.MILLISECOND, (int) ms);
-		return res;
+		int ms = val.time_value().multiply(new BigDecimal(1000)).intValue();
+		Calendar adjusted = (Calendar)calendar().clone();
+		adjusted.add(Calendar.MILLISECOND, ms);
+		return new XSTime(getTime(adjusted), timezoned());
 	}
 
 	@Override

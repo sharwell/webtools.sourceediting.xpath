@@ -119,12 +119,14 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 		  return ResultBuffer.EMPTY;
 		
 		Item anyType = arg.first();
-		
-		if (anyType instanceof XSDuration || anyType instanceof CalendarType ||
-			anyType instanceof XSBase64Binary || anyType instanceof XSHexBinary) {
+		if (!(anyType instanceof XSString
+			|| anyType instanceof XSUntypedAtomic
+			|| anyType instanceof XSFloat
+			|| anyType instanceof XSDouble
+			|| anyType instanceof XSDecimal
+			|| anyType instanceof XSBoolean))
+		{
 			throw DynamicError.invalidType();
-		} else if (anyType instanceof XSAnyURI) {
-			return XSBoolean.valueOf(!anyType.getStringValue().isEmpty());
 		}
 		
 		String str_value = anyType.getStringValue();
@@ -138,12 +140,14 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	}
 
 	private boolean isFalse(String str_value) {
+		str_value = str_value.trim();
 		return str_value.equals("0") || str_value.equals("false") ||
 		    str_value.equals("+0") || str_value.equals("-0") ||
 		    str_value.equals("0.0E0") || str_value.equals("NaN");
 	}
 
 	private boolean isCastable(Item anyType, String str_value) {
+		str_value = str_value.trim();
 		return str_value.equals("0") || str_value.equals("1") || 
 			 str_value.equals("true") || str_value.equals("false") ||
 			 anyType instanceof NumericType;

@@ -42,11 +42,11 @@ public abstract class CalendarType extends CtrType {
 	public abstract boolean timezoned();
 
 	/**
-	 * Gets a {@link Calendar} representing the {@link CalendarType} in the UTC
+	 * Gets a {@link Calendar} representing the {@link CalendarType} in the GMT
 	 * time zone.
 	 */
 	public static Calendar normalizeCalendar(Calendar cal) {
-		Calendar normalized = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar normalized = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 		normalized.setTimeInMillis(cal.getTimeInMillis());
 		return normalized;
 	}

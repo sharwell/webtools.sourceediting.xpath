@@ -11,6 +11,9 @@ import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,7 +27,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
+import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.Engine;
 import org.eclipse.wst.xml.xpath2.processor.internal.ChildAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AttrType;
@@ -32,6 +37,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.TextType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
+import org.eclipse.wst.xml.xpath2.processor.util.DynamicContextBuilder;
+import org.eclipse.wst.xml.xpath2.processor.util.StaticContextBuilder;
 import org.hamcrest.Matcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -43,7 +50,60 @@ import org.w3c.dom.Text;
  */
 public abstract class XPathTestBase {
 
+	private final boolean _debug;
+
+	private final Engine _engine = new Engine();
+	private DocumentBuilder _documentBuilder;
 	private ZipFile _zipFile;
+
+	public XPathTestBase() {
+		this._debug = false;
+	}
+
+	public XPathTestBase(boolean debug) {
+		this._debug = debug;
+	}
+
+	protected StaticContextBuilder createStaticContextBuilder() {
+		return new StaticContextBuilder()
+			.withNamespace("fn", "http://www.w3.org/2005/xpath-functions")
+			.withNamespace("xs", "http://www.w3.org/2001/XMLSchema");
+	}
+
+	protected DynamicContextBuilder createDynamicContextBuilder(StaticContext staticContext) {
+		Duration defaultTimezoneOffset;
+		try {
+			defaultTimezoneOffset = DatatypeFactory.newInstance().newDuration(false, 0, 0, 0, 5, 0, 0);
+		} catch (DatatypeConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+
+		return new DynamicContextBuilder(staticContext)
+			.withTimezoneOffset(defaultTimezoneOffset);
+	}
+
+	protected Engine getEngine() {
+		return _engine;
+	}
+
+	protected DocumentBuilder getDocumentBuilder() {
+		if (_documentBuilder == null) {
+			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			documentBuilderFactory.setNamespaceAware(true);
+
+			try {
+				_documentBuilder = documentBuilderFactory.newDocumentBuilder();
+			} catch (ParserConfigurationException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		return _documentBuilder;
+	}
+
+	protected boolean isDebug() {
+		return _debug;
+	}
 
 	public static <T> Matcher<T> xmlEqualTo(T operand) {
 		return IsXMLEqual.xmlEqualTo(operand);
@@ -73,8 +133,12 @@ public abstract class XPathTestBase {
 	}
 
 	public String readFile(String filePath, String fileName, String extension) throws IOException {
+		return readFile(filePath + fileName + extension);
+	}
+
+	public String readFile(String filePath) throws IOException {
 		ZipFile sourceFile = getZipFile();
-		ZipEntry entry = sourceFile.getEntry(filePath + fileName + extension);
+		ZipEntry entry = sourceFile.getEntry(filePath);
 		InputStreamReader inputStreamReader = new InputStreamReader(sourceFile.getInputStream(entry), "UTF-8");
 		try {
 			char[] data = new char[(int)entry.getSize()];
@@ -111,16 +175,16 @@ public abstract class XPathTestBase {
 		return writer.toString();
 	}
 
-	private final DocumentBuilder _documentBuilder;
+	private final DocumentBuilder _normalizationDocumentBuilder;
 	private final Document _dummyDocument;
 	{
 		try {
-			_documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			_normalizationDocumentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (ParserConfigurationException ex) {
 			throw new RuntimeException(ex);
 		}
 
-		_dummyDocument = _documentBuilder.newDocument();
+		_dummyDocument = _normalizationDocumentBuilder.newDocument();
 	}
 
 	private ResultSequence normalizeSequence(ResultSequence sequence) throws ParserConfigurationException {
@@ -265,7 +329,7 @@ public abstract class XPathTestBase {
 		 */
 		ResultSequence s7;
 		{
-			Document document = _documentBuilder.newDocument();
+			Document document = _normalizationDocumentBuilder.newDocument();
 			document.setStrictErrorChecking(false);
 			for (Iterator<Item> itemIt = s6.iterator(); itemIt.hasNext(); ) {
 				Item item = itemIt.next();

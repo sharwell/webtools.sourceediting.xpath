@@ -35,9 +35,10 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 
 	// XXX needed for fn:boolean
 	/**
-	 * Check whether node represnts 0
-	 * 
-	 * @return True if node represnts 0. False otherwise
+	 * Check whether node represents 0. Note that for types that distinguish
+	 * between 0 and -0, this method returns true for both cases.
+	 *
+	 * @return True if node represents 0. False otherwise
 	 */
 	public abstract boolean zero();
 
@@ -85,7 +86,9 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 	 * 
 	 * @return A NumericType representing the closest long of the number stored.
 	 */
-	public abstract NumericType round_half_to_even();
+	public final NumericType round_half_to_even() {
+		return round_half_to_even(0);
+	}
 	
 	public abstract NumericType round_half_to_even(int precision);
 
@@ -136,5 +139,10 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 			throw DynamicError.throw_type_error();
 
 		return get_single_type(rs.first(), type);
+	}
+
+	@Override
+	public String toString() {
+		return string_type() + "(" + getStringValue() + ")";
 	}
 }

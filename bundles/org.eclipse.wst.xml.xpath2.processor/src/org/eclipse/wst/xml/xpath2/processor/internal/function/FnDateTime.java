@@ -95,7 +95,7 @@ public class FnDateTime extends Function {
 		} else if (param2.timezoned()) {
 			timezone = param2.calendar().getTimeZone();
 		} else {
-			timezone = TimeZone.getTimeZone("UTC");
+			timezone = TimeZone.getTimeZone("GMT");
 		}
 
 		Calendar cal = Calendar.getInstance(timezone);

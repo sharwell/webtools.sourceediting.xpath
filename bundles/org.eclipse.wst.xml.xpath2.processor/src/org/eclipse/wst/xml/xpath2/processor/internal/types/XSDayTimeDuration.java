@@ -66,7 +66,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 *            True if this duration of time represents a backwards passage
 	 *            through time. False otherwise
 	 */
-	public XSDayTimeDuration(int days, int hours, int minutes, double seconds,
+	public XSDayTimeDuration(int days, int hours, int minutes, BigDecimal seconds,
 			boolean negative) {
 		super(0, 0, days, hours, minutes, seconds, negative);
 	}
@@ -77,19 +77,19 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @param secs
 	 *            Number of seconds in the duration of time
 	 */
-	public XSDayTimeDuration(double secs) {
-		super(0, 0, 0, 0, 0, Math.abs(secs), secs < 0);
+	public XSDayTimeDuration(BigDecimal secs) {
+		super(0, 0, 0, 0, 0, secs.abs(), secs.compareTo(BigDecimal.ZERO) < 0);
 	}
 
 	/**
 	 * Initialises to a duration of no time (0days, 0hours, 0minutes, 0seconds)
 	 */
 	public XSDayTimeDuration() {
-		super(0, 0, 0, 0, 0, 0.0, false);
+		super(0, 0, 0, 0, 0, BigDecimal.ZERO, false);
 	}
 
 	public XSDayTimeDuration(Duration d) {
-		this(d.getDays(), d.getHours(), d.getMinutes(), d.getField(DatatypeConstants.SECONDS).doubleValue(), d.getSign() == -1);
+		this(d.getDays(), d.getHours(), d.getMinutes(), new BigDecimal(d.getField(DatatypeConstants.SECONDS).doubleValue()), d.getSign() == -1);
 	}
 
 	/**
@@ -110,9 +110,12 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 			return ResultBuffer.EMPTY;
 	
 		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof CalendarType ||
-			aat instanceof XSBoolean || aat instanceof XSBase64Binary ||
-			aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSDuration
+			|| aat instanceof XSYearMonthDuration
+			|| aat instanceof XSDayTimeDuration))
+		{
 			throw DynamicError.invalidType();
 		}
 
@@ -147,15 +150,17 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @return New XSDayTimeDuration representing the duration of time supplied
 	 */
 	public static XSDuration parseDTDuration(String str) {
+		str = str.trim();
+
 		boolean negative;
 		int days = 0;
 		int hours = 0;
 		int minutes = 0;
-		double seconds = 0;
+		BigDecimal seconds = BigDecimal.ZERO;
 
 		// string following the P
 		String pstr;
-		String tstr = null;
+		String tstr;
 
 		// get the negative and pstr
 		if (str.startsWith("-P")) {
@@ -215,7 +220,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 			index = tstr.indexOf('S');
 			if (index != -1) {
 				String digit = tstr.substring(0, index);
-				seconds = Double.parseDouble(digit);
+				seconds = new BigDecimal(digit);
 				tstr = tstr.substring(index + 1, tstr.length());
 				did_something = true;
 			}
@@ -266,11 +271,19 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 */
 	@Override
 	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
-		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
-		
-		double res = value() + val.value();
+		if (arg.size() == 1) {
+			Item first = arg.first();
+			if (first instanceof XSDate || first instanceof XSTime || first instanceof XSDateTime) {
+				// This is a special case for xs:date, xs:time, and xs:dateTime
+				// http://www.w3.org/TR/xquery-semantics/#sec_operators
+				return ((MathPlus)first).plus(this, evaluationContext);
+			}
+		}
 
-		return new XSDayTimeDuration(res);
+		XSDayTimeDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
+		
+		BigDecimal result = value().add(val.value());
+		return new XSDayTimeDuration(result);
 	}
 
 	/**
@@ -287,7 +300,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
-		double res = value() - val.value();
+		BigDecimal res = value().subtract(val.value());
 
 		return new XSDayTimeDuration(res);
 	}
@@ -318,9 +331,8 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 			throw DynamicError.nan();
 		}
 
-		double res = value() * val.double_value();
-
-		return new XSDayTimeDuration(res);
+		BigDecimal result = value().multiply(new BigDecimal(val.double_value()));
+		return new XSDayTimeDuration(result);
 	}
 
 	/**
@@ -342,21 +354,19 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 
 		if (at instanceof XSDouble) {
 			XSDouble dt = (XSDouble) at;
-			double retval = 0;
+
+			BigDecimal retval = BigDecimal.ZERO;
 			
 			if (dt.nan()) {
 				throw DynamicError.nan();
 			}
 			
 			if (!dt.zero()) {
-				BigDecimal ret;
-				
 				if (dt.infinite()) {
-					retval = value() / dt.double_value();
+					// TODO: check this
+					retval = value().divide(new BigDecimal(dt.double_value()));
 				} else {
-					ret = new BigDecimal(value());
-					ret = ret.divide(new BigDecimal(dt.double_value()), 18, BigDecimal.ROUND_HALF_EVEN);
-					retval = ret.doubleValue();
+					retval = value().divide(new BigDecimal(dt.double_value()), 18, BigDecimal.ROUND_HALF_EVEN);
 				}
 			} else {
 				throw DynamicError.overflowUnderflow();
@@ -366,22 +376,20 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 		} else if (at instanceof XSDecimal) {
 			XSDecimal dt = (XSDecimal) at;
 			
-			BigDecimal ret = new BigDecimal(0);
+			BigDecimal ret = BigDecimal.ZERO;
 							
 			if (!dt.zero()) {
-				ret = new BigDecimal(value());
-				ret = ret.divide(dt.getValue(), 18, BigDecimal.ROUND_HALF_EVEN);
+				ret = value().divide(dt.getValue(), 18, BigDecimal.ROUND_HALF_EVEN);
 			} else {
 				throw DynamicError.overflowUnderflow();
 			}
 			
-			return new XSDayTimeDuration(ret.intValue());
+			return new XSDayTimeDuration(ret);
 		} else if (at instanceof XSDayTimeDuration) {
 			XSDuration md = (XSDuration) at;
 
-			BigDecimal res;
-			res = new BigDecimal(this.value());
-			BigDecimal l = new BigDecimal(md.value());
+			BigDecimal res = value();
+			BigDecimal l = md.value();
 			res = res.divide(l, 18, BigDecimal.ROUND_HALF_EVEN);
 
 			return new XSDecimal(res);

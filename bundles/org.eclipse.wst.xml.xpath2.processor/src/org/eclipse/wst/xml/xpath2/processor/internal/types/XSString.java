@@ -199,5 +199,4 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	public Object getNativeValue() {
 		return _value;
 	}
-
 }

@@ -55,7 +55,7 @@ public class XSID extends XSNCName {
 		
 		if (!isConstraintSatisfied(strValue)) {
 			// invalid input
-			throw DynamicError.throw_type_error();
+			throw DynamicError.cant_cast(null);
 		}
 
 		return new XSID(strValue);

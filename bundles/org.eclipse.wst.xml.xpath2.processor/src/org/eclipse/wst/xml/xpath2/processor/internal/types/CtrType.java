@@ -41,4 +41,9 @@ public abstract class CtrType extends AnyAtomicType {
 	public Object getNativeValue() {
 		return string_value();
 	}
+
+	@Override
+	public String toString() {
+		return string_type() + "(\"" + getStringValue().replace("\"", "\"\"") + "\")";
+	}
 }

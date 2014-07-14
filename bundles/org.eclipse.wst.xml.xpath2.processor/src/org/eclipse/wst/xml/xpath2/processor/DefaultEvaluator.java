@@ -48,6 +48,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ReverseAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.SelfAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticContextAdapter;
+import org.eclipse.wst.xml.xpath2.processor.internal.StaticFunctNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticTypeNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
@@ -987,18 +988,45 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 */
 	@Override
 	public ResultSequence visit(CastableExpr cexp) {
-		boolean castable;
-		try {
-			CastExpr ce = new CastExpr((Expr) cexp.left(), (SingleType) cexp
-					.right());
 
-			visit(ce);
-			castable = true;
-		} catch (Throwable t) {
-			castable = false;
+		ResultSequence rs = cexp.left().accept(this);
+		SingleType st = (SingleType) cexp.right();
+
+		rs = FnData.atomize(rs);
+
+		if (rs.size() > 1)
+			return XSBoolean.FALSE;
+
+		if (rs.empty()) {
+			if (st.qmark())
+				return XSBoolean.TRUE;
+			else
+				return XSBoolean.FALSE;
 		}
 
-		return XSBoolean.valueOf(castable);
+		AnyType at = (AnyType) rs.item(0);
+
+		if (!(at instanceof AnyAtomicType))
+			return XSBoolean.FALSE;
+
+		AnyAtomicType aat = (AnyAtomicType) at;
+		QName type = st.type();
+
+		// prepare args from function
+		Collection<ResultSequence> args = new ArrayList<ResultSequence>();
+		args.add(aat);
+
+		Function function = _sc.resolveFunction(type.asQName(), args.size());
+		if (function == null) {
+			throw new StaticTypeNameError(type.getStringValue(), null);
+		}
+
+		try {
+			function.evaluate(args, _ec);
+			return XSBoolean.TRUE;
+		} catch (DynamicError err) {
+			return XSBoolean.FALSE;
+		}
 	}
 
 	/**
@@ -1044,8 +1072,11 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 				function = _sc.resolveFunction(type.asQName(), args.size());
 				cexp.set_function(function);
 			}
-			if (function == null)
-				throw report_error(TypeError.invalid_type(null));
+
+			if (function == null) {
+				throw new StaticTypeNameError(type.getStringValue(), null);
+			}
+
 			return function.evaluate(args, _ec);
 		} catch (DynamicError err) {
 			throw err;

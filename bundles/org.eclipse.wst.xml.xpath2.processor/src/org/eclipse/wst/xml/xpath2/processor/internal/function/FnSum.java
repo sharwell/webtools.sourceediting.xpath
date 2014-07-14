@@ -64,14 +64,18 @@ public class FnSum extends Function {
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		Iterator<ResultSequence> argIterator = args.iterator();
 		ResultSequence argSequence = argIterator.next();
-		AnyAtomicType zero = ZERO;
+		ResultSequence zero = ZERO;
 		if (argIterator.hasNext()) {
 			ResultSequence zeroSequence = argIterator.next();
-			if (zeroSequence.size() != 1)
+			if (argSequence.empty()) {
+				return zeroSequence;
+			}
+
+			if (zeroSequence.size() > 1)
 				throw new DynamicError(TypeError.invalid_type(null));
-			if (! (zeroSequence.first() instanceof AnyAtomicType))
+			if (zeroSequence.size() == 1 && ! (zeroSequence.first() instanceof AnyAtomicType))
 				throw new DynamicError(TypeError.invalid_type(zeroSequence.first().getStringValue()));
-			zero = (AnyAtomicType)zeroSequence.first();
+			zero = zeroSequence;
 		}
 		return sum(argSequence, zero, evaluationContext);
 	}
@@ -85,11 +89,9 @@ public class FnSum extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:sum operation.
 	 */
-	public static ResultSequence sum(ResultSequence arg, AnyAtomicType zero, EvaluationContext evaluationContext) throws DynamicError {
-
-
+	public static ResultSequence sum(ResultSequence arg, ResultSequence zeroSequence, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg.empty())
-			return zero;
+			return zeroSequence;
 
 		MathPlus total = null;
 
@@ -97,10 +99,10 @@ public class FnSum extends Function {
 		tp.considerSequence(arg);
 
 		for (Iterator<Item> i = arg.iterator(); i.hasNext();) {
-			AnyAtomicType conv = tp.promote((AnyType) i.next());
-			
+			Item item = i.next();
+			AnyAtomicType conv = tp.promote((AnyType) item);
 			if(conv == null){
-				conv = zero;
+				throw DynamicError.argument_type_error(item.getClass());
 			}
 			
 			if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {

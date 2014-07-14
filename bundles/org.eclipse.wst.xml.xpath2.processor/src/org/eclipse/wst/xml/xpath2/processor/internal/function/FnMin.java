@@ -17,6 +17,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
@@ -27,8 +28,10 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.ComparableTypePromoter;
 import org.eclipse.wst.xml.xpath2.processor.internal.utils.TypePromoter;
 
@@ -43,7 +46,7 @@ public class FnMin extends Function {
 	 * Constructor for FnMin.
 	 */
 	public FnMin() {
-		super(new QName("min"), 1);
+		super(new QName("min"), 1, 2);
 	}
 
 	/**
@@ -72,8 +75,8 @@ public class FnMin extends Function {
 	 * @return Result of fn:min operation.
 	 */
 	public static ResultSequence min(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
-
 		ResultSequence arg = FnMax.get_arg(args, CmpLt.class);
+		Comparator<String> collation = FnMax.getCollation(args, evaluationContext);
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
@@ -82,19 +85,39 @@ public class FnMin extends Function {
 		TypePromoter tp = new ComparableTypePromoter();
 		tp.considerSequence(arg);
 
+		boolean nan = false;
 		for (Iterator<Item> i = arg.iterator(); i.hasNext();) {
-			AnyAtomicType conv = tp.promote((AnyType) i.next());
+			Item item = i.next();
+			AnyAtomicType conv = tp.promote((AnyType) item);
 			
-			if( conv != null ){
+			if( !nan && conv != null ){
 				
 				if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
-					return tp.promote(new XSFloat(Float.NaN));
+					nan = true;
 				}
-				if (max == null || ((CmpLt)conv).lt((AnyType)max, evaluationContext)) {
+
+				if (max == null) {
+					max = (CmpLt)conv;
+					continue;
+				}
+
+				boolean lt;
+				if (conv instanceof XSString || conv instanceof XSAnyURI) {
+					lt = collation.compare(conv.getStringValue(), ((AnyType)max).getStringValue()) < 0;
+				} else {
+					lt = ((CmpLt)conv).lt((AnyType)max, evaluationContext);
+				}
+
+				if (lt) {
 					max = (CmpLt)conv;
 				}
 			}
 		}
+
+		if (nan) {
+			return tp.promote(new XSFloat(Float.NaN));
+		}
+
 		return (AnyType) max;
 	}
 

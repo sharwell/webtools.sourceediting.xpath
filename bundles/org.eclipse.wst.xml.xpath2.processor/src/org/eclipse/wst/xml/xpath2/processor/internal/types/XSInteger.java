@@ -21,6 +21,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
@@ -36,6 +37,9 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSInteger extends XSDecimal {
 
 	private static final String XS_INTEGER = "xs:integer";
+	
+	private static Pattern _lexicalPattern = Pattern.compile("\\s*[+-]?[0-9]+\\s*");
+
 	private BigInteger _value;
 
 	/**
@@ -129,13 +133,16 @@ public class XSInteger extends XSDecimal {
 		// the function conversion rules apply here too. Get the argument
 		// and convert it's string value to an integer.
 		Item aat = arg.first();
-
-		if (aat instanceof XSDuration || aat instanceof CalendarType ||
-			aat instanceof XSBase64Binary || aat instanceof XSHexBinary ||
-			aat instanceof XSAnyURI) {
+		if (!(aat instanceof XSString
+			|| aat instanceof XSUntypedAtomic
+			|| aat instanceof XSFloat
+			|| aat instanceof XSDouble
+			|| aat instanceof XSDecimal
+			|| aat instanceof XSBoolean))
+		{
 			throw DynamicError.invalidType();
 		}
-		
+
 		if (!isCastable(aat)) {
 			throw DynamicError.cant_cast(null);
 		}
@@ -143,13 +150,29 @@ public class XSInteger extends XSDecimal {
 		
 		try {
 			BigInteger bigInt = castInteger(aat);
+			if (getMinValue() != null && bigInt.compareTo(getMinValue()) < 0) {
+				throw DynamicError.cant_cast(null);
+			}
+
+			if (getMaxValue() != null && bigInt.compareTo(getMaxValue()) > 0) {
+				throw DynamicError.cant_cast(null);
+			}
+
 			return new XSInteger(bigInt);
 		} catch (NumberFormatException e) {
 			throw DynamicError.invalidLexicalValue(e);
 		}
 
 	}
-	
+
+	protected BigInteger getMinValue() {
+		return null;
+	}
+
+	protected BigInteger getMaxValue() {
+		return null;
+	}
+
 	private BigInteger castInteger(Item aat) {
 		if (aat instanceof XSBoolean) {
 			if (aat.getStringValue().equals("true")) {
@@ -165,7 +188,7 @@ public class XSInteger extends XSDecimal {
 				return bigDec.toBigInteger();
 		}
 		
-		return new BigInteger(aat.getStringValue());
+		return new BigInteger(aat.getStringValue().trim());
 	}
 	
 	private boolean isCastable(Item aat) throws DynamicError {
@@ -184,16 +207,8 @@ public class XSInteger extends XSDecimal {
 	}
 	
 	@Override
-	@SuppressWarnings("ResultOfObjectAllocationIgnored")
 	protected boolean isLexicalValue(String value) {
-
-		try {
-			new BigInteger(value);
-		} catch (NumberFormatException ex) {
-			return false;
-		}
-		
-		return true;
+		return _lexicalPattern.matcher(value).matches();
 	}
 
 	/**

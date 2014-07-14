@@ -18,7 +18,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigDecimal;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -291,7 +291,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg instanceof XSDayTimeDuration) {
 			XSDayTimeDuration dayTimeDuration = (XSDayTimeDuration)arg;
 			return (monthValue() == 0 && dayTimeDuration.value() == 0.0);
@@ -299,9 +299,8 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 			XSYearMonthDuration yearMonthDuration = (XSYearMonthDuration)arg;
 			return monthValue() == yearMonthDuration.monthValue();
 		}
-		XSDuration val = (XSDuration) NumericType
-				.get_single_type(arg, XSDuration.class);
-		return super.eq(val, dynamicContext);
+		XSDuration val = NumericType.get_single_type(arg, XSDuration.class);
+		return super.eq(val, evaluationContext);
 	}
 
 	/**
@@ -314,9 +313,8 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSYearMonthDuration val = (XSYearMonthDuration) NumericType
-				.get_single_type(arg, XSYearMonthDuration.class);
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSYearMonthDuration val = NumericType.get_single_type(arg, XSYearMonthDuration.class);
 
 		return monthValue() < val.monthValue();
 	}
@@ -331,9 +329,8 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSYearMonthDuration val = (XSYearMonthDuration) NumericType
-				.get_single_type(arg, XSYearMonthDuration.class);
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSYearMonthDuration val = NumericType.get_single_type(arg, XSYearMonthDuration.class);
 
 		return monthValue() > val.monthValue();
 	}
@@ -349,9 +346,8 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
-		XSYearMonthDuration val = (XSYearMonthDuration) NumericType
-				.get_single_type(arg, XSYearMonthDuration.class);
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSYearMonthDuration val = NumericType.get_single_type(arg, XSYearMonthDuration.class);
 
 		int res = monthValue() + val.monthValue();
 
@@ -369,9 +365,8 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
-		XSYearMonthDuration val = (XSYearMonthDuration) NumericType
-				.get_single_type(arg, XSYearMonthDuration.class);
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSYearMonthDuration val = NumericType.get_single_type(arg, XSYearMonthDuration.class);
 
 		int res = monthValue() - val.monthValue();
 
@@ -389,7 +384,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg) throws DynamicError {
+	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence convertedRS = arg;		
 		if (arg.size() == 1) {
 			Item argValue = arg.first();
@@ -398,8 +393,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
             }
 		}
 		
-		XSDouble val = (XSDouble) NumericType.get_single_type(convertedRS,
-				XSDouble.class);
+		XSDouble val = NumericType.get_single_type(convertedRS, XSDouble.class);
 
 		if (val.nan()) {
 			throw DynamicError.nan();
@@ -425,7 +419,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence div(ResultSequence arg) throws DynamicError {
+	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg.size() != 1)
 			throw DynamicError.throw_type_error();
 

@@ -21,7 +21,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 import java.math.BigDecimal;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -85,7 +85,7 @@ public class XSDouble extends NumericType {
 	 */
 	public static XSDouble parse_double(String i) {
 		try {
-			Double d = null;
+			Double d;
 			if (i.equals("INF")) {
 				d = Double.POSITIVE_INFINITY;
 			} else if (i.equals("-INF")) {
@@ -258,7 +258,7 @@ public class XSDouble extends NumericType {
 	 * @since 1.1
 	 */
 	@Override
-	public boolean eq(AnyType aa, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType aa, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence crs = constructor(aa);
 		
 		if (crs.empty()) {
@@ -278,7 +278,7 @@ public class XSDouble extends NumericType {
 
 		// Operator == for double values in Java performs as described above.
 		// Note that this is NOT equivalent to the Double.equals method.
-		return _value == d._value;
+		return double_value() == d.double_value();
 	}
 
 	/**
@@ -291,10 +291,10 @@ public class XSDouble extends NumericType {
 	 *         one stored. False otherwise
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
 		
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return double_value() > val.double_value();
 	}
 
@@ -316,10 +316,10 @@ public class XSDouble extends NumericType {
 	 *         one stored. False otherwise
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return double_value() < val.double_value();
 	}
 
@@ -333,7 +333,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble consisting of the result of the mathematical addition.
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
 		
@@ -370,10 +370,10 @@ public class XSDouble extends NumericType {
 	 *         subtraction.
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 
 		return new XSDouble(double_value() - val.double_value());
 	}
@@ -389,10 +389,10 @@ public class XSDouble extends NumericType {
 	 *         multiplication.
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg) throws DynamicError {
+	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return new XSDouble(double_value() * val.double_value());
 	}
 
@@ -405,10 +405,10 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble consisting of the result of the mathematical division.
 	 */
 	@Override
-	public ResultSequence div(ResultSequence arg) throws DynamicError {
+	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return new XSDouble(double_value() / val.double_value());
 	}
 
@@ -422,10 +422,10 @@ public class XSDouble extends NumericType {
 	 *         division.
 	 */
 	@Override
-	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
+	public ResultSequence idiv(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 
 		if (this.nan() || val.nan())
 			throw DynamicError.numeric_overflow("Dividend or divisor is NaN");
@@ -449,10 +449,10 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble consisting of the result of the mathematical modulus.
 	 */
 	@Override
-	public ResultSequence mod(ResultSequence arg) throws DynamicError {
+	public ResultSequence mod(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return new XSDouble(double_value() % val.double_value());
 	}
 

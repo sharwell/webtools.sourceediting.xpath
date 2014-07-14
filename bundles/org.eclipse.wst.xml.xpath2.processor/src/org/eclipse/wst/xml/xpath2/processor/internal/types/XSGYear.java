@@ -15,12 +15,15 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import javax.xml.datatype.Duration;
+
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
@@ -34,8 +37,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSGYear extends CalendarType implements CmpEq {
 
 	private static final String XS_G_YEAR = "xs:gYear";
-	private final Calendar _calendar;
-	private final boolean _timezoned;
+	private final int _year;
+	private final TimeZone _timeZone;
 
 	/**
 	 * Initialises a representation of the supplied month
@@ -45,21 +48,50 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 * @param tz
 	 *            Timezone associated with this month
 	 */
-	@Deprecated
-	public XSGYear(Calendar cal, XSDuration tz) {
-		_calendar = cal;
-		if (tz != null) {
-			_timezoned = true;
-			_tz = tz;
-		}
-		
+//	@Deprecated
+//	public XSGYear(Calendar cal, XSDuration tz) {
+//		_calendar = cal;
+//		if (tz != null) {
+//			_timezoned = true;
+//			_tz = tz;
+//		}
+//		
+//	}
+
+	public XSGYear(int year, TimeZone timeZone) {
+		_year = year;
+		_timeZone = timeZone;
 	}
 
 	/**
 	 * Initialises a representation of the current year
 	 */
 	public XSGYear() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
+		this(getYear(new GregorianCalendar(TimeZone.getTimeZone("UTC"))), TimeZone.getTimeZone("UTC"));
+	}
+
+	static int getYear(Calendar calendar) {
+		// make sure we are working with Gregorian rules
+		GregorianCalendar gregorianCalendar;
+		if (calendar instanceof GregorianCalendar) {
+			gregorianCalendar = (GregorianCalendar)calendar;
+			if (gregorianCalendar.getTime().before(gregorianCalendar.getGregorianChange())) {
+				gregorianCalendar = (GregorianCalendar)gregorianCalendar.clone();
+				gregorianCalendar.setGregorianChange(new Date(Long.MIN_VALUE));
+			}
+		} else {
+			gregorianCalendar = new GregorianCalendar(calendar.getTimeZone());
+			gregorianCalendar.setGregorianChange(new Date(Long.MIN_VALUE));
+			gregorianCalendar.setTimeInMillis(calendar.getTimeInMillis());
+		}
+
+		if (gregorianCalendar.get(Calendar.ERA) == GregorianCalendar.AD) {
+			return gregorianCalendar.get(Calendar.YEAR);
+		} else {
+			// 1 BC ==> year 0
+			// 2 BC ==> year -1
+			return 1 - gregorianCalendar.get(Calendar.YEAR);
+		}
 	}
 
 	/**
@@ -106,7 +138,7 @@ public class XSGYear extends CalendarType implements CmpEq {
 		if (dt == null)
 			return null;
 
-		return new XSGYear(dt.calendar(), dt.tz());
+		return new XSGYear(getYear(dt.calendar()), dt.timezoned() ? dt.calendar().getTimeZone() : null);
 	}
 
 	/**
@@ -174,17 +206,17 @@ public class XSGYear extends CalendarType implements CmpEq {
 	private XSGYear castGYear(AnyAtomicType aat) {
 		if (aat instanceof XSGYear) {
 			XSGYear gy = (XSGYear) aat;
-			return new XSGYear(gy.calendar(), gy.tz());
+			return new XSGYear(gy._year, gy._timeZone);
 		}
 		
 		if (aat instanceof XSDate) {
 			XSDate date = (XSDate) aat;
-			return new XSGYear(date.calendar(), date.tz());
+			return new XSGYear(getYear(date.calendar()), date.timezoned() ? date.calendar().getTimeZone() : null);
 		}
 		
 		if (aat instanceof XSDateTime) {
 			XSDateTime dateTime = (XSDateTime) aat;
-			return new XSGYear(dateTime.calendar(), dateTime.tz());
+			return new XSGYear(getYear(dateTime.calendar()), dateTime.timezoned() ? dateTime.calendar().getTimeZone() : null);
 		}
 		
 		return parse_gYear(aat.getStringValue());
@@ -196,11 +228,7 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 * @return The actual year as an integer
 	 */
 	public int year() {
-		int y = _calendar.get(Calendar.YEAR);
-		if (_calendar.get(Calendar.ERA) == GregorianCalendar.BC)
-			y *= -1;
-
-		return y;
+		return _year;
 	}
 
 	/**
@@ -210,7 +238,7 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public boolean timezoned() {
-		return _timezoned;
+		return _timeZone != null;
 	}
 
 	/**
@@ -268,7 +296,18 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public Calendar calendar() {
-		return _calendar;
+		GregorianCalendar calendar = new GregorianCalendar(_timeZone != null ? _timeZone : TimeZone.getTimeZone("UTC"));
+		calendar.clear();
+		calendar.setGregorianChange(new Date(Long.MIN_VALUE));
+
+		if (_year <= 0) {
+			calendar.set(Calendar.ERA, GregorianCalendar.BC);
+			calendar.set(Calendar.YEAR, 1 - _year);
+		} else {
+			calendar.set(Calendar.YEAR, _year);
+		}
+
+		return calendar;
 	}
 
 	/**
@@ -282,10 +321,11 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSGYear val = (XSGYear) NumericType.get_single_type(arg, XSGYear.class);
-		Calendar thiscal = normalizeCalendar(calendar(), tz());
-		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSGYear val = NumericType.get_single_type(arg, XSGYear.class);
+		Duration implicitTimezoneOffset = evaluationContext.getDynamicContext().getTimezoneOffset();
+		Calendar thiscal = getTimezonedCalendar(implicitTimezoneOffset);
+		Calendar thatcal = val.getTimezonedCalendar(implicitTimezoneOffset);
 
 		return thiscal.compareTo(thatcal) == 0;
 	}
@@ -295,8 +335,13 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 * 
 	 * @return the timezone associated with the date stored
 	 */
-	public XSDuration tz() {
-		return _tz;
+	public XSDayTimeDuration tz() {
+		if (!timezoned()) {
+			return null;
+		}
+
+		double rawOffset = _timeZone.getRawOffset() / 1000.0;
+		return new XSDayTimeDuration(rawOffset);
 	}	
 
 	@Override

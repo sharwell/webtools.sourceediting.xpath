@@ -73,7 +73,7 @@ public class FnCurrentTime extends Function {
 		Duration d = dc.getTimezoneOffset();
 		XSDayTimeDuration tz = new XSDayTimeDuration(0, d.getHours(), d.getMinutes(), 0.0, d.getSign() == -1);
 
-		AnyType res = new XSTime(dc.getCurrentDateTime(), tz);
+		AnyType res = new XSTime(XSTime.getTime(dc.getCurrentDateTime()), true);
 
 		return res;
 	}

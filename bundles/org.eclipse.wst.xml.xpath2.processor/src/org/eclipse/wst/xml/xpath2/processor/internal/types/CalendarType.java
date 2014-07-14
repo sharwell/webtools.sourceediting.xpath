@@ -17,6 +17,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import javax.xml.datatype.Duration;
+
 // common base for anything that uses a calendar... basically stuff doing with
 // time... hopefully in the future this may be factored out here
 /**
@@ -47,6 +49,50 @@ public abstract class CalendarType extends CtrType {
 		Calendar normalized = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		normalized.setTimeInMillis(cal.getTimeInMillis());
 		return normalized;
+	}
+
+	public Calendar getTimezonedCalendar(Duration implicitTimezoneOffset) {
+		if (timezoned()) {
+			return calendar();
+		}
+
+		Calendar adjusted = (Calendar)calendar().clone();
+		/* To interpret 1970-01-01T00:00:00-01:00 in the implicit timezone
+		 * -02:00, we want the result to be 1970-01-01T00:00:00-02:00. This
+		 * means we need to add 1 hour, which is the current time zone offset
+		 * minus the implicit time zone offset.
+		 */
+
+		TimeZone currentTimeZone = adjusted.getTimeZone();
+		TimeZone implicitTimeZone = XSDateTime.getTimeZone(implicitTimezoneOffset.getHours(), implicitTimezoneOffset.getMinutes(), implicitTimezoneOffset.getSign() < 0);
+
+		long millisecondAdjustment = currentTimeZone.getRawOffset() - implicitTimeZone.getRawOffset();
+		adjusted.add(Calendar.MILLISECOND, (int)millisecondAdjustment);
+
+		adjusted.setTimeZone(implicitTimeZone);
+		return adjusted;
+	}
+
+	public Calendar getNonTimezonedCalendar(Duration implicitTimezoneOffset) {
+		if (!timezoned()) {
+			return calendar();
+		}
+
+		Calendar adjusted = (Calendar)calendar().clone();
+		/* To interpret 1970-01-01T00:00:00-01:00 in the implicit timezone
+		 * -02:00, we want the result to be 1970-01-01T00:00:00-02:00. This
+		 * means we need to add 1 hour, which is the current time zone offset
+		 * minus the implicit time zone offset.
+		 */
+
+		TimeZone currentTimeZone = adjusted.getTimeZone();
+		TimeZone implicitTimeZone = XSDateTime.getTimeZone(implicitTimezoneOffset.getHours(), implicitTimezoneOffset.getMinutes(), implicitTimezoneOffset.getSign() < 0);
+
+		long millisecondAdjustment = currentTimeZone.getRawOffset() - implicitTimeZone.getRawOffset();
+		adjusted.add(Calendar.MILLISECOND, (int)millisecondAdjustment);
+
+		adjusted.setTimeZone(implicitTimeZone);
+		return adjusted;
 	}
 
 	protected boolean isGDataType(AnyType aat) {

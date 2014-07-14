@@ -10,9 +10,9 @@
       <xsl:text><![CDATA[package org.eclipse.wst.xml.xpath2.test;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;]]></xsl:text><xsl:if test="x:test-case[@is-XPath2='true']/x:expected-error[text() != '*']"><xsl:text><![CDATA[
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;]]></xsl:text></xsl:if><xsl:text><![CDATA[
+import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -43,9 +43,9 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;]]></xsl:text><xsl:if test="x:test-case[@is-XPath2='true']/x:input-URI"><xsl:text><![CDATA[
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;]]></xsl:text></xsl:if><xsl:text><![CDATA[
 import org.eclipse.wst.xml.xpath2.processor.util.DynamicContextBuilder;
-import org.eclipse.wst.xml.xpath2.processor.util.StaticContextBuilder;]]></xsl:text><xsl:if test="x:test-case[@is-XPath2='true']/x:expected-error[text() != '*']"><xsl:text><![CDATA[
+import org.eclipse.wst.xml.xpath2.processor.util.StaticContextBuilder;
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matcher;]]></xsl:text></xsl:if><xsl:text><![CDATA[
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -122,7 +122,11 @@ public class ]]></xsl:text>
     <xsl:param name="expectedError"/>
     String query = readFile("Queries/XQuery/" + filePath, "<xsl:value-of select="@name"/>", ".xq");
     query = query.replaceAll("declare\\s+variable\\s+\\$[a-zA-Z_-][a-zA-Z0-9_-]*\\s+external\\s*;", "");<xsl:if test="$outputName">
-    String expected = readFile("ExpectedTestResults/" + filePath, "<xsl:value-of select="$outputName[1]"/>", "");</xsl:if>
+    List&lt;Matcher&lt;? super String&gt;&gt; expectedMatchers = new ArrayList&lt;Matcher&lt;? super String&gt;&gt;();<xsl:for-each select="$outputName"><xsl:choose><xsl:when test="$compare='XML'">
+    expectedMatchers.add(CoreMatchers.is(xmlEqualTo(readFile("ExpectedTestResults/" + filePath, "<xsl:value-of select="."/>", ""))));</xsl:when><xsl:when test="$compare='Fragment' or $compare='Inspect'">
+    expectedMatchers.add(CoreMatchers.is(xmlFragmentEqualTo(readFile("ExpectedTestResults/" + filePath, "<xsl:value-of select="."/>", ""))));</xsl:when><xsl:when test="$compare='Text'">
+    expectedMatchers.add(CoreMatchers.is(CoreMatchers.equalTo(readFile("ExpectedTestResults/" + filePath, "<xsl:value-of select="."/>", ""))));</xsl:when><xsl:when test="$compare='Ignore'"/><xsl:otherwise>
+    Assert.fail("Shouldn't reach this point.");</xsl:otherwise></xsl:choose></xsl:for-each></xsl:if>
 
 <xsl:choose>
 <xsl:when test="$expectedError"><xsl:if test="$expectedError!='*'">
@@ -134,25 +138,9 @@ public class ]]></xsl:text>
 		ResultSequence result = expression.evaluate(dynamicContext, contextItems);<xsl:choose><xsl:when test="$outputName">
 
 		String actual = serializeResultSequence(result);
-<xsl:choose>
-	<xsl:when test="$compare='XML'">
-		XMLAssert.assertXMLEqual(expected, actual);
-	</xsl:when>
-	<xsl:when test="$compare='Fragment'">
-		XMLAssert.assertXMLEqual("&lt;dummy&gt;" + expected + "&lt;/dummy&gt;", "&lt;dummy&gt;" + actual + "&lt;/dummy&gt;");
-	</xsl:when>
-	<xsl:when test="$compare='Text'">
-		Assert.assertEquals(expected, actual);
-	</xsl:when>
-	<xsl:when test="$compare='Inspect'">
-		XMLAssert.assertXMLEqual("&lt;dummy&gt;" + expected + "&lt;/dummy&gt;", "&lt;dummy&gt;" + actual + "&lt;/dummy&gt;");
-	</xsl:when>
-	<xsl:when test="$compare='Ignore'">
-	</xsl:when>
-	<xsl:otherwise>
-		Assert.fail("Shouldn't reach this point.");
-	</xsl:otherwise>
-</xsl:choose>
+<xsl:if test="$compare != 'Ignore'">
+		Assert.assertThat(actual, CoreMatchers.anyOf(expectedMatchers));
+</xsl:if>
 		</xsl:when><xsl:otherwise>
 		Assert.fail("Expected an exception: <xsl:for-each select="$expectedError"><xsl:value-of select="."/><xsl:if test="position() != last()"> or </xsl:if></xsl:for-each>");</xsl:otherwise></xsl:choose>
 	} catch (DynamicError ex) {<xsl:if test="$expectedError!='*'">
@@ -167,25 +155,9 @@ public class ]]></xsl:text>
     ResultSequence result = expression.evaluate(dynamicContext, contextItems);
 
     String actual = serializeResultSequence(result);
-<xsl:choose>
-  <xsl:when test="$compare='XML'">
-    XMLAssert.assertXMLEqual(expected, actual);
-  </xsl:when>
-  <xsl:when test="$compare='Fragment'">
-    XMLAssert.assertXMLEqual("&lt;dummy&gt;" + expected + "&lt;/dummy&gt;", "&lt;dummy&gt;" + actual + "&lt;/dummy&gt;");
-  </xsl:when>
-  <xsl:when test="$compare='Text'">
-    Assert.assertEquals(expected, actual);
-  </xsl:when>
-  <xsl:when test="$compare='Inspect'">
-    XMLAssert.assertXMLEqual("&lt;dummy&gt;" + expected + "&lt;/dummy&gt;", "&lt;dummy&gt;" + actual + "&lt;/dummy&gt;");
-  </xsl:when>
-  <xsl:when test="$compare='Ignore'">
-  </xsl:when>
-  <xsl:otherwise>
-    Assert.fail("Shouldn't reach this point.");
-  </xsl:otherwise>
-</xsl:choose>
+<xsl:if test="$compare != 'Ignore'">
+		Assert.assertThat(actual, CoreMatchers.anyOf(expectedMatchers));
+</xsl:if>
 </xsl:otherwise>
 </xsl:choose>
   </xsl:template>

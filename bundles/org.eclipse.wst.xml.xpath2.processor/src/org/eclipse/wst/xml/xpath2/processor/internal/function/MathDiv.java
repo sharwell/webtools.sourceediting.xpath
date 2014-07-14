@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 
@@ -27,5 +28,5 @@ public interface MathDiv {
 	 *             Dynamic error.
 	 * @return Result of operation.
 	 */
-	public ResultSequence div(ResultSequence arg) throws DynamicError;
+	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError;
 }

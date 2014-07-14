@@ -15,6 +15,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.Collection;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -40,10 +41,10 @@ public class FsTimes extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_times(args);
+		return fs_times(args, evaluationContext);
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class FsTimes extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_times(Collection<ResultSequence> args) throws DynamicError {
+	public static ResultSequence fs_times(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		FsPlus.MathOp<MathTimes> op = new FsPlus.MathOp<MathTimes>() {
 			@Override
 			public Class<? extends MathTimes> getType() {
@@ -63,10 +64,10 @@ public class FsTimes extends Function {
 			}
 
 			@Override
-			public ResultSequence execute(MathTimes obj, ResultSequence arg) throws DynamicError {
-				return obj.times(arg);
+			public ResultSequence execute(MathTimes obj, ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+				return obj.times(arg, evaluationContext);
 			}
 		};
-		return FsPlus.do_math_op(args, op);
+		return FsPlus.do_math_op(args, op, evaluationContext);
 	}
 }

@@ -53,10 +53,10 @@ public class FsPlus extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_plus(args);
+		return fs_plus(args, evaluationContext);
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class FsPlus extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_plus(Collection<ResultSequence> args) throws DynamicError {
+	public static ResultSequence fs_plus(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		MathOp<MathPlus> op = new MathOp<MathPlus>() {
 			@Override
 			public Class<? extends MathPlus> getType() {
@@ -140,11 +140,11 @@ public class FsPlus extends Function {
 			}
 
 			@Override
-			public ResultSequence execute(MathPlus obj, ResultSequence arg) throws DynamicError {
-				return obj.plus(arg);
+			public ResultSequence execute(MathPlus obj, ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+				return obj.plus(arg, evaluationContext);
 			}
 		};
-		return do_math_op(args, op);
+		return do_math_op(args, op, evaluationContext);
 	}
 
 	/**
@@ -178,7 +178,7 @@ public class FsPlus extends Function {
 	public interface MathOp<T> {
 		Class<? extends T> getType();
 
-		ResultSequence execute(T obj, ResultSequence arg) throws DynamicError;
+		ResultSequence execute(T obj, ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError;
 	}
 
 	// voodoo
@@ -192,7 +192,7 @@ public class FsPlus extends Function {
 	 *             Dynamic error.
 	 * @return Result of operation.
 	 */
-	public static <T> ResultSequence do_math_op(Collection<ResultSequence> args, MathOp<T> op) throws DynamicError {
+	public static <T> ResultSequence do_math_op(Collection<ResultSequence> args, MathOp<T> op, EvaluationContext evaluationContext) throws DynamicError {
 
 		// sanity check args + convert em
 		if (args.size() != 2)
@@ -218,6 +218,6 @@ public class FsPlus extends Function {
 
 		ResultSequence arg2 = argi.next();
 
-		return op.execute(arg, arg2);
+		return op.execute(arg, arg2, evaluationContext);
 	}
 }

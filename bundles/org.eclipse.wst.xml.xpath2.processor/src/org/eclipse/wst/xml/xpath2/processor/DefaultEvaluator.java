@@ -48,7 +48,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.ReverseAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.SelfAxis;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticContextAdapter;
-import org.eclipse.wst.xml.xpath2.processor.internal.StaticNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.StaticTypeNameError;
 import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
@@ -157,16 +156,16 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	private static final QName ANY_ATOMIC_TYPE = new QName("xs",
 			"anyAtomicType", XML_SCHEMA_NS);
 
-	private org.eclipse.wst.xml.xpath2.api.DynamicContext _dc;
+	private final org.eclipse.wst.xml.xpath2.api.DynamicContext _dc;
 
 	// this is a parameter that may be set on a call...
 	// the parameter may become invalid on the next call... i.e. the
 	// previous parameter is not saved... so use with care! [remember...
 	// this thing is highly recursive]
 	private Pair<String, ResultSequence> _param;
-	private EvaluationContext _ec;
+	private final EvaluationContext _ec;
 
-	private StaticContext _sc;
+	private final StaticContext _sc;
 
 	private Focus _focus = new Focus(ResultBuffer.EMPTY);
 
@@ -287,18 +286,8 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	}
 
 	// XXX this kinda sux
-	// the problem is that visistor interface does not throw exceptions...
-	// so we get around it ;D
-	private void report_error(DynamicError err) {
-		throw err;
-	}
-
-	private void report_error(TypeError err) {
+	private DynamicError report_error(TypeError err) {
 		throw new DynamicError(err);
-	}
-
-	private void report_error(StaticNameError err) {
-		throw err;
 	}
 
 	private AnyAtomicType makeAtomic(QName name) {
@@ -614,7 +603,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		int size_two = two.size();
 
 		if (size_one > 1 || size_two > 1)
-			report_error(TypeError.invalid_type(null));
+			throw report_error(TypeError.invalid_type(null));
 
 		if (size_one == 0 || size_two == 0)
 			return ResultBuffer.EMPTY;
@@ -623,7 +612,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		Item at_two = two.item(0);
 
 		if (!(at_one instanceof NodeType) || !(at_two instanceof NodeType))
-			report_error(TypeError.invalid_type(null));
+			throw report_error(TypeError.invalid_type(null));
 
 		// ok we got the args finally
 		NodeType nt_one = (NodeType) at_one;
@@ -666,40 +655,40 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 			switch (cmpex.type()) {
 			case CmpExpr.EQ:
-				return FsEq.fs_eq_value(args, _dc);
+				return FsEq.fs_eq_value(args, _ec);
 
 			case CmpExpr.NE:
-				return FsNe.fs_ne_value(args, _dc);
+				return FsNe.fs_ne_value(args, _ec);
 
 			case CmpExpr.GT:
-				return FsGt.fs_gt_value(args, _dc);
+				return FsGt.fs_gt_value(args, _ec);
 
 			case CmpExpr.LT:
-				return FsLt.fs_lt_value(args, _dc);
+				return FsLt.fs_lt_value(args, _ec);
 
 			case CmpExpr.GE:
-				return FsGe.fs_ge_value(args, _dc);
+				return FsGe.fs_ge_value(args, _ec);
 
 			case CmpExpr.LE:
-				return FsLe.fs_le_value(args, _dc);
+				return FsLe.fs_le_value(args, _ec);
 
 			case CmpExpr.EQUALS:
-				return FsEq.fs_eq_general(args, _dc);
+				return FsEq.fs_eq_general(args, _ec);
 
 			case CmpExpr.NOTEQUALS:
-				return FsNe.fs_ne_general(args, _dc);
+				return FsNe.fs_ne_general(args, _ec);
 
 			case CmpExpr.GREATER:
-				return FsGt.fs_gt_general(args, _dc);
+				return FsGt.fs_gt_general(args, _ec);
 
 			case CmpExpr.LESSTHAN:
-				return FsLt.fs_lt_general(args, _dc);
+				return FsLt.fs_lt_general(args, _ec);
 
 			case CmpExpr.GREATEREQUAL:
-				return FsGe.fs_ge_general(args, _dc);
+				return FsGe.fs_ge_general(args, _ec);
 
 			case CmpExpr.LESSEQUAL:
-				return FsLe.fs_le_general(args, _dc);
+				return FsLe.fs_le_general(args, _ec);
 
 			case CmpExpr.IS:
 			case CmpExpr.LESS_LESS:
@@ -710,7 +699,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 				assert false;
 			}
 		} catch (DynamicError err) {
-			report_error(err);
+			throw err;
 		}
 		return null; // unreach
 	}
@@ -734,8 +723,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		try {
 			return OpTo.op_to(args);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -743,8 +731,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		try {
 			return FnBoolean.fn_boolean(rs);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -760,10 +747,9 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(AddExpr addex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(addex);
-			return FsPlus.fs_plus(args);
+			return FsPlus.fs_plus(args, _ec);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -778,10 +764,9 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(SubExpr subex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(subex);
-			return FsMinus.fs_minus(args);
+			return FsMinus.fs_minus(args, _ec);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -796,10 +781,9 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(MulExpr mulex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(mulex);
-			return FsTimes.fs_times(args);
+			return FsTimes.fs_times(args, _ec);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -814,10 +798,9 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(DivExpr mulex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(mulex);
-			return FsDiv.fs_div(args);
+			return FsDiv.fs_div(args, _ec);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -832,10 +815,9 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(IDivExpr mulex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(mulex);
-			return FsIDiv.fs_idiv(args);
+			return FsIDiv.fs_idiv(args, _ec);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -850,10 +832,9 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	public ResultSequence visit(ModExpr mulex) {
 		try {
 			Collection<ResultSequence> args = do_bin_args(mulex);
-			return FsMod.fs_mod(args);
+			return FsMod.fs_mod(args, _ec);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -881,8 +862,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			Collection<ResultSequence> args = do_bin_args(unex);
 			return OpUnion.op_union(args);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -900,8 +880,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			Collection<ResultSequence> args = do_bin_args(pipex);
 			return OpUnion.op_union(args);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -918,8 +897,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			Collection<ResultSequence> args = do_bin_args(iexpr);
 			return OpIntersect.op_intersect(args);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -936,8 +914,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			Collection<ResultSequence> args = do_bin_args(eexpr);
 			return OpExcept.op_except(args);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -995,7 +972,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		try {
 			st.match(rs);
 		} catch (DynamicError err) {
-			report_error(err);
+			throw err;
 		}
 
 		return rs;
@@ -1040,19 +1017,19 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		rs = FnData.atomize(rs);
 
 		if (rs.size() > 1)
-			report_error(TypeError.invalid_type(null));
+			throw report_error(TypeError.invalid_type(null));
 
 		if (rs.empty()) {
 			if (st.qmark())
 				return rs;
 			else
-				report_error(TypeError.invalid_type(null));
+				throw report_error(TypeError.invalid_type(null));
 		}
 
 		AnyType at = (AnyType) rs.item(0);
 
 		if (!(at instanceof AnyAtomicType))
-			report_error(TypeError.invalid_type(null));
+			throw report_error(TypeError.invalid_type(null));
 
 		AnyAtomicType aat = (AnyAtomicType) at;
 		QName type = st.type();
@@ -1068,11 +1045,10 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 				cexp.set_function(function);
 			}
 			if (function == null)
-				report_error(TypeError.invalid_type(null));
+				throw report_error(TypeError.invalid_type(null));
 			return function.evaluate(args, _ec);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -1093,8 +1069,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		try {
 			return FsMinus.fs_minus_unary(args);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -1115,8 +1090,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		try {
 			return FsPlus.fs_plus_unary(args);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -1172,14 +1146,14 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 				// atomic... just concat
 				case 1:
 					if (!(item instanceof AnyAtomicType))
-						report_error(TypeError.mixed_vals(null));
+						throw report_error(TypeError.mixed_vals(null));
 					rs.add(item);
 					break;
 
 				case 2:
 					node_types = true;
 					if (!(item instanceof NodeType))
-						report_error(TypeError.mixed_vals(null));
+						throw report_error(TypeError.mixed_vals(null));
 					rs.add(item);
 					break;
 
@@ -1257,8 +1231,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 						AnyType item = (AnyType) i.next();
 
 						if (!(item instanceof NodeType)) {
-							report_error(TypeError.step_conatins_atoms(null));
-							return null; // unreach
+							throw report_error(TypeError.step_conatins_atoms(null));
 						}
 					}
 
@@ -1332,10 +1305,10 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		AnyType ci = focus().context_item();
 		
 		if (ci == null) 
-			report_error(DynamicError.contextUndefined());
+			throw DynamicError.contextUndefined();
 
 		if (!(ci instanceof NodeType))
-			report_error(TypeError.ci_not_node(ci.string_type()));
+			throw report_error(TypeError.ci_not_node(ci.string_type()));
 
 		NodeType cn = (NodeType) ci;
 
@@ -1367,7 +1340,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		AnyType ci = focus().context_item();
 
 		if (!(ci instanceof NodeType))
-			report_error(TypeError.ci_not_node(ci.string_type()));
+			throw report_error(TypeError.ci_not_node(ci.string_type()));
 
 		NodeType cn = (NodeType) ci;
 
@@ -1599,7 +1572,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 		AnyType contextItem = focus().context_item();
 		if (contextItem == null) {
-			report_error(DynamicError.contextUndefined());
+			throw DynamicError.contextUndefined();
 		}
 		rs.add(contextItem);
 		return rs.getSequence();
@@ -1630,8 +1603,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			}
 			return function.evaluate(args, _ec);
 		} catch (DynamicError err) {
-			report_error(err);
-			return null; // unreach
+			throw err;
 		}
 	}
 
@@ -1687,8 +1659,8 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			if (! ok ) {
 				ok = BuiltinTypeLibrary.BUILTIN_TYPES.lookupType(e.qname().namespace(), e.qname().local()) != null;
 			}
-			if (! ok) report_error(new StaticTypeNameError("Type not defined: "
-					+ e.qname().string(), null));
+			if (! ok) throw new StaticTypeNameError("Type not defined: "
+					+ e.qname().string(), null);
 			
 			ResultSequence arg = _param._two;
 			_param._two = item_test(arg, e.qname());
@@ -2044,13 +2016,9 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 			if (at instanceof NumericType) {
 				try {
-					return FsEq.fs_eq_fast(at, new XSInteger(BigInteger.valueOf(focus().position())), _dc);
+					return FsEq.fs_eq_fast(at, new XSInteger(BigInteger.valueOf(focus().position())), _ec);
 				} catch (DynamicError err) {
-					report_error(err);
-
-					// unreach
-					assert false;
-					return false;
+					throw err;
 				}
 			}
 		}

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -19,6 +20,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -30,6 +32,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.TextType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
+import org.hamcrest.Matcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -40,17 +43,37 @@ import org.w3c.dom.Text;
  */
 public abstract class XPathTestBase {
 
-	public String readFile(String filePath, String fileName, String extension) throws IOException {
-		File zipFile;
-		try {
-			zipFile = new File(getClass().getClassLoader().getResource("XQTS_1_0_3.zip").toURI());
-		} catch (URISyntaxException ex) {
-			FileNotFoundException fileNotFoundException = new FileNotFoundException();
-			fileNotFoundException.initCause(ex);
-			throw fileNotFoundException;
+	private ZipFile _zipFile;
+
+	public static <T> Matcher<T> xmlEqualTo(T operand) {
+		return IsXMLEqual.xmlEqualTo(operand);
+	}
+
+	public static <T> Matcher<T> xmlFragmentEqualTo(T operand) {
+		return IsXMLEqual.xmlFragmentEqualTo(operand);
+	}
+
+	private synchronized ZipFile getZipFile() throws IOException {
+		if (_zipFile == null) {
+			File zipFile;
+			try {
+				zipFile = new File(getClass().getClassLoader().getResource("XQTS_1_0_3.zip").toURI());
+			} catch (URISyntaxException ex) {
+				FileNotFoundException fileNotFoundException = new FileNotFoundException();
+				fileNotFoundException.initCause(ex);
+				throw fileNotFoundException;
+			}
+
+			ZipFile sourceFile = new ZipFile(zipFile);
+			_zipFile = sourceFile;
+			return sourceFile;
 		}
 
-		ZipFile sourceFile = new ZipFile(zipFile);
+		return _zipFile;
+	}
+
+	public String readFile(String filePath, String fileName, String extension) throws IOException {
+		ZipFile sourceFile = getZipFile();
 		ZipEntry entry = sourceFile.getEntry(filePath + fileName + extension);
 		InputStreamReader inputStreamReader = new InputStreamReader(sourceFile.getInputStream(entry), "UTF-8");
 		try {
@@ -62,7 +85,6 @@ public abstract class XPathTestBase {
 
 			return new String(data);
 		} finally {
-			sourceFile.close();
 			inputStreamReader.close();
 		}
 	}
@@ -87,6 +109,18 @@ public abstract class XPathTestBase {
 		StringWriter writer = new StringWriter();
 		transformer.transform(new DOMSource(normalizedDocument.value()), new StreamResult(writer));
 		return writer.toString();
+	}
+
+	private final DocumentBuilder _documentBuilder;
+	private final Document _dummyDocument;
+	{
+		try {
+			_documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		} catch (ParserConfigurationException ex) {
+			throw new RuntimeException(ex);
+		}
+
+		_dummyDocument = _documentBuilder.newDocument();
 	}
 
 	private ResultSequence normalizeSequence(ResultSequence sequence) throws ParserConfigurationException {
@@ -231,14 +265,7 @@ public abstract class XPathTestBase {
 		 */
 		ResultSequence s7;
 		{
-			DocumentBuilder documentBuilder;
-			try {
-				documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			} catch (ParserConfigurationException ex) {
-				throw new RuntimeException(ex);
-			}
-
-			Document document = documentBuilder.newDocument();
+			Document document = _documentBuilder.newDocument();
 			document.setStrictErrorChecking(false);
 			for (Iterator<Item> itemIt = s6.iterator(); itemIt.hasNext(); ) {
 				Item item = itemIt.next();
@@ -257,10 +284,8 @@ public abstract class XPathTestBase {
 		return s7;
 	}
 
-	private static TextType createTextNode(String text) throws ParserConfigurationException {
-		DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		Document document = documentBuilder.newDocument();
-		return createTextNode(document, text);
+	private TextType createTextNode(String text) throws ParserConfigurationException {
+		return createTextNode(_dummyDocument, text);
 	}
 
 	private static TextType createTextNode(Document document, String text) {

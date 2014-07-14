@@ -18,6 +18,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 import java.math.BigInteger;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -141,8 +142,8 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		int cmp = do_compare(arg, dynamicContext);
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		int cmp = do_compare(arg, evaluationContext.getDynamicContext());
 
 		// XXX im not sure what to do here!!! because eq has to return
 		// something i fink....
@@ -163,8 +164,8 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		int cmp = do_compare(arg, context);
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		int cmp = do_compare(arg, evaluationContext.getDynamicContext());
 
 		assert cmp != 666;
 
@@ -182,8 +183,8 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		int cmp = do_compare(arg, context);
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		int cmp = do_compare(arg, evaluationContext.getDynamicContext());
 
 		assert cmp != 666;
 

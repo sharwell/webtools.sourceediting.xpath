@@ -15,10 +15,13 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import javax.xml.datatype.Duration;
+
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
@@ -32,8 +35,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSGMonth extends CalendarType implements CmpEq {
 
 	private static final String XS_G_MONTH = "xs:gMonth";
-	private final Calendar _calendar;
-	private final boolean _timezoned;
+	private final int _month;
+	private final TimeZone _timeZone;
 
 	/**
 	 * Initializes a representation of the supplied month
@@ -41,22 +44,28 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * @param cal
 	 *            Calendar representation of the month to be stored
 	 * @param tz
-	 *            Timezone associated with this month
+	 *            Time zone associated with this month
 	 */
-	@Deprecated
-	public XSGMonth(Calendar cal, XSDuration tz) {
-		_calendar = cal;
-		if (tz != null) {
-			_timezoned = true;
-			_tz = tz;
-		}
+//	@Deprecated
+//	public XSGMonth(Calendar cal, XSDuration tz) {
+//		_calendar = cal;
+//		if (tz != null) {
+//			_timezoned = true;
+//			_tz = tz;
+//		}
+//	}
+
+	public XSGMonth(int month, TimeZone timeZone) {
+		assert month >= 1 && month <= 12;
+		_month = month;
+		_timeZone = timeZone;
 	}
 
 	/**
-	 * Initialises a representation of the current month
+	 * Initializes a representation of the current month
 	 */
 	public XSGMonth() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")).get(Calendar.MONTH) + 1, TimeZone.getTimeZone("UTC"));
 	}
 
 	/**
@@ -101,7 +110,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 		if (dt == null)
 			return null;
 
-		return new XSGMonth(dt.calendar(), dt.tz());
+		return new XSGMonth(dt.calendar().get(Calendar.MONTH) + 1, dt.timezoned() ? dt.calendar().getTimeZone() : null);
 	}
 
 	/**
@@ -169,17 +178,17 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	private XSGMonth castGMonth(AnyAtomicType aat) {
 		if (aat instanceof XSGMonth) {
 			XSGMonth gm = (XSGMonth) aat;
-			return new XSGMonth(gm.calendar(), gm.tz());
+			return new XSGMonth(gm._month, gm._timeZone);
 		}
 		
 		if (aat instanceof XSDate) {
 			XSDate date = (XSDate) aat;
-			return new XSGMonth(date.calendar(), date.tz());
+			return new XSGMonth(date.calendar().get(Calendar.MONTH) + 1, date.timezoned() ? date.calendar().getTimeZone() : null);
 		}
 		
 		if (aat instanceof XSDateTime) {
 			XSDateTime dateTime = (XSDateTime) aat;
-			return new XSGMonth(dateTime.calendar(), dateTime.tz());
+			return new XSGMonth(dateTime.calendar().get(Calendar.MONTH) + 1, dateTime.timezoned() ? dateTime.calendar().getTimeZone() : null);
 		}
 		
 		return parse_gMonth(aat.getStringValue());
@@ -191,7 +200,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * @return The actual month as an integer
 	 */
 	public int month() {
-		return _calendar.get(Calendar.MONTH) + 1;
+		return _month;
 	}
 
 	/**
@@ -201,7 +210,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public boolean timezoned() {
-		return _timezoned;
+		return _timeZone != null;
 	}
 
 	/**
@@ -259,7 +268,11 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public Calendar calendar() {
-		return _calendar;
+		GregorianCalendar calendar = new GregorianCalendar(_timeZone != null ? _timeZone : TimeZone.getTimeZone("UTC"));
+		calendar.clear();
+		calendar.setGregorianChange(new Date(Long.MIN_VALUE));
+		calendar.set(Calendar.MONTH, _month - 1);
+		return calendar;
 	}
 
 	/**
@@ -273,11 +286,11 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSGMonth val = (XSGMonth) NumericType.get_single_type(arg,
-				XSGMonth.class);
-		Calendar thiscal = normalizeCalendar(calendar(), tz());
-		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSGMonth val = NumericType.get_single_type(arg, XSGMonth.class);
+		Duration implicitTimezoneOffset = evaluationContext.getDynamicContext().getTimezoneOffset();
+		Calendar thiscal = getTimezonedCalendar(implicitTimezoneOffset);
+		Calendar thatcal = val.getTimezonedCalendar(implicitTimezoneOffset);
 
 		return thiscal.compareTo(thatcal) == 0;
 	}
@@ -288,8 +301,13 @@ public class XSGMonth extends CalendarType implements CmpEq {
 	 * @return the timezone associated with the date stored
 	 * @since 1.1
 	 */
-	public XSDuration tz() {
-		return _tz;
+	public XSDayTimeDuration tz() {
+		if (!timezoned()) {
+			return null;
+		}
+
+		double rawOffset = _timeZone.getRawOffset() / 1000.0;
+		return new XSDayTimeDuration(rawOffset);
 	}	
 
 	@Override

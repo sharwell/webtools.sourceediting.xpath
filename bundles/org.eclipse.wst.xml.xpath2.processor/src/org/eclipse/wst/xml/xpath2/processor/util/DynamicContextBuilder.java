@@ -36,6 +36,7 @@ import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DOMLoader;
 import org.eclipse.wst.xml.xpath2.processor.XercesLoader;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnCollection;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDateTime;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -91,7 +92,9 @@ public class DynamicContextBuilder implements DynamicContext {
 	@Override
 	public GregorianCalendar getCurrentDateTime() {
 		if (_currentDateTime == null) {
-			_currentDateTime = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+			Duration timezoneOffset = getTimezoneOffset();
+			TimeZone timezone = XSDateTime.getTimeZone(timezoneOffset.getHours(), timezoneOffset.getMinutes(), timezoneOffset.getSign() < 0);
+			_currentDateTime = new GregorianCalendar(timezone);
 		}
 		return _currentDateTime;
 	}
@@ -108,7 +111,7 @@ public class DynamicContextBuilder implements DynamicContext {
 
 	@Override
 	public Document getDocument(URI resolved) {
-		Document doc = null;
+		Document doc;
 		if (_loaded_documents.containsKey(resolved)) {
 			 //tried before
 			doc = _loaded_documents.get(resolved);

@@ -88,8 +88,17 @@ public class FnDateTime extends Function {
 		}
 		XSDate param1 = (XSDate)arg1.first();
 		XSTime param2 = (XSTime)arg2.first();
-		
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
+		TimeZone timezone;
+		if (param1.timezoned()) {
+			timezone = param1.calendar().getTimeZone();
+		} else if (param2.timezoned()) {
+			timezone = param2.calendar().getTimeZone();
+		} else {
+			timezone = TimeZone.getTimeZone("UTC");
+		}
+
+		Calendar cal = Calendar.getInstance(timezone);
 		cal.set(param1.year(), param1.month() - 1, param1.day());
 		cal.set(Calendar.HOUR_OF_DAY, param2.hour());
 		cal.set(Calendar.MINUTE, param2.minute());
@@ -102,20 +111,12 @@ public class FnDateTime extends Function {
 		  // it's an error, if the arguments have different timezones
 		  throw DynamicError.inconsistentTimeZone();
 		} else if (timeTimeZone != null) {
-			// convert calendar to UTC before creating the XSDateTime
-			int multiplier = timeTimeZone.negative() ? 1 : -1;
-			cal.add(Calendar.HOUR_OF_DAY, multiplier * (timeTimeZone.days() * 24 + timeTimeZone.hours()));
-			cal.add(Calendar.MINUTE, multiplier * timeTimeZone.minutes());
-			return new XSDateTime(cal, timeTimeZone);
+			return new XSDateTime(cal, true);
 		} else if (dateTimeZone != null) {
-			// convert calendar to UTC before creating the XSDateTime
-			int multiplier = dateTimeZone.negative() ? 1 : -1;
-			cal.add(Calendar.HOUR_OF_DAY, multiplier * (dateTimeZone.days() * 24 + dateTimeZone.hours()));
-			cal.add(Calendar.MINUTE, multiplier * dateTimeZone.minutes());
-			return new XSDateTime(cal, dateTimeZone);
+			return new XSDateTime(cal, true);
 		}
 		else {
-			return new XSDateTime(cal, null);
+			return new XSDateTime(cal, false);
 		}
 	}
 

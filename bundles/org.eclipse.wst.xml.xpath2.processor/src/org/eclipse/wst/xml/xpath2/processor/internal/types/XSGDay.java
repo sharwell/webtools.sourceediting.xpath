@@ -16,10 +16,13 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import javax.xml.datatype.Duration;
+
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
@@ -33,8 +36,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSGDay extends CalendarType implements CmpEq {
 
 	private static final String XS_G_DAY = "xs:gDay";
-	private final Calendar _calendar;
-	private final boolean _timezoned;
+	private final int _day;
+	private final TimeZone _timeZone;
 
 	/**
 	 * Initializes a representation of the supplied day
@@ -44,20 +47,26 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * @param tz
 	 *            Timezone associated with this day
 	 */
-	@Deprecated
-	public XSGDay(Calendar cal, XSDuration tz) {
-		_calendar = cal;
-		if (tz != null) {
-			_timezoned = true;
-			_tz = tz;
-		}
+//	@Deprecated
+//	public XSGDay(Calendar cal, XSDuration tz) {
+//		_calendar = cal;
+//		if (tz != null) {
+//			_timezoned = true;
+//			_tz = tz;
+//		}
+//	}
+
+	public XSGDay(int day, TimeZone timeZone) {
+		assert day >= 1 && day <= 31;
+		_day = day;
+		_timeZone = timeZone;
 	}
 
 	/**
-	 * Initialises a representation of the current day
+	 * Initializes a representation of the current day
 	 */
 	public XSGDay() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")).get(Calendar.DAY_OF_MONTH), TimeZone.getTimeZone("UTC"));
 	}
 
 	/**
@@ -100,7 +109,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 		if (dt == null)
 			return null;
 
-		return new XSGDay(dt.calendar(), dt.tz());
+		return new XSGDay(dt.calendar().get(Calendar.DAY_OF_MONTH), dt.timezoned() ? dt.calendar().getTimeZone() : null);
 	}
 	
 	/**
@@ -169,17 +178,17 @@ public class XSGDay extends CalendarType implements CmpEq {
 	private XSGDay castGDay(AnyAtomicType aat) {
 		if (aat instanceof XSGDay) {
 			XSGDay gday = (XSGDay) aat;
-			return new XSGDay(gday.calendar(), gday.tz());
+			return new XSGDay(gday._day, gday._timeZone);
 		}
 		
 		if (aat instanceof XSDate) {
 			XSDate date = (XSDate) aat;
-			return new XSGDay(date.calendar(), date.tz());
+			return new XSGDay(date.calendar().get(Calendar.DAY_OF_MONTH), date.timezoned() ? date.calendar().getTimeZone() : null);
 		}
 		
 		if (aat instanceof XSDateTime) {
 			XSDateTime dateTime = (XSDateTime) aat;
-			return new XSGDay(dateTime.calendar(), dateTime.tz());
+			return new XSGDay(dateTime.calendar().get(Calendar.DAY_OF_MONTH), dateTime.timezoned() ? dateTime.calendar().getTimeZone() : null);
 		}
 		return parse_gDay(aat.getStringValue()); 
 	}
@@ -190,7 +199,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * @return The actual day as an integer
 	 */
 	public int day() {
-		return _calendar.get(Calendar.DAY_OF_MONTH);
+		return _day;
 	}
 
 	/**
@@ -200,7 +209,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public boolean timezoned() {
-		return _timezoned;
+		return _timeZone != null;
 	}
 
 	/**
@@ -212,9 +221,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	public String getStringValue() {
 		String ret = "---";
 
-		Calendar adjustFortimezone = calendar();
-		
-		ret += XSDateTime.pad_int(adjustFortimezone.get(Calendar.DAY_OF_MONTH), 2);
+		ret += XSDateTime.pad_int(day(), 2);
 		
 		if (timezoned()) {
 			XSDuration tz = tz();
@@ -260,7 +267,11 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public Calendar calendar() {
-		return _calendar;
+		GregorianCalendar calendar = new GregorianCalendar(_timeZone != null ? _timeZone : TimeZone.getTimeZone("UTC"));
+		calendar.clear();
+		calendar.setGregorianChange(new Date(Long.MIN_VALUE));
+		calendar.set(Calendar.DAY_OF_MONTH, _day);
+		return calendar;
 	}
 
 	/**
@@ -274,11 +285,12 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSGDay val = (XSGDay) NumericType.get_single_type(arg, XSGDay.class);
-		Calendar thiscal = normalizeCalendar(calendar(), tz());
-		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
-		
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSGDay val = NumericType.get_single_type(arg, XSGDay.class);
+		Duration implicitTimezoneOffset = evaluationContext.getDynamicContext().getTimezoneOffset();
+		Calendar thiscal = getTimezonedCalendar(implicitTimezoneOffset);
+		Calendar thatcal = val.getTimezonedCalendar(implicitTimezoneOffset);
+
 		return thiscal.compareTo(thatcal) == 0;
 	}
 	
@@ -288,8 +300,13 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 * @return the timezone associated with the date stored
 	 * @since 1.1
 	 */
-	public XSDuration tz() {
-		return _tz;
+	public XSDayTimeDuration tz() {
+		if (!timezoned()) {
+			return null;
+		}
+
+		double rawOffset = _timeZone.getRawOffset() / 1000.0;
+		return new XSDayTimeDuration(rawOffset);
 	}	
 
 	@Override

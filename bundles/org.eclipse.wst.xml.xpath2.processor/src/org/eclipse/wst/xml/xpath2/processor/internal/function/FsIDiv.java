@@ -15,6 +15,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.Collection;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -40,10 +41,10 @@ public class FsIDiv extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_idiv(args);
+		return fs_idiv(args, evaluationContext);
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class FsIDiv extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_idiv(Collection<ResultSequence> args) throws DynamicError {
+	public static ResultSequence fs_idiv(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		FsPlus.MathOp<MathIDiv> op = new FsPlus.MathOp<MathIDiv>() {
 			@Override
 			public Class<? extends MathIDiv> getType() {
@@ -63,10 +64,10 @@ public class FsIDiv extends Function {
 			}
 
 			@Override
-			public ResultSequence execute(MathIDiv obj, ResultSequence arg) throws DynamicError {
-				return obj.idiv(arg);
+			public ResultSequence execute(MathIDiv obj, ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+				return obj.idiv(arg, evaluationContext);
 			}
 		};
-		return FsPlus.do_math_op(args, op);
+		return FsPlus.do_math_op(args, op, evaluationContext);
 	}
 }

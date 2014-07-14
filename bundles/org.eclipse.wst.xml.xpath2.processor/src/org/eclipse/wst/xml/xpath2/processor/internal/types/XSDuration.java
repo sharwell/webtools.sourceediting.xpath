@@ -13,7 +13,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
@@ -167,7 +167,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 			did_something = true;
 		}
 		if (seconds != 0) {
-			String doubStr = (new Double(seconds).toString());
+			String doubStr = Double.toString(seconds);
 			if (doubStr.endsWith(".0")) {
 				// string value of x.0 seconds is xS. e.g, 7.0S is converted to
 				// 7S.
@@ -236,9 +236,8 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSDuration val = (XSDuration) NumericType.get_single_type(arg,
-				XSDuration.class);
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDuration val = NumericType.get_single_type(arg, XSDuration.class);
 
 		return value() == val.value();
 	}
@@ -253,9 +252,8 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSDuration val = (XSDuration) NumericType.get_single_type(arg,
-				XSDayTimeDuration.class);
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
 		return value() < val.value();
 	}
@@ -270,9 +268,8 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSDuration val = (XSDuration) NumericType.get_single_type(arg,
-				XSDayTimeDuration.class);
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
 		return value() > val.value();
 	}
@@ -370,7 +367,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * @return New XSDayTimeDuration representing the duration of time supplied
 	 */
 	public static XSDuration parseDTDuration(String str) {
-		boolean negative = false;
+		boolean negative;
 		int years = 0;
 		int months = 0;
 		int days = 0;
@@ -379,7 +376,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 		double seconds = 0;
 
 		// string following the P
-		String pstr = "";
+		String pstr;
 		String tstr = "";
 
 		// get the negative and pstr
@@ -470,7 +467,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	}
 
 	@Override
-	public Object clone() throws CloneNotSupportedException {
+	public XSDuration clone() {
 		return new XSDuration(year(), month(), days(), hours(), minutes(),
 				seconds(), negative());
 	}

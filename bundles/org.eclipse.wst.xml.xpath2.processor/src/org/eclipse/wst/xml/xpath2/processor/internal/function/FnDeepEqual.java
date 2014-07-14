@@ -17,7 +17,6 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -81,7 +80,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 		Iterator<ResultSequence> citer = args.iterator();
 		ResultSequence arg1 = citer.next();
 		ResultSequence arg2 = citer.next();
-		ResultSequence arg3 = null;
+		ResultSequence arg3;
 		String collationURI = context.getStaticContext().getCollationProvider().getDefaultCollation();
 		if (citer.hasNext()) {
 			arg3 = citer.next();
@@ -138,7 +137,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 */
 	public static boolean deep_equal(AnyType one, AnyType two, EvaluationContext context, String collationURI) {
 		if ((one instanceof AnyAtomicType) && (two instanceof AnyAtomicType))
-			return deep_equal_atomic((AnyAtomicType) one, (AnyAtomicType) two, context.getDynamicContext(), collationURI);
+			return deep_equal_atomic((AnyAtomicType) one, (AnyAtomicType) two, context, collationURI);
 
 		else if (((one instanceof AnyAtomicType) && (two instanceof NodeType))
 				|| ((one instanceof NodeType) && (two instanceof AnyAtomicType)))
@@ -159,7 +158,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 *            input2 xpath expression/variable.
 	 * @return Result of fn:deep-equal operation.
 	 */
-	public static boolean deep_equal_atomic(AnyAtomicType one, AnyAtomicType two, DynamicContext context, String collationURI) {
+	public static boolean deep_equal_atomic(AnyAtomicType one, AnyAtomicType two, EvaluationContext evaluationContext, String collationURI) {
 		if (!(one instanceof CmpEq))
 			return false;
 		if (!(two instanceof CmpEq))
@@ -170,24 +169,23 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 		try {
 			if (isNumeric(one, two)) {
 				NumericType numeric = (NumericType) one;
-				if (numeric.eq(two, context)) {
+				if (numeric.eq(two, evaluationContext)) {
 					return true;
 				} else {
 					XSString value1 = new XSString(one.getStringValue());
-					if (value1.eq(two, context)) {
+					if (value1.eq(two, evaluationContext)) {
 						return true;
 					}
 				}
 			}
 
-			if (a.eq(two, context))
+			if (a.eq(two, evaluationContext))
 				return true;
 			
 			if (needsStringComparison(one, two)) {
 				XSString xstr1 = new XSString(one.getStringValue());
 				XSString xstr2 = new XSString(two.getStringValue());
-				if (FnCompare.compare_string(collationURI, xstr1, xstr2,
-						context).equals(BigInteger.ZERO)) {
+				if (FnCompare.compare_string(collationURI, xstr1, xstr2, evaluationContext.getDynamicContext()).equals(BigInteger.ZERO)) {
 					return true;
 				}
 			}

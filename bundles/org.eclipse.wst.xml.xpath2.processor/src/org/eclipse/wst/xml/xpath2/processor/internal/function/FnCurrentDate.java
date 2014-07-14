@@ -69,7 +69,7 @@ public class FnCurrentDate extends Function {
 		assert args.size() == 0;
 
 		XSDayTimeDuration tz = new XSDayTimeDuration(dc.getTimezoneOffset());
-		AnyType res = new XSDate(dc.getCurrentDateTime(), tz);
+		AnyType res = new XSDate(XSDate.getDate(dc.getCurrentDateTime()), true);
 
 		return res;
 	}

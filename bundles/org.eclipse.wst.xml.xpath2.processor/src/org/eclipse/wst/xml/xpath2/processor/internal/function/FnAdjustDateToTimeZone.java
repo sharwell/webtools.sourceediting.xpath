@@ -12,17 +12,11 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.TimeZone;
 
-import javax.xml.datatype.Duration;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -30,6 +24,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDate;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDateTime;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
 
 /**
@@ -63,23 +58,63 @@ public class FnAdjustDateToTimeZone extends Function {
 	 */
 	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
-		return adjustDate(args, ec.getDynamicContext());
+		return adjustDate(args, ec);
 	}
 
 	/**
-	 * Evaluate the function using the arguments passed.
-	 * 
-	 * @param args
-	 *            Result from the expressions evaluation.
-	 * @param sc
-	 *            Result of static context operation.
-	 * @throws DynamicError
-	 *             Dynamic error.
+	 * Adjusts an xs:date value to a specific timezone, or to no timezone at
+	 * all. If $timezone is the empty sequence, returns an xs:date without a
+	 * timezone. Otherwise, returns an xs:date with a timezone. For purposes of
+	 * timezone adjustment, an xs:date is treated as an xs:dateTime with time
+	 * 00:00:00.
+	 *
+	 * <p>
+	 * If $timezone is not specified, then $timezone is the value of the
+	 * implicit timezone in the dynamic context.</p>
+	 *
+	 * <p>
+	 * If $arg is the empty sequence, then the result is the empty sequence.</p>
+	 *
+	 * <p>
+	 * A dynamic error is raised [err:FODT0003] if $timezone is less than -PT14H
+	 * or greater than PT14H or if does not contain an integral number of
+	 * minutes.</p>
+	 *
+	 * <p>
+	 * If $arg does not have a timezone component and $timezone is the empty
+	 * sequence, then the result is the value of $arg.</p>
+	 *
+	 * <p>
+	 * If $arg does not have a timezone component and $timezone is not the empty
+	 * sequence, then the result is $arg with $timezone as the timezone
+	 * component.</p>
+	 *
+	 * <p>
+	 * If $arg has a timezone component and $timezone is the empty sequence,
+	 * then the result is the localized value of $arg without its timezone
+	 * component.</p>
+	 *
+	 * <p>
+	 * If $arg has a timezone component and $timezone is not the empty sequence,
+	 * then:</p>
+	 *
+	 * <ul>
+	 * <li>Let $srcdt be an xs:dateTime value, with 00:00:00 for the time
+	 * component and date and timezone components that are the same as the date
+	 * and timezone components of $arg.</li>
+	 * <li>Let $r be the result of evaluating
+	 * fn:adjust-dateTime-to-timezone($srcdt, $timezone)</li>
+	 * <li>The result of this function will be a date value that has date and
+	 * timezone components that are the same as the date and timezone components
+	 * of $r.</li>
+	 * </ul>
+	 *
+	 * @param args Result from the expressions evaluation.
+	 * @param sc Result of static context operation.
+	 * @throws DynamicError Dynamic error.
 	 * @return Result of the fn:dateTime operation.
 	 */
-	public static ResultSequence adjustDate(Collection<ResultSequence> args,
-			DynamicContext dc) throws DynamicError {
-
+	public static ResultSequence adjustDate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expectedArgs());
 
 		// get args
@@ -93,39 +128,38 @@ public class FnAdjustDateToTimeZone extends Function {
 		if (argiter.hasNext()) {
 			arg2 = argiter.next();
 		}
-		
-		XSDate date = (XSDate) arg1.item(0);
-		XSDayTimeDuration timezone;
+
+		XSDate date = (XSDate) arg1.first();
 
 		if (arg2 != null && arg2.empty()) {
-			if (date.timezoned()) {
-				XSDate localized = new XSDate(date.calendar(), null);
-				return localized;
+			// this is the only case where a value without a timezone is returned
+			if (!date.timezoned()) {
+				return date;
 			}
-			return arg1;
+
+			Calendar adjusted = date.getNonTimezonedCalendar(evaluationContext.getDynamicContext().getTimezoneOffset());
+			return new XSDate(XSDate.getDate(adjusted), false);
 		}
 
+		XSDayTimeDuration timezone;
 		if (arg2 == null) {
-			timezone = new XSDayTimeDuration(dc.getTimezoneOffset());
+			timezone = new XSDayTimeDuration(evaluationContext.getDynamicContext().getTimezoneOffset());
 		} else {
-			timezone = (XSDayTimeDuration) arg2.item(0);
+			timezone = (XSDayTimeDuration) arg2.first();
 		}
 
-		if (timezone.lt(minDuration, dc) || timezone.gt(maxDuration, dc)) {
+		if (timezone.hours() < 0 || timezone.hours() > 14)
 			throw DynamicError.invalidTimezone();
-		}
-		
-		if (date.tz() == null) {
-			return new XSDate(date.calendar(), timezone);
-		}
-		
-		XMLGregorianCalendar xmlCalendar = _datatypeFactory.newXMLGregorianCalendar((GregorianCalendar)date.normalizeCalendar(date.calendar(), date.tz()));
-		
-		Duration duration = _datatypeFactory.newDuration(timezone.getStringValue());
-		xmlCalendar.add(duration);
-		xmlCalendar.setTime(0, 0, 0, BigDecimal.ZERO);
-		
-		return new XSDate(xmlCalendar.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), timezone);
+		if (timezone.hours() == 14 && timezone.minutes() != 0)
+			throw DynamicError.invalidTimezone();
+		if (timezone.seconds() != 0)
+			throw DynamicError.invalidTimezone();
+
+		Calendar calendar = date.getTimezonedCalendar(_datatypeFactory.newDuration(!timezone.negative(), 0, 0, 0, timezone.hours(), timezone.minutes(), 0));
+		Calendar adjustedCalendar = (Calendar)calendar.clone();
+		adjustedCalendar.setTimeZone(XSDateTime.getTimeZone(timezone.hours(), timezone.minutes(), timezone.negative()));
+		adjustedCalendar.setTimeInMillis(calendar.getTimeInMillis());
+		return new XSDate(XSDate.getDate(adjustedCalendar), true);
 	}
 
 	/**
@@ -136,10 +170,8 @@ public class FnAdjustDateToTimeZone extends Function {
 	public synchronized static Collection<SeqType> expectedArgs() {
 		if (_expected_args == null) {
 			_expected_args = new ArrayList<SeqType>();
-			_expected_args
-					.add(new SeqType(new XSDate(), SeqType.OCC_QMARK));
-			_expected_args.add(new SeqType(new XSDayTimeDuration(),
-					SeqType.OCC_QMARK));
+			_expected_args.add(new SeqType(new XSDate(), SeqType.OCC_QMARK));
+			_expected_args.add(new SeqType(new XSDayTimeDuration(), SeqType.OCC_QMARK));
 		}
 
 		return _expected_args;

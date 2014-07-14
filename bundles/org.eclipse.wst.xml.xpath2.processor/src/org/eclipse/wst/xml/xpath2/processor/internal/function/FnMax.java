@@ -19,7 +19,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -58,7 +57,7 @@ public class FnMax extends Function {
 	 */
 	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
-		return max(args, ec.getDynamicContext());
+		return max(args, ec);
 	}
 
 	/**
@@ -72,7 +71,7 @@ public class FnMax extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:max operation.
 	 */
-	public static ResultSequence max(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
+	public static ResultSequence max(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 
 		ResultSequence arg = get_arg(args, CmpGt.class);
 		if (arg.empty())
@@ -91,7 +90,7 @@ public class FnMax extends Function {
 				if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
 					return tp.promote(new XSFloat(Float.NaN));
 				}
-				if (max == null || ((CmpGt)conv).gt((AnyType)max, dynamicContext)) {
+				if (max == null || ((CmpGt)conv).gt((AnyType)max, evaluationContext)) {
 					max = (CmpGt)conv;
 				}
 			}

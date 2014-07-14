@@ -71,10 +71,7 @@ public class FnCurrentDateTime extends Function {
 			DynamicContext dc) throws DynamicError {
 		assert args.size() == 0;
 
-		Duration d = dc.getTimezoneOffset();
-		XSDayTimeDuration tz = new XSDayTimeDuration(0, d.getHours(), d.getMinutes(), 0.0, d.getSign() == -1);
-
-		AnyType res = new XSDateTime(dc.getCurrentDateTime(), tz);
+		AnyType res = new XSDateTime(dc.getCurrentDateTime(), true);
 
 		return res;
 	}

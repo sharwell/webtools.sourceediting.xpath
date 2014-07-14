@@ -14,7 +14,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -123,7 +123,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 		if (anyType instanceof XSDuration || anyType instanceof CalendarType ||
 			anyType instanceof XSBase64Binary || anyType instanceof XSHexBinary) {
 			throw DynamicError.invalidType();
-		} else if (anyType instanceof XSAnyURI || anyType instanceof XSUntypedAtomic) {
+		} else if (anyType instanceof XSAnyURI) {
 			return XSBoolean.valueOf(!anyType.getStringValue().isEmpty());
 		}
 		
@@ -163,9 +163,8 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 *         comparison
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
-				XSBoolean.class);
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSBoolean barg = NumericType.get_single_type(arg, XSBoolean.class);
 
 		return value() == barg.value();
 	}
@@ -183,9 +182,8 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 *         comparison
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
-				XSBoolean.class);
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSBoolean barg = NumericType.get_single_type(arg, XSBoolean.class);
 
 		boolean result = false;
 
@@ -207,9 +205,8 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 *         comparison
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
-				XSBoolean.class);
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSBoolean barg = NumericType.get_single_type(arg, XSBoolean.class);
 
 		boolean result = false;
 

@@ -19,7 +19,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -58,7 +57,7 @@ public class FnMin extends Function {
 	 */
 	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
-		return min(args, ec.getDynamicContext());
+		return min(args, ec);
 	}
 
 	/**
@@ -72,7 +71,7 @@ public class FnMin extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:min operation.
 	 */
-	public static ResultSequence min(Collection<ResultSequence> args, DynamicContext context) throws DynamicError {
+	public static ResultSequence min(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 
 		ResultSequence arg = FnMax.get_arg(args, CmpLt.class);
 		if (arg.empty())
@@ -91,7 +90,7 @@ public class FnMin extends Function {
 				if (conv instanceof XSDouble && ((XSDouble)conv).nan() || conv instanceof XSFloat && ((XSFloat)conv).nan()) {
 					return tp.promote(new XSFloat(Float.NaN));
 				}
-				if (max == null || ((CmpLt)conv).lt((AnyType)max, context)) {
+				if (max == null || ((CmpLt)conv).lt((AnyType)max, evaluationContext)) {
 					max = (CmpLt)conv;
 				}
 			}

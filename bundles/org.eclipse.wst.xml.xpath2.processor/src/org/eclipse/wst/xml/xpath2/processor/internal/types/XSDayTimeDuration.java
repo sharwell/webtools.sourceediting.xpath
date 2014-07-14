@@ -18,8 +18,10 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigDecimal;
 
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.Duration;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -87,7 +89,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	}
 
 	public XSDayTimeDuration(Duration d) {
-		this(d.getDays(), d.getHours(), d.getMinutes(), 0.0, d.getSign() == -1);
+		this(d.getDays(), d.getHours(), d.getMinutes(), d.getField(DatatypeConstants.SECONDS).doubleValue(), d.getSign() == -1);
 	}
 
 	/**
@@ -97,7 +99,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws CloneNotSupportedException
 	 */
 	@Override
-	public Object clone() throws CloneNotSupportedException {
+	public XSDayTimeDuration clone() {
 		return new XSDayTimeDuration(days(), hours(), minutes(), seconds(),
 				negative());
 	}
@@ -145,14 +147,14 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @return New XSDayTimeDuration representing the duration of time supplied
 	 */
 	public static XSDuration parseDTDuration(String str) {
-		boolean negative = false;
+		boolean negative;
 		int days = 0;
 		int hours = 0;
 		int minutes = 0;
 		double seconds = 0;
 
 		// string following the P
-		String pstr = null;
+		String pstr;
 		String tstr = null;
 
 		// get the negative and pstr
@@ -263,9 +265,8 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
-		XSDuration val = (XSDuration) NumericType
-				.get_single_type(arg, XSDayTimeDuration.class);
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 		
 		double res = value() + val.value();
 
@@ -283,9 +284,8 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
-		XSDuration val = (XSDuration) NumericType
-				.get_single_type(arg, XSDayTimeDuration.class);
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
 		double res = value() - val.value();
 
@@ -303,7 +303,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg) throws DynamicError {
+	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence convertedRS = arg;
 		
 		if (arg.size() == 1) {
@@ -313,8 +313,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
             }
 		}
 		
-		XSDouble val = (XSDouble) NumericType.get_single_type(convertedRS,
-				                                  XSDouble.class);
+		XSDouble val = NumericType.get_single_type(convertedRS, XSDouble.class);
 		if (val.nan()) {
 			throw DynamicError.nan();
 		}
@@ -335,7 +334,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence div(ResultSequence arg) throws DynamicError {
+	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg.size() != 1)
 			throw DynamicError.throw_type_error();
 
@@ -350,7 +349,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 			}
 			
 			if (!dt.zero()) {
-				BigDecimal ret = new BigDecimal(0);
+				BigDecimal ret;
 				
 				if (dt.infinite()) {
 					retval = value() / dt.double_value();
@@ -380,7 +379,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 		} else if (at instanceof XSDayTimeDuration) {
 			XSDuration md = (XSDuration) at;
 
-			BigDecimal res = null;
+			BigDecimal res;
 			res = new BigDecimal(this.value());
 			BigDecimal l = new BigDecimal(md.value());
 			res = res.divide(l, 18, BigDecimal.ROUND_HALF_EVEN);

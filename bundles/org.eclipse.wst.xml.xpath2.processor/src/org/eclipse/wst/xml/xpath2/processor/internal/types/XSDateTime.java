@@ -19,12 +19,13 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -57,14 +58,14 @@ Cloneable {
 	 * @param tz
 	 *            The timezone of the date to be stored.
 	 */
-	@Deprecated
-	public XSDateTime(Calendar cal, XSDuration tz) {
-		assert TimeZone.getTimeZone("UTC").equals(cal.getTimeZone());
-
-		_calendar = cal;
-		_tz = tz;
-		_timezoned = _tz != null;
-	}
+//	@Deprecated
+//	public XSDateTime(Calendar cal, XSDuration tz) {
+//		assert TimeZone.getTimeZone("UTC").equals(cal.getTimeZone());
+//
+//		_calendar = cal;
+//		_tz = tz;
+//		_timezoned = _tz != null;
+//	}
 
 	public XSDateTime(Calendar cal, boolean hasTimeZone) {
 		_calendar = cal;
@@ -77,21 +78,16 @@ Cloneable {
 	 * @return A copy of this date and time representation
 	 */
 	@Override
-	public Object clone() throws CloneNotSupportedException {
+	public XSDateTime clone() {
 		Calendar c = (Calendar) calendar().clone();
-		XSDuration t = tz();
-
-		if (t != null)
-			t = (XSDuration) t.clone();
-
-		return new XSDateTime(c, t);
+		return new XSDateTime(c, timezoned());
 	}
 
 	/**
 	 * Inititates a new representation of the current date and time
 	 */
 	public XSDateTime() {
-		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), null);
+		this(new GregorianCalendar(TimeZone.getTimeZone("UTC")), true);
 	}
 
 	/**
@@ -427,9 +423,20 @@ Cloneable {
 		if (d == null)
 			return null;
 
-		// SANITY CHEX
-		TimeZone UTC = TimeZone.getTimeZone("UTC");
-		GregorianCalendar cal = new GregorianCalendar(UTC);
+		// get timezone
+		TimeZone calendarTimeZone;
+		if (timezone != null) {
+			int[] tz = parse_timezone(timezone);
+			if (tz == null)
+				return null;
+
+			XSDuration tzd = new XSDayTimeDuration(0, tz[1], tz[2], 0.0, tz[0] < 0);
+			calendarTimeZone = getTimeZone(tz[1], tz[2], tz[0] < 0);
+		} else {
+			calendarTimeZone = TimeZone.getTimeZone("UTC");
+		}
+
+		GregorianCalendar cal = new GregorianCalendar(calendarTimeZone);
 
 		// year
 		int year = d[0];
@@ -479,20 +486,11 @@ Cloneable {
 		if (!set_item(cal, Calendar.MILLISECOND, (int) ms))
 			return null;
 
-		// get timezone
-		int tz[] = null;
-		XSDuration tzd = null;
-		if (timezone != null) {
-			tz = parse_timezone(timezone);
+		return new XSDateTime(cal, timezone != null);
+	}
 
-			if (tz == null)
-				return null;
-
-			tzd = new XSDayTimeDuration(0, tz[1], tz[2], 0.0, tz[0] < 0);
-
-		}
-
-		return new XSDateTime(cal, tzd);
+	public static TimeZone getTimeZone(int hours, int minutes, boolean negative) {
+		return TimeZone.getTimeZone(String.format("GMT%s%s%s", negative ? "-" : "+", pad_int(hours, 2), pad_int(minutes, 2)));
 	}
 
 	/**
@@ -528,10 +526,6 @@ Cloneable {
 		if (dt == null)
 			throw DynamicError.cant_cast(null);
 
-		if (dt.calendar() != null && dt.calendar().getTimeZone() != null) {
-			assert !dt.calendar().getTimeZone().getID().startsWith("GMT");
-		}
-
 		return dt;
 	}
 
@@ -554,12 +548,11 @@ Cloneable {
 	private CalendarType castDateTime(AnyAtomicType aat) {
 		if (aat instanceof XSDate) {
 			XSDate date = (XSDate) aat;
-			return new XSDateTime(date.calendar(), date.tz());
+			return new XSDateTime(date.calendar(), date.timezoned());
 		}
 
 		if (aat instanceof XSDateTime) {
-			XSDateTime dateTime = (XSDateTime) aat;
-			return new XSDateTime(dateTime.calendar(), dateTime.tz());
+			return clone();
 		}
 
 		return parseDateTime(aat.getStringValue());
@@ -768,11 +761,11 @@ Cloneable {
 	 *         point in time. False otherwise.
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSDateTime val = (XSDateTime) NumericType.get_single_type(arg,
-				XSDateTime.class);
-		Calendar thiscal = normalizeCalendar(calendar(), tz());
-		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDateTime val = NumericType.get_single_type(arg, XSDateTime.class);
+		Duration implicitTimezoneOffset = evaluationContext.getDynamicContext().getTimezoneOffset();
+		Calendar thiscal = getTimezonedCalendar(implicitTimezoneOffset);
+		Calendar thatcal = val.getTimezonedCalendar(implicitTimezoneOffset);
 
 		return thiscal.compareTo(thatcal) == 0;
 	}
@@ -788,11 +781,11 @@ Cloneable {
 	 *         supplied. False otherwise.
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSDateTime val = (XSDateTime) NumericType.get_single_type(arg,
-				XSDateTime.class);
-		Calendar thiscal = normalizeCalendar(calendar(), tz());
-		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDateTime val = NumericType.get_single_type(arg, XSDateTime.class);
+		Duration implicitTimezoneOffset = evaluationContext.getDynamicContext().getTimezoneOffset();
+		Calendar thiscal = getTimezonedCalendar(implicitTimezoneOffset);
+		Calendar thatcal = val.getTimezonedCalendar(implicitTimezoneOffset);
 
 		return thiscal.before(thatcal);
 	}
@@ -808,11 +801,11 @@ Cloneable {
 	 *         supplied. False otherwise.
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSDateTime val = (XSDateTime) NumericType.get_single_type(arg,
-				XSDateTime.class);
-		Calendar thiscal = normalizeCalendar(calendar(), tz());
-		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDateTime val = NumericType.get_single_type(arg, XSDateTime.class);
+		Duration implicitTimezoneOffset = evaluationContext.getDynamicContext().getTimezoneOffset();
+		Calendar thiscal = getTimezonedCalendar(implicitTimezoneOffset);
+		Calendar thatcal = val.getTimezonedCalendar(implicitTimezoneOffset);
 
 		return thiscal.after(thatcal);
 	}
@@ -822,8 +815,14 @@ Cloneable {
 	 * 
 	 * @return the timezone associated with the date stored
 	 */
-	public XSDuration tz() {
-		return _tz;
+	public XSDayTimeDuration tz() {
+		if (!timezoned()) {
+			return null;
+		}
+
+		TimeZone timeZone = calendar().getTimeZone();
+		double rawOffset = timeZone.getRawOffset() / 1000.0;
+		return new XSDayTimeDuration(rawOffset);
 	}
 
 	// XXX this is incorrect [epoch]
@@ -855,7 +854,7 @@ Cloneable {
 	 *         minus operation.
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg.size() != 1)
 			throw DynamicError.throw_type_error();
 
@@ -867,63 +866,43 @@ Cloneable {
 		}
 
 		if (at instanceof XSDateTime) {
-			return minusXSDateTime(arg);
+			return minusXSDateTime(arg, evaluationContext);
 		}
 
 		if (at instanceof XSYearMonthDuration) {
-			return minusXSYearMonthDuration(at);
+			return minusXSYearMonthDuration((XSYearMonthDuration) at);
 		}
 
 		if (at instanceof XSDayTimeDuration) {
-			return minusXSDayTimeDuration(at);
+			return minusXSDayTimeDuration((XSDayTimeDuration) at);
 		}
 		return null; // unreach
 
 	}
 
-	private ResultSequence minusXSDateTime(ResultSequence arg)
-			throws DynamicError {
-		XSDateTime val = (XSDateTime) NumericType.get_single_type(arg,
-				XSDateTime.class);
+	private ResultSequence minusXSDateTime(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDateTime val = NumericType.get_single_type(arg, XSDateTime.class);
+		Duration implicitTimezoneOffset = evaluationContext.getDynamicContext().getTimezoneOffset();
+		Calendar thiscal = getTimezonedCalendar(implicitTimezoneOffset);
+		Calendar thatcal = val.getTimezonedCalendar(implicitTimezoneOffset);
 
-		Calendar thisCal = normalizeCalendar(calendar(), tz());
-		Calendar thatCal = normalizeCalendar(val.calendar(), val.tz());
-		long duration = thisCal.getTimeInMillis()
-				- thatCal.getTimeInMillis();
-		Duration dtduration = _datatypeFactory.newDuration(duration);
-		return XSDayTimeDuration.parseDTDuration(dtduration.toString());
+		long duration = thiscal.getTimeInMillis() - thatcal.getTimeInMillis();
+		return new XSDayTimeDuration(_datatypeFactory.newDuration(duration));
 	}
 
-	private ResultSequence minusXSDayTimeDuration(Item at) {
-		XSDuration val = (XSDuration) at;
-		try {
-			XSDateTime res = (XSDateTime) clone();
-			XMLGregorianCalendar xmlCal = _datatypeFactory
-					.newXMLGregorianCalendar((GregorianCalendar) calendar());
-			Duration dtduration = _datatypeFactory
-					.newDuration(val.getStringValue());
-			xmlCal.add(dtduration.negate());
-			res = new XSDateTime(xmlCal.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), res.tz());
-
-			return res;
-		} catch (CloneNotSupportedException ex) {
-
-		}
-		return null;
+	private ResultSequence minusXSDayTimeDuration(XSDayTimeDuration val) {
+		Calendar resultCalendar = (Calendar)calendar().clone();
+		int multiplier = val.negative() ? 1 : -1;
+		resultCalendar.add(Calendar.HOUR_OF_DAY, multiplier * val.hours());
+		resultCalendar.add(Calendar.MINUTE, multiplier * val.minutes());
+		resultCalendar.add(Calendar.MILLISECOND, multiplier * (int)(val.seconds() * 1000));
+		return new XSDateTime(resultCalendar, timezoned());
 	}
 
-	private ResultSequence minusXSYearMonthDuration(Item at) {
-		XSYearMonthDuration val = (XSYearMonthDuration) at;
-
-		try {
-			XSDateTime res = (XSDateTime) clone();
-
-			res.calendar().add(Calendar.MONTH, val.monthValue() * -1);
-			return res;
-		} catch (CloneNotSupportedException ex) {
-
-		}
-		return null;
+	private ResultSequence minusXSYearMonthDuration(XSYearMonthDuration val) {
+		Calendar resultCalendar = (Calendar)calendar().clone();
+		resultCalendar.add(Calendar.MONTH, val.monthValue() * -1);
+		return new XSDateTime(resultCalendar, timezoned());
 	}
 
 	/**
@@ -941,39 +920,25 @@ Cloneable {
 	 *         minus operation.
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg.size() != 1)
 			throw DynamicError.throw_type_error();
 
 		Item at = arg.first();
 
-		try {
-			if (at instanceof XSYearMonthDuration) {
-				XSYearMonthDuration val = (XSYearMonthDuration) at;
-
-				XSDateTime res = (XSDateTime) clone();
-
-				res.calendar().add(Calendar.MONTH, val.monthValue());
-				return res;
-			} else if (at instanceof XSDayTimeDuration) {
-				XSDuration val = (XSDuration) at;
-
-				XSDateTime res = (XSDateTime) clone();
-
-				XMLGregorianCalendar xmlCal = _datatypeFactory
-						.newXMLGregorianCalendar(
-								(GregorianCalendar) calendar());
-				Duration dtduration = _datatypeFactory
-						.newDuration(val.getStringValue());
-				xmlCal.add(dtduration);
-				res = new XSDateTime(xmlCal.toGregorianCalendar(TimeZone.getTimeZone("UTC"), null, null), res.tz());
-				return res;
-			} else {
-				throw DynamicError.throw_type_error();
-			}
-		} catch (CloneNotSupportedException err) {
-			assert false;
-			return null;
+		if (at instanceof XSYearMonthDuration) {
+			XSYearMonthDuration val = (XSYearMonthDuration) at;
+			
+			XSDateTime res = clone();
+			
+			res.calendar().add(Calendar.MONTH, val.monthValue());
+			return res;
+		} else if (at instanceof XSDayTimeDuration) {
+			XSDayTimeDuration duration = (XSDayTimeDuration)at;
+			XSDayTimeDuration negatedDuration = new XSDayTimeDuration(duration.days(), duration.hours(), duration.minutes(), duration.seconds(), !duration.negative());
+			return minusXSDayTimeDuration(negatedDuration);
+		} else {
+			throw DynamicError.throw_type_error();
 		}
 
 	}

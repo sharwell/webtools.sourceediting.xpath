@@ -289,7 +289,9 @@ Cloneable {
 		int year = adjustFortimezone.get(Calendar.YEAR);
 		if (adjustFortimezone.get(Calendar.ERA) == GregorianCalendar.BC) {
 			year--;
-			ret += "-";
+			if (year > 0) {
+				ret += "-";
+			}
 		}
 
 		ret += XSDateTime.pad_int(year, 4);
@@ -479,8 +481,6 @@ Cloneable {
 		// multiplier is negated due to this being a 'minus' operation
 		int multiplier = val.negative() ? 1 : -1;
 		resultCalendar.add(Calendar.DAY_OF_YEAR, multiplier * val.days());
-		resultCalendar.add(Calendar.HOUR_OF_DAY, multiplier * val.hours());
-		resultCalendar.add(Calendar.MINUTE, multiplier * val.minutes());
 		resultCalendar.add(Calendar.MILLISECOND, multiplier * val.time_value().multiply(new BigDecimal(1000)).intValue());
 		return new XSDate(getDate(resultCalendar), timezoned());
 	}

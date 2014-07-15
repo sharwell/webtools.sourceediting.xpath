@@ -432,7 +432,10 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
             builder.append('/');
         }
 
-        builder.append(e.expr().accept(this));
+        if (e.expr() != null) {
+            builder.append(e.expr().accept(this));
+        }
+
         if (e.next() != null) {
             builder.append(", ");
             builder.append(e.next().accept(this));

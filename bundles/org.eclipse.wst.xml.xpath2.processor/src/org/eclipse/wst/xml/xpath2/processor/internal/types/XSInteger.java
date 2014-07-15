@@ -379,10 +379,7 @@ public class XSInteger extends XSDecimal {
 	
 	@Override
 	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
-		ResultSequence carg = convertResultSequence(arg);
-		
-		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
-
+		XSDecimal val = (XSDecimal) get_single_type(arg, XSDecimal.class);
 		if (val.zero()) {
 			throw DynamicError.div_zero(null);
 		}

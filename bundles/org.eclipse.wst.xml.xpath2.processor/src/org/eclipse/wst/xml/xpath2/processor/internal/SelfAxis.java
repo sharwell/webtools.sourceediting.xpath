@@ -12,6 +12,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.w3c.dom.Node;
 
@@ -28,6 +29,10 @@ public class SelfAxis extends ForwardAxis {
 	 */
 	@Override
 	public void iterate(NodeType node, ResultBuffer copyInto, Node limitNode) {
+		if (node == null) {
+			throw DynamicError.contextUndefined();
+		}
+
 		copyInto.add(node);
 	}
 	

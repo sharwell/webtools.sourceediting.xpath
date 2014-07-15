@@ -677,7 +677,9 @@ Cloneable {
 		int year = adjustFortimezone.get(Calendar.YEAR);
 		if (adjustFortimezone.get(Calendar.ERA) == GregorianCalendar.BC) {
 			year--;
-			ret += "-";
+			if (year > 0) {
+				ret += "-";
+			}
 		}
 
 		ret += pad_int(year, 4);

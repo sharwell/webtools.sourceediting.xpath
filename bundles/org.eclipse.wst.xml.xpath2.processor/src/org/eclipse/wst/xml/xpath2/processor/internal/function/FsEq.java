@@ -19,8 +19,11 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
@@ -29,10 +32,14 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.CtrType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
 
@@ -40,6 +47,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
  * Class for the Equality function.
  */
 public class FsEq extends Function {
+
 	/**
 	 * Constructor for FsEq.
 	 */
@@ -80,6 +88,7 @@ public class FsEq extends Function {
 		for (ResultSequence rs : args) {
 			//FnData.fast_atomize(rs);
 			rs = FnData.atomize(rs);
+//			rs = FsConvertOperand.convert_operand(Arrays.<ResultSequence>asList(rs, new XSString()));
 
 			if (rs.empty())
 				return new ArrayList<Item>();
@@ -89,8 +98,8 @@ public class FsEq extends Function {
 
 			Item arg = rs.first();
 
-			if (arg instanceof XSUntypedAtomic)
-				arg = new XSString(arg.getStringValue());
+//			if (arg instanceof XSUntypedAtomic)
+//				arg = new XSString(arg.getStringValue());
 
 			result.add(arg);
 		}
@@ -353,10 +362,104 @@ public class FsEq extends Function {
 		if (arg2.size() != 1)
 			throw DynamicError.throw_type_error();
 
+		AnyType[] promoted = promoteValueComparisonOperands((CtrType)arg, (CtrType)arg2.first());
+		arg = promoted[0];
+		arg2 = promoted[1];
+
 		if (!(op.getType().isInstance(arg)))
 			throw DynamicError.throw_type_error();
 
 		boolean cmpres = op.execute(op.getType().cast(arg), (AnyType)arg2.first(), evaluationContext);
 		return XSBoolean.valueOf(cmpres);
 	}
+
+	private static AnyType[] promoteValueComparisonOperands(CtrType arg1, CtrType arg2) {
+		if (arg1.getClass() == arg2.getClass()) {
+			// trivial case
+			return new AnyType[] { arg1, arg2 };
+		}
+
+		if (arg2 instanceof XSUntypedAtomic) {
+			AnyType[] swappedResult = promoteValueComparisonOperands(arg2, arg1);
+			AnyType tmp = swappedResult[0];
+			swappedResult[0] = swappedResult[1];
+			swappedResult[1] = tmp;
+			return swappedResult;
+		}
+
+		AnyType[] result = new AnyType[2];
+		if (arg1.getClass().isAssignableFrom(arg2.getClass())) {
+			result[0] = arg1;
+			result[1] = (AnyType)arg1.constructor(arg2);
+		} else if (arg2.getClass().isAssignableFrom(arg1.getClass())) {
+			result[0] = (AnyType)arg2.constructor(arg1);
+			result[1] = arg2;
+		} else if (arg1 instanceof XSDouble) {
+			if (arg2 instanceof XSFloat || arg2 instanceof XSDecimal) {
+				result[0] = arg1;
+				result[1] = (AnyType)arg1.constructor(arg2);
+			}
+		} else if (arg1 instanceof XSFloat) {
+			if (arg2 instanceof XSDouble) {
+				result[0] = (AnyType)arg2.constructor(arg1);
+				result[1] = arg2;
+			} else if (arg2 instanceof XSDecimal) {
+				result[0] = arg1;
+				result[1] = (AnyType)arg1.constructor(arg2);
+			}
+		} else if (arg1 instanceof XSDecimal) {
+			if (arg2 instanceof XSDouble || arg2 instanceof XSFloat) {
+				result[0] = (AnyType)arg2.constructor(arg1);
+				result[1] = arg2;
+			}
+		} else if (arg1 instanceof XSUntypedAtomic) {
+			result[0] = (AnyType)arg2.constructor(arg1);
+			result[1] = arg2;
+		} else if (arg1 instanceof XSAnyURI) {
+			if (arg2 instanceof XSString) {
+				result[0] = (AnyType)arg2.constructor(arg1);
+				result[1] = arg2;
+			}
+		} else if (arg2 instanceof XSAnyURI) {
+			if (arg1 instanceof XSString) {
+				result[0] = arg1;
+				result[1] = (AnyType)arg1.constructor(arg2);
+			}
+		}
+
+		if (result[0] == null || result[1] == null) {
+			Class<? extends CtrType> commonParent = findCommonParent(arg1, arg2);
+			if (commonParent != null && commonParent != CtrType.class) {
+				CtrType instance = null;
+				try {
+					instance = commonParent.newInstance();
+				} catch (InstantiationException ex) {
+				} catch (IllegalAccessException ex) {
+				}
+
+				if (instance != null) {
+					result[0] = (AnyType)instance.constructor(arg1);
+					result[1] = (AnyType)instance.constructor(arg2);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	private static Class<? extends CtrType> findCommonParent(CtrType arg1, CtrType arg2) {
+		Class<?> type;
+		for (type = arg2.getClass(); type != null; type = type.getSuperclass()) {
+			if (type.isAssignableFrom(arg1.getClass())) {
+				break;
+			}
+		}
+
+		if (type != null && CtrType.class.isAssignableFrom(type)) {
+			return type.asSubclass(CtrType.class);
+		}
+
+		return null;
+	}
+
 }

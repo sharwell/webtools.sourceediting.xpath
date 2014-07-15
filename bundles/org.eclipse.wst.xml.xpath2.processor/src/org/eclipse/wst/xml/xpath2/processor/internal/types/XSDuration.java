@@ -114,7 +114,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 			adjustedHours = adjustedHours % HOURS_PER_DAY;
 		}
 
-		if (years == 0 && months == 0 && days == 0 && hours == 0 && minutes == 0 && adjustedSeconds.compareTo(BigDecimal.ZERO) == 0) {
+		if (adjustedYear == 0 && adjustedMonth == 0 && adjustedDays == 0 && adjustedHours == 0 && adjustedMinutes == 0 && adjustedSeconds.compareTo(BigDecimal.ZERO) == 0) {
 			adjustedNegative = false;
 		}
 

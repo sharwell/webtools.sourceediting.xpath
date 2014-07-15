@@ -17,6 +17,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.Duration;
@@ -331,7 +332,12 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 			throw DynamicError.nan();
 		}
 
+		if (val.infinite()) {
+			throw DynamicError.overflowUnderflow();
+		}
+
 		BigDecimal result = value().multiply(new BigDecimal(val.double_value()));
+		result = result.setScale(3, RoundingMode.DOWN);
 		return new XSDayTimeDuration(result);
 	}
 
@@ -355,13 +361,15 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 		if (at instanceof XSDouble) {
 			XSDouble dt = (XSDouble) at;
 
-			BigDecimal retval = BigDecimal.ZERO;
-			
 			if (dt.nan()) {
 				throw DynamicError.nan();
 			}
+
+			BigDecimal retval;
 			
-			if (!dt.zero()) {
+			if (dt.infinite()) {
+				retval = BigDecimal.ZERO;
+			} else if (!dt.zero()) {
 				if (dt.infinite()) {
 					// TODO: check this
 					retval = value().divide(new BigDecimal(dt.double_value()));

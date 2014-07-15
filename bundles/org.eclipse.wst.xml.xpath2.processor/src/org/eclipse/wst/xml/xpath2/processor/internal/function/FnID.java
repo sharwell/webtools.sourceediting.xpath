@@ -66,13 +66,108 @@ public class FnID extends Function {
 	}
 
 	/**
-	 * Insert-Before operation.
-	 * 
-	 * @param args
-	 *            Result from the expressions evaluation.
-	 * @throws DynamicError
-	 *             Dynamic error.
-	 * @return Result of fn:insert-before operation.
+	 * Returns the sequence of element nodes that have an ID value matching the
+	 * value of one or more of the IDREF values supplied in $arg.
+	 *
+	 * <p>
+	 * Note:</p>
+	 *
+	 * <p>
+	 * This function does not have the desired effect when searching a document
+	 * in which elements of type xs:ID are used as identifiers. To preserve
+	 * backwards compatibility, a new function fn:element-with-id is therefore
+	 * being introduced; it behaves the same way as fn:id in the case of
+	 * ID-valued attributes.</p>
+	 *
+	 * <p>
+	 * The function returns a sequence, in document order with duplicates
+	 * eliminated, containing every element node E that satisfies all the
+	 * following conditions:</p>
+	 *
+	 * <ol>
+	 * <li>E is in the target document. The target document is the document
+	 * containing $node, or the document containing the context item (.) if the
+	 * second argument is omitted. The behavior of the function if $node is
+	 * omitted is exactly the same as if the context item had been passed as
+	 * $node. If $node, or the context item if the second argument is omitted,
+	 * is a node in a tree whose root is not a document node [err:FODC0001] is
+	 * raised. If the second argument is the context item, or is omitted, the
+	 * following errors may be raised: if there is no context item,
+	 * [err:XPDY0002]XP; if the context item is not a node
+	 * [err:XPTY0004]XP.</li>
+	 * <li>E has an ID value equal to one of the candidate IDREF values, where:
+	 * <ul>
+	 * <li>An element has an ID value equal to V if either or both of the
+	 * following conditions are true:
+	 * <ul>
+	 * <li>The is-id property (See Section 5.5 is-id AccessorDM.) of the element
+	 * node is true, and the typed value of the element node is equal to V under
+	 * the rules of the eq operator using the Unicode code point collation
+	 * (http://www.w3.org/2005/xpath-functions/collation/codepoint).</li>
+	 * <li>The element has an attribute node whose is-id property (See Section
+	 * 5.5 is-id AccessorDM.) is true and whose typed value is equal to V under
+	 * the rules of the eq operator using the Unicode code point collation
+	 * (http://www.w3.org/2005/xpath-functions/collation/codepoint).</li>
+	 * </ul></li>
+	 * <li>Each xs:string in $arg is treated as a whitespace-separated sequence
+	 * of tokens, each token acting as an IDREF. These tokens are then included
+	 * in the list of candidate IDREF values. If any of the tokens is not a
+	 * lexically valid IDREF (that is, if it is not lexically an xs:NCName), it
+	 * is ignored. Formally, the candidate IDREF values are the strings in the
+	 * sequence given by the expression:
+	 * <pre>
+	 * for $s in $arg return fn:tokenize(fn:normalize-space($s), ' ')
+	 *     [. castable as xs:IDREF]
+	 * </pre></li>
+	 * </ul></li>
+	 * <li>If several elements have the same ID value, then E is the one that is
+	 * first in document order.</li>
+	 * </ol>
+	 *
+	 * <p>
+	 * Notes:</p>
+	 *
+	 * <p>
+	 * If the data model is constructed from an Infoset, an attribute will have
+	 * the is-id property if the corresponding attribute in the Infoset had an
+	 * attribute type of ID: typically this means the attribute was declared as
+	 * an ID in a DTD.</p>
+	 *
+	 * <p>
+	 * If the data model is constructed from a PSVI, an element or attribute
+	 * will have the is-id property if its typed value is a single atomic value
+	 * of type xs:ID or a type derived by restriction from xs:ID.</p>
+	 *
+	 * <p>
+	 * No error is raised in respect of a candidate IDREF value that does not
+	 * match the ID of any element in the document. If no candidate IDREF value
+	 * matches the ID value of any element, the function returns the empty
+	 * sequence.</p>
+	 *
+	 * <p>
+	 * It is not necessary that the supplied argument should have type xs:IDREF
+	 * or xs:IDREFS, or that it should be derived from a node with the is-idrefs
+	 * property.</p>
+	 *
+	 * <p>
+	 * An element may have more than one ID value. This can occur with synthetic
+	 * data models or with data models constructed from a PSVI where the element
+	 * and one of its attributes are both typed as xs:ID.</p>
+	 *
+	 * <p>
+	 * If the source document is well-formed but not valid, it is possible for
+	 * two or more elements to have the same ID value. In this situation, the
+	 * function will select the first such element.</p>
+	 *
+	 * <p>
+	 * It is also possible in a well-formed but invalid document to have an
+	 * element or attribute that has the is-id property but whose value does not
+	 * conform to the lexical rules for the xs:ID type. Such a node will never
+	 * be selected by this function.</p>
+	 *
+	 * @param args Result from the expressions evaluation.
+	 * @throws DynamicError Dynamic error.
+	 * @return Result of fn:id operation.
 	 */
 	public static ResultSequence id(Collection<ResultSequence> args, EvaluationContext context) throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
@@ -103,11 +198,11 @@ public class FnID extends Function {
 		}
 		
 		Node node = nodeType.node_value();
-		if (node.getOwnerDocument() == null) {
-			// W3C Test suite seems to want XPDY0002
-			throw DynamicError.contextUndefined();
-			//throw DynamicError.noContextDoc();
-		}
+//		if (node.getOwnerDocument() == null) {
+//			// W3C Test suite seems to want XPDY0002
+//			throw DynamicError.contextUndefined();
+//			//throw DynamicError.noContextDoc();
+//		}
 		
 		if (hasIDREF(idrefs, node)) {
 			ElementType element = new ElementType((Element) node, context.getStaticContext().getTypeModel());

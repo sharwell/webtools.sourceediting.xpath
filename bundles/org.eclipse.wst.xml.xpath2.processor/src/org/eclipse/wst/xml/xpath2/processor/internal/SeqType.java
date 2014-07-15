@@ -107,41 +107,46 @@ public class SeqType {
 	public SeqType(SequenceType st, StaticContext sc, ResultSequence rs) {
 
 		occ = mapSequenceTypeOccurrence(st.occurrence());
-		// figure out the item is
-		final ItemType item = st.item_type();
-		KindTest ktest = null;
-		switch (item.type()) {
-		case ItemType.ITEM:
-			typeClass = AnyType.class;
-			return;
 
-			// XXX IMPLEMENT THIS
-		case ItemType.QNAME:
-			final AnyAtomicType aat = make_atomic(sc, item.qname());
+		if (occ == OCC_EMPTY) {
+			typeClass = NodeType.class;
+		} else {
+			// figure out the item is
+			final ItemType item = st.item_type();
+			KindTest ktest = null;
+			switch (item.type()) {
+			case ItemType.ITEM:
+				typeClass = AnyType.class;
+				return;
 
-			assert aat != null;
-			anytype = aat;
-			if (item.qname().equals(ANY_ATOMIC_TYPE)) {
-				typeClass = AnyAtomicType.class;
-			} else {
-				typeClass = anytype.getClass();
+				// XXX IMPLEMENT THIS
+			case ItemType.QNAME:
+				final AnyAtomicType aat = make_atomic(sc, item.qname());
+
+				assert aat != null;
+				anytype = aat;
+				if (item.qname().equals(ANY_ATOMIC_TYPE)) {
+					typeClass = AnyAtomicType.class;
+				} else {
+					typeClass = anytype.getClass();
+				}
+				return;
+
+			case ItemType.KINDTEST:
+				ktest = item.kind_test();
+				break;
+
 			}
-			return;
 
-		case ItemType.KINDTEST:
-			ktest = item.kind_test();
-			break;
+			if (ktest == null) {
+				return;
+			}
 
+			typeClass = ktest.getXDMClassType();
+			anytype = ktest.createTestType(rs, sc);
+			nodeName = ktest.name();
+			wild = ktest.isWild();
 		}
-
-		if (ktest == null) {
-			return;
-		}
-
-		typeClass = ktest.getXDMClassType();
-		anytype = ktest.createTestType(rs, sc);
-		nodeName = ktest.name();
-		wild = ktest.isWild();
 	}
 
 	private AnyAtomicType make_atomic(StaticContext sc, QName qname) {

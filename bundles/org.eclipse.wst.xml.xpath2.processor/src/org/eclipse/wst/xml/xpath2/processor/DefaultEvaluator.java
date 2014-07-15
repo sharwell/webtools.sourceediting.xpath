@@ -973,7 +973,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		try {
 			st.match(rs);
 		} catch (DynamicError err) {
-			throw err;
+			throw new DynamicError("XPDY0050", "XPDY0050", err);
 		}
 
 		return rs;

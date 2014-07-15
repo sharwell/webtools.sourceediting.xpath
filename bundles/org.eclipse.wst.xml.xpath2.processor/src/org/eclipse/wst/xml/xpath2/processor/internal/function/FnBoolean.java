@@ -83,12 +83,10 @@ public class FnBoolean extends Function {
 		if (arg.empty())
 			return XSBoolean.FALSE;
 
-		Item at = arg.item(0);
-
 		/* 2. If its operand is a sequence whose first item is a node,
 		 * fn:boolean returns true.
 		 */
-		if (at instanceof NodeType) {
+		if (arg.item(0) instanceof NodeType) {
 			return XSBoolean.TRUE;
 		}
 
@@ -96,8 +94,8 @@ public class FnBoolean extends Function {
 		 * from xs:boolean, fn:boolean returns the value of its operand
 		 * unchanged.
 		 */
-		if (at instanceof XSBoolean) {
-			return (XSBoolean)at;
+		if (arg instanceof XSBoolean) {
+			return (XSBoolean)arg;
 		}
 
 		/* 4. If its operand is a singleton value of type xs:string, xs:anyURI,
@@ -105,25 +103,25 @@ public class FnBoolean extends Function {
 		 * returns false if the operand value has zero length; otherwise it
 		 * returns true.
 		 */
-		if (at instanceof XSString || at instanceof XSAnyURI || at instanceof XSUntypedAtomic) {
-			return XSBoolean.valueOf(!at.getStringValue().isEmpty());
+		if (arg instanceof XSString || arg instanceof XSAnyURI || arg instanceof XSUntypedAtomic) {
+			return XSBoolean.valueOf(!arg.item(0).getStringValue().isEmpty());
 		}
 
 		/* 5. If its operand is a singleton value of any numeric type or derived
 		 * from a numeric type, fn:boolean returns false if the operand value is
 		 * NaN or is numerically equal to zero; otherwise it returns true.
 		 */
-		if (at instanceof NumericType) {
-			NumericType numeric = (NumericType)at;
+		if (arg instanceof NumericType) {
+			NumericType numeric = (NumericType)arg;
 			if (numeric.zero()) {
 				return XSBoolean.FALSE;
 			}
 
-			if (at instanceof XSDouble && ((XSDouble)at).nan()) {
+			if (arg instanceof XSDouble && ((XSDouble)arg).nan()) {
 				return XSBoolean.FALSE;
 			}
 			
-			if (at instanceof XSFloat && ((XSFloat)at).nan()) {
+			if (arg instanceof XSFloat && ((XSFloat)arg).nan()) {
 				return XSBoolean.FALSE;
 			}
 			
@@ -132,7 +130,7 @@ public class FnBoolean extends Function {
 
 		/* 6. In all other cases, fn:boolean raises a type error [err:FORG0006].
 		 */
-		throw DynamicError.argument_type_error(at.getClass());
+		throw DynamicError.argument_type_error(arg.getClass());
 	}
 
 }

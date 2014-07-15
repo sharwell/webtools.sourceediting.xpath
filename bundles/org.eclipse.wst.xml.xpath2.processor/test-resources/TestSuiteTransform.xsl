@@ -117,7 +117,8 @@ public class ]]></xsl:text>
     if (isDebug()) {
       System.out.println(query);
     }
-    query = query.replaceAll("declare\\s+variable\\s+\\$[a-zA-Z_-][a-zA-Z0-9_-]*\\s+external\\s*;", "");<xsl:if test="$outputName">
+    query = query.replaceAll("declare\\s+variable\\s+\\$[a-zA-Z_-][a-zA-Z0-9_-]*\\s+external\\s*;", "");
+    query = query.replaceAll("import\\s+schema\\s+namespace\\s+[a-zA-Z_][a-zA-Z0-9_]*\\s+=\\s+\"[^\"]*\"\\s*;", "");<xsl:if test="$outputName">
     List&lt;Matcher&lt;? super String&gt;&gt; expectedMatchers = new ArrayList&lt;Matcher&lt;? super String&gt;&gt;();<xsl:for-each select="$outputName"><xsl:choose><xsl:when test="$compare='XML'">
     expectedMatchers.add(CoreMatchers.is(xmlEqualTo(readFile("ExpectedTestResults/" + filePath + "<xsl:value-of select="."/>"))));</xsl:when><xsl:when test="$compare='Fragment' or $compare='Inspect'">
     expectedMatchers.add(CoreMatchers.is(xmlFragmentEqualTo(readFile("ExpectedTestResults/" + filePath + "<xsl:value-of select="."/>"))));</xsl:when><xsl:when test="$compare='Text'">

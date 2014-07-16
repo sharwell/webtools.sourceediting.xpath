@@ -14,8 +14,11 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.CollationProvider;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
@@ -35,7 +38,7 @@ public class FnEndsWith extends Function {
 	 * Constructor for FnEndsWith.
 	 */
 	public FnEndsWith() {
-		super(new QName("ends-with"), 2);
+		super(new QName("ends-with"), 2, 3);
 	}
 
 	/**
@@ -48,8 +51,8 @@ public class FnEndsWith extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
-		return ends_with(args);
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
+		return ends_with(args, ec);
 	}
 
 	/**
@@ -61,7 +64,7 @@ public class FnEndsWith extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:ends-with operation.
 	 */
-	public static ResultSequence ends_with(Collection<ResultSequence> args) throws DynamicError {
+	public static ResultSequence ends_with(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get args
@@ -76,12 +79,35 @@ public class FnEndsWith extends Function {
 		if (!arg2.empty())
 			str2 = ((XSString) arg2.first()).value();
 
+		ResultSequence arg3 = null;
+		if (argiter.hasNext()) {
+			arg3 = argiter.next();
+		}
+
+		CollationProvider collationProvider = evaluationContext.getDynamicContext().getCollationProvider();
+		String collationName;
+		if (arg3 != null) {
+			if (arg3.empty() || !(arg3.first() instanceof XSString)) {
+				throw DynamicError.argument_type_error(null);
+			}
+
+			collationName = arg3.first().getStringValue();
+		} else {
+			collationName = collationProvider.getDefaultCollation();
+		}
+
+		Comparator<String> collation = collationProvider.getCollation(collationName);
+		if (collation == null) {
+			throw DynamicError.unsupported_collation(collationName);
+		}
+
 		int str1len = str1.length();
 		int str2len = str2.length();
 
 		if (str1len == 0 && str2len != 0) {
 			return XSBoolean.FALSE;
 		}
+
 		if (str2len == 0) {
 			return XSBoolean.TRUE;
 		}
@@ -98,6 +124,7 @@ public class FnEndsWith extends Function {
 		if (_expected_args == null) {
 			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
+			_expected_args.add(arg);
 			_expected_args.add(arg);
 			_expected_args.add(arg);
 		}

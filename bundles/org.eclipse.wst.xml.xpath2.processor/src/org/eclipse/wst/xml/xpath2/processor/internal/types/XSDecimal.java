@@ -33,6 +33,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -129,7 +130,7 @@ public class XSDecimal extends NumericType {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		Item aat = arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
 			|| aat instanceof XSFloat
@@ -237,19 +238,20 @@ public class XSDecimal extends NumericType {
 	 */
 	@Override
 	public boolean eq(AnyType at, EvaluationContext evaluationContext) throws DynamicError {
-		XSDecimal dt = null;
-		if (!(at instanceof XSDecimal)) { 
-			ResultSequence crs = constructor(at);
-			if (crs.empty()) {
-				throw DynamicError.throw_type_error();
-			}
-		
-			Item cat = crs.first();
-
-			dt = (XSDecimal) cat;
-	    } else {
-	    	dt = (XSDecimal) at;
-	    }
+		XSDecimal dt = get_single_type(at, XSDecimal.class);
+//		if (!(at instanceof XSDecimal)) { 
+//			throw DynamicError.throw_type_error();
+//			ResultSequence crs = constructor(at);
+//			if (crs.empty()) {
+//				throw DynamicError.throw_type_error();
+//			}
+//		
+//			Item cat = crs.first();
+//
+//			dt = (XSDecimal) cat;
+//	    } else {
+//	    	dt = (XSDecimal) at;
+//	    }
 		return (_value.compareTo(dt.getValue()) == 0);
 	}
 
@@ -410,9 +412,8 @@ public class XSDecimal extends NumericType {
 
 		if (val.zero())
 			throw DynamicError.div_zero(null);
-		BigInteger _ivalue = _value.toBigInteger();
-		BigInteger ival =  val.getValue().toBigInteger();
-		BigInteger result = _ivalue.divide(ival);
+
+		BigInteger result = _value.divideToIntegralValue(val.getValue()).toBigInteger();
 		return new XSInteger(result);
 	}
 
@@ -438,6 +439,10 @@ public class XSDecimal extends NumericType {
 	}
 
 	public static BigDecimal remainder(BigDecimal value, BigDecimal divisor) {
+		if (divisor.compareTo(BigDecimal.ZERO) == 0) {
+			throw DynamicError.div_zero(null);
+		}
+
 		// return value.remainder(divisor);
 		
 		// appx as of now. JDK 1.4 doesn't support BigDecimal.remainder(..)

@@ -16,9 +16,12 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.CollationProvider;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -65,30 +68,6 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 	}
 
 	/**
-	 * Obtain a comparable type.
-	 * 
-	 * @param at
-	 *            expression of any type.
-	 * @throws DynamicError
-	 *             Dynamic error.
-	 * @return Result of operation.
-	 */
-	private static CmpEq get_comparable(AnyType at) throws DynamicError {
-		if (at instanceof NodeType) {
-			XSString nodeString = new XSString(at.getStringValue());
-			return nodeString;
-		}
-		
-		if (!(at instanceof AnyAtomicType))
-			throw DynamicError.throw_type_error();
-		
-		if (!(at instanceof CmpEq))
-			throw DynamicError.not_cmp(null);
-
-		return (CmpEq) at;
-	}
-
-	/**
 	 * Index-Of operation.
 	 * 
 	 * @param args
@@ -113,66 +92,46 @@ public class FnIndexOf extends AbstractCollationEqualFunction {
 		// sanity chex
 		if (arg2.size() != 1)
 			throw DynamicError.throw_type_error();
-		
-		String collationUri = evaluationContext.getDynamicContext().getCollationProvider().getDefaultCollation();
+
+		ResultSequence arg3 = null;
 		if (citer.hasNext()) {
-			ResultSequence arg3 = citer.next();
-			if (!arg3.empty()) {
-				XSString collation = (XSString) arg3.first();
-				collationUri = collation.getStringValue();
+			arg3 = citer.next();
+		}
+
+		CollationProvider collationProvider = evaluationContext.getDynamicContext().getCollationProvider();
+		String collationName;
+		if (arg3 != null) {
+			if (arg3.empty() || !(arg3.first() instanceof XSString)) {
+				throw DynamicError.argument_type_error(null);
 			}
+
+			collationName = arg3.first().getStringValue();
+		} else {
+			collationName = collationProvider.getDefaultCollation();
+		}
+
+		Comparator<String> collation = collationProvider.getCollation(collationName);
+		if (collation == null) {
+			throw DynamicError.unsupported_collation(collationName);
 		}
 
 		ResultBuffer rb = new ResultBuffer();
 		AnyAtomicType at = (AnyAtomicType)arg2.first();
 
-		get_comparable(at);
-
 		int index = 1;
 
 		for (Iterator<Item> i = arg1.iterator(); i.hasNext();) {
-			AnyType cmptype = (AnyType) i.next();
-			get_comparable(cmptype);
+			Item item = i.next();
+			try {
+				ResultSequence eq = FsEq.fs_eq_value(Arrays.<ResultSequence>asList(ResultBuffer.wrap(item), at), evaluationContext);
+				if (!eq.empty() && ((XSBoolean)eq.first()).value()) {
+					rb.add(new XSInteger(BigInteger.valueOf(index)));
+				}
+			} catch (DynamicError ex) {
+				// Values that cannot be compared, i.e. the eq operator is not
+				// defined for their types, are considered to be distinct.
+			}
 
-			if (!(at instanceof CmpEq))
-				continue;
-			
-			if (isBoolean(cmptype, at)) {
-				XSBoolean boolat = (XSBoolean) cmptype;
-				if (boolat.eq(at, evaluationContext)) {
- 				   rb.add(new XSInteger(BigInteger.valueOf(index)));
-				}
-			} else 
-			
-			if (isNumeric(cmptype, at)) {
-				NumericType numericat = (NumericType) at;
-				if (numericat.eq(cmptype, evaluationContext)) {
-					rb.add(new XSInteger(BigInteger.valueOf(index)));
-				}
-			} else
-			
-			if (isDuration(cmptype, at)) {
-				XSDuration durat = (XSDuration) at;
-				if (durat.eq(cmptype, evaluationContext)) {
-					rb.add(new XSInteger(BigInteger.valueOf(index)));
-				}
-			} else
-				
-			if (at instanceof QName && cmptype instanceof QName ) {
-				QName qname = (QName)at;
-				if (qname.eq(cmptype, evaluationContext)) {
-					rb.add(new XSInteger(BigInteger.valueOf(index)));
-				}
-			} else 
-			
-			if (needsStringComparison(cmptype, at)) {
-				XSString xstr1 = new XSString(cmptype.getStringValue());
-				XSString itemStr = new XSString(at.getStringValue());
-				if (FnCompare.compare_string(collationUri, xstr1, itemStr, evaluationContext.getDynamicContext()).equals(BigInteger.ZERO)) {
-					rb.add(new XSInteger(BigInteger.valueOf(index)));
-				}
-			} 
-			
 			index++;
 		}
 

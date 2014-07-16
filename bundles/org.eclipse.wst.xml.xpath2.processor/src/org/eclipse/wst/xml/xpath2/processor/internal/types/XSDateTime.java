@@ -34,6 +34,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathMinus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathPlus;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
@@ -265,6 +266,10 @@ Cloneable {
 					if (token.length() > 2)
 						return null;
 				} else if (x == '.') {
+					if (token.length() != 2) {
+						return null;
+					}
+
 					token += x;
 					state = 3;
 				} else
@@ -287,6 +292,11 @@ Cloneable {
 			return null;
 
 		// get seconds
+		// less than 2 digits for the number of seconds
+		if (token.length() < 2) {
+			return null;
+		}
+
 		// this is whole + dot + nothing else
 		if (token.length() == 3)
 			return null;
@@ -312,6 +322,10 @@ Cloneable {
 	 *         displacement and element 3 is the minute displacement.
 	 */
 	public static int[] parse_timezone(String str) {
+		if (!str.matches("^Z|[+-][0-9]{2}:[0-9]{2}$")) {
+			return null;
+		}
+
 		int[] ret = new int[3];
 
 		for (int i = 0; i < ret.length; i++)
@@ -511,7 +525,7 @@ Cloneable {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
 			|| aat instanceof XSDateTime
@@ -520,11 +534,11 @@ Cloneable {
 			throw DynamicError.invalidType();
 		}
 
-		if (!isCastable(aat)) {
+		if (!isCastable((AnyAtomicType) aat)) {
 			throw DynamicError.cant_cast(null);
 		}
 
-		CalendarType dt = castDateTime(aat);
+		CalendarType dt = castDateTime((AnyAtomicType) aat);
 
 		if (dt == null)
 			throw DynamicError.cant_cast(null);

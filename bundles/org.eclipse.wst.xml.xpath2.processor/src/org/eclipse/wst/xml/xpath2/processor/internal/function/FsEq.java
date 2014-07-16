@@ -37,11 +37,13 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSYearMonthDuration;
 
 /**
  * Class for the Equality function.
@@ -179,61 +181,30 @@ public class FsEq extends Function {
 	private static boolean do_general_pair(AnyType a, AnyType b,
 			CmpGeneralOp op, EvaluationContext evaluationContext) throws DynamicError {
 
-		// section 3.5.2
-
-		// rule a
-		// if one is untyped and other is numeric, cast untyped to
-		// double
-		if ((a instanceof XSUntypedAtomic && b instanceof NumericType)
-				|| (b instanceof XSUntypedAtomic && a instanceof NumericType)) {
-			if (a instanceof XSUntypedAtomic)
-				a = new XSDouble(a.getStringValue());
-			else
-				b = new XSDouble(b.getStringValue());
-
-		}
-
-		// rule b
-		// if one is untyped and other is string or untyped, then cast
-		// untyped to string
-		else if ((a instanceof XSUntypedAtomic
-				&& (b instanceof XSString || b instanceof XSUntypedAtomic) || (b instanceof XSUntypedAtomic && (a instanceof XSString || a instanceof XSUntypedAtomic)))) {
-
-			if (a instanceof XSUntypedAtomic)
-				a = new XSString(a.getStringValue());
-			if (b instanceof XSUntypedAtomic)
-				b = new XSString(b.getStringValue());
-		}
-
-		// rule c
-		// if one is untyped and other is not string,untyped,numeric
-		// cast untyped to dynamic type of other
-
-		// if one is untyped and other is numeric, cast untyped to
-		// double
-		else if ((a instanceof XSUntypedAtomic && b instanceof XSBoolean)
-				|| (b instanceof XSUntypedAtomic && a instanceof XSBoolean)) {
-			if (a instanceof XSUntypedAtomic)
-				a = (XSBoolean)XSBoolean.TRUE.constructor(a);
-			else
-				b = (XSBoolean)XSBoolean.TRUE.constructor(b);
-
-		}
-
-	// XXX?
-		// TODO: This makes no sense as implemented before
-		else if (a instanceof XSUntypedAtomic) {
-//			ResultSequence converted = ResultSequenceFactory.create_new(a);
-//			assert converted.size() == 1;
-//			a = converted.first();
+		if (a instanceof XSUntypedAtomic && b instanceof XSUntypedAtomic) {
+			a = new XSString(a.getStringValue());
+			b = new XSString(b.getStringValue());
+		} else if (a instanceof XSUntypedAtomic) {
+			if (b instanceof NumericType) {
+				a = (XSDouble)new XSDouble().constructor(new XSString(a.getStringValue()));
+			} else if (b instanceof XSDayTimeDuration) {
+				a = (XSDayTimeDuration)new XSDayTimeDuration().constructor(new XSString(a.getStringValue()));
+			} else if (b instanceof XSYearMonthDuration) {
+				a = (XSYearMonthDuration)new XSYearMonthDuration().constructor(new XSString(a.getStringValue()));
+			} else {
+				a = (AnyType)((CtrType)b).constructor(new XSString(a.getStringValue()));
+			}
 		} else if (b instanceof XSUntypedAtomic) {
-//			ResultSequence converted = ResultSequenceFactory.create_new(b);
-//			assert converted.size() == 1;
-//			b = converted.first();
+			if (a instanceof NumericType) {
+				b = (XSDouble)new XSDouble().constructor(new XSString(b.getStringValue()));
+			} else if (a instanceof XSDayTimeDuration) {
+				b = (XSDayTimeDuration)new XSDayTimeDuration().constructor(new XSString(b.getStringValue()));
+			} else if (a instanceof XSYearMonthDuration) {
+				b = (XSYearMonthDuration)new XSYearMonthDuration().constructor(new XSString(b.getStringValue()));
+			} else {
+				b = (AnyType)((CtrType)a).constructor(new XSString(b.getStringValue()));
+			}
 		}
-
-		// rule d
-		// if value comparison is true, return true.
 
 		ResultSequence one = a;
 		ResultSequence two = b;
@@ -241,6 +212,10 @@ public class FsEq extends Function {
 		Collection<ResultSequence> args = new ArrayList<ResultSequence>();
 		args.add(one);
 		args.add(two);
+
+//		ResultSequence arg1 = FsConvertOperand.convert_operand(Arrays.<ResultSequence>asList(a, b));
+//		ResultSequence arg2 = FsConvertOperand.convert_operand(Arrays.<ResultSequence>asList(b, a));
+//		Collection<ResultSequence> args = Arrays.<ResultSequence>asList(a, b);
 
 		ResultSequence result = op.execute(args, evaluationContext);
 
@@ -259,8 +234,7 @@ public class FsEq extends Function {
 	 *         Dynamic context 
 	 * @return Result of general equality operation.
 	 */
-	public static ResultSequence fs_eq_general(Collection<ResultSequence> args, EvaluationContext evaluationContext)
-			{
+	public static ResultSequence fs_eq_general(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
 		CmpGeneralOp op = new CmpGeneralOp() {
 			@Override
 			public ResultSequence execute(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
@@ -363,6 +337,11 @@ public class FsEq extends Function {
 			throw DynamicError.throw_type_error();
 
 		AnyType[] promoted = promoteValueComparisonOperands((CtrType)arg, (CtrType)arg2.first());
+		if (promoted[0].getClass() != promoted[1].getClass()) {
+//			throw DynamicError.cant_cast(String.format("Cannot apply value comparison to arguments of type %s and %s", ((CtrType)arg).string_type(), ((CtrType)arg2.first()).string_type()));
+			throw DynamicError.invalidType();
+		}
+
 		arg = promoted[0];
 		arg2 = promoted[1];
 
@@ -373,18 +352,102 @@ public class FsEq extends Function {
 		return XSBoolean.valueOf(cmpres);
 	}
 
+//	private static AnyType[] promoteGeneralComparisonOperands(CtrType arg1, CtrType arg2) {
+//		if (arg1 instanceof XSUntypedAtomic && arg2 instanceof XSUntypedAtomic) {
+//			return new AnyType[] { new XSString(arg1.getStringValue()), new XSString(arg2.getStringValue()) };
+//		}
+//
+//		if (arg1.getClass() == arg2.getClass()) {
+//			// trivial case
+//			return new AnyType[] { arg1, arg2 };
+//		}
+//
+//		if (arg2 instanceof XSUntypedAtomic) {
+//			AnyType[] swappedResult = promoteGeneralComparisonOperands(arg2, arg1);
+//			AnyType tmp = swappedResult[0];
+//			swappedResult[0] = swappedResult[1];
+//			swappedResult[1] = tmp;
+//			return swappedResult;
+//		}
+//
+//		AnyType[] result = new AnyType[2];
+//		if (arg1.getClass().isAssignableFrom(arg2.getClass())) {
+//			result[0] = arg1;
+//			result[1] = (AnyType)arg1.constructor(arg2);
+//		} else if (arg2.getClass().isAssignableFrom(arg1.getClass())) {
+//			result[0] = (AnyType)arg2.constructor(arg1);
+//			result[1] = arg2;
+//		} else if (arg1 instanceof XSDouble) {
+//			if (arg2 instanceof XSFloat || arg2 instanceof XSDecimal) {
+//				result[0] = arg1;
+//				result[1] = (AnyType)arg1.constructor(arg2);
+//			}
+//		} else if (arg1 instanceof XSFloat) {
+//			if (arg2 instanceof XSDouble) {
+//				result[0] = (AnyType)arg2.constructor(arg1);
+//				result[1] = arg2;
+//			} else if (arg2 instanceof XSDecimal) {
+//				result[0] = arg1;
+//				result[1] = (AnyType)arg1.constructor(arg2);
+//			}
+//		} else if (arg1 instanceof XSDecimal) {
+//			if (arg2 instanceof XSDouble || arg2 instanceof XSFloat) {
+//				result[0] = (AnyType)arg2.constructor(arg1);
+//				result[1] = arg2;
+//			}
+//		} else if (arg1 instanceof XSUntypedAtomic) {
+//			result[0] = (AnyType)arg2.constructor(arg1);
+//			result[1] = arg2;
+//		} else if (arg1 instanceof XSAnyURI) {
+//			if (arg2 instanceof XSString) {
+//				result[0] = (AnyType)arg2.constructor(arg1);
+//				result[1] = arg2;
+//			}
+//		} else if (arg2 instanceof XSAnyURI) {
+//			if (arg1 instanceof XSString) {
+//				result[0] = arg1;
+//				result[1] = (AnyType)arg1.constructor(arg2);
+//			}
+//		}
+//
+//		if (result[0] == null || result[1] == null) {
+//			Class<? extends CtrType> commonParent = findCommonParent(arg1, arg2);
+//			if (commonParent != null && commonParent != CtrType.class) {
+//				CtrType instance = null;
+//				try {
+//					instance = commonParent.newInstance();
+//				} catch (InstantiationException ex) {
+//				} catch (IllegalAccessException ex) {
+//				}
+//
+//				if (instance != null) {
+//					result[0] = (AnyType)instance.constructor(arg1);
+//					result[1] = (AnyType)instance.constructor(arg2);
+//				}
+//			}
+//		}
+//
+//		if (result[0] == null || result[1] == null) {
+//			// couldn't promote types; leave as they were
+//			result[0] = arg1;
+//			result[1] = arg2;
+//		}
+//
+//		return result;
+//	}
+
 	private static AnyType[] promoteValueComparisonOperands(CtrType arg1, CtrType arg2) {
-		if (arg1.getClass() == arg2.getClass()) {
-			// trivial case
-			return new AnyType[] { arg1, arg2 };
+		if (arg1 instanceof XSUntypedAtomic) {
+			arg1 = new XSString(arg1.getStringValue());
 		}
 
 		if (arg2 instanceof XSUntypedAtomic) {
-			AnyType[] swappedResult = promoteValueComparisonOperands(arg2, arg1);
-			AnyType tmp = swappedResult[0];
-			swappedResult[0] = swappedResult[1];
-			swappedResult[1] = tmp;
-			return swappedResult;
+			arg2 = new XSString(arg2.getStringValue());
+		}
+
+		if (arg1.getClass() == arg2.getClass()) {
+			// trivial case
+			return new AnyType[] { arg1, arg2 };
 		}
 
 		AnyType[] result = new AnyType[2];
@@ -412,9 +475,6 @@ public class FsEq extends Function {
 				result[0] = (AnyType)arg2.constructor(arg1);
 				result[1] = arg2;
 			}
-		} else if (arg1 instanceof XSUntypedAtomic) {
-			result[0] = (AnyType)arg2.constructor(arg1);
-			result[1] = arg2;
 		} else if (arg1 instanceof XSAnyURI) {
 			if (arg2 instanceof XSString) {
 				result[0] = (AnyType)arg2.constructor(arg1);
@@ -442,6 +502,12 @@ public class FsEq extends Function {
 					result[1] = (AnyType)instance.constructor(arg2);
 				}
 			}
+		}
+
+		if (result[0] == null || result[1] == null) {
+			// couldn't promote types; leave as they were
+			result[0] = arg1;
+			result[1] = arg2;
 		}
 
 		return result;

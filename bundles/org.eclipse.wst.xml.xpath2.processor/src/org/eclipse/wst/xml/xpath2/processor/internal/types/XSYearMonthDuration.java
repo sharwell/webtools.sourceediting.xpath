@@ -27,6 +27,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathDiv;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathMinus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathPlus;
@@ -128,7 +129,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
 			|| aat instanceof XSDuration
@@ -138,11 +139,11 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 			throw DynamicError.invalidType();
 		}
 
-		if (!isCastable(aat)) {
+		if (!isCastable((AnyAtomicType) aat)) {
 			throw DynamicError.cant_cast(null);
 		}
 
-		XSDuration ymd = castYearMonthDuration(aat);
+		XSDuration ymd = castYearMonthDuration((AnyAtomicType) aat);
 
 		if (ymd == null)
 			throw DynamicError.cant_cast(null);

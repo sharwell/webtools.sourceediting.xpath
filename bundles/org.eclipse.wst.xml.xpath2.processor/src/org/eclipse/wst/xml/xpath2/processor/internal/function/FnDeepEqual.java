@@ -14,9 +14,12 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.CollationProvider;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -27,6 +30,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.w3c.dom.Node;
 
@@ -73,23 +78,37 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 *             Dynamic error.
 	 * @return Result of fn:deep-equal operation.
 	 */
-	public static ResultSequence deep_equal(Collection<ResultSequence> args, EvaluationContext context)
+	public static ResultSequence deep_equal(Collection<ResultSequence> args, EvaluationContext evaluationContext)
 			throws DynamicError {
 
 		// get args
 		Iterator<ResultSequence> citer = args.iterator();
 		ResultSequence arg1 = citer.next();
 		ResultSequence arg2 = citer.next();
-		ResultSequence arg3;
-		String collationURI = context.getStaticContext().getCollationProvider().getDefaultCollation();
+
+		ResultSequence arg3 = null;
 		if (citer.hasNext()) {
 			arg3 = citer.next();
-			if (!arg3.empty()) {
-				collationURI = arg3.first().getStringValue();
-			}
 		}
 
-		boolean result = deep_equal(arg1, arg2, context, collationURI);
+		CollationProvider collationProvider = evaluationContext.getDynamicContext().getCollationProvider();
+		String collationName;
+		if (arg3 != null) {
+			if (arg3.empty() || !(arg3.first() instanceof XSString)) {
+				throw DynamicError.invalidType();
+			}
+
+			collationName = arg3.first().getStringValue();
+		} else {
+			collationName = collationProvider.getDefaultCollation();
+		}
+
+		Comparator<String> collation = collationProvider.getCollation(collationName);
+		if (collation == null) {
+			throw DynamicError.unsupported_collation(collationName);
+		}
+
+		boolean result = deep_equal(arg1, arg2, evaluationContext, collation);
 
 		return XSBoolean.valueOf(result);
 	}
@@ -105,7 +124,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 *            Current dynamic context 
 	 * @return Result of fn:deep-equal operation.
 	 */
-	public static boolean deep_equal(ResultSequence one, ResultSequence two, EvaluationContext context, String collationURI) {
+	public static boolean deep_equal(ResultSequence one, ResultSequence two, EvaluationContext context, Comparator<String> collation) {
 		if (one.empty() && two.empty())
 			return true;
 
@@ -119,7 +138,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 			AnyType a = (AnyType) onei.next();
 			AnyType b = (AnyType) twoi.next();
 
-			if (!deep_equal(a, b, context, collationURI))
+			if (!deep_equal(a, b, context, collation))
 				return false;
 		}
 		return true;
@@ -135,18 +154,31 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 * @param context 
 	 * @return Result of fn:deep-equal operation.
 	 */
-	public static boolean deep_equal(AnyType one, AnyType two, EvaluationContext context, String collationURI) {
-		if ((one instanceof AnyAtomicType) && (two instanceof AnyAtomicType))
-			return deep_equal_atomic((AnyAtomicType) one, (AnyAtomicType) two, context, collationURI);
+	public static boolean deep_equal(AnyType one, AnyType two, EvaluationContext context, Comparator<String> collation) {
+		if ((one instanceof AnyAtomicType) && (two instanceof AnyAtomicType)) {
+			if (isNaN(one) && isNaN(two)) {
+				return true;
+			}
 
-		else if (((one instanceof AnyAtomicType) && (two instanceof NodeType))
-				|| ((one instanceof NodeType) && (two instanceof AnyAtomicType)))
-			return false;
-		else if ((one instanceof NodeType) && (two instanceof NodeType))
-			return deep_equal_node((NodeType) one, (NodeType) two, context);
-		else {
+			try {
+				ResultSequence equal = FsEq.fs_eq_value(Arrays.<ResultSequence>asList(one, two), context);
+				return !equal.empty() && ((XSBoolean)equal.first()).value();
+			} catch (DynamicError ex) {
+				// If the eq operator is not defined for $i1 and $i2, the
+				// function returns false.
+				return false;
+			}
+		} else if ((one instanceof AnyAtomicType) || (two instanceof AnyAtomicType)) {
 			return false;
 		}
+
+		return deep_equal_node((NodeType)one, (NodeType)two, context);
+	}
+
+	private static boolean isNaN(AnyType value) {
+		return
+			(value instanceof XSFloat && ((XSFloat)value).nan())
+			|| (value instanceof XSDouble && ((XSDouble)value).nan());
 	}
 
 	/**
@@ -158,7 +190,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 *            input2 xpath expression/variable.
 	 * @return Result of fn:deep-equal operation.
 	 */
-	public static boolean deep_equal_atomic(AnyAtomicType one, AnyAtomicType two, EvaluationContext evaluationContext, String collationURI) {
+	public static boolean deep_equal_atomic(AnyAtomicType one, AnyAtomicType two, EvaluationContext evaluationContext, Comparator<String> collation) {
 		if (!(one instanceof CmpEq))
 			return false;
 		if (!(two instanceof CmpEq))
@@ -185,7 +217,7 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 			if (needsStringComparison(one, two)) {
 				XSString xstr1 = new XSString(one.getStringValue());
 				XSString xstr2 = new XSString(two.getStringValue());
-				if (FnCompare.compare_string(collationURI, xstr1, xstr2, evaluationContext.getDynamicContext()).equals(BigInteger.ZERO)) {
+				if (FnCompare.compare_string(collation, xstr1, xstr2, evaluationContext.getDynamicContext()).equals(BigInteger.ZERO)) {
 					return true;
 				}
 			}

@@ -16,8 +16,11 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.CollationProvider;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
@@ -37,7 +40,7 @@ public class FnSubstringAfter extends Function {
 	 * Constructor for FnSubstringAfter.
 	 */
 	public FnSubstringAfter() {
-		super(new QName("substring-after"), 2);
+		super(new QName("substring-after"), 2, 3);
 	}
 
 	/**
@@ -50,8 +53,8 @@ public class FnSubstringAfter extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
-		return substring_after(args);
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
+		return substring_after(args, ec);
 	}
 
 	/**
@@ -63,7 +66,7 @@ public class FnSubstringAfter extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:substring-after operation.
 	 */
-	public static ResultSequence substring_after(Collection<ResultSequence> args)
+	public static ResultSequence substring_after(Collection<ResultSequence> args, EvaluationContext evaluationContext)
 			throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
@@ -79,6 +82,28 @@ public class FnSubstringAfter extends Function {
 		ResultSequence arg2 = argiter.next();
 		if (!arg2.empty()) {
 			str2 = ((XSString) arg2.first()).value();
+		}
+
+		ResultSequence arg3 = null;
+		if (argiter.hasNext()) {
+			arg3 = argiter.next();
+		}
+
+		CollationProvider collationProvider = evaluationContext.getDynamicContext().getCollationProvider();
+		String collationName;
+		if (arg3 != null) {
+			if (arg3.empty() || !(arg3.first() instanceof XSString)) {
+				throw DynamicError.argument_type_error(null);
+			}
+
+			collationName = arg3.first().getStringValue();
+		} else {
+			collationName = collationProvider.getDefaultCollation();
+		}
+
+		Comparator<String> collation = collationProvider.getCollation(collationName);
+		if (collation == null) {
+			throw DynamicError.unsupported_collation(collationName);
 		}
 
 		int str1len = str1.length();
@@ -112,6 +137,7 @@ public class FnSubstringAfter extends Function {
 		if (_expected_args == null) {
 			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
+			_expected_args.add(arg);
 			_expected_args.add(arg);
 			_expected_args.add(arg);
 		}

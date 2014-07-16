@@ -15,14 +15,18 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.util.Comparator;
+
 import javax.xml.XMLConstants;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.apache.xerces.util.XMLChar;
+import org.eclipse.wst.xml.xpath2.api.CollationProvider;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -117,6 +121,11 @@ public class QName extends CtrType implements CmpEq {
 		}
 		
 		String[] tokens = str.split(":");
+		for (String token : tokens) {
+			if (!XMLChar.isValidNCName(token)) {
+				return null;
+			}
+		}
 
 		if (tokens.length == 1)
 			return new QName(tokens[0]);
@@ -142,7 +151,7 @@ public class QName extends CtrType implements CmpEq {
 		if (arg.empty())
 			throw DynamicError.throw_type_error();
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 
 		if (!(aat instanceof XSString) && !(aat instanceof QName))
 			throw DynamicError.throw_type_error();
@@ -253,6 +262,18 @@ public class QName extends CtrType implements CmpEq {
 		return _namespace;
 	}
 
+	public String namespace(EvaluationContext evaluationContext) {
+		if (expanded()) {
+			return namespace();
+		}
+
+		if (prefix() == null || prefix().isEmpty()) {
+			return null;
+		}
+
+		return evaluationContext.getStaticContext().getNamespaceContext().getNamespaceURI(prefix());
+	}
+
 	/**
 	 * Retrieves the node's name
 	 * 
@@ -289,7 +310,7 @@ public class QName extends CtrType implements CmpEq {
 
 		// if they aren't expanded... we can't compare them
 		if (!_expanded || !arg.expanded()) {
-			assert false; // XXX not stricly necessary
+//			assert false; // XXX not stricly necessary
 			return false;
 		}
 
@@ -354,7 +375,19 @@ public class QName extends CtrType implements CmpEq {
 	@Override
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		QName val = NumericType.get_single_type(arg, QName.class);
-		return equals(val);
+
+		Comparator<String> collation = evaluationContext.getDynamicContext().getCollationProvider().getCollation(CollationProvider.CODEPOINT_COLLATION);
+		if (collation.compare(local(), val.local()) != 0) {
+			return false;
+		}
+
+		String ns1 = namespace(evaluationContext);
+		String ns2 = val.namespace(evaluationContext);
+		if (ns1 == null || ns2 == null) {
+			return (Object)ns1 == (Object)ns2;
+		}
+
+		return collation.compare(ns1, ns2) == 0;
 	}
 	
 	@Override

@@ -12,6 +12,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.math.BigInteger;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
@@ -77,44 +78,15 @@ public abstract class AbstractCollationEqualFunction extends Function {
 	}
 	
 	protected static boolean hasValue(ResultBuffer rs, AnyAtomicType item,
-			EvaluationContext evaluationContext, String collationURI) throws DynamicError {
-		XSString itemStr = new XSString(item.getStringValue());
+			EvaluationContext evaluationContext, Comparator<String> collation) throws DynamicError {
 
 		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
 			AnyType at = (AnyType) i.next();
-
-			if (!(at instanceof CmpEq))
-				continue;
-
-			if (isBoolean(item, at)) {
-				XSBoolean boolat = (XSBoolean) at;
-				if (boolat.eq(item, evaluationContext)) {
-					return true;
-				}
-			}
-
-			if (isNumeric(item, at)) {
-				NumericType numericat = (NumericType) at;
-				if (numericat.eq(item, evaluationContext)) {
-					return true;
-				}
-			}
-
-			if (isDuration(item, at)) {
-				XSDuration durat = (XSDuration) at;
-				if (durat.eq(item, evaluationContext)) {
-					return true;
-				}
-			}
-
-			if (needsStringComparison(item, at)) {
-				XSString xstr1 = new XSString(at.getStringValue());
-				if (FnCompare.compare_string(collationURI, xstr1, itemStr,
-						evaluationContext.getDynamicContext()).equals(BigInteger.ZERO)) {
-					return true;
-				}
+			if (FnDeepEqual.deep_equal(at, item, evaluationContext, collation)) {
+				return true;
 			}
 		}
+
 		return false;
 	}
 

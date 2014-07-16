@@ -17,12 +17,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -34,6 +38,7 @@ import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DOMLoader;
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.XercesLoader;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnCollection;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDateTime;
@@ -129,7 +134,10 @@ public class DynamicContextBuilder implements DynamicContext {
 			loader.set_validating(false);
 
 			Document doc = loader.load(new URL(uri.toString()).openStream());
-			doc.setDocumentURI(uri.toString());
+			if (doc != null) {
+				doc.setDocumentURI(uri.toString());
+			}
+
 			return doc;
 		} catch (FileNotFoundException e) {
 			return null;
@@ -147,14 +155,31 @@ public class DynamicContextBuilder implements DynamicContext {
 			if (realURI.isAbsolute()) {
 				return realURI;
 			}
+
+			if (_staticContext.getBaseUri() == null) {
+				throw DynamicError.contextUndefined();
+			}
+
+			if (_staticContext.getBaseUri().isOpaque()) {
+				if ("jar".equals(_staticContext.getBaseUri().getScheme())) {
+					return new URI("jar:" + new URI(_staticContext.getBaseUri().toString().substring(4)).resolve(uri).toString());
+				}
+			}
+
 			return _staticContext.getBaseUri().resolve(uri);
 		} catch (IllegalArgumentException iae) {
+			return null;
+		} catch (URISyntaxException ex) {
 			return null;
 		}
 	}
 
 	@Override
 	public Map<String, List<Document>> getCollections() {
+		if (_collections == null) {
+			return Collections.emptyMap();
+		}
+
 		return _collections;
 	}
 
@@ -173,8 +198,14 @@ public class DynamicContextBuilder implements DynamicContext {
 		return this;
 	}
 
-	public void withCollections(Map<String, List<Document>> map) {
+	public DynamicContextBuilder withCurrentDateTime(GregorianCalendar dateTime) {
+		this._currentDateTime = dateTime;
+		return this;
+	}
+
+	public DynamicContextBuilder withCollections(Map<String, List<Document>> map) {
 		this._collections = map;
+		return this;
 	}
 	
 	@Override

@@ -66,20 +66,8 @@ public class FnUnordered extends Function {
 		Iterator<ResultSequence> citer = args.iterator();
 		ResultSequence arg = citer.next();
 
-		if (arg.empty())
-			return ResultBuffer.EMPTY;
-
-		// XXX lame
-		ArrayList<Item> tmp = new ArrayList<Item>();
-		for (Iterator<Item> i = arg.iterator(); i.hasNext();)
-			tmp.add(i.next());
-
-		Collections.shuffle(tmp);
-
-		ResultBuffer rb = new ResultBuffer();
-		for (Iterator<Item> i = tmp.iterator(); i.hasNext();)
-			rb.add((AnyType) i.next());
-
-		return rb.getSequence();
+		// the order should only be adjusted if it results in improved
+		// implementation efficiency
+		return arg;
 	}
 }

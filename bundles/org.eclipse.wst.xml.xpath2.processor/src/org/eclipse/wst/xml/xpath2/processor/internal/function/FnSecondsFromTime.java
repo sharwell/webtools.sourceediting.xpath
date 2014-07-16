@@ -78,9 +78,7 @@ public class FnSecondsFromTime extends Function {
 
 		XSTime dt = (XSTime) arg1.first();
 
-		double res = dt.second();
-
-		return new XSDecimal(new BigDecimal(res));
+		return new XSDecimal(dt.second());
 	}
 
 	/**

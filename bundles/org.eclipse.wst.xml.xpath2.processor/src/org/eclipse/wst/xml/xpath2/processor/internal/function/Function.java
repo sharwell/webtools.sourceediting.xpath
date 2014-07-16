@@ -21,6 +21,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -34,6 +35,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyAtomicType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.CtrType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
@@ -219,13 +221,12 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 					// create a new item of the expected
 					// type initialized with from the string
 					// value of the item
-					AnyType converted;
-					if (expected_aat instanceof XSString) {
-					   XSString strType = new XSString(item.getStringValue());
-					   converted = strType;
+					ResultSequence converted;
+					if (expected_aat instanceof CtrType) {
+						converted = ((CtrType)expected_aat).constructor((XSUntypedAtomic)item);
 					}
 					else {
-					   converted = item;
+						converted = item;
 					}
 					
 					result.concat(converted);
@@ -268,9 +269,9 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 	 *             Dynamic error.
 	 * @return Converted arguments.
 	 */
-	public static Collection<ResultSequence> convert_arguments(Collection<? extends ResultSequence> args,
+	public static List<ResultSequence> convert_arguments(Collection<? extends ResultSequence> args,
 			Collection<? extends SeqType> expected) throws DynamicError {
-		Collection<ResultSequence> result = new ArrayList<ResultSequence>();
+		List<ResultSequence> result = new ArrayList<ResultSequence>();
 
 		assert args.size() <= expected.size();
 

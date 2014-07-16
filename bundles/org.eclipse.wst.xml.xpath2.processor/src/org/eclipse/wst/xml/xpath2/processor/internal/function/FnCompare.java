@@ -123,7 +123,11 @@ public class FnCompare extends Function {
 			XSString xstr2, DynamicContext context) throws DynamicError {
 		Comparator<String> collator = context.getCollationProvider().getCollation(collationUri);
 		if (collator == null) throw DynamicError.unsupported_collation(collationUri);
+		return compare_string(collator, xstr1, xstr2, context);
+	}
 
+	public static BigInteger compare_string(Comparator<String> collator, XSString xstr1,
+			XSString xstr2, DynamicContext context) throws DynamicError {
 		if (xstr1 == null || xstr2 == null) return null;
 		
 		int ret = collator.compare(xstr1.value(), xstr2.value());

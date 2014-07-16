@@ -13,6 +13,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -102,8 +103,9 @@ public class FnDateTime extends Function {
 		cal.set(param1.year(), param1.month() - 1, param1.day());
 		cal.set(Calendar.HOUR_OF_DAY, param2.hour());
 		cal.set(Calendar.MINUTE, param2.minute());
-		cal.set(Calendar.SECOND, (new Double(Math.floor(param2.second())).intValue()));
-		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.SECOND, param2.second().intValue());
+		BigDecimal ms = param2.second().subtract(new BigDecimal(param2.second().intValue())).multiply(new BigDecimal(1000));
+		cal.set(Calendar.MILLISECOND, ms.intValue());
 		XSDuration dateTimeZone = param1.tz();
 		XSDuration timeTimeZone = param2.tz();
 		if ((dateTimeZone != null && timeTimeZone != null) &&

@@ -1138,6 +1138,7 @@
       <query name="GenCompEq-2" date="2009-05-01+02:00"/>
       <input-file role="principal-data" variable="input-context">emptydoc</input-file>
       <output-file role="principal" compare="Text">GenCompEq-2.txt</output-file>
+      <expected-error>FORG0001</expected-error>
    </test-case>
    <test-case is-XPath2="true" name="GenCompEq-3" FilePath="Expressions/Operators/CompExpr/GenComprsn/GenCompEq/" scenario="standard" Creator="Sorin Nasoi">
       <description>General comparison where one of the types is xs:untypedAtomic and the other xs:dayTimeDuration.</description>

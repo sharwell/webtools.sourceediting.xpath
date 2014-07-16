@@ -32,6 +32,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -141,7 +142,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
 			|| aat instanceof XSDateTime
@@ -151,11 +152,11 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 			throw DynamicError.invalidType();
 		}
 
-		if (!isCastable(aat)) {
+		if (!isCastable((AnyAtomicType) aat)) {
 			throw DynamicError.cant_cast(null);
 		}
 		
-		XSGMonthDay val = castGMonthDay(aat);
+		XSGMonthDay val = castGMonthDay((AnyAtomicType) aat);
 
 		if (val == null)
 			throw DynamicError.cant_cast(null);

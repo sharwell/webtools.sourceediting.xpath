@@ -12,8 +12,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.util.regex.Pattern;
 
-import org.apache.xerces.util.XMLChar;
-import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;

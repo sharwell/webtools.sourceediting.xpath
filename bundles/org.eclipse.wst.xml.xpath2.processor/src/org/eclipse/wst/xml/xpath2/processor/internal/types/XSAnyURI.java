@@ -17,6 +17,11 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -25,6 +30,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -98,7 +104,7 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyType aat = (AnyType) arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
 			|| aat instanceof XSAnyURI))
@@ -106,7 +112,14 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 			throw DynamicError.invalidType();
 		}
 
-		return new XSAnyURI(aat.string_value().trim().replaceAll("\\s+", " "));
+		String uri = aat.string_value().trim().replaceAll("\\s+", " ");
+		try {
+			URI parsed = new URI(uri);
+		} catch (URISyntaxException ex) {
+			throw DynamicError.cant_cast(uri, ex);
+		}
+
+		return new XSAnyURI(uri);
 	}
 
 	/**

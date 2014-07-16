@@ -28,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathTimes;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
@@ -116,7 +117,7 @@ public class XSDouble extends NumericType {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		Item aat = arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
@@ -152,6 +153,10 @@ public class XSDouble extends NumericType {
 	}
 	
 	private XSDouble castDouble(Item aat) {
+		if (aat instanceof XSFloat) {
+			return new XSDouble(((XSFloat)aat).float_value());
+		}
+
 		String stringValue = aat.getStringValue().trim();
 		if (aat instanceof XSBoolean) {
 			if (stringValue.equals("true")) {
@@ -160,6 +165,7 @@ public class XSDouble extends NumericType {
 				return new XSDouble(0.0E0);
 			}
 		}
+
 		return parse_double(stringValue);
 		
 	}
@@ -443,14 +449,14 @@ public class XSDouble extends NumericType {
 
 		XSDouble val = get_single_type(carg, XSDouble.class);
 
+		if (val.zero())
+			throw DynamicError.div_zero(null);
+
 		if (this.nan() || val.nan())
 			throw DynamicError.numeric_overflow("Dividend or divisor is NaN");
 
 		if (this.infinite())
 			throw DynamicError.numeric_overflow("Dividend is infinite");
-
-		if (val.zero())
-			throw DynamicError.div_zero(null);
 
 		BigDecimal result = new BigDecimal((double_value() / val.double_value()));
 		return new XSInteger(result.toBigInteger());
@@ -574,4 +580,18 @@ public class XSDouble extends NumericType {
     public Object getNativeValue() {
     	return double_value();
     }
+
+	@Override
+	public String toString() {
+		String specialValue = null;
+		if (nan() || infinite()) {
+			specialValue = getStringValue();
+		}
+
+		if (specialValue != null) {
+			return string_type() + "(\"" + specialValue + "\")";
+		}
+
+		return super.toString();
+	}
 }

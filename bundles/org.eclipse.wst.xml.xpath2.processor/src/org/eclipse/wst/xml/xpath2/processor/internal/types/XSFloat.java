@@ -28,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -168,7 +169,7 @@ public class XSFloat extends NumericType {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyType aat = (AnyType) arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 		
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
@@ -358,14 +359,14 @@ public class XSFloat extends NumericType {
 		ResultSequence carg = convertResultSequence(arg);
 		XSFloat val = get_single_type(carg, XSFloat.class);
 
+		if (val.zero())
+			throw DynamicError.div_zero(null);
+
 		if (this.nan() || val.nan())
 			throw DynamicError.numeric_overflow("Dividend or divisor is NaN");
 
 		if (this.infinite())
 			throw DynamicError.numeric_overflow("Dividend is infinite");
-
-		if (val.zero())
-			throw DynamicError.div_zero(null);
 
 		BigDecimal result = BigDecimal.valueOf((new Float((float_value() / 
 				                                 val.float_value()))).longValue());
@@ -508,5 +509,19 @@ public class XSFloat extends NumericType {
 	@Override
 	public Object getNativeValue() {
 		return float_value();
+	}
+
+	@Override
+	public String toString() {
+		String specialValue = null;
+		if (nan() || infinite()) {
+			specialValue = getStringValue();
+		}
+
+		if (specialValue != null) {
+			return string_type() + "(\"" + specialValue + "\")";
+		}
+
+		return super.toString();
 	}
 }

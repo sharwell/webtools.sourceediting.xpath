@@ -105,7 +105,7 @@ public class OpTo extends Function {
 		if (_expected_args == null) {
 			_expected_args = new ArrayList<SeqType>();
 
-			SeqType st = new SeqType(new XSInteger());
+			SeqType st = new SeqType(new XSInteger(), SeqType.OCC_QMARK);
 
 			_expected_args.add(st);
 			_expected_args.add(st);

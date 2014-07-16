@@ -160,12 +160,14 @@
       <query name="K2-SeqDocFunc-7" date="2007-11-26+01:00"/>
       <input-file role="principal-data" variable="input-context">emptydoc</input-file>
       <expected-error>FODC0002</expected-error>
+      <expected-error>FODC0005</expected-error>
    </test-case>
    <test-case is-XPath2="true" Creator="Frans Englich" name="K2-SeqDocFunc-8" FilePath="Functions/SeqFunc/NodeSeqFunc/SeqDocFunc/" scenario="runtime-error">
       <description>A windows file path is an invalid URI to fn:doc()(#2).</description>
       <query name="K2-SeqDocFunc-8" date="2007-11-26+01:00"/>
       <input-file role="principal-data" variable="input-context">emptydoc</input-file>
       <expected-error>FODC0002</expected-error>
+      <expected-error>FODC0005</expected-error>
    </test-case>
    <test-case is-XPath2="true" Creator="Frans Englich" name="K2-SeqDocFunc-9" FilePath="Functions/SeqFunc/NodeSeqFunc/SeqDocFunc/" scenario="runtime-error">
       <description>A windows file path is an invalid URI to fn:doc()(#3).</description>

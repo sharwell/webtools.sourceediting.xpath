@@ -13,6 +13,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 
 /**
  * The purpose of this function is to enable a relative URI to be resolved
@@ -96,12 +98,31 @@ public class FnResolveURI extends Function {
 		}
 
 		Item relativeURI = relativeRS.first();
+		try {
+			URI uri = new URI(relativeURI.getStringValue());
+			if (uri.isAbsolute()) {
+				return ResultBuffer.wrap(relativeURI);
+			}
+		} catch (URISyntaxException ex) {
+			// ignore and continue
+		}
+
 		String resolvedURI = null;
 				
 		if (baseUriRS == null) {
 			resolvedURI = resolveURI(ec.getStaticContext().getBaseUri().toString(), relativeURI.getStringValue());
 		} else {
 			Item baseURI = baseUriRS.first();
+
+			try {
+				URI baseUri = new URI(baseURI.getStringValue());
+				if (!baseUri.isAbsolute()) {
+					throw DynamicError.errorResolvingURI(null);
+				}
+			} catch (URISyntaxException ex) {
+				throw DynamicError.errorResolvingURI(ex);
+			}
+
 			resolvedURI = resolveURI(baseURI.getStringValue(), relativeURI.getStringValue());
 		}
 
@@ -128,8 +149,8 @@ public class FnResolveURI extends Function {
 	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
 			_expected_args = new ArrayList<SeqType>();
-			_expected_args.add(new SeqType(SeqType.OCC_QMARK));
-			_expected_args.add(new SeqType(SeqType.OCC_NONE));
+			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_QMARK));
+			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_NONE));
 		}
 
 		return _expected_args;

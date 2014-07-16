@@ -25,6 +25,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -377,7 +378,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
 			|| aat instanceof XSDuration
@@ -387,11 +388,11 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 			throw DynamicError.invalidType();
 		}
 
-		if (!(isCastable(aat))) {
+		if (!(isCastable((AnyAtomicType) aat))) {
 			throw DynamicError.cant_cast(null);
 		}
 		
-		XSDuration duration = castDuration(aat);
+		XSDuration duration = castDuration((AnyAtomicType) aat);
 
 		if (duration == null)
 			throw DynamicError.cant_cast(null);

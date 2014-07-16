@@ -28,6 +28,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 
+import com.ibm.icu.text.Normalizer;
 import org.eclipse.wst.xml.xpath2.api.CollationProvider;
 import org.eclipse.wst.xml.xpath2.api.Function;
 import org.eclipse.wst.xml.xpath2.api.FunctionLibrary;
@@ -230,7 +231,7 @@ public class StaticContextBuilder implements StaticContext {
 		
 		@Override
 		public int compare(String o1, String o2) {
-			return o1.compareTo(o2);
+			return Normalizer.compare(o1, o2, Normalizer.COMPARE_CODE_POINT_ORDER);
 		}
 	};
 	
@@ -266,6 +267,11 @@ public class StaticContextBuilder implements StaticContext {
 
 	public StaticContextBuilder withBaseUri(String string) throws URISyntaxException {
 		_base_uri = new URI(string);		
+		return this;
+	}
+
+	public StaticContextBuilder withBaseUri(URI uri) {
+		_base_uri = uri;
 		return this;
 	}
 

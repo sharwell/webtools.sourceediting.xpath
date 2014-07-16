@@ -15,17 +15,21 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 
 /**
  * Returns the contiguous sequence of items in the value of $sourceSeq beginning
@@ -35,7 +39,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
  * <= $p < fn:round($startingLoc) + fn:round($length)
  */
 public class FnSubsequence extends Function {
-	
+	private static Collection<SeqType> _expected_args = null;
+
 	/**
 	 * Constructor for FnSubsequence.
 	 */
@@ -69,76 +74,85 @@ public class FnSubsequence extends Function {
 	public static ResultSequence subsequence(Collection<ResultSequence> args) throws DynamicError {		
 		ResultBuffer rs = new ResultBuffer();
 
+		List<ResultSequence> convertedArgs = convert_arguments(args, expected_args());
+
 		// get args
-		Iterator<ResultSequence> citer = args.iterator();
-		
-		ResultSequence seq = citer.next();		
-		if (seq.empty())
+		ResultSequence sourceSeq = convertedArgs.get(0);
+		XSDouble startingLoc = (XSDouble)convertedArgs.get(1).first();
+		XSDouble length = convertedArgs.size() >= 3 ? (XSDouble)(!convertedArgs.get(2).empty() ? convertedArgs.get(2).first() : null) : null;
+
+		if (sourceSeq.empty())
 			return ResultBuffer.EMPTY;
-		
-		ResultSequence startLoc = citer.next();
-		ResultSequence length = null; 		
-		if (citer.hasNext()) {
-			length = citer.next(); 
+
+		int start = (int)((XSDouble)FnRound.fn_round(startingLoc)).double_value() - 1;
+
+		int end;
+		if (length == null) {
+			end = sourceSeq.size();
+		} else {
+			int lengthValue = (int)((XSDouble)FnRound.fn_round(length)).double_value();
+			end = start + lengthValue;
 		}
 
-		Item at = startLoc.first();
-		if (!(at instanceof NumericType)) {
-			throw DynamicError.throw_type_error();
+		start = Math.max(start, 0);
+		end = Math.min(end, sourceSeq.size());
+
+		if (start == 0 && end == sourceSeq.size()) {
+			return sourceSeq;
+		} else if (end <= start) {
+			return ResultBuffer.EMPTY;
 		}
 
-		at = new XSDouble(at.getStringValue());
-
-		int start = (int) ((XSDouble) at).double_value();
-        int effectiveNoItems = 0; // no of items beyond index >= 1 that are added to the result
-        
-	    if (length != null) {
-	    	// the 3rd argument is present
-			if (length.size() != 1)
-				throw DynamicError.throw_type_error();
-			at = length.first();
-			if (!(at instanceof NumericType)) {
-				throw DynamicError.throw_type_error();
-			}
-			at = new XSDouble(at.getStringValue());
-			int len = (int) ((XSDouble) at).double_value();
-			if (len < 0) {
-				throw DynamicError.throw_type_error();	
+		ResultBuffer result = new ResultBuffer();
+		int index = 0;
+		for (Iterator<Item> seqIter = sourceSeq.iterator(); seqIter.hasNext(); ) {
+			Item item = seqIter.next();
+			if (index >= start && index < end) {
+				result.add(item);
 			}
 
-			if (start <= 0) {				
-				effectiveNoItems = start + len - 1;	
-				start = 1;
-			}
-			else {
-				effectiveNoItems = len;
-			}
+			index++;
 		}
-	    else {
-	    	// 3rd argument is absent
-	    	if (start <= 0) {
-	    		start = 1;
-	    		effectiveNoItems = seq.size(); 
-	    	}
-	    	else {
-	    		effectiveNoItems = seq.size() - start + 1; 
-	    	}
-	    }
-		
-		int pos = 1; // index running parallel to the iterator
-		int addedItems = 0;
-		if (effectiveNoItems > 0) {
-			for (Iterator<Item> seqIter = seq.iterator(); seqIter.hasNext();) {
-				at = (AnyType) seqIter.next();
-				if (start <= pos && addedItems < effectiveNoItems) {				
-					rs.add(at);
-					addedItems++;
-				}
-				pos++;
-			}
-		}
-		
-		return rs.getSequence();
+
+		return result.getSequence();
+//		XSDouble startLoc = (XSDouble)convert_argument(citer.next(), new SeqType(XSDouble.class, SeqType.OCC_NONE));
+//		ResultSequence length = convert_argument(citer.next(), new SeqType(XSDouble.class, SeqType.OCC_QMARK));
+//
+//		XSDouble rounded = (XSDouble)FnRound.fn_round(startLoc);
+//		int start = (int)rounded.double_value();
+//		int end = Integer.MAX_VALUE;
+//		if (!length.empty()) {
+//			end = (int)((XSDouble)FnRound.fn_round(ResultBuffer.wrap(length.first()))).double_value();
+//		}
+//
+//		int pos = 1; // index running parallel to the iterator
+//		for (Iterator<Item> seqIter = seq.iterator(); seqIter.hasNext();) {
+//			Item item = seqIter.next();
+//			if (start <= pos && pos < end) {
+//				rs.add(item);
+//			}
+//
+//			pos++;
+//		}
+//		
+//		return rs.getSequence();
 	}
-	
+
+	/**
+	 * Obtain a list of expected arguments.
+	 * 
+	 * @return Result of operation.
+	 */
+	public synchronized static Collection<SeqType> expected_args() {
+		if (_expected_args == null) {
+			_expected_args = new ArrayList<SeqType>();
+			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
+			_expected_args.add(new SeqType(AnyType.class, SeqType.OCC_STAR));
+			_expected_args.add(new SeqType(new XSDouble(), SeqType.OCC_NONE));
+			_expected_args.add(new SeqType(new XSDouble(), SeqType.OCC_QMARK));
+		}
+
+		return _expected_args;
+	}
+
 }

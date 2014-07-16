@@ -17498,6 +17498,7 @@
       <query name="K2-SeqExprCast-420" date="2007-11-26+01:00"/>
       <input-file role="principal-data" variable="input-context">emptydoc</input-file>
       <output-file role="principal" compare="Text">K2-SeqExprCast-420.txt</output-file>
+      <expected-error>FORG0001</expected-error>
    </test-case>
    <test-case is-XPath2="true" Creator="Frans Englich" name="K2-SeqExprCast-421" FilePath="exprSeqTypes/SeqExprCast/" scenario="runtime-error">
       <description>Pass an invalid anyURI. The specifications are unclear on this, so various kinds of output is accepted, see W3C's public report 5705.</description>

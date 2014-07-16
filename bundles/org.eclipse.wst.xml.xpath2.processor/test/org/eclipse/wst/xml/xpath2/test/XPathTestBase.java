@@ -1,5 +1,6 @@
 package org.eclipse.wst.xml.xpath2.test;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,10 +8,16 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.xml.XMLConstants;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -23,7 +30,12 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
 
+import org.apache.xerces.impl.xs.SchemaGrammar;
+import org.apache.xerces.impl.xs.XMLSchemaLoader;
+import org.apache.xerces.xni.parser.XMLInputSource;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -37,12 +49,14 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.TextType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.xerces.XercesTypeModel;
 import org.eclipse.wst.xml.xpath2.processor.util.DynamicContextBuilder;
 import org.eclipse.wst.xml.xpath2.processor.util.StaticContextBuilder;
 import org.hamcrest.Matcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -51,9 +65,10 @@ import org.w3c.dom.Text;
 public abstract class XPathTestBase {
 
 	private final boolean _debug;
+	private final boolean _checkInspections = false;
 
 	private final Engine _engine = new Engine();
-	private DocumentBuilder _documentBuilder;
+	private final Map<String, DocumentBuilder> _documentBuilders = new HashMap<String, DocumentBuilder>();
 	private ZipFile _zipFile;
 
 	public XPathTestBase() {
@@ -65,9 +80,28 @@ public abstract class XPathTestBase {
 	}
 
 	protected StaticContextBuilder createStaticContextBuilder() {
-		return new StaticContextBuilder()
-			.withNamespace("fn", "http://www.w3.org/2005/xpath-functions")
-			.withNamespace("xs", "http://www.w3.org/2001/XMLSchema");
+		try {
+			return new StaticContextBuilder()
+				.withNamespace("fn", "http://www.w3.org/2005/xpath-functions")
+				.withNamespace("xs", "http://www.w3.org/2001/XMLSchema")
+				.withNamespace("xml", "http://www.w3.org/XML/1998/namespace")
+				.withBaseUri("jar:" + getClass().getClassLoader().getResource("XQTS_1_0_3.zip").toURI().toString() + "!/");
+		} catch (URISyntaxException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	protected StaticContextBuilder createStaticContextBuilder(String schema) {
+		try {
+			XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
+			String rawSchema = readFile(schema);
+			SchemaGrammar grammar = (SchemaGrammar)schemaLoader.loadGrammar(new XMLInputSource(schema, schema, schema, new ByteArrayInputStream(rawSchema.getBytes("UTF-8")), "UTF-8"));
+
+			return createStaticContextBuilder()
+				.withTypeModel(new XercesTypeModel(grammar.toXSModel()));
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	protected DynamicContextBuilder createDynamicContextBuilder(StaticContext staticContext) {
@@ -78,31 +112,54 @@ public abstract class XPathTestBase {
 			throw new RuntimeException(e);
 		}
 
+		GregorianCalendar dateTime = new GregorianCalendar(TimeZone.getTimeZone("GMT-0500"));
+		dateTime.set(2005, 11, 5, 17, 10, 0);
+		dateTime.set(Calendar.MILLISECOND, 344);
 		return new DynamicContextBuilder(staticContext)
-			.withTimezoneOffset(defaultTimezoneOffset);
+			.withTimezoneOffset(defaultTimezoneOffset)
+			.withCurrentDateTime(dateTime);
 	}
 
 	protected Engine getEngine() {
 		return _engine;
 	}
 
-	protected DocumentBuilder getDocumentBuilder() {
-		if (_documentBuilder == null) {
+	protected DocumentBuilder getDocumentBuilder(String schema) {
+		if (schema == null) {
+			schema = "";
+		}
+
+		if (_documentBuilders.get(schema) == null) {
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			documentBuilderFactory.setNamespaceAware(true);
+			if (!schema.isEmpty()) {
+				try {
+					SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+					String rawSchema = readFile(schema);
+					documentBuilderFactory.setSchema(schemaFactory.newSchema(new StreamSource(new ByteArrayInputStream(rawSchema.getBytes("UTF-8")))));
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				} catch (SAXException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
 
 			try {
-				_documentBuilder = documentBuilderFactory.newDocumentBuilder();
+				_documentBuilders.put(schema, documentBuilderFactory.newDocumentBuilder());
 			} catch (ParserConfigurationException ex) {
 				throw new RuntimeException(ex);
 			}
 		}
 
-		return _documentBuilder;
+		return _documentBuilders.get(schema);
 	}
 
 	protected boolean isDebug() {
 		return _debug;
+	}
+
+	protected boolean checkInspections() {
+		return _checkInspections;
 	}
 
 	public static <T> Matcher<T> xmlEqualTo(T operand) {
@@ -235,6 +292,7 @@ public abstract class XPathTestBase {
 				} else {
 					if (builder != null) {
 						buffer.append(new XSString(builder.toString()));
+						builder = null;
 					}
 
 					buffer.append(item);
@@ -308,6 +366,7 @@ public abstract class XPathTestBase {
 				} else {
 					if (builder != null && builder.length() > 0) {
 						buffer.append(createTextNode(builder.toString()));
+						builder = null;
 					}
 
 					buffer.append(item);

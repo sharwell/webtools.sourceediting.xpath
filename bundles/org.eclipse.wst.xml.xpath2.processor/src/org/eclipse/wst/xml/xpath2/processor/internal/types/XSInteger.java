@@ -29,6 +29,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -132,7 +133,7 @@ public class XSInteger extends XSDecimal {
 
 		// the function conversion rules apply here too. Get the argument
 		// and convert it's string value to an integer.
-		Item aat = arg.first();
+		Item aat = FnData.atomize(arg.first());
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
 			|| aat instanceof XSFloat
@@ -317,6 +318,10 @@ public class XSInteger extends XSDecimal {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
+		if (val.zero()) {
+			throw DynamicError.div_zero(null);
+		}
+
 		BigInteger result = int_value().remainder(val.int_value()); 
 		
 		return new XSInteger(result);

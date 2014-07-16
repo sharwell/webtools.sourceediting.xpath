@@ -18,6 +18,7 @@ import java.util.Collection;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
+import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
@@ -89,6 +90,9 @@ public class FsMinus extends Function {
 		if (args.size() != 1)
 			throw DynamicError.throw_type_error();
 		ResultSequence arg = args.iterator().next();
+		if (arg.empty()) {
+			return ResultBuffer.EMPTY;
+		}
 
 		// make sure we got only one numeric atom
 		if (arg.size() != 1)

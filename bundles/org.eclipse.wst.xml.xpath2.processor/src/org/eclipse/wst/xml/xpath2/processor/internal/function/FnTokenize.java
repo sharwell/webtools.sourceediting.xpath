@@ -73,9 +73,13 @@ public class FnTokenize extends AbstractRegExFunction {
 		// get args
 		Iterator<ResultSequence> argiter = cargs.iterator();
 		ResultSequence arg1 = argiter.next();
-		String str1 = "";
-		if (!arg1.empty()) {
-			str1 = ((XSString) arg1.first()).value();
+		if (arg1.empty()) {
+			return ResultBuffer.EMPTY;
+		}
+
+		String str1 = ((XSString) arg1.first()).value();
+		if (str1.isEmpty()) {
+			return ResultBuffer.EMPTY;
 		}
 
 		ResultSequence arg2 = argiter.next();
@@ -119,7 +123,7 @@ public class FnTokenize extends AbstractRegExFunction {
 			startpos = matcher.end();
 			tokens.add(token);
 		}
-		if (startpos < endpos) {
+		if (startpos <= endpos) {
 			String token = src.substring(startpos, endpos);
 			tokens.add(token);
 		}

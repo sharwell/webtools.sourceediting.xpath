@@ -17,6 +17,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
@@ -25,12 +26,15 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.CtrType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSUntypedAtomic;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSYearMonthDuration;
 
@@ -98,7 +102,7 @@ public class FsPlus extends Function {
 			if (arg instanceof XSDouble) has_double = true;
 			if (arg instanceof XSFloat) has_float = true;
 			if (arg instanceof XSDayTimeDuration || arg instanceof XSYearMonthDuration) has_duration = true;
-			result.add(ResultBuffer.wrap(arg));
+			result.add(arg);
 		}
 
 		if (has_double) has_float = false;
@@ -166,7 +170,11 @@ public class FsPlus extends Function {
 		// make sure we got only one arg
 		if (args.size() != 1)
 			throw DynamicError.throw_type_error();
+
 		ResultSequence arg = args.iterator().next();
+		if (arg.empty()) {
+			return ResultBuffer.EMPTY;
+		}
 
 		// make sure we got only one numeric atom
 		if (arg.size() != 1)
@@ -203,25 +211,150 @@ public class FsPlus extends Function {
 			throw DynamicError.throw_type_error();
 
 		Collection<ResultSequence> cargs = convert_args(args);
-
-		if (cargs.size() == 0)
+		if (cargs.isEmpty())
 			return ResultBuffer.EMPTY;
+
+		cargs = promoteMathOperands(cargs);
 
 		// make sure arugments are good [at least the first one]
 		Iterator<ResultSequence> argi = cargs.iterator();
 
-		T arg;
-		try {
-			arg = op.getType().cast(argi.next().item(0));
-			if (arg == null) {
-				throw DynamicError.throw_type_error();
-			}
-		} catch (ClassCastException ex) {
+		ResultSequence argSequence = argi.next();
+		if (argSequence == null) {
 			throw DynamicError.throw_type_error();
 		}
 
-		ResultSequence arg2 = argi.next();
+		Item arg = argSequence.item(0);
+		if (!(op.getType().isInstance(arg)))
+			throw DynamicError.throw_type_error();
 
-		return op.execute(arg, arg2, evaluationContext);
+		ResultSequence arg2 = argi.next();
+		return op.execute(op.getType().cast(arg), arg2, evaluationContext);
+	}
+
+	private static Collection<ResultSequence> promoteMathOperands(Collection<ResultSequence> args) {
+		List<ResultSequence> result = new ArrayList<ResultSequence>(args);
+
+		boolean changed;
+		do {
+			changed = false;
+			for (int i = 1; i < result.size(); i++) {
+				AnyType[] promoted = promoteMathOperands((CtrType)result.get(0), (CtrType)result.get(i));
+				if (promoted[0] != result.get(0)) {
+					changed = true;
+					result.set(0, promoted[0]);
+				}
+
+				if (promoted[1] != result.get(1)) {
+					changed = true;
+					result.set(1, promoted[1]);
+				}
+			}
+		} while (changed);
+
+		return result;
+	}
+
+	private static AnyType[] promoteMathOperands(CtrType arg1, CtrType arg2) {
+		if (arg1 == null || arg2 == null) {
+			return new AnyType[] { arg1, arg2 };
+		}
+
+		if (arg1 instanceof XSUntypedAtomic && arg2 instanceof XSUntypedAtomic) {
+			return new AnyType[] { new XSString(arg1.getStringValue()), new XSString(arg2.getStringValue()) };
+		}
+
+		if (arg1.getClass() == arg2.getClass()) {
+			// trivial case
+			return new AnyType[] { arg1, arg2 };
+		}
+
+		if (arg2 instanceof XSUntypedAtomic) {
+			AnyType[] swappedResult = promoteMathOperands(arg2, arg1);
+			AnyType tmp = swappedResult[0];
+			swappedResult[0] = swappedResult[1];
+			swappedResult[1] = tmp;
+			return swappedResult;
+		}
+
+		AnyType[] result = new AnyType[2];
+		if (arg1.getClass().isAssignableFrom(arg2.getClass())) {
+			result[0] = arg1;
+			result[1] = (AnyType)arg1.constructor(arg2);
+		} else if (arg2.getClass().isAssignableFrom(arg1.getClass())) {
+			result[0] = (AnyType)arg2.constructor(arg1);
+			result[1] = arg2;
+		} else if (arg1 instanceof XSDouble) {
+			if (arg2 instanceof XSFloat || arg2 instanceof XSDecimal) {
+				result[0] = arg1;
+				result[1] = (AnyType)arg1.constructor(arg2);
+			}
+		} else if (arg1 instanceof XSFloat) {
+			if (arg2 instanceof XSDouble) {
+				result[0] = (AnyType)arg2.constructor(arg1);
+				result[1] = arg2;
+			} else if (arg2 instanceof XSDecimal) {
+				result[0] = arg1;
+				result[1] = (AnyType)arg1.constructor(arg2);
+			}
+		} else if (arg1 instanceof XSDecimal) {
+			if (arg2 instanceof XSDouble || arg2 instanceof XSFloat) {
+				result[0] = (AnyType)arg2.constructor(arg1);
+				result[1] = arg2;
+			}
+		} else if (arg1 instanceof XSUntypedAtomic) {
+			result[0] = (AnyType)arg2.constructor(arg1);
+			result[1] = arg2;
+		} else if (arg1 instanceof XSAnyURI) {
+			if (arg2 instanceof XSString) {
+				result[0] = (AnyType)arg2.constructor(arg1);
+				result[1] = arg2;
+			}
+		} else if (arg2 instanceof XSAnyURI) {
+			if (arg1 instanceof XSString) {
+				result[0] = arg1;
+				result[1] = (AnyType)arg1.constructor(arg2);
+			}
+		}
+
+		if (result[0] == null || result[1] == null) {
+			Class<? extends CtrType> commonParent = findCommonParent(arg1, arg2);
+			if (commonParent != null && commonParent != CtrType.class) {
+				CtrType instance = null;
+				try {
+					instance = commonParent.newInstance();
+				} catch (InstantiationException ex) {
+				} catch (IllegalAccessException ex) {
+				}
+
+				if (instance != null) {
+					result[0] = (AnyType)instance.constructor(arg1);
+					result[1] = (AnyType)instance.constructor(arg2);
+				}
+			}
+		}
+
+		if (result[0] == null || result[1] == null) {
+			// couldn't promote types; leave as they were
+			result[0] = arg1;
+			result[1] = arg2;
+		}
+
+		return result;
+	}
+
+	private static Class<? extends CtrType> findCommonParent(CtrType arg1, CtrType arg2) {
+		Class<?> type;
+		for (type = arg2.getClass(); type != null; type = type.getSuperclass()) {
+			if (type.isAssignableFrom(arg1.getClass())) {
+				break;
+			}
+		}
+
+		if (type != null && CtrType.class.isAssignableFrom(type)) {
+			return type.asSubclass(CtrType.class);
+		}
+
+		return null;
 	}
 }

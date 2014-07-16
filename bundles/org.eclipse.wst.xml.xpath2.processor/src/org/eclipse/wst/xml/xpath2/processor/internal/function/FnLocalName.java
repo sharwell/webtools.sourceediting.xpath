@@ -86,6 +86,10 @@ public class FnLocalName extends Function {
 			return new XSString("");
 		}
 
+		if (!(arg1 instanceof NodeType)) {
+			throw DynamicError.invalidType();
+		}
+
 		NodeType an = (NodeType) arg1.first();
 		
 
@@ -106,7 +110,7 @@ public class FnLocalName extends Function {
 	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
 			_expected_args = new ArrayList<SeqType>();
-			SeqType arg = new SeqType(SeqType.OCC_QMARK);
+			SeqType arg = new SeqType(NodeType.class, SeqType.OCC_QMARK);
 			_expected_args.add(arg);
 		}
 

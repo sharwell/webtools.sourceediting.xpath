@@ -20,6 +20,8 @@
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java_cup.runtime.Symbol;
+import org.eclipse.wst.xml.xpath2.processor.XPathParserException;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.LiteralUtils;
 
 
 /**
@@ -853,6 +855,10 @@ class XPathFlex implements java_cup.runtime.Scanner {
       zzEOFDone = true;
       yyclose();
     }
+
+	if (commentLevel > 0) {
+		throw new XPathParserException("Unterminated comment", null);
+	}
   }
 
 
@@ -1317,7 +1323,7 @@ class XPathFlex implements java_cup.runtime.Scanner {
           }
         case 170: break;
         case 49: 
-          { return symbol(XpathSym.DOUBLE, new Double(yytext()));
+          { return symbol(XpathSym.DOUBLE, LiteralUtils.parseDouble(yytext()));
           }
         case 171: break;
         case 62: 

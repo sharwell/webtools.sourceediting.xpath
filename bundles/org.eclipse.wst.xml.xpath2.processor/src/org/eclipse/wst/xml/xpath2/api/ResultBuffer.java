@@ -410,8 +410,8 @@ public class ResultBuffer {
 	}
 
 	public static ResultSequence wrap(Item item) {
-		if (item instanceof SingleItemSequence)
-			return (SingleItemSequence)item;
+		if (item instanceof ResultSequence)
+			return (ResultSequence)item;
 		
 		return new SingleResultSequence(item); 
 	}

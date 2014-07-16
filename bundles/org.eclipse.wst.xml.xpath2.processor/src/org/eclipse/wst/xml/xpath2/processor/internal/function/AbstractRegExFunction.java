@@ -11,9 +11,13 @@
  *******************************************************************************/
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 public abstract class AbstractRegExFunction extends Function {
@@ -58,12 +62,52 @@ public abstract class AbstractRegExFunction extends Function {
 			}
 			
 			if (flags.indexOf("x") >= 0) {
-				flag = flag | Pattern.COMMENTS;
+				//pattern = removeWhitespace(pattern);
+				flag |= Pattern.COMMENTS;
 			}
 		}
-		
-		Pattern p = Pattern.compile(pattern, flag);
-		return p.matcher(src);
+
+		try {
+			Pattern p = Pattern.compile(pattern, flag);
+			return p.matcher(src);
+		} catch (PatternSyntaxException ex) {
+			throw DynamicError.regex_error(null, ex);
+		}
 	}
+
+//	private static final Pattern characterClassPattern = Pattern.compile("");
+//	static {
+//		final String XmlChar = "[^\\[\\-\\]]";
+//		final String SingleCharEsc = "\\[nrt|.?*+(){}$\\[^\\\\\\-\\]]";
+//		final String charOrEsc = "(?:" + XmlChar + "|" + SingleCharEsc + ")";
+//		final String charRange = charOrEsc + "\\-" + charOrEsc;
+//		final String charClassEsc = "(?:";
+//		final String posCharGroup = "(?:" + charRange + "|" + charClassEsc + ")+";
+//		final String negCharGroup = "\\^" + posCharGroup;
+//		final String charClassSub = "(?:" + posCharGroup + "|" + negCharGroup + ")-" + charClassExpr;
+//		final String charGroup = "(?:" + posCharGroup + "|" + negCharGroup + "|" + charClassSub + ")";
+//		final String charClassExpr = "\\[" + charGroup + "\\]";
+//	}
+//
+//	private static String removeWhitespace(String pattern) {
+//		List<Integer> startIndexes = new ArrayList<Integer>();
+//		List<Integer> endIndexes = new ArrayList<Integer>();
+//		Matcher matcher = characterClassPattern.matcher(pattern);
+//		while (matcher.find()) {
+//			startIndexes.add(matcher.start());
+//			endIndexes.add(matcher.end());
+//		}
+//
+//		StringBuilder patternBuilder = new StringBuilder();
+//		int previousEnd = 0;
+//		for (int i = 0; i < startIndexes.size(); i++) {
+//			patternBuilder.append(pattern.substring(previousEnd, startIndexes.get(i)).replaceAll("\\s+", ""));
+//			patternBuilder.append(pattern.substring(startIndexes.get(i), endIndexes.get(i)));
+//			previousEnd = endIndexes.get(i);
+//		}
+//
+//		patternBuilder.append(pattern.substring(previousEnd, pattern.length()).replaceAll("\\s+", ""));
+//		return patternBuilder.toString();
+//	}
 
 }

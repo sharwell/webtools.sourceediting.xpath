@@ -13,10 +13,14 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 
+import com.ibm.icu.text.Normalizer;
+import org.eclipse.wst.xml.xpath2.api.CollationProvider;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -38,7 +42,7 @@ public class FnContains extends Function {
 	 * Constructor for FnContains.
 	 */
 	public FnContains() {
-		super(new QName("contains"), 2);
+		super(new QName("contains"), 2, 3);
 	}
 
 	/**
@@ -52,7 +56,7 @@ public class FnContains extends Function {
 	 */
 	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
-		return contains(args);
+		return contains(args, ec);
 	}
 
 	/**
@@ -64,7 +68,7 @@ public class FnContains extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:contains operation.
 	 */
-	public static ResultSequence contains(Collection<ResultSequence> args) throws DynamicError {
+	public static ResultSequence contains(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get args
@@ -79,6 +83,28 @@ public class FnContains extends Function {
 		if (!arg2.empty())
 			str2 = ((XSString) arg2.first()).value();
 
+		ResultSequence arg3 = null;
+		if (argiter.hasNext()) {
+			arg3 = argiter.next();
+		}
+
+		CollationProvider collationProvider = evaluationContext.getDynamicContext().getCollationProvider();
+		String collationName;
+		if (arg3 != null) {
+			if (arg3.empty() || !(arg3.first() instanceof XSString)) {
+				throw DynamicError.argument_type_error(null);
+			}
+
+			collationName = arg3.first().getStringValue();
+		} else {
+			collationName = collationProvider.getDefaultCollation();
+		}
+
+		Comparator<String> collation = collationProvider.getCollation(collationName);
+		if (collation == null) {
+			throw DynamicError.unsupported_collation(collationName);
+		}
+
 		int str1len = str1.length();
 		int str2len = str2.length();
 
@@ -90,7 +116,7 @@ public class FnContains extends Function {
 			return XSBoolean.FALSE;
 		}
 
-		return XSBoolean.valueOf(str1.indexOf(str2) != -1);
+		return XSBoolean.valueOf(str1.contains(str2));
 	}
 
 	/**
@@ -102,6 +128,7 @@ public class FnContains extends Function {
 		if (_expected_args == null) {
 			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_QMARK);
+			_expected_args.add(arg);
 			_expected_args.add(arg);
 			_expected_args.add(arg);
 		}

@@ -34,6 +34,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathMinus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathPlus;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
@@ -151,7 +152,7 @@ Cloneable {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 		if (!(aat instanceof XSString
 			|| aat instanceof XSUntypedAtomic
 			|| aat instanceof XSDateTime
@@ -160,11 +161,11 @@ Cloneable {
 			throw DynamicError.invalidType();
 		}
 
-		if (!isCastable(aat)) {
+		if (!isCastable((AnyAtomicType) aat)) {
 			throw DynamicError.invalidType();
 		}
 		
-		CalendarType t = castTime(aat);
+		CalendarType t = castTime((AnyAtomicType) aat);
 
 		if (t == null)
 			throw DynamicError.cant_cast(null);
@@ -222,15 +223,10 @@ Cloneable {
 	 * 
 	 * @return The second stored
 	 */
-	public double second() {
-		double s = _calendar.get(Calendar.SECOND);
-
-		double ms = _calendar.get(Calendar.MILLISECOND);
-
-		ms /= 1000;
-
-		s += ms;
-		return s;
+	public BigDecimal second() {
+		BigDecimal s = new BigDecimal(_calendar.get(Calendar.SECOND));
+		BigDecimal ms = new BigDecimal(_calendar.get(Calendar.MILLISECOND)).divide(new BigDecimal(1000));
+		return s.add(ms);
 	}
 
 	/**
@@ -260,16 +256,17 @@ Cloneable {
 		
 
 		ret += ":";
-		int isecond = (int) second();
-		double sec = second();
+		BigDecimal sec = second();
+		int isecond = sec.intValue();
 
-		if ((sec - (isecond)) == 0.0)
+		if (sec.compareTo(new BigDecimal(isecond)) == 0) {
 			ret += XSDateTime.pad_int(isecond, 2);
-		else {
-			if (sec < 10.0)
-				ret += "0" + sec;
-			else
-				ret += sec;
+		} else {
+			if (sec.compareTo(new BigDecimal(10)) < 0) {
+				ret += 0;
+			}
+
+			ret += sec;
 		}
 
 		if (timezoned()) {
@@ -341,8 +338,8 @@ Cloneable {
 	 * 
 	 * @return time stored in milliseconds since the epoch
 	 */
-	public double value() {
-		return calendar().getTimeInMillis() / 1000.0;
+	public BigDecimal value() {
+		return new BigDecimal(calendar().getTimeInMillis()).divide(new BigDecimal(1000));
 	}
 
 	/**

@@ -18,6 +18,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -80,12 +81,32 @@ public class FnMatches extends AbstractRegExFunction {
 		String pattern = ((XSString) arg2.first()).value();
 		String flags = null;
 
+		int patternFlags = 0;
 		if (argiter.hasNext()) {
-			ResultSequence flagRS = null;
+			ResultSequence flagRS;
 			flagRS = argiter.next();
 			flags = flagRS.first().getStringValue();
-			if (validflags.indexOf(flags) == -1 && flags.length() > 0 ) {
-				throw DynamicError.regex_flags_error(null);
+			for (int i = 0; i < flags.length(); i++) {
+				switch (flags.charAt(i)) {
+				case 's':
+					patternFlags |= Pattern.DOTALL;
+					break;
+
+				case 'm':
+					patternFlags |= Pattern.MULTILINE;
+					break;
+
+				case 'i':
+					patternFlags |= Pattern.CASE_INSENSITIVE;
+					break;
+
+				case 'x':
+					patternFlags |= Pattern.COMMENTS;
+					break;
+
+				default:
+					throw DynamicError.regex_flags_error(null);
+				}
 			}
 		}
 

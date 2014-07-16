@@ -75,7 +75,7 @@ public class FnQName extends Function {
 		Iterator<ResultSequence> argiter = cargs.iterator();
 		ResultSequence arg1 = argiter.next();
 
-		String ns = null;
+		String ns = "";
 		if (!arg1.empty())
 			ns = ((XSString) arg1.first()).value();
 		ResultSequence arg2 = argiter.next();
@@ -84,6 +84,9 @@ public class FnQName extends Function {
 		QName qn = QName.parse_QName(name);
 		if (qn == null)
 			throw DynamicError.lexical_error(null, null);
+		if (ns.isEmpty() && qn.prefix() != null)
+			throw DynamicError.lexical_error(null, null);
+
 		qn.set_namespace(ns);
 
 		return qn;

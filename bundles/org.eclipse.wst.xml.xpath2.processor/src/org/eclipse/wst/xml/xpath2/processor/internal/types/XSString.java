@@ -28,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnCompare;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -36,7 +37,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 
 	private static final String XS_STRING = "xs:string";
-	private String _value;
+	private final String _value;
 
 	/**
 	 * Initialises using the supplied String
@@ -110,8 +111,7 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		//AnyAtomicType aat = (AnyAtomicType) arg.first();
-		Item aat = arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 
 		return new XSString(aat.getStringValue());
 	}
@@ -120,9 +120,9 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 
 	// 666 indicates death [compare returned empty seq]
 	private int do_compare(AnyType arg, DynamicContext dc) throws DynamicError {
-
-		// XXX: This can't happen, I guess
-		if (arg == null) return 666;
+		if (!(arg instanceof XSString)) {
+			throw DynamicError.invalidType();
+		}
 
 		XSString comparand = arg instanceof XSString ? (XSString)arg : new XSString(arg.getStringValue());
 		
@@ -144,11 +144,6 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	@Override
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		int cmp = do_compare(arg, evaluationContext.getDynamicContext());
-
-		// XXX im not sure what to do here!!! because eq has to return
-		// something i fink....
-		if (cmp == 666)
-			assert false;
 
 		return cmp == 0;
 	}

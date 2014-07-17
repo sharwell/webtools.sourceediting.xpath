@@ -33,6 +33,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.xerces.dom.PSVIDocumentImpl;
+import org.apache.xerces.impl.Constants;
 import org.apache.xerces.impl.xs.SchemaGrammar;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.xni.parser.XMLInputSource;
@@ -71,6 +73,13 @@ public abstract class XPathTestBase {
 	private final Map<String, DocumentBuilder> _documentBuilders = new HashMap<String, DocumentBuilder>();
 	private ZipFile _zipFile;
 
+	public static final String SCHEMA_VALIDATION_FEATURE = Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_VALIDATION_FEATURE;
+	public static final String LOAD_EXTERNAL_DTD_FEATURE = Constants.XERCES_FEATURE_PREFIX + Constants.LOAD_EXTERNAL_DTD_FEATURE;
+	public static final String NONVALIDATING_LOAD_DTD_GRAMMAR = Constants.XERCES_FEATURE_PREFIX + Constants.LOAD_DTD_GRAMMAR_FEATURE;
+
+	public static final String DOCUMENT_IMPLEMENTATION_PROPERTY = Constants.XERCES_PROPERTY_PREFIX + Constants.DOCUMENT_CLASS_NAME_PROPERTY;
+	public static final String DOCUMENT_PSVI_IMPLEMENTATION = PSVIDocumentImpl.class.getCanonicalName();
+
 	public XPathTestBase() {
 		this._debug = false;
 	}
@@ -89,6 +98,11 @@ public abstract class XPathTestBase {
 		} catch (URISyntaxException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	protected StaticContextBuilder createStaticContextBuilder(Document document) {
+		return createStaticContextBuilder()
+			.withTypeModel(new XercesTypeModel(document));
 	}
 
 	protected StaticContextBuilder createStaticContextBuilder(String schema) {
@@ -132,6 +146,10 @@ public abstract class XPathTestBase {
 		if (_documentBuilders.get(schema) == null) {
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			documentBuilderFactory.setNamespaceAware(true);
+			documentBuilderFactory.setAttribute(SCHEMA_VALIDATION_FEATURE, Boolean.FALSE);
+			documentBuilderFactory.setAttribute(LOAD_EXTERNAL_DTD_FEATURE, Boolean.TRUE);
+			documentBuilderFactory.setAttribute(NONVALIDATING_LOAD_DTD_GRAMMAR, Boolean.TRUE);
+			documentBuilderFactory.setAttribute(DOCUMENT_IMPLEMENTATION_PROPERTY, DOCUMENT_PSVI_IMPLEMENTATION);
 			if (!schema.isEmpty()) {
 				try {
 					SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

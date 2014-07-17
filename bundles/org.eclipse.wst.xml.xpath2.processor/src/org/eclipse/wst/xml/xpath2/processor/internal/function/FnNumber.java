@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
+import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.TypeError;
@@ -58,9 +59,14 @@ public class FnNumber extends Function {
 
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		ResultSequence argument = null;
+		ResultSequence argument;
 		if (args.isEmpty()) {
-			argument = getResultSetForArityZero(ec);
+			Item contextItem = ec.getContextItem();
+			if (contextItem == null) {
+				throw DynamicError.contextUndefined();
+			}
+
+			argument = ResultBuffer.wrap(contextItem);
 		} else {
 			argument = args.iterator().next();
 		}
@@ -82,45 +88,15 @@ public class FnNumber extends Function {
 	public static XSDouble fn_number(ResultSequence arg, EvaluationContext ec)
 			throws DynamicError {
 
-		if (arg.size() > 1) {
-			throw new DynamicError(TypeError.invalid_type("bad argument passed to fn:number()"));
-		} else if (arg.size() == 1) {
-			Item at = arg.first();
-
-			/*
-			if (!(at instanceof AnyAtomicType))
-				DynamicError.throw_type_error();
-			*/
-			
-			if (at instanceof AnyAtomicType) {
-			  if ((at instanceof XSDouble)) {
-				 return (XSDouble)at;
-			  } else if ((at instanceof XSFloat)) {
-				  float value = ((XSFloat)at).float_value();
-				  if (Float.isNaN(value)) {
-					  return new XSDouble(Double.NaN);
-				  } else if (value == Float.NEGATIVE_INFINITY) {
-					  return new XSDouble(Double.NEGATIVE_INFINITY);
-				  } else if (value == Float.POSITIVE_INFINITY) {
-					  return new XSDouble(Double.POSITIVE_INFINITY);
-				  } else {
-					  return new XSDouble((double)value); 
-				  }
-			  } else {
-				 XSDouble d = XSDouble.parse_double(at.getStringValue());
-				 return d != null ? d : new XSDouble(Double.NaN);
-			  }
-			}
-			else if (at instanceof NodeType) {
-				XSDouble d = XSDouble.parse_double((FnData.atomize(at)).getStringValue());
-				return d != null ? d : new XSDouble(Double.NaN);
-			}
-		} else {
+		if (arg.empty()) {
 			return new XSDouble(Double.NaN);
 		}
-		
-		// unreach
-		return null;
+
+		try {
+			return (XSDouble)new XSDouble().constructor(arg);
+		} catch (DynamicError ex) {
+			return new XSDouble(Double.NaN);
+		}
 	}
 
 }

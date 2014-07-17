@@ -17,6 +17,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -113,15 +114,48 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 		}
 
 		String uri = aat.string_value().trim().replaceAll("\\s+", " ");
+		String escaped = escapeInvalidCharacters(uri);
+
 		try {
-			URI parsed = new URI(uri);
+			URI parsed = new URI(escaped);
 		} catch (URISyntaxException ex) {
-			throw DynamicError.cant_cast(uri, ex);
+			throw DynamicError.cant_cast(escaped, ex);
 		}
 
-		return new XSAnyURI(uri);
+		return new XSAnyURI(escaped);
 	}
 
+	private static String escapeInvalidCharacters(String uri) {
+		try {
+			StringBuilder result = new StringBuilder();
+			byte[] utf8 = uri.getBytes("UTF-8");
+			for (byte b : utf8) {
+				if (b > 0x20 && b < 0x7F) {
+					switch (b) {
+					case '<':
+					case '>':
+					case '"':
+						break;
+
+					default:
+						result.append((char)b);
+						continue;
+					}
+				}
+
+				result.append('%');
+				if (b < 0x10) {
+					result.append('0');
+				}
+
+				result.append(Integer.toHexString(b));
+			}
+
+			return result.toString();
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 	/**
 	 * Equality comparison between this and the supplied representation which
 	 * must be of type xs:anyURI (or, by promotion of this, xs:string)

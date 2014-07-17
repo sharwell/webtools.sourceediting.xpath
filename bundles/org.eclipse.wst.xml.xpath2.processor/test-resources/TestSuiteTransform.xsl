@@ -76,7 +76,7 @@ public class ]]></xsl:text>
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new XSAnyURI().getItemType())</xsl:for-each><xsl:for-each select="x:input-file">
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new ElementType().getItemType())</xsl:for-each>;
 
-<xsl:apply-templates select="x:input-file | x:input-URI | x:defaultCollection" mode="read"/>
+<xsl:apply-templates select="x:input-file | x:input-URI | x:defaultCollection | x:contextItem" mode="read"/>
 
     DynamicContext dynamicContext = createDynamicContextBuilder(staticContext)<xsl:for-each select="x:input-URI">
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new XSAnyURI("<xsl:apply-templates select="." mode="withVariable"/>"))</xsl:for-each><xsl:for-each select="x:input-file">
@@ -88,6 +88,7 @@ public class ]]></xsl:text>
   <xsl:with-param name="compare" select="x:output-file/@compare"/>
   <xsl:with-param name="outputName" select="x:output-file/text()"/>
   <xsl:with-param name="expectedError" select="x:expected-error/text()"/>
+  <xsl:with-param name="contextItems" select="x:contextItem/text()"/>
 </xsl:apply-templates>
   }
   </xsl:template>
@@ -153,7 +154,7 @@ public class ]]></xsl:text>
       <xsl:choose>
         <xsl:when test="ends-with($fileName, '.xml')">
           String raw_<xsl:value-of select="$inputDocumentVariable"/> = readFile("<xsl:value-of select="$fileName"/>");
-          Document <xsl:value-of select="$inputDocumentVariable"/> = getDocumentBuilder("<xsl:value-of select="$schema"/>").parse(new ByteArrayInputStream(raw_<xsl:value-of select="$inputDocumentVariable"/>.getBytes("UTF-8")), "<xsl:value-of select="$fileName"/>");
+          Document <xsl:value-of select="$inputDocumentVariable"/> = getDocumentBuilder("<xsl:value-of select="$schema"/>").parse(new ByteArrayInputStream(raw_<xsl:value-of select="$inputDocumentVariable"/>.getBytes("UTF-8")), staticContext.getBaseUri().toString() + "<xsl:value-of select="$fileName"/>");
           <xsl:value-of select="$variableName"/>.add(<xsl:value-of select="$inputDocumentVariable"/>);
         </xsl:when>
         <xsl:otherwise>
@@ -163,6 +164,31 @@ public class ]]></xsl:text>
       </xsl:choose>
     </xsl:for-each>
     collections.put(staticContext.getBaseUri().resolve(<xsl:value-of select="$collectionName"/>).toString(), <xsl:value-of select="$variableName"/>);
+  </xsl:template>
+
+  <xsl:template match="x:contextItem" mode="read">
+    <xsl:variable name="variableName" select="concat('context_',replace(text(),'-','_'))"/>
+    <xsl:variable name="inputId" select="text()"/>
+    <xsl:variable name="source" select="doc('../XQTSCatalog.xml')/x:test-suite/x:sources/x:source[@ID=$inputId]"/>
+    <xsl:variable name="fileName" select="$source/@FileName"/>
+    <xsl:variable name="schema">
+      <xsl:choose>
+        <xsl:when test="$source/@schema">
+          <xsl:variable name="schemaNode" select="doc('../XQTSCatalog.xml')/x:test-suite/x:sources/x:schema[@ID=($source/@schema)]"/>
+          <xsl:value-of select="$schemaNode/@FileName"/>
+        </xsl:when>
+        <xsl:otherwise></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="ends-with($fileName, '.xml')">
+        String raw_<xsl:value-of select="$variableName"/> = readFile("<xsl:value-of select="$fileName"/>");
+        Document <xsl:value-of select="$variableName"/> = getDocumentBuilder("<xsl:value-of select="$schema"/>").parse(new ByteArrayInputStream(raw_<xsl:value-of select="$variableName"/>.getBytes("UTF-8")), staticContext.getBaseUri().toString() + "<xsl:value-of select="$fileName"/>");
+      </xsl:when>
+      <xsl:otherwise>
+        String <xsl:value-of select="$variableName"/> = readFile("<xsl:value-of select="$fileName"/>");
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="x:input-file" mode="read">
@@ -182,7 +208,7 @@ public class ]]></xsl:text>
     <xsl:choose>
       <xsl:when test="ends-with($fileName, '.xml')">
         String raw_<xsl:value-of select="$variableName"/> = readFile("<xsl:value-of select="$fileName"/>");
-        Document <xsl:value-of select="$variableName"/> = getDocumentBuilder("<xsl:value-of select="$schema"/>").parse(new ByteArrayInputStream(raw_<xsl:value-of select="$variableName"/>.getBytes("UTF-8")), "<xsl:value-of select="$fileName"/>");
+        Document <xsl:value-of select="$variableName"/> = getDocumentBuilder("<xsl:value-of select="$schema"/>").parse(new ByteArrayInputStream(raw_<xsl:value-of select="$variableName"/>.getBytes("UTF-8")), staticContext.getBaseUri().toString() + "<xsl:value-of select="$fileName"/>");
       </xsl:when>
       <xsl:otherwise>
         String <xsl:value-of select="$variableName"/> = readFile("<xsl:value-of select="$fileName"/>");
@@ -195,6 +221,7 @@ public class ]]></xsl:text>
     <xsl:param name="outputName"/>
     <xsl:param name="compare"/>
     <xsl:param name="expectedError"/>
+    <xsl:param name="contextItems"/>
     String query = readFile("Queries/XQuery/" + filePath + "<xsl:value-of select="@name"/>.xq");
     if (isDebug()) {
       System.out.println(query);
@@ -216,7 +243,7 @@ public class ]]></xsl:text>
 	matchers.add(CoreMatchers.is(CoreMatchers.equalTo("<xsl:value-of select="."/>")));</xsl:for-each></xsl:if>
 	try {
 		XPath2Expression expression = getEngine().parseExpression(query, staticContext);
-		Node[] contextItems = new Node[] { };
+		Node[] contextItems = new Node[] {<xsl:for-each select="$contextItems"> context_<xsl:value-of select="replace(.,'-','_')"/><xsl:if test="position() != last()">,</xsl:if></xsl:for-each> };
 		ResultSequence result = expression.evaluate(dynamicContext, contextItems);<xsl:choose><xsl:when test="$outputName">
 
 		String actual = serializeResultSequence(result);
@@ -233,7 +260,7 @@ public class ]]></xsl:text>
 </xsl:when>
 <xsl:otherwise>
     XPath2Expression expression = getEngine().parseExpression(query, staticContext);
-    Node[] contextItems = new Node[] { };
+    Node[] contextItems = new Node[] {<xsl:for-each select="$contextItems"> context_<xsl:value-of select="replace(.,'-','_')"/><xsl:if test="position() != last()">,</xsl:if></xsl:for-each> };
     ResultSequence result = expression.evaluate(dynamicContext, contextItems);
 
     String actual = serializeResultSequence(result);

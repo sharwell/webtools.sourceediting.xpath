@@ -18,7 +18,9 @@ public class Engine implements XPath2Engine {
 		xPath.setStaticContext(context);
 		StaticNameResolver name_check = new StaticNameResolver(context);
 		name_check.check(xPath);
-		
+		StaticTypeChecker type_check = new StaticTypeChecker(context);
+		type_check.check(xPath);
+
 		xPath.setAxes(name_check.getAxes());
 		xPath.setFreeVariables(name_check.getFreeVariables());
 		xPath.setResolvedFunctions(name_check.getResolvedFunctions());

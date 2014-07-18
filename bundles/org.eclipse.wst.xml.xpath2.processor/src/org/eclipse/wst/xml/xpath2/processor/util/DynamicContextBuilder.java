@@ -170,8 +170,14 @@ public class DynamicContextBuilder implements DynamicContext {
 		return this;
 	}
 
-	public void withCollections(Map<String, List<Document>> map) {
+	public DynamicContextBuilder withCurrentDateTime(GregorianCalendar dateTime) {
+		this._currentDateTime = dateTime;
+		return this;
+	}
+
+	public DynamicContextBuilder withCollections(Map<String, List<Document>> map) {
 		this._collections = map;
+		return this;
 	}
 	
 	@Override

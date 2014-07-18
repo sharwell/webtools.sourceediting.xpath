@@ -591,7 +591,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
     @Override
     public String visit(FunctionCall e) {
         StringBuilder builder = new StringBuilder();
-        builder.append(e.name());
+        builder.append(e.name().getStringValue());
         builder.append('(');
         boolean first = true;
         for (Iterator<Expr> exprIt = e.iterator(); exprIt.hasNext(); ) {

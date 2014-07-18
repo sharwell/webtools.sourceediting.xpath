@@ -51,19 +51,27 @@ public abstract class AbstractRegExFunction extends Function {
 	private static Matcher compileAndExecute(String pattern, String flags, String src) {
 		int flag = Pattern.UNIX_LINES;
 		if (flags != null) {
-			if (flags.indexOf("m") >= 0) {
-				flag = flag | Pattern.MULTILINE;
-			}
-			if (flags.indexOf("s") >= 0) {
-				flag = flag | Pattern.DOTALL;
-			}
-			if (flags.indexOf("i") >= 0) {
-				flag = flag | Pattern.CASE_INSENSITIVE;
-			}
-			
-			if (flags.indexOf("x") >= 0) {
-				//pattern = removeWhitespace(pattern);
-				flag |= Pattern.COMMENTS;
+			for (int i = 0; i < flags.length(); i++) {
+				switch (flags.charAt(i)) {
+				case 'm':
+					flag |= Pattern.MULTILINE;
+					break;
+
+				case 's':
+					flag |= Pattern.DOTALL;
+					break;
+
+				case 'i':
+					flag |= Pattern.CASE_INSENSITIVE;
+					break;
+
+				case 'x':
+					pattern = removeWhitespace(pattern);
+					break;
+
+				default:
+					throw DynamicError.regex_flags_error(flags);
+				}
 			}
 		}
 
@@ -75,39 +83,129 @@ public abstract class AbstractRegExFunction extends Function {
 		}
 	}
 
-//	private static final Pattern characterClassPattern = Pattern.compile("");
-//	static {
-//		final String XmlChar = "[^\\[\\-\\]]";
-//		final String SingleCharEsc = "\\[nrt|.?*+(){}$\\[^\\\\\\-\\]]";
-//		final String charOrEsc = "(?:" + XmlChar + "|" + SingleCharEsc + ")";
-//		final String charRange = charOrEsc + "\\-" + charOrEsc;
-//		final String charClassEsc = "(?:";
-//		final String posCharGroup = "(?:" + charRange + "|" + charClassEsc + ")+";
-//		final String negCharGroup = "\\^" + posCharGroup;
-//		final String charClassSub = "(?:" + posCharGroup + "|" + negCharGroup + ")-" + charClassExpr;
-//		final String charGroup = "(?:" + posCharGroup + "|" + negCharGroup + "|" + charClassSub + ")";
-//		final String charClassExpr = "\\[" + charGroup + "\\]";
-//	}
-//
-//	private static String removeWhitespace(String pattern) {
-//		List<Integer> startIndexes = new ArrayList<Integer>();
-//		List<Integer> endIndexes = new ArrayList<Integer>();
-//		Matcher matcher = characterClassPattern.matcher(pattern);
-//		while (matcher.find()) {
-//			startIndexes.add(matcher.start());
-//			endIndexes.add(matcher.end());
-//		}
-//
-//		StringBuilder patternBuilder = new StringBuilder();
-//		int previousEnd = 0;
-//		for (int i = 0; i < startIndexes.size(); i++) {
-//			patternBuilder.append(pattern.substring(previousEnd, startIndexes.get(i)).replaceAll("\\s+", ""));
-//			patternBuilder.append(pattern.substring(startIndexes.get(i), endIndexes.get(i)));
-//			previousEnd = endIndexes.get(i);
-//		}
-//
-//		patternBuilder.append(pattern.substring(previousEnd, pattern.length()).replaceAll("\\s+", ""));
-//		return patternBuilder.toString();
-//	}
+	private static String removeWhitespace(String pattern) {
+		StringBuilder builder = new StringBuilder();
+		int index = 0;
+		while (index < pattern.length()) {
+			index = handleOuter(pattern, index, builder);
+			if (index < pattern.length()) {
+				index = handleInner(pattern, index, builder);
+			}
+		}
 
+		return builder.toString();
+	}
+
+	private static int handleOuter(String pattern, int index, StringBuilder result) {
+		while (index < pattern.length()) {
+			switch (pattern.charAt(index)) {
+			case '[':
+				result.append('[');
+				index++;
+				return index;
+
+			case '\\':
+				result.append('\\');
+				index = handleOuterEscape(pattern, index + 1, result);
+				break;
+
+			default:
+				if (!Character.isWhitespace(pattern.charAt(index))) {
+					result.append(pattern.charAt(index));
+				}
+
+				index++;
+				break;
+			}
+		}
+
+		return index;
+	}
+
+	/**
+	 * This method starts with the character immediately following a '\\'
+	 * character.
+	 */
+	private static int handleOuterEscape(String pattern, int index, StringBuilder result) {
+		assert pattern.charAt(index - 1) == '\\';
+
+		while (index < pattern.length()) {
+			switch (pattern.charAt(index)) {
+			case '\\':
+			case '[':
+				result.append(pattern.charAt(index));
+				index++;
+				return index;
+
+			default:
+				if (!Character.isWhitespace(pattern.charAt(index))) {
+					result.append(pattern.charAt(index));
+					index++;
+					return index;
+				}
+
+				// skip whitespace
+				index++;
+				break;
+			}
+		}
+
+		return index;
+	}
+
+	/**
+	 * This method starts with the character following the '[' that begins a
+	 * character class.
+	 */
+	private static int handleInner(String pattern, int index, StringBuilder result) {
+		assert pattern.charAt(index - 1) == '[';
+
+		while (index < pattern.length()) {
+			switch (pattern.charAt(index)) {
+			case '\\':
+				// escapes are even easier inside a character class, where
+				// whitespace is not ignored.
+				result.append('\\');
+				index++;
+				if (index < pattern.length()) {
+					switch (pattern.charAt(index)) {
+					case '\\':
+					case ']':
+					case '-':
+						result.append(pattern.charAt(index));
+						index++;
+						break;
+
+					default:
+						break;
+					}
+				}
+
+				break;
+
+			case ']':
+				result.append(']');
+				index++;
+				return index;
+
+			case '-':
+				// character class differencing
+				result.append('-');
+				index++;
+				if (index < pattern.length() && pattern.charAt(index) == '[') {
+					result.append('[');
+					index = handleInner(pattern, index + 1, result);
+				}
+
+				break;
+
+			default:
+				result.append(pattern.charAt(index));
+				index++;
+				break;
+			}
+		}
+
+		return index;
+	}
 }

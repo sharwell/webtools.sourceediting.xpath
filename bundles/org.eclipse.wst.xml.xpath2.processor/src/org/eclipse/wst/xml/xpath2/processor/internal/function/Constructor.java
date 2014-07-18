@@ -40,6 +40,10 @@ public class Constructor extends Function {
 		_atomic_type = aat;
 	}
 
+	public CtrType getAtomicType() {
+		return _atomic_type;
+	}
+
 	// XXX IN GENRAL, I THIUNK WE NEED TO PULL SANITY CHECKING OUTSIDE!
 	// PLUS I AM NOT ATOMIZING/ETC ETC HERE!!! BAD CODE
 	// BUG XXX HACK DEATH

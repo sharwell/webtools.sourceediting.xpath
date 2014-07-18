@@ -37,10 +37,25 @@ import org.w3c.dom.Node;
  */
 public class SeqType {
 
+	/**
+	 * The sequence contains exactly one item.
+	 */
 	public static final int OCC_NONE = 0;
+	/**
+	 * The sequence contains zero or more items.
+	 */
 	public static final int OCC_STAR = 1;
+	/**
+	 * The sequence contains one or more items.
+	 */
 	public static final int OCC_PLUS = 2;
+	/**
+	 * The sequence contains zero or one items.
+	 */
 	public static final int OCC_QMARK = 3;
+	/**
+	 * The sequence is empty.
+	 */
 	public static final int OCC_EMPTY = 4;
 
 	/**
@@ -199,6 +214,10 @@ public class SeqType {
 	 */
 	public AnyType type() {
 		return anytype;
+	}
+
+	public Class<? extends AnyType> getTypeClass() {
+		return typeClass;
 	}
 
 	/**

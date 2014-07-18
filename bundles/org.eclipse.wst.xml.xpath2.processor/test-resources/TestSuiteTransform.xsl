@@ -16,32 +16,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 
-import org.custommonkey.xmlunit.XMLAssert;
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.api.XPath2Expression;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
-import org.eclipse.wst.xml.xpath2.processor.Engine;
 import org.eclipse.wst.xml.xpath2.processor.StaticError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnCollection;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.DocType;
-import org.eclipse.wst.xml.xpath2.processor.internal.types.ElementType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeItemTypeImpl;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
-import org.eclipse.wst.xml.xpath2.processor.util.DynamicContextBuilder;
-import org.eclipse.wst.xml.xpath2.processor.util.StaticContextBuilder;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
@@ -74,7 +62,7 @@ public class ]]></xsl:text>
 
     StaticContext staticContext = createStaticContextBuilder()<xsl:for-each select="x:input-URI">
           .withVariable(new QName("<xsl:value-of select="@variable"/>"), new XSAnyURI().getItemType())</xsl:for-each><xsl:for-each select="x:input-file">
-          .withVariable(new QName("<xsl:value-of select="@variable"/>"), new ElementType().getItemType())</xsl:for-each>;
+          .withVariable(new QName("<xsl:value-of select="@variable"/>"), new NodeItemTypeImpl(Node.DOCUMENT_NODE))</xsl:for-each>;
 
 <xsl:apply-templates select="x:input-file | x:input-URI | x:defaultCollection | x:contextItem" mode="read"/>
 

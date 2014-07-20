@@ -110,7 +110,7 @@ public class DynamicError extends XPathException {
 	 * @return the DynamicError.
 	 */
 	public static DynamicError throw_type_error() throws DynamicError {
-		throw argument_type_error(null);
+		throw invalidType();
 	}
 
 	/**

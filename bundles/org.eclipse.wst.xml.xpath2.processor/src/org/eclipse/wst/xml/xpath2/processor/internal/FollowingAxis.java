@@ -57,8 +57,9 @@ public class FollowingAxis extends ForwardAxis {
 		// for each sibling, get all its descendants
 		DescendantAxis da = new DescendantAxis();
 		for (Iterator<Item> i = siblingBuffer.iterator(); i.hasNext();) {
-			result.add((NodeType)i);
-			da.iterate((NodeType) i.next(), result, null);
+			Item item = i.next();
+			result.add(item);
+			da.iterate((NodeType) item, result, null);
 		}
 
 		// if we got a parent, we gotta repeat the story for the parent

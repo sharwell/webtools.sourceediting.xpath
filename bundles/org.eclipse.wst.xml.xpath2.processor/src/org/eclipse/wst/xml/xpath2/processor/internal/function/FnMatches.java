@@ -84,9 +84,6 @@ public class FnMatches extends AbstractRegExFunction {
 			ResultSequence flagRS = null;
 			flagRS = argiter.next();
 			flags = flagRS.first().getStringValue();
-			if (validflags.indexOf(flags) == -1 && flags.length() > 0 ) {
-				throw DynamicError.regex_flags_error(null);
-			}
 		}
 
 		try {

@@ -63,7 +63,7 @@ public abstract class AbstractRegExFunction extends Function {
 					break;
 
 				case 'x':
-					flag |= Pattern.COMMENTS;
+					pattern = removeWhitespace(pattern);
 					break;
 
 				default:
@@ -76,4 +76,141 @@ public abstract class AbstractRegExFunction extends Function {
 		return p.matcher(src);
 	}
 
+	/**
+	 * This method implements the regular expression whitespace removal
+	 * algorithm described for the {@code x} flag in the XPath specification.
+	 *
+	 * <p>The behavior of this method is unspecified if {@code pattern} is not
+	 * a valid regular expression according to the XPath specification.</p>
+	 *
+	 * @param pattern The regular expression containing whitespaces to remove.
+	 * @return A copy of {@code pattern} with all whitespace characters removed,
+	 * except for whitespace characters appearing within a character class
+	 * construct.
+	 */
+	protected static String removeWhitespace(String pattern) {
+		StringBuilder builder = new StringBuilder();
+		int index = 0;
+		while (index < pattern.length()) {
+			index = handleOuter(pattern, index, builder);
+			if (index < pattern.length()) {
+				index = handleInner(pattern, index, builder);
+			}
+		}
+
+		return builder.toString();
+	}
+
+	private static int handleOuter(String pattern, int index, StringBuilder result) {
+		while (index < pattern.length()) {
+			switch (pattern.charAt(index)) {
+			case '[':
+				result.append('[');
+				index++;
+				return index;
+
+			case '\\':
+				result.append('\\');
+				index = handleOuterEscape(pattern, index + 1, result);
+				break;
+
+			default:
+				if (!Character.isWhitespace(pattern.charAt(index))) {
+					result.append(pattern.charAt(index));
+				}
+
+				index++;
+				break;
+			}
+		}
+
+		return index;
+	}
+
+	/**
+	 * This method starts with the character immediately following a '\\'
+	 * character.
+	 */
+	private static int handleOuterEscape(String pattern, int index, StringBuilder result) {
+		assert pattern.charAt(index - 1) == '\\';
+
+		while (index < pattern.length()) {
+			switch (pattern.charAt(index)) {
+			case '\\':
+			case '[':
+				result.append(pattern.charAt(index));
+				index++;
+				return index;
+
+			default:
+				if (!Character.isWhitespace(pattern.charAt(index))) {
+					result.append(pattern.charAt(index));
+					index++;
+					return index;
+				}
+
+				// skip whitespace
+				index++;
+				break;
+			}
+		}
+
+		return index;
+	}
+
+	/**
+	 * This method starts with the character following the '[' that begins a
+	 * character class.
+	 */
+	private static int handleInner(String pattern, int index, StringBuilder result) {
+		assert pattern.charAt(index - 1) == '[';
+
+		while (index < pattern.length()) {
+			switch (pattern.charAt(index)) {
+			case '\\':
+				// escapes are even easier inside a character class, where
+				// whitespace is not ignored.
+				result.append('\\');
+				index++;
+				if (index < pattern.length()) {
+					switch (pattern.charAt(index)) {
+					case '\\':
+					case ']':
+					case '-':
+						result.append(pattern.charAt(index));
+						index++;
+						break;
+
+					default:
+						break;
+					}
+				}
+
+				break;
+
+			case ']':
+				result.append(']');
+				index++;
+				return index;
+
+			case '-':
+				// character class differencing
+				result.append('-');
+				index++;
+				if (index < pattern.length() && pattern.charAt(index) == '[') {
+					result.append('[');
+					index = handleInner(pattern, index + 1, result);
+				}
+
+				break;
+
+			default:
+				result.append(pattern.charAt(index));
+				index++;
+				break;
+			}
+		}
+
+		return index;
+	}
 }

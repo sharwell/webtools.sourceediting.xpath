@@ -17,6 +17,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.regex.Matcher;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -75,22 +76,29 @@ public class FnReplace extends Function {
 
 		ResultSequence arg2 = argiter.next();
 		ResultSequence arg3 = argiter.next();
-		ResultSequence arg4 = null;
+		String flags = null;
 		if (argiter.hasNext()) {
-			arg4 = argiter.next();
-			String flags = arg4.first().getStringValue();
-			
-			if (flags.length() == 0) {
-				arg4 = null;
-			} else if (isFlagValid(flags) == false) {
-				throw new DynamicError("FORX0001", "Invalid regular expression. flags", null);
-			}
+			ResultSequence arg4 = argiter.next();
+			flags = arg4.first().getStringValue();
 		}
 		String pattern = ((XSString) arg2.first()).value();
 		String replacement = ((XSString) arg3.first()).value();
 		
 		try {
-			return new XSString(str1.replaceAll(pattern, replacement));
+			Matcher matcher = null;
+			if (flags != null) {
+				if ("x".equals(flags)) {
+					pattern = AbstractRegExFunction.removeWhitespace(pattern);
+				} else {
+					matcher = AbstractRegExFunction.regex(pattern, flags, str1);
+				}
+			}
+
+			if (matcher == null) {
+				return new XSString(str1.replaceAll(pattern, replacement));
+			} else {
+				return new XSString(matcher.replaceAll(replacement));
+			}
 		} catch (PatternSyntaxException err) {
 			throw DynamicError.regex_error(null, err);
 		} catch (IllegalArgumentException ex) {
@@ -105,20 +113,6 @@ public class FnReplace extends Function {
 			throw new DynamicError("FORX0004", "invalid regex.", ex);
 		}
 	}
-	
-	private static boolean isFlagValid(String flag) {
-		char flags[] = {'s', 'm', 'i', 'x'};
-		
-		for (int i = 0; i < flags.length; i++) {
-			if (flag.indexOf(flags[i]) != -1) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	
 
 	/**
 	 * Obtain a list of expected arguments.

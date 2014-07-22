@@ -99,7 +99,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 				builder.append(", $");
 			}
 
-			builder.append(pair.varname().toString());
+			builder.append(pair.varname().getStringValue());
 			builder.append(" in ");
 			builder.append(pair.expr().accept(this));
 		}
@@ -135,7 +135,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 				builder.append(", $");
 			}
 
-			builder.append(pair.varname().toString());
+			builder.append(pair.varname().getStringValue());
 			builder.append(" in ");
 			builder.append(pair.expr().accept(this));
 		}
@@ -432,9 +432,11 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
             builder.append('/');
         }
 
-        builder.append(e.expr().accept(this));
+        if (e.expr() != null) {
+            builder.append(e.expr().accept(this));
+        }
+
         if (e.next() != null) {
-            builder.append(", ");
             builder.append(e.next().accept(this));
         }
 
@@ -535,12 +537,12 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 
     @Override
     public String visit(NameTest e) {
-        return e.name().toString();
+        return e.name().getStringValue();
     }
 
     @Override
     public String visit(VarRef e) {
-        return "$" + e.name().toString();
+        return "$" + e.name().getStringValue();
     }
 
     @Override
@@ -589,7 +591,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
     @Override
     public String visit(FunctionCall e) {
         StringBuilder builder = new StringBuilder();
-        builder.append(e.name());
+        builder.append(e.name().getStringValue());
         builder.append('(');
         boolean first = true;
         for (Iterator<Expr> exprIt = e.iterator(); exprIt.hasNext(); ) {
@@ -607,7 +609,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 
 	@Override
 	public String visit(SingleType e) {
-		String result = e.type().toString();
+		String result = e.type().getStringValue();
 		if (e.qmark()) {
 			result += "?";
 		}
@@ -645,7 +647,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 	public String visit(ItemType e) {
 		switch (e.type()) {
 		case ItemType.QNAME:
-			return e.qname().toString();
+			return e.qname().getStringValue();
 
 		case ItemType.KINDTEST:
 			return e.kind_test().accept(this);
@@ -723,12 +725,12 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 				builder.append('*');
 			} else {
 				assert e.name() != null;
-				builder.append(e.name().toString());
+				builder.append(e.name().getStringValue());
 			}
 
 			if (e.type() != null) {
 				builder.append(", ");
-				builder.append(e.type().toString());
+				builder.append(e.type().getStringValue());
 			}
 
 			return builder.toString();
@@ -737,7 +739,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 
 	@Override
 	public String visit(SchemaAttrTest e) {
-		return "schema-attribute(" + e.name().toString() + ")";
+		return "schema-attribute(" + e.name().getStringValue() + ")";
 	}
 
 	@Override
@@ -755,12 +757,12 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 				builder.append("*");
 			} else {
 				assert e.name() != null;
-				builder.append(e.name().toString());
+				builder.append(e.name().getStringValue());
 			}
 
 			if (e.type() != null) {
 				builder.append(", ");
-				builder.append(e.type().toString());
+				builder.append(e.type().getStringValue());
 				if (e.qmark()) {
 					builder.append('?');
 				}
@@ -775,7 +777,7 @@ public class ExpressionPrinterVisitor implements XPathVisitor<String> {
 	@Override
 	public String visit(SchemaElemTest e) {
 		StringBuilder builder = new StringBuilder("schema-element(");
-		builder.append(e.name().toString());
+		builder.append(e.name().getStringValue());
 		builder.append(')');
 		return builder.toString();
 	}

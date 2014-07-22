@@ -14,6 +14,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 
 public abstract class AbstractRegExFunction extends Function {
@@ -47,18 +48,27 @@ public abstract class AbstractRegExFunction extends Function {
 	private static Matcher compileAndExecute(String pattern, String flags, String src) {
 		int flag = Pattern.UNIX_LINES;
 		if (flags != null) {
-			if (flags.indexOf("m") >= 0) {
-				flag = flag | Pattern.MULTILINE;
-			}
-			if (flags.indexOf("s") >= 0) {
-				flag = flag | Pattern.DOTALL;
-			}
-			if (flags.indexOf("i") >= 0) {
-				flag = flag | Pattern.CASE_INSENSITIVE;
-			}
-			
-			if (flags.indexOf("x") >= 0) {
-				flag = flag | Pattern.COMMENTS;
+			for (int i = 0; i < flags.length(); i++) {
+				switch (flags.charAt(i)) {
+				case 'm':
+					flag |= Pattern.MULTILINE;
+					break;
+
+				case 's':
+					flag |= Pattern.DOTALL;
+					break;
+
+				case 'i':
+					flag |= Pattern.CASE_INSENSITIVE;
+					break;
+
+				case 'x':
+					flag |= Pattern.COMMENTS;
+					break;
+
+				default:
+					throw DynamicError.regex_flags_error(flags);
+				}
 			}
 		}
 		

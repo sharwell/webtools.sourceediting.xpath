@@ -375,7 +375,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError invalidCollectionArgument() {
-		return make_error("FODC0004", "Invalid argument to fn:doc", null, null);
+		return make_error("FODC0004", "Invalid argument to fn:collection", null, null);
 	}
 	
 	/**

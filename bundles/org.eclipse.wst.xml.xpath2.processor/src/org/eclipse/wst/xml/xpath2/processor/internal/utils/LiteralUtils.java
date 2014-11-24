@@ -12,13 +12,18 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.utils;
 
+import java.util.regex.Pattern;
+import org.eclipse.wst.xml.xpath2.processor.StaticError;
+
 /**
  * String literal utilities
  * 
  *
  */
 public class LiteralUtils {
-	
+
+	private static final Pattern ZERO_PATTERN = Pattern.compile("^(?:0+(\\.0*)?|\\.0+)(?:[eE][+-]?[0-9]+)?$");
+
 	/**
 	 * Unquotes a quoted string, changing double quotes into single quotes as well.
      * Examples (string delimited by > and <):
@@ -51,5 +56,18 @@ public class LiteralUtils {
 	public static String quote(String unquotedString) {
 		String quotedContent = unquotedString.replace("\"", "\"\"");
 		return "\"" + quotedContent + "\"";
+	}
+
+	public static double parseDouble(String text) {
+		double result = Double.parseDouble(text);
+		if (Double.isInfinite(result)) {
+			throw new StaticError("FOAR0002", "Numeric overflow in double literal", null);
+		}
+
+		if (result == 0.0 && !ZERO_PATTERN.matcher(text).matches()) {
+			throw new StaticError("FOAR0002", "Numeric underflow in double literal", null);
+		}
+
+		return result;
 	}
 }

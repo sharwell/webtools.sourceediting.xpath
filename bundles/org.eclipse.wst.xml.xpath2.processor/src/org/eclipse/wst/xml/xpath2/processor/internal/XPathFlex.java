@@ -20,6 +20,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java_cup.runtime.Symbol;
+import org.eclipse.wst.xml.xpath2.processor.XPathParserException;
 
 
 /**
@@ -853,6 +854,10 @@ class XPathFlex implements java_cup.runtime.Scanner {
       zzEOFDone = true;
       yyclose();
     }
+
+	if (commentLevel > 0) {
+		throw new XPathParserException("Unterminated comment", null);
+	}
   }
 
 

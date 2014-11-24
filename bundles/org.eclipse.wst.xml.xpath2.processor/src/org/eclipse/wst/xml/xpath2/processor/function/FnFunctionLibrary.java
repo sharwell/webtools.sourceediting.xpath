@@ -41,6 +41,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.function.FnDeepEqual;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnDefaultCollation;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnDistinctValues;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnDoc;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnDocAvailable;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnDocumentUri;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnEmpty;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnEncodeForURI;
@@ -275,6 +276,7 @@ public class FnFunctionLibrary extends FunctionLibrary {
 
 		// XXX implement functions that generate sequences
 		add_function(new FnDoc());
+		add_function(new FnDocAvailable());
 		add_function(new FnCollection());
 
 		// context functions

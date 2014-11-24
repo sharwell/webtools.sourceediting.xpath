@@ -240,7 +240,7 @@ public class XSFloat extends NumericType {
 
 		// Operator == for float values in Java performs as described above.
 		// Note that this is NOT equivalent to the Float.equals method.
-		return _value == f._value;
+		return float_value() == f.float_value();
 	}
 
 	/**

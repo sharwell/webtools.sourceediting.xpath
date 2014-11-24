@@ -48,7 +48,13 @@ public class ConstructorFL extends FunctionLibrary {
 
 		_types.put(name, at);
 
-		add_function(new Constructor(at));
+		if (!at.string_type().equals("xs:NOTATION") && !at.string_type().equals("xs:anyAtomicType")) {
+			/* For every atomic type in the in-scope schema types (except
+			 * xs:NOTATION and xs:anyAtomicType, which are not instantiable), a
+			 * constructor function is implicitly defined.
+			 */
+			add_function(new Constructor(at));
+		}
 	}
 
 	/**

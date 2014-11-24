@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.wst.xml.xpath2.processor.XPathParserException;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AddExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AndExpr;
 import org.eclipse.wst.xml.xpath2.processor.internal.ast.AnyKindTest;
@@ -4524,13 +4525,19 @@ class CUP$XPathCup$actions {
           case 185: // UnreservedQName ::= NCName COLON NCName 
             {
               QName RESULT = null;
-		int pleft = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).left;
-		int pright = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).right;
-		String p = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).value;
-		int lleft = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).left;
-		int lright = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right;
-		String l = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).value;
-		 RESULT = new QName(p,l); 
+		String prefix = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).value;
+		int prefixStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).right;
+		int colonStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-1)).right;
+		if (colonStart != prefixStart + prefix.length()) {
+			throw new XPathParserException("whitespace can't appear between the prefix and the colon", null);
+		}
+
+		int localNameStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right;
+		if (localNameStart != colonStart + 1) {
+			throw new XPathParserException("whitespace can't appear between the colon and the local part", null);
+		}
+		String local_part = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).value;
+		 RESULT = new QName(prefix,local_part); 
               CUP$XPathCup$result = new java_cup.runtime.Symbol(15/*UnreservedQName*/, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).left, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right, RESULT);
             }
           return CUP$XPathCup$result;
@@ -4575,13 +4582,19 @@ class CUP$XPathCup$actions {
           case 181: // QName ::= NCName COLON NCName 
             {
               QName RESULT = null;
-		int pleft = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).left;
-		int pright = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).right;
-		String p = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).value;
-		int lleft = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).left;
-		int lright = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right;
-		String l = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).value;
-		 RESULT = new QName(p,l); 
+		String prefix = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).value;
+		int prefixStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).right;
+		int colonStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-1)).right;
+		if (colonStart != prefixStart + prefix.length()) {
+			throw new XPathParserException("whitespace can't appear between the prefix and the colon", null);
+		}
+
+		int localNameStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right;
+		if (localNameStart != colonStart + 1) {
+			throw new XPathParserException("whitespace can't appear between the colon and the local part", null);
+		}
+		String local_part = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).value;
+		RESULT = new QName(prefix, local_part); 
               CUP$XPathCup$result = new java_cup.runtime.Symbol(14/*QName*/, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).left, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right, RESULT);
             }
           return CUP$XPathCup$result;
@@ -5524,10 +5537,18 @@ class CUP$XPathCup$actions {
           case 104: // Wildcard ::= STAR COLON NCName 
             {
               QName RESULT = null;
-		int nleft = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).left;
-		int nright = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right;
-		String n = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).value;
-		 RESULT = new QName("*", n); 
+		int prefixStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).right;
+		int colonStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-1)).right;
+		if (colonStart != prefixStart + 1) {
+			throw new XPathParserException("whitespace can't appear between the prefix and the colon", null);
+		}
+
+		int localNameStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right;
+		if (localNameStart != colonStart + 1) {
+			throw new XPathParserException("whitespace can't appear between the colon and the local part", null);
+		}
+		String local_part = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).value;
+		RESULT = new QName("*", local_part); 
               CUP$XPathCup$result = new java_cup.runtime.Symbol(17/*Wildcard*/, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).left, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right, RESULT);
             }
           return CUP$XPathCup$result;
@@ -5536,10 +5557,18 @@ class CUP$XPathCup$actions {
           case 103: // Wildcard ::= NCName COLON STAR 
             {
               QName RESULT = null;
-		int nleft = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).left;
-		int nright = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).right;
-		String n = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).value;
-		 RESULT = new QName(n, "*"); 
+		String prefix = (String)((java_cup.runtime.Symbol) CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).value;
+		int prefixStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).right;
+		int colonStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-1)).right;
+		if (colonStart != prefixStart + prefix.length()) {
+			throw new XPathParserException("whitespace can't appear between the prefix and the colon", null);
+		}
+
+		int localNameStart = ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right;
+		if (localNameStart != colonStart + 1) {
+			throw new XPathParserException("whitespace can't appear between the colon and the local part", null);
+		}
+		RESULT = new QName(prefix, "*"); 
               CUP$XPathCup$result = new java_cup.runtime.Symbol(17/*Wildcard*/, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-2)).left, ((java_cup.runtime.Symbol)CUP$XPathCup$stack.elementAt(CUP$XPathCup$top-0)).right, RESULT);
             }
           return CUP$XPathCup$result;

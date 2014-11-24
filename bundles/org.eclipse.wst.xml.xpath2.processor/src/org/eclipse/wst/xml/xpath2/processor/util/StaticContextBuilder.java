@@ -230,7 +230,22 @@ public class StaticContextBuilder implements StaticContext {
 		
 		@Override
 		public int compare(String o1, String o2) {
-			return o1.compareTo(o2);
+			int length = Math.min(o1.length(), o2.length());
+			for (int i = 0; i < length; i++) {
+				int cp1 = o1.codePointAt(i);
+				int chResult = Integer.compare(cp1, o2.codePointAt(i));
+				if (chResult != 0) {
+					return chResult;
+				}
+
+				if (cp1 > Character.MAX_VALUE) {
+					// skip the high surrogate here, and low surrogate before next
+					// loop iteration
+					i++;
+				}
+			}
+
+			return Integer.compare(o1.length(), o2.length());
 		}
 	};
 	

@@ -278,7 +278,7 @@ public class XSDouble extends NumericType {
 
 		// Operator == for double values in Java performs as described above.
 		// Note that this is NOT equivalent to the Double.equals method.
-		return _value == d._value;
+		return double_value() == d.double_value();
 	}
 
 	/**

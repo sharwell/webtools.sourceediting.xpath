@@ -110,7 +110,7 @@ public class DynamicError extends XPathException {
 	 * @return the DynamicError.
 	 */
 	public static DynamicError throw_type_error() throws DynamicError {
-		throw argument_type_error(null);
+		throw invalidType();
 	}
 
 	/**
@@ -375,7 +375,7 @@ public class DynamicError extends XPathException {
 	 * @since 1.1
 	 */
 	public static DynamicError invalidCollectionArgument() {
-		return make_error("FODC0004", "Invalid argument to fn:doc", null, null);
+		return make_error("FODC0004", "Invalid argument to fn:collection", null, null);
 	}
 	
 	/**

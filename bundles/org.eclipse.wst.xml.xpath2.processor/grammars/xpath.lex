@@ -18,6 +18,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java_cup.runtime.Symbol;
+import org.eclipse.wst.xml.xpath2.processor.XPathParserException;
 
 %%
 
@@ -67,6 +68,12 @@ NCName		= ( {Letter} | "_") ( {NCNameChar} )*
 		public static final int EOF = XpathSym.EOF;
 	}
 %}
+
+%eof{
+	if (commentLevel > 0) {
+		throw new XPathParserException("Unterminated comment", null);
+	}
+%eof}
 
 %state COMMENT
 

@@ -265,7 +265,7 @@ public class XSInteger extends XSDecimal {
 	@Override
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
-		XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
+		XSInteger val = get_single_type(carg, XSInteger.class);
 		
 		return new XSInteger(int_value().subtract(val.int_value()));
 	}
@@ -283,7 +283,7 @@ public class XSInteger extends XSDecimal {
 	public ResultSequence times(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
+		XSInteger val = get_single_type(carg, XSInteger.class);
 		
 		return new XSInteger(int_value().multiply(val.int_value()));
 	}
@@ -300,7 +300,7 @@ public class XSInteger extends XSDecimal {
 	public ResultSequence mod(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
+		XSInteger val = get_single_type(carg, XSInteger.class);
 		BigInteger result = int_value().remainder(val.int_value()); 
 		
 		return new XSInteger(result);
@@ -333,7 +333,7 @@ public class XSInteger extends XSDecimal {
 	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
-        XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
+        XSInteger val = get_single_type(carg, XSInteger.class);
         
         int compareResult = int_value().compareTo(val.int_value());
 		
@@ -354,7 +354,7 @@ public class XSInteger extends XSDecimal {
 	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
-        XSInteger val = (XSInteger) get_single_type(carg, XSInteger.class);
+        XSInteger val = get_single_type(carg, XSInteger.class);
         
         int compareResult = int_value().compareTo(val.int_value());
 		
@@ -365,7 +365,7 @@ public class XSInteger extends XSDecimal {
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		
-		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
+		XSDecimal val = get_single_type(carg, XSDecimal.class);
 
 		if (val.zero()) {
 			throw DynamicError.div_zero(null);

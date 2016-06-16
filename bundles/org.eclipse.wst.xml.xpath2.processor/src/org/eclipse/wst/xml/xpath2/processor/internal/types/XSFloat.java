@@ -255,7 +255,7 @@ public class XSFloat extends NumericType {
 	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
-		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
+		XSFloat val = get_single_type(carg, XSFloat.class);
 		return float_value() > val.float_value();
 	}
 
@@ -271,7 +271,7 @@ public class XSFloat extends NumericType {
 	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
-		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
+		XSFloat val = get_single_type(carg, XSFloat.class);
 		return float_value() < val.float_value();
 	}
 
@@ -326,7 +326,7 @@ public class XSFloat extends NumericType {
 	@Override
 	public ResultSequence times(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = constructor(arg);
-		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
+		XSFloat val = get_single_type(carg, XSFloat.class);
 		return new XSFloat(float_value() * val.float_value());
 	}
 
@@ -341,7 +341,7 @@ public class XSFloat extends NumericType {
 	@Override
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
-		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
+		XSFloat val = get_single_type(carg, XSFloat.class);
 		return new XSFloat(float_value() / val.float_value());
 	}
 
@@ -357,7 +357,7 @@ public class XSFloat extends NumericType {
 	@Override
 	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
-		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
+		XSFloat val = get_single_type(carg, XSFloat.class);
 
 		if (this.nan() || val.nan())
 			throw DynamicError.numeric_overflow("Dividend or divisor is NaN");
@@ -385,7 +385,7 @@ public class XSFloat extends NumericType {
 	@Override
 	public ResultSequence mod(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
-		XSFloat val = (XSFloat) get_single_type(carg, XSFloat.class);
+		XSFloat val = get_single_type(carg, XSFloat.class);
 		return new XSFloat(float_value() % val.float_value());
 	}
 

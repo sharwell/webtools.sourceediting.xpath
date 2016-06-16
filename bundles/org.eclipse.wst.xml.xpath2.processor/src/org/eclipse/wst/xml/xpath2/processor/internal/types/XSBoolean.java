@@ -163,8 +163,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 */
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
-				XSBoolean.class);
+		XSBoolean barg = NumericType.get_single_type(arg, XSBoolean.class);
 
 		return value() == barg.value();
 	}
@@ -183,8 +182,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 */
 	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
-				XSBoolean.class);
+		XSBoolean barg = NumericType.get_single_type(arg, XSBoolean.class);
 
 		boolean result = false;
 
@@ -207,8 +205,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 */
 	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSBoolean barg = (XSBoolean) NumericType.get_single_type((Item)arg,
-				XSBoolean.class);
+		XSBoolean barg = NumericType.get_single_type(arg, XSBoolean.class);
 
 		boolean result = false;
 

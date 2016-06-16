@@ -306,7 +306,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSGDay val = (XSGDay) NumericType.get_single_type(arg, XSGDay.class);
+		XSGDay val = NumericType.get_single_type(arg, XSGDay.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 		

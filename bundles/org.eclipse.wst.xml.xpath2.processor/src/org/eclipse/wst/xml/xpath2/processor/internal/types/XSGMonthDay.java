@@ -322,8 +322,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSGMonthDay val = (XSGMonthDay) NumericType.get_single_type(arg,
-				XSGMonthDay.class);
+		XSGMonthDay val = NumericType.get_single_type(arg, XSGMonthDay.class);
 
 		return calendar().equals(val.calendar());
 	}

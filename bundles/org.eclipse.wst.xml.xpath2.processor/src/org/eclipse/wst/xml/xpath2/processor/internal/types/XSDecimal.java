@@ -261,7 +261,7 @@ public class XSDecimal extends NumericType {
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
 		
-		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
+		XSDecimal val = get_single_type(carg, XSDecimal.class);
 		return (_value.compareTo(val.getValue()) == 1);
 	}
 
@@ -283,7 +283,7 @@ public class XSDecimal extends NumericType {
 	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
-		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
+		XSDecimal val = get_single_type(carg, XSDecimal.class);
 		return (_value.compareTo(val.getValue()) == -1);
 	}
 
@@ -361,7 +361,7 @@ public class XSDecimal extends NumericType {
 	public ResultSequence times(ResultSequence arg) {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
+		XSDecimal val = get_single_type(carg, XSDecimal.class);
 		BigDecimal result = _value.multiply(val.getValue());
 		return new XSDecimal(result);
 	}
@@ -379,7 +379,7 @@ public class XSDecimal extends NumericType {
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 			
-		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
+		XSDecimal val = get_single_type(carg, XSDecimal.class);
 		if (val.zero()) {
 			throw DynamicError.div_zero(null);
 		}
@@ -401,7 +401,7 @@ public class XSDecimal extends NumericType {
 	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
+		XSDecimal val = get_single_type(carg, XSDecimal.class);
 
 		if (val.zero())
 			throw DynamicError.div_zero(null);
@@ -424,7 +424,7 @@ public class XSDecimal extends NumericType {
 	public ResultSequence mod(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDecimal val = (XSDecimal) get_single_type(carg, XSDecimal.class);
+		XSDecimal val = get_single_type(carg, XSDecimal.class);
 		
 		// BigDecimal result = _value.remainder(val.getValue());
 		BigDecimal result = remainder(_value, val.getValue()); 

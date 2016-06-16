@@ -237,8 +237,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 */
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSDuration val = (XSDuration) NumericType.get_single_type(arg,
-				XSDuration.class);
+		XSDuration val = NumericType.get_single_type(arg, XSDuration.class);
 
 		return value() == val.value();
 	}
@@ -254,8 +253,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 */
 	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSDuration val = (XSDuration) NumericType.get_single_type(arg,
-				XSDayTimeDuration.class);
+		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
 		return value() < val.value();
 	}
@@ -271,8 +269,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 */
 	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSDuration val = (XSDuration) NumericType.get_single_type(arg,
-				XSDayTimeDuration.class);
+		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
 		return value() > val.value();
 	}

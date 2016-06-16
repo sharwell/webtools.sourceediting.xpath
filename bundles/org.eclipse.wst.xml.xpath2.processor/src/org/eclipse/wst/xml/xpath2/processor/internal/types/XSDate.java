@@ -342,7 +342,7 @@ Cloneable {
 	 */
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSDate val = (XSDate) NumericType.get_single_type((Item)arg, XSDate.class);
+		XSDate val = NumericType.get_single_type(arg, XSDate.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 
@@ -360,7 +360,7 @@ Cloneable {
 	 */
 	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSDate val = (XSDate) NumericType.get_single_type((Item)arg, XSDate.class);
+		XSDate val = NumericType.get_single_type(arg, XSDate.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 
@@ -378,7 +378,7 @@ Cloneable {
 	 */
 	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSDate val = (XSDate) NumericType.get_single_type((Item)arg, XSDate.class);
+		XSDate val = NumericType.get_single_type(arg, XSDate.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 
@@ -471,7 +471,7 @@ Cloneable {
 	}
 
 	private ResultSequence minusXSDate(ResultSequence arg) throws DynamicError {
-		XSDate val = (XSDate) NumericType.get_single_type(arg, XSDate.class);
+		XSDate val = NumericType.get_single_type(arg, XSDate.class);
 		Duration dtduration = null;
 		Calendar thisCal = normalizeCalendar(calendar(), tz());
 		Calendar thatCal = normalizeCalendar(val.calendar(), val.tz());

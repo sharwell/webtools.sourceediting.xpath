@@ -19,6 +19,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
@@ -443,8 +444,23 @@ public class XSFloat extends NumericType {
 		}
 
 		BigDecimal value = new BigDecimal(float_value());
-		BigDecimal round = value.setScale(0, BigDecimal.ROUND_HALF_UP);
-		return new XSFloat(round.floatValue());
+
+		BigDecimal round;
+		if (value.compareTo(BigDecimal.ZERO) < 0) {
+			round = value.setScale(0, RoundingMode.HALF_DOWN);
+		} else {
+			round = value.setScale(0, RoundingMode.HALF_UP);
+		}
+
+		float result;
+		if (round.compareTo(BigDecimal.ZERO) == 0) {
+			// preserve the sign of the input
+			result = float_value() < 0 ? -0.0f : 0.0f;
+		} else {
+			result = round.floatValue();
+		}
+
+		return new XSFloat(result);
 	}
 
 	/**

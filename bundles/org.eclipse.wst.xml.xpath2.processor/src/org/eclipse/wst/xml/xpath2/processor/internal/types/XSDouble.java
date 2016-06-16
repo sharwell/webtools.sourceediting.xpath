@@ -19,6 +19,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
@@ -510,9 +511,24 @@ public class XSDouble extends NumericType {
 			return this;
 		}
 
-		BigDecimal value = new BigDecimal(_value);
-		BigDecimal round = value.setScale(0, BigDecimal.ROUND_HALF_UP);
-		return new XSDouble(round.doubleValue());
+		BigDecimal value = new BigDecimal(double_value());
+
+		BigDecimal round;
+		if (value.compareTo(BigDecimal.ZERO) < 0) {
+			round = value.setScale(0, RoundingMode.HALF_DOWN);
+		} else {
+			round = value.setScale(0, RoundingMode.HALF_UP);
+		}
+
+		double result;
+		if (round.compareTo(BigDecimal.ZERO) == 0) {
+			// preserve the sign of the input
+			result = double_value() < 0 ? -0.0f : 0.0f;
+		} else {
+			result = round.doubleValue();
+		}
+
+		return new XSDouble(result);
 	}
 
 	/**

@@ -126,7 +126,7 @@ public abstract class AbstractURIFunction extends Function {
 	
 			if (needs_escape(x, escape_delimiters, escape_space)) {
 				sb.append("%");
-				sb.append(Integer.toHexString(x & 0xFF).toUpperCase());
+				sb.append(Integer.toHexString(0x100 | (x & 0xFF)).substring(1).toUpperCase());
 			} else
 				sb.append((char)x);
 		}

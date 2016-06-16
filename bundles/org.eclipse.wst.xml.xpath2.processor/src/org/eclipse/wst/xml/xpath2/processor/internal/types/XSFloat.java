@@ -438,6 +438,10 @@ public class XSFloat extends NumericType {
 	 */
 	@Override
 	public NumericType round() {
+		if (nan() || infinite() || zero() || negativeZero()) {
+			return this;
+		}
+
 		BigDecimal value = new BigDecimal(float_value());
 		BigDecimal round = value.setScale(0, BigDecimal.ROUND_HALF_UP);
 		return new XSFloat(round.floatValue());
@@ -461,6 +465,10 @@ public class XSFloat extends NumericType {
 	 */
 	@Override
 	public NumericType round_half_to_even(int precision) {
+		if (nan() || infinite() || zero() || negativeZero()) {
+			return this;
+		}
+
 		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
 		return new XSFloat(round.floatValue());

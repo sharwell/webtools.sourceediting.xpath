@@ -532,17 +532,6 @@ public class XSDouble extends NumericType {
 	}
 
 	/**
-	 * Returns the closest integer of the number stored.
-	 * 
-	 * @return A XSDouble representing the closest long of the number stored.
-	 */
-	@Override
-	public NumericType round_half_to_even() {
-
-		return round_half_to_even(0);
-	}
-
-	/**
 	 * Returns the closest integer of the number stored with the specified
 	 * precision.
 	 * 

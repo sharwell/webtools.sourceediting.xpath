@@ -107,17 +107,15 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 	 * @throws DynamicError
 	 *             If node being tested is not of expected type
 	 */
-	public static Item get_single_type(Item at, Class<? extends AnyType> type)
-			throws DynamicError {
-
-		if (!type.isInstance(at))
+	public static <T extends AnyType> T get_single_type(Item at, Class<T> type) throws DynamicError {
+		try {
+			return type.cast(at);
+		} catch (ClassCastException ex) {
 			throw DynamicError.throw_type_error();
-
-		return at;
+		}
 	}
 
-	public static Item get_single_type(AnyType at, Class<? extends AnyType> type)
-	throws DynamicError {
+	public static <T extends AnyType> T get_single_type(AnyType at, Class<T> type) throws DynamicError {
 		return get_single_type((Item)at, type);
 	}
 
@@ -133,16 +131,10 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 	 * @throws DynamicError
 	 *             If node being tested is not of expected type
 	 */
-	public static AnyType get_single_type(ResultSequence rs, Class<? extends AnyType> type)
-			throws DynamicError {
+	public static <T extends AnyType> T get_single_type(ResultSequence rs, Class<T> type) throws DynamicError {
 		if (rs.size() != 1)
 			throw DynamicError.throw_type_error();
 
-		Item at = rs.first();
-
-		if (!type.isInstance(at))
-			throw DynamicError.throw_type_error();
-
-		return (AnyType) at;
+		return get_single_type(rs.first(), type);
 	}
 }

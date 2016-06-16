@@ -26,6 +26,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSPositiveInteger extends XSNonNegativeInteger {
 	
 	private static final String XS_POSITIVE_INTEGER = "xs:positiveInteger";
+	private static final BigInteger MIN_VALUE = BigInteger.ONE;
 
 	/**
 	 * Initializes a representation of 1
@@ -75,31 +76,24 @@ public class XSPositiveInteger extends XSNonNegativeInteger {
 	 */
 	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
-		if (arg.empty())
-			return ResultBuffer.EMPTY;
-
-		// the function conversion rules apply here too. Get the argument
-		// and convert it's string value to a positiveInteger.
-		Item aat = arg.first();
-
-		try {
-			BigInteger bigInt = new BigInteger(aat.getStringValue());
-			
-			// doing the range checking
-			// min value is 1
-			// max value is INF
-			BigInteger min = BigInteger.valueOf(1);
-
-			if (bigInt.compareTo(min) < 0) {
-			   // invalid input
-			   throw DynamicError.cant_cast(null);	
-			}
-			
-			return new XSPositiveInteger(bigInt);
-		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null, e);
+		ResultSequence result = super.constructor(arg);
+		if (result.empty()) {
+			return result;
 		}
 
+		XSInteger integer = (XSInteger)result;
+		// range is already validated via getMinValue() and/or getMaxValue()
+		return new XSPositiveInteger(integer.int_value());
+	}
+
+	@Override
+	protected BigInteger getMinValue() {
+		return MIN_VALUE;
+	}
+
+	@Override
+	protected BigInteger getMaxValue() {
+		return null;
 	}
 
 	@Override

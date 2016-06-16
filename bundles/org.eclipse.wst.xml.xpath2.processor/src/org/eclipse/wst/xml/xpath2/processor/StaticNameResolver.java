@@ -617,6 +617,20 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 	@Override
 	public Void visit(CastableExpr cexp) {
 		printBinExpr("CASTABLE", cexp);
+
+		SingleType st = (SingleType) cexp.right();
+		QName type = st.type();
+		
+		javax.xml.namespace.QName qName = type.asQName();
+		Function f = _sc.resolveFunction(qName, 1);
+		if (f == null) {
+			if (type.getStringValue().equals("xs:NOTATION") || type.getStringValue().equals("xs:anyAtomicType")) {
+				reportError(new StaticNameError("XPST0080", "Can't cast to " + type.getStringValue(), null));
+			} else {
+				reportError(new StaticTypeNameError("Type does not exist: " + type.toString(), null));
+			}
+		}
+
 		return null;
 	}
 
@@ -636,9 +650,13 @@ public class StaticNameResolver implements XPathVisitor<Void>, StaticChecker {
 		
 		javax.xml.namespace.QName qName = type.asQName();
 		Function f = _sc.resolveFunction(qName, 1);
-		if (f == null)
-			reportError(new StaticFunctNameError("Type does not exist: "
-					+ type.toString(), null));
+		if (f == null) {
+			if (type.getStringValue().equals("xs:NOTATION") || type.getStringValue().equals("xs:anyAtomicType")) {
+				reportError(new StaticNameError("XPST0080", "Can't cast to " + type.getStringValue(), null));
+			} else {
+				reportError(new StaticTypeNameError("Type does not exist: " + type.toString(), null));
+			}
+		}
 		cexp.set_function(f);
 		_resolvedFunctions.add(qName);
 

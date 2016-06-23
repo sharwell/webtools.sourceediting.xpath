@@ -37,17 +37,6 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  */
 public class FnCodepointsToString extends Function {
 	private static Collection<SeqType> _expected_args = null;
-	
-    /**
-     * The maximum value of a Unicode code point.
-     */
-    public static final int MIN_LEGAL_CODEPOINT = 0x1;
-
-
-    /**
-     * The maximum value of a Unicode code point.
-     */
-    public static final int MAX_LEGAL_CODEPOINT = 0x10ffff;
 
 	/**
 	 * Constructor for FnCodepointsToString.
@@ -94,7 +83,14 @@ public class FnCodepointsToString extends Function {
 			XSInteger code = (XSInteger) i.next();
 			
 			int codepoint = code.int_value().intValue();
-			if (codepoint < MIN_LEGAL_CODEPOINT || codepoint > MAX_LEGAL_CODEPOINT) {
+			boolean valid = true;
+			if (!Character.isValidCodePoint(codepoint)) {
+				valid = false;
+			} else if (!isValidXmlCharacter(codepoint)) {
+				valid = false;
+			}
+
+			if (!valid) {
 				throw DynamicError.unsupported_codepoint("U+" + Integer.toString(codepoint, 16).toUpperCase(), null);
 			}
 
@@ -109,6 +105,15 @@ public class FnCodepointsToString extends Function {
 			// This should be duoble checked above, but rather safe than sorry
 			throw DynamicError.unsupported_codepoint(iae.getMessage(), iae);
 		}
+	}
+
+	private static boolean isValidXmlCharacter(int codepoint) {
+		return (codepoint >= 0x0020 && codepoint <= 0xD7FF)
+			|| (codepoint >= 0xE000 && codepoint <= 0xFFFD)
+			|| (codepoint >= 0x10000 && codepoint <= 0x10FFFF)
+			|| codepoint == 0x0009
+			|| codepoint == 0x000A
+			|| codepoint == 0x000D;
 	}
 
 	/**

@@ -17,7 +17,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
-import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
 
 %%
 
@@ -61,6 +61,11 @@ NCName		= ( {Letter} | "_") ( {NCNameChar} )*
 	}
 
 	private int commentLevel = 0;
+
+	private enum sym {
+		;
+		public static final int EOF = XpathSym.EOF;
+	}
 %}
 
 %state COMMENT
@@ -70,7 +75,8 @@ NCName		= ( {Letter} | "_") ( {NCNameChar} )*
 <YYINITIAL> {
 
 "(:"			{ commentLevel++; // int overflow =P
-			  yybegin(COMMENT); 
+			  yybegin(COMMENT);
+			  break;
 			}
 
 "\["	{ return symbol(XpathSym.LBRACKET); }
@@ -184,7 +190,7 @@ NCName		= ( {Letter} | "_") ( {NCNameChar} )*
 
 
 
-{Whitespace} { /* ignore */ }
+{Whitespace} { /* ignore */ break; }
 
 
 .	{ 
@@ -198,10 +204,11 @@ NCName		= ( {Letter} | "_") ( {NCNameChar} )*
 }
 
 <COMMENT> {
-	"(:"		{ commentLevel++; }
+	"(:"		{ commentLevel++; break; }
 	":)"		{ commentLevel--; 
 			  if(commentLevel == 0)
 		          	yybegin(YYINITIAL);
+			  break;
 			}
-	.|\n		{ /* ignore */ }
+	.|\n		{ /* ignore */ break; }
 }

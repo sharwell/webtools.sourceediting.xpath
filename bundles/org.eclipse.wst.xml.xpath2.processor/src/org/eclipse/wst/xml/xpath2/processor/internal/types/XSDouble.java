@@ -19,6 +19,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.DynamicContext;
@@ -506,20 +507,28 @@ public class XSDouble extends NumericType {
 	 */
 	@Override
 	public NumericType round() {
-		BigDecimal value = new BigDecimal(_value);
-		BigDecimal round = value.setScale(0, BigDecimal.ROUND_HALF_UP);
-		return new XSDouble(round.doubleValue());
-	}
+		if (nan() || infinite() || zero() || negativeZero()) {
+			return this;
+		}
 
-	/**
-	 * Returns the closest integer of the number stored.
-	 * 
-	 * @return A XSDouble representing the closest long of the number stored.
-	 */
-	@Override
-	public NumericType round_half_to_even() {
+		BigDecimal value = new BigDecimal(double_value());
 
-		return round_half_to_even(0);
+		BigDecimal round;
+		if (value.compareTo(BigDecimal.ZERO) < 0) {
+			round = value.setScale(0, RoundingMode.HALF_DOWN);
+		} else {
+			round = value.setScale(0, RoundingMode.HALF_UP);
+		}
+
+		double result;
+		if (round.compareTo(BigDecimal.ZERO) == 0) {
+			// preserve the sign of the input
+			result = double_value() < 0 ? -0.0f : 0.0f;
+		} else {
+			result = round.doubleValue();
+		}
+
+		return new XSDouble(result);
 	}
 
 	/**
@@ -532,6 +541,10 @@ public class XSDouble extends NumericType {
 	 */
 	@Override
 	public NumericType round_half_to_even(int precision) {
+		if (nan() || infinite() || zero() || negativeZero()) {
+			return this;
+		}
+
 		BigDecimal value = new BigDecimal(_value);
 		BigDecimal round = value.setScale(precision, BigDecimal.ROUND_HALF_EVEN);
 		return new XSDouble(round.doubleValue());

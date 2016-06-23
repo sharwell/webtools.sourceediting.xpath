@@ -85,7 +85,9 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 	 * 
 	 * @return A NumericType representing the closest long of the number stored.
 	 */
-	public abstract NumericType round_half_to_even();
+	public final NumericType round_half_to_even() {
+		return round_half_to_even(0);
+	}
 	
 	public abstract NumericType round_half_to_even(int precision);
 

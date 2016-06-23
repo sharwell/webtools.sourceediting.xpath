@@ -18,6 +18,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -263,8 +264,8 @@ Cloneable {
 		if (timezoned()) {
 			int hrs = _tz.hours();
 			int min = _tz.minutes();
-			double secs = _tz.seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = _tz.seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 				ret += "Z";
 			} else {
 				String tZoneStr = "";
@@ -376,8 +377,8 @@ Cloneable {
 	 * 
 	 * @return Number of milliseconds since the begining of the epoch
 	 */
-	public double value() {
-		return calendar().getTimeInMillis() / 1000.0;
+	public BigDecimal value() {
+		return BigDecimal.valueOf(calendar().getTimeInMillis()).divide(BigDecimal.valueOf(1000));
 	}
 
 	// math
@@ -506,7 +507,7 @@ Cloneable {
 				res.calendar().add(Calendar.DAY_OF_MONTH, days);
 
 				res.calendar().add(Calendar.MILLISECOND,
-						(int) (val.time_value() * 1000.0));
+						val.time_value().multiply(BigDecimal.valueOf(1000)).intValue());
 				return res;
 			} else {
 				throw DynamicError.throw_type_error();

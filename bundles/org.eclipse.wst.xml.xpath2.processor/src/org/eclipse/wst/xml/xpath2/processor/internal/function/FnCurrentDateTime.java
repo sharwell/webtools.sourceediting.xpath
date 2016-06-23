@@ -13,6 +13,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 import javax.xml.datatype.Duration;
@@ -72,7 +73,7 @@ public class FnCurrentDateTime extends Function {
 		assert args.size() == 0;
 
 		Duration d = dc.getTimezoneOffset();
-		XSDayTimeDuration tz = new XSDayTimeDuration(0, d.getHours(), d.getMinutes(), 0.0, d.getSign() == -1);
+		XSDayTimeDuration tz = new XSDayTimeDuration(0, d.getHours(), d.getMinutes(), BigDecimal.ZERO, d.getSign() == -1);
 
 		AnyType res = new XSDateTime(dc.getCurrentDateTime(), tz);
 

@@ -17,6 +17,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -237,13 +238,16 @@ Cloneable {
 	 * @return Integer array of size 3. Element 1 is the hour, element 2 is the
 	 *         minute and element 3 is the seconds
 	 */
-	public static double[] parse_time(String str) {
+	public static BigDecimal[] parse_time(String str) {
 		int state = 0; // 0 getting minute
 		// 1 getting hour
 		// 2 getting seconds [the whole part]
 		// 3 getting fraction of seconds
 
-		double[] ret = new double[3];
+		BigDecimal[] ret = new BigDecimal[3];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = BigDecimal.ZERO;
+		}
 
 		String token = "";
 
@@ -257,7 +261,7 @@ Cloneable {
 				if (x == ':') {
 					if (token.length() != 2)
 						return null;
-					ret[state] = Integer.parseInt(token);
+					ret[state] = BigDecimal.valueOf(Integer.parseInt(token));
 					state++;
 					token = "";
 				} else if (is_digit(x))
@@ -307,7 +311,7 @@ Cloneable {
 		if (token.length() == 3)
 			return null;
 
-		ret[2] = Double.parseDouble(token);
+		ret[2] = new BigDecimal(token);
 
 		// XXX sanity check args...
 		return ret;
@@ -469,31 +473,31 @@ Cloneable {
 			return null;
 
 		// get time
-		double t[] = parse_time(time);
+		BigDecimal[] t = parse_time(time);
 		if (t == null)
 			return null;
 
-		if (t[0] == 24) {
+		if (t[0].intValueExact() == 24) {
 			// '24' is permitted if the minutes and seconds represented are zero
-			if (t[1] != 0 || t[2] != 0) {
+			if (t[1].compareTo(BigDecimal.ZERO) != 0 || t[2].compareTo(BigDecimal.ZERO) != 0) {
 				return null;
 			}
 
 			cal.set(Calendar.HOUR_OF_DAY, 0);
 			cal.add(Calendar.HOUR_OF_DAY, 24);
-		} else if (!set_item(cal, Calendar.HOUR_OF_DAY, (int) t[0])) {
+		} else if (!set_item(cal, Calendar.HOUR_OF_DAY, t[0].intValueExact())) {
 			return null;
 		}
 
-		if (!set_item(cal, Calendar.MINUTE, (int) t[1]))
+		if (!set_item(cal, Calendar.MINUTE, t[1].intValueExact()))
 			return null;
 
-		if (!set_item(cal, Calendar.SECOND, (int) t[2]))
+		if (!set_item(cal, Calendar.SECOND, t[2].intValue()))
 			return null;
 
-		double ms = t[2] - ((int) t[2]);
-		ms *= 1000;
-		if (!set_item(cal, Calendar.MILLISECOND, (int) ms))
+		BigDecimal ms = t[2].subtract(BigDecimal.valueOf(t[2].intValue()));
+		ms = ms.multiply(BigDecimal.valueOf(1000));
+		if (!set_item(cal, Calendar.MILLISECOND, ms.intValue()))
 			return null;
 
 		// get timezone
@@ -505,7 +509,7 @@ Cloneable {
 			if (tz == null)
 				return null;
 
-			tzd = new XSDayTimeDuration(0, tz[1], tz[2], 0.0, tz[0] < 0);
+			tzd = new XSDayTimeDuration(0, tz[1], tz[2], BigDecimal.ZERO, tz[0] < 0);
 
 		}
 
@@ -617,14 +621,14 @@ Cloneable {
 	 * 
 	 * @return the seconds value of the date stored
 	 */
-	public double second() {
-		double s = _calendar.get(Calendar.SECOND);
+	public BigDecimal second() {
+		BigDecimal s = BigDecimal.valueOf(_calendar.get(Calendar.SECOND));
 
-		double ms = _calendar.get(Calendar.MILLISECOND);
+		BigDecimal ms = BigDecimal.valueOf(_calendar.get(Calendar.MILLISECOND));
 
-		ms /= 1000;
+		ms = ms.divide(BigDecimal.valueOf(1000));
 
-		s += ms;
+		s = s.add(ms);
 		return s;
 	}
 
@@ -696,13 +700,13 @@ Cloneable {
 		ret += pad_int(adjustFortimezone.get(Calendar.MINUTE), 2);
 
 		ret += ":";
-		int isecond = (int) second();
-		double sec = second();
+		int isecond = second().intValue();
+		BigDecimal sec = second();
 
-		if ((sec - (isecond)) == 0.0)
+		if (sec.subtract(BigDecimal.valueOf(isecond)).compareTo(BigDecimal.ZERO) == 0)
 			ret += pad_int(isecond, 2);
 		else {
-			if (sec < 10.0)
+			if (sec.compareTo(BigDecimal.valueOf(10)) < 0)
 				ret += "0" + sec;
 			else
 				ret += sec;
@@ -711,8 +715,8 @@ Cloneable {
 		if (timezoned()) {
 			int hrs = _tz.hours();
 			int min = _tz.minutes();
-			double secs = _tz.seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = _tz.seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 				ret += "Z";
 			} else {
 				String tZoneStr = "";
@@ -826,8 +830,8 @@ Cloneable {
 	 * 
 	 * @return Number of milliseconds since the begining of the epoch
 	 */
-	public double value() {
-		return calendar().getTimeInMillis() / 1000.0;
+	public BigDecimal value() {
+		return BigDecimal.valueOf(calendar().getTimeInMillis()).divide(BigDecimal.valueOf(1000));
 	}
 
 	// math

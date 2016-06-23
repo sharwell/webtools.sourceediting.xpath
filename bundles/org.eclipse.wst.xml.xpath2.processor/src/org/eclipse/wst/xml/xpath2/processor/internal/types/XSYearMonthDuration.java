@@ -56,7 +56,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 *            through time. False otherwise
 	 */
 	public XSYearMonthDuration(int year, int month, boolean negative) {
-		super(year, month, 0, 0, 0, 0, negative);
+		super(year, month, 0, 0, 0, BigDecimal.ZERO, negative);
 	}
 
 	/**
@@ -297,7 +297,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg instanceof XSDayTimeDuration) {
 			XSDayTimeDuration dayTimeDuration = (XSDayTimeDuration)arg;
-			return (monthValue() == 0 && dayTimeDuration.value() == 0.0);
+			return monthValue() == 0 && dayTimeDuration.value().compareTo(BigDecimal.ZERO) == 0;
 		} else if (arg instanceof XSYearMonthDuration) {
 			XSYearMonthDuration yearMonthDuration = (XSYearMonthDuration)arg;
 			return monthValue() == yearMonthDuration.monthValue();

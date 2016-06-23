@@ -92,7 +92,7 @@ public class FnDateTime extends Function {
 		cal.set(param1.year(), param1.month() - 1, param1.day());
 		cal.set(Calendar.HOUR_OF_DAY, param2.hour());
 		cal.set(Calendar.MINUTE, param2.minute());
-		cal.set(Calendar.SECOND, (new Double(Math.floor(param2.second())).intValue()));
+		cal.set(Calendar.SECOND, param2.second().intValue());
 		cal.set(Calendar.MILLISECOND, 0);
 		
 		XSDuration dateTimeZone = param1.tz();

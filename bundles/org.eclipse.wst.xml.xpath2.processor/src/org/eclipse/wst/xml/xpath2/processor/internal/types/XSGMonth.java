@@ -14,6 +14,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -221,8 +222,8 @@ public class XSGMonth extends CalendarType implements CmpEq {
 			
 			int hrs = tz().hours();
 			int min = tz().minutes();
-			double secs = tz().seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = tz().seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 			  ret += "Z";
 			}
 			else {

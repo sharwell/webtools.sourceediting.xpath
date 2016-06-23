@@ -59,6 +59,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSID;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSIDREF;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInt;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSInteger;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSLanguage;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSLong;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNCName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSNMTOKEN;
@@ -99,6 +100,7 @@ public class XSCtrLibrary extends ConstructorFL {
 		add_type(new XSString());
 		add_type(new XSNormalizedString());
 		add_type(new XSToken());
+		add_type(new XSLanguage());
 		add_type(new XSName());
 		add_type(new XSNCName());
 		add_type(new XSNMTOKEN());

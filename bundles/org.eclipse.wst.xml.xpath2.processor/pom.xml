@@ -178,6 +178,26 @@
 
     <plugins>
       <plugin>
+        <!-- Not executed during the build by default, but available for code generation on the command line:
+
+            mvn de.jflex:maven-jflex-plugin:generate
+
+            Note that manual fixup to the generated code is required before it can be committed (the diff makes this
+            clear).
+         -->
+        <groupId>de.jflex</groupId>
+        <artifactId>maven-jflex-plugin</artifactId>
+        <version>1.4.3-r1</version>
+        <configuration>
+          <backup>false</backup>
+          <outputDirectory>src</outputDirectory>
+          <lexDefinitions>
+            <lexDefinition>grammars/xpath.lex</lexDefinition>
+          </lexDefinitions>
+        </configuration>
+      </plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>

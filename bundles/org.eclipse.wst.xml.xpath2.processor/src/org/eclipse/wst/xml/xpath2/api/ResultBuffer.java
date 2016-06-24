@@ -410,8 +410,13 @@ public class ResultBuffer {
 	}
 
 	public static ResultSequence wrap(Item item) {
-		if (item instanceof SingleItemSequence)
-			return (SingleItemSequence)item;
+		if (item instanceof ResultSequence) {
+			ResultSequence result = (ResultSequence)item;
+			if (result.size() == 1) {
+				// no need to wrap a sequence that has exactly one item
+				return result;
+			}
+		}
 		
 		return new SingleResultSequence(item); 
 	}

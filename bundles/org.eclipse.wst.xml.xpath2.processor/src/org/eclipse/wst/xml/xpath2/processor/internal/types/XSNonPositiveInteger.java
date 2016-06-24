@@ -16,8 +16,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigInteger;
 
-import org.eclipse.wst.xml.xpath2.api.Item;
-import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -26,6 +24,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSNonPositiveInteger extends XSInteger {
 	
 	private static final String XS_NON_POSITIVE_INTEGER = "xs:nonPositiveInteger";
+	private static final BigInteger MAX_VALUE = BigInteger.ZERO;
 
 	/**
 	 * Initializes a representation of 0
@@ -75,31 +74,24 @@ public class XSNonPositiveInteger extends XSInteger {
 	 */
 	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
-		if (arg.empty())
-			return ResultBuffer.EMPTY;
-
-		// the function conversion rules apply here too. Get the argument
-		// and convert it's string value to a nonPositiveInteger.
-		Item aat = arg.first();
-
-		try {
-			BigInteger bigInt = new BigInteger(aat.getStringValue());
-			
-			// doing the range checking
-			// min value is, -INF
-			// max value is 0
-			BigInteger max = BigInteger.valueOf(0L);			
-
-			if (bigInt.compareTo(max) > 0) {
-			   // invalid input
-			   throw DynamicError.cant_cast(null);	
-			}
-			
-			return new XSNonPositiveInteger(bigInt);
-		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null, e);
+		ResultSequence result = super.constructor(arg);
+		if (result.empty()) {
+			return result;
 		}
 
+		XSInteger integer = (XSInteger)result;
+		// range is already validated via getMinValue() and/or getMaxValue()
+		return new XSNonPositiveInteger(integer.int_value());
+	}
+
+	@Override
+	protected BigInteger getMinValue() {
+		return null;
+	}
+
+	@Override
+	protected BigInteger getMaxValue() {
+		return MAX_VALUE;
 	}
 
 	@Override

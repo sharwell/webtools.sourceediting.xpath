@@ -24,6 +24,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSShort extends XSInt {
 	
 	private static final String XS_SHORT = "xs:short";
+	private static final BigInteger MIN_VALUE = BigInteger.valueOf(Short.MIN_VALUE);
+	private static final BigInteger MAX_VALUE = BigInteger.valueOf(Short.MAX_VALUE);
 
 	/**
 	 * Initializes a representation of 0
@@ -73,30 +75,24 @@ public class XSShort extends XSInt {
 	 */
 	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
-		if (arg.empty())
-			return ResultBuffer.EMPTY;
-
-		// the function conversion rules apply here too. Get the argument
-		// and convert it's string value to a short.
-		Item aat = arg.first();
-
-		try {
-			BigInteger bigInt = new BigInteger(aat.getStringValue());
-			
-			// doing the range checking
-			BigInteger min = BigInteger.valueOf(-32768L);
-			BigInteger max = BigInteger.valueOf(32767L);			
-
-			if (bigInt.compareTo(min) < 0 || bigInt.compareTo(max) > 0) {
-			   // invalid input
-			   throw DynamicError.throw_type_error();	
-			}
-			
-			return new XSShort(bigInt);
-		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null, e);
+		ResultSequence result = super.constructor(arg);
+		if (result.empty()) {
+			return result;
 		}
 
+		XSInteger integer = (XSInteger)result;
+		// range is already validated via getMinValue() and/or getMaxValue()
+		return new XSShort(integer.int_value());
+	}
+
+	@Override
+	protected BigInteger getMinValue() {
+		return MIN_VALUE;
+	}
+
+	@Override
+	protected BigInteger getMaxValue() {
+		return MAX_VALUE;
 	}
 
 	@Override

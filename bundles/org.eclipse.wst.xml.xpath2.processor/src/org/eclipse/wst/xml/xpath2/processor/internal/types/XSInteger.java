@@ -143,13 +143,39 @@ public class XSInteger extends XSDecimal {
 		
 		try {
 			BigInteger bigInt = castInteger(aat);
+			if (getMinValue() != null && bigInt.compareTo(getMinValue()) < 0) {
+				throw DynamicError.cant_cast(null);
+			}
+
+			if (getMaxValue() != null && bigInt.compareTo(getMaxValue()) > 0) {
+				throw DynamicError.cant_cast(null);
+			}
+
 			return new XSInteger(bigInt);
 		} catch (NumberFormatException e) {
 			throw DynamicError.invalidLexicalValue(e);
 		}
 
 	}
-	
+
+	/**
+	 * Gets the minimum value (inclusive) which can be represented by this integer.
+	 *
+	 * @return The minimum value which can be represented by this integer type, or {@code null} if there is no minimum.
+	 */
+	protected BigInteger getMinValue() {
+		return null;
+	}
+
+	/**
+	 * Gets the maximum value (inclusive) which can be represented by this integer.
+	 *
+	 * @return The maximum value which can be represented by this integer type, or {@code null} if there is no maximum.
+	 */
+	protected BigInteger getMaxValue() {
+		return null;
+	}
+
 	private BigInteger castInteger(Item aat) {
 		if (aat instanceof XSBoolean) {
 			if (aat.getStringValue().equals("true")) {

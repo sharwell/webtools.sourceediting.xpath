@@ -24,6 +24,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSInt extends XSLong {
 	
 	private static final String XS_INT = "xs:int";
+	private static final BigInteger MIN_VALUE = BigInteger.valueOf(Integer.MIN_VALUE);
+	private static final BigInteger MAX_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
 
 	/**
 	 * Initializes a representation of 0
@@ -73,37 +75,28 @@ public class XSInt extends XSLong {
 	 */
 	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
-
-		if (arg.empty())
-			return ResultBuffer.EMPTY;
-
-		// the function conversion rules apply here too. Get the argument
-		// and convert it's string value to an int.
-		Item aat = arg.first();
-
-		try {
-			BigInteger bigInt = new BigInteger(aat.getStringValue());
-			
-			// doing the range checking
-			BigInteger min = BigInteger.valueOf(-2147483648L);
-			BigInteger max = BigInteger.valueOf(2147483647L);			
-
-			if (bigInt.compareTo(min) < 0 || bigInt.compareTo(max) > 0) {
-			   // invalid input
-			   throw DynamicError.throw_type_error();	
-			}
-			
-			return new XSInt(bigInt);
-		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null, e);
+		ResultSequence result = super.constructor(arg);
+		if (result.empty()) {
+			return result;
 		}
 
+		XSInteger integer = (XSInteger)result;
+		// range is already validated via getMinValue() and/or getMaxValue()
+		return new XSInt(integer.int_value());
+	}
+
+	@Override
+	protected BigInteger getMinValue() {
+		return MIN_VALUE;
+	}
+
+	@Override
+	protected BigInteger getMaxValue() {
+		return MAX_VALUE;
 	}
 
 	@Override
 	public TypeDefinition getTypeDefinition() {
 		return BuiltinTypeLibrary.XS_INT;
 	}
-	
-
 }

@@ -15,8 +15,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigInteger;
 
-import org.eclipse.wst.xml.xpath2.api.Item;
-import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -25,6 +23,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSLong extends XSInteger {
 	
 	private static final String XS_LONG = "xs:long";
+	private static final BigInteger MIN_VALUE = BigInteger.valueOf(Long.MIN_VALUE);
+	private static final BigInteger MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 
 	/**
 	 * Initializes a representation of 0
@@ -62,7 +62,7 @@ public class XSLong extends XSInteger {
 	public String type_name() {
 		return "long";
 	}
-	
+
 	/**
 	 * Creates a new ResultSequence consisting of the extractable long in the
 	 * supplied ResultSequence
@@ -74,31 +74,24 @@ public class XSLong extends XSInteger {
 	 */
 	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
-
-		if (arg.empty())
-			return ResultBuffer.EMPTY;
-
-		// the function conversion rules apply here too. Get the argument
-		// and convert it's string value to a long.
-		Item aat = arg.first();
-
-		try {
-			BigInteger bigInt = new BigInteger(aat.getStringValue());
-			
-			// doing the range checking
-			BigInteger min = BigInteger.valueOf(-9223372036854775808L);
-			BigInteger max = BigInteger.valueOf(9223372036854775807L);			
-
-			if (bigInt.compareTo(min) < 0 || bigInt.compareTo(max) > 0) {
-			   // invalid input
-			   throw DynamicError.throw_type_error();	
-			}
-			
-			return new XSLong(bigInt);
-		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null, e);
+		ResultSequence result = super.constructor(arg);
+		if (result.empty()) {
+			return result;
 		}
 
+		XSInteger integer = (XSInteger)result;
+		// range is already validated via getMinValue() and/or getMaxValue()
+		return new XSLong(integer.int_value());
+	}
+
+	@Override
+	protected BigInteger getMinValue() {
+		return MIN_VALUE;
+	}
+
+	@Override
+	protected BigInteger getMaxValue() {
+		return MAX_VALUE;
 	}
 
 	@Override

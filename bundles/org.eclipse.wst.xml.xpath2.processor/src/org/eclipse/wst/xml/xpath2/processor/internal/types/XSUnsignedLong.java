@@ -26,6 +26,8 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
 public class XSUnsignedLong extends XSNonNegativeInteger {
 	
 	private static final String XS_UNSIGNED_LONG = "xs:unsignedLong";
+	private static final BigInteger MIN_VALUE = BigInteger.ZERO;
+	private static final BigInteger MAX_VALUE = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
 
 	/**
 	 * Initializes a representation of 0
@@ -75,32 +77,24 @@ public class XSUnsignedLong extends XSNonNegativeInteger {
 	 */
 	@Override
 	public ResultSequence constructor(ResultSequence arg) throws DynamicError {
-		if (arg.empty())
-			return ResultBuffer.EMPTY;
-
-		// the function conversion rules apply here too. Get the argument
-		// and convert it's string value to a unsignedLong.
-		Item aat = arg.first();
-
-		try {
-			BigInteger bigInt = new BigInteger(aat.getStringValue());
-			
-			// doing the range checking
-			// min value is 0
-			// max value is 18446744073709551615
-			BigInteger min = BigInteger.valueOf(0);
-			BigInteger max = new BigInteger("18446744073709551615");
-
-			if (bigInt.compareTo(min) < 0 || bigInt.compareTo(max) > 0) {
-			   // invalid input
-			   throw DynamicError.cant_cast(null);	
-			}
-			
-			return new XSUnsignedLong(bigInt);
-		} catch (NumberFormatException e) {
-			throw DynamicError.cant_cast(null, e);
+		ResultSequence result = super.constructor(arg);
+		if (result.empty()) {
+			return result;
 		}
 
+		XSInteger integer = (XSInteger)result;
+		// range is already validated via getMinValue() and/or getMaxValue()
+		return new XSUnsignedLong(integer.int_value());
+	}
+
+	@Override
+	protected BigInteger getMinValue() {
+		return MIN_VALUE;
+	}
+
+	@Override
+	protected BigInteger getMaxValue() {
+		return MAX_VALUE;
 	}
 
 	@Override

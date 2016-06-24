@@ -323,7 +323,7 @@ Cloneable {
 	 */
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSTime val = (XSTime) NumericType.get_single_type(arg, XSTime.class);
+		XSTime val = NumericType.get_single_type(arg, XSTime.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 
@@ -340,7 +340,7 @@ Cloneable {
 	 */
 	@Override
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSTime val = (XSTime) NumericType.get_single_type(arg, XSTime.class);
+		XSTime val = NumericType.get_single_type(arg, XSTime.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 		return thiscal.before(thatcal);
@@ -357,7 +357,7 @@ Cloneable {
 	 */
 	@Override
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		XSTime val = (XSTime) NumericType.get_single_type(arg, XSTime.class);
+		XSTime val = NumericType.get_single_type(arg, XSTime.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 
@@ -437,8 +437,7 @@ Cloneable {
 	 */
 	@Override
 	public ResultSequence plus(ResultSequence arg) throws DynamicError {
-		XSDuration val = (XSDuration) NumericType
-				.get_single_type(arg, XSDayTimeDuration.class);
+		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
 		try {
 			double ms = val.time_value() * 1000.0;

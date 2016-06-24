@@ -295,7 +295,7 @@ public class XSDouble extends NumericType {
 	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
 		
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return double_value() > val.double_value();
 	}
 
@@ -320,7 +320,7 @@ public class XSDouble extends NumericType {
 	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
 		Item carg = convertArg(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return double_value() < val.double_value();
 	}
 
@@ -374,7 +374,7 @@ public class XSDouble extends NumericType {
 	public ResultSequence minus(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 
 		return new XSDouble(double_value() - val.double_value());
 	}
@@ -393,7 +393,7 @@ public class XSDouble extends NumericType {
 	public ResultSequence times(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return new XSDouble(double_value() * val.double_value());
 	}
 
@@ -409,7 +409,7 @@ public class XSDouble extends NumericType {
 	public ResultSequence div(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return new XSDouble(double_value() / val.double_value());
 	}
 
@@ -426,7 +426,7 @@ public class XSDouble extends NumericType {
 	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 
 		if (this.nan() || val.nan())
 			throw DynamicError.numeric_overflow("Dividend or divisor is NaN");
@@ -453,7 +453,7 @@ public class XSDouble extends NumericType {
 	public ResultSequence mod(ResultSequence arg) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
-		XSDouble val = (XSDouble) get_single_type(carg, XSDouble.class);
+		XSDouble val = get_single_type(carg, XSDouble.class);
 		return new XSDouble(double_value() % val.double_value());
 	}
 

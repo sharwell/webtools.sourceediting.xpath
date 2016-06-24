@@ -346,7 +346,7 @@ public class QName extends CtrType implements CmpEq {
 	 */
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		QName val = (QName) NumericType.get_single_type(arg, QName.class);
+		QName val = NumericType.get_single_type(arg, QName.class);
 		return equals(val);
 	}
 	

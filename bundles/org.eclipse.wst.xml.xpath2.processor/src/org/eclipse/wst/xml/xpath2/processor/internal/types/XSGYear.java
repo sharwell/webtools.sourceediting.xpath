@@ -279,7 +279,7 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 */
 	@Override
 	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		XSGYear val = (XSGYear) NumericType.get_single_type(arg, XSGYear.class);
+		XSGYear val = NumericType.get_single_type(arg, XSGYear.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
 

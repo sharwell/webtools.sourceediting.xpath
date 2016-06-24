@@ -19,6 +19,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java_cup.runtime.Symbol;
 import org.eclipse.wst.xml.xpath2.processor.XPathParserException;
+import org.eclipse.wst.xml.xpath2.processor.internal.utils.LiteralUtils;
 
 %%
 
@@ -190,7 +191,7 @@ NCName		= ( {Letter} | "_") ( {NCNameChar} )*
 				return symbol(XpathSym.STRING, org.eclipse.wst.xml.xpath2.processor.internal.utils.LiteralUtils.unquote(str)); 
 			}
 {Digits}		{ return symbol(XpathSym.INTEGER, new java.math.BigInteger(yytext())); }
-{DoubleLiteral}		{ return symbol(XpathSym.DOUBLE, new Double(yytext())); }
+{DoubleLiteral}		{ return symbol(XpathSym.DOUBLE, LiteralUtils.parseDouble(yytext())); }
 {DecimalLiteral}	{ return symbol(XpathSym.DECIMAL, new java.math.BigDecimal(yytext())); }
 {NCName}		{ return symbol(XpathSym.NCNAME, yytext()); }
 

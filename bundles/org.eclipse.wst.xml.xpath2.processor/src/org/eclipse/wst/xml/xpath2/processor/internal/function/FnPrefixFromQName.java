@@ -78,7 +78,12 @@ public class FnPrefixFromQName extends Function {
 		String prefix = qname.prefix();
 		
 		if (prefix != null) {
-			if (! XMLConstants.NULL_NS_URI.equals(sc.getNamespaceContext().getNamespaceURI(prefix))) {
+			String nsURI = qname.expanded() ? qname.namespace() : null;
+			if (nsURI == null) {
+				nsURI = sc.getNamespaceContext().getNamespaceURI(prefix);
+			}
+
+			if (! XMLConstants.NULL_NS_URI.equals(nsURI)) {
 				  return new XSNCName(prefix);
 			} else {
 				throw DynamicError.invalidPrefix();

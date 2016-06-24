@@ -20,7 +20,6 @@ import java.util.Iterator;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -61,7 +60,7 @@ public class FnAdjustDateToTimeZone extends Function {
 	 */
 	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
-		return adjustDate(args, ec.getDynamicContext());
+		return adjustDate(args, ec);
 	}
 
 	/**
@@ -75,9 +74,7 @@ public class FnAdjustDateToTimeZone extends Function {
 	 *             Dynamic error.
 	 * @return Result of the fn:dateTime operation.
 	 */
-	public static ResultSequence adjustDate(Collection<ResultSequence> args,
-			DynamicContext dc) throws DynamicError {
-
+	public static ResultSequence adjustDate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expectedArgs());
 
 		// get args
@@ -103,7 +100,7 @@ public class FnAdjustDateToTimeZone extends Function {
 		}
 		
 		timezone = (XSDayTimeDuration) arg2.item(0);
-		if (timezone.lt(minDuration, dc) || timezone.gt(maxDuration, dc)) {
+		if (timezone.lt(minDuration, evaluationContext) || timezone.gt(maxDuration, evaluationContext)) {
 			throw DynamicError.invalidTimezone();
 		}
 		

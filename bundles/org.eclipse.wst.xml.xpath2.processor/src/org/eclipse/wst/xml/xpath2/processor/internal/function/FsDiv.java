@@ -41,10 +41,10 @@ public class FsDiv extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_div(args);
+		return fs_div(args, evaluationContext);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class FsDiv extends Function {
 	 *             Dynamic error.
 	 * @return Result of fs:div operation.
 	 */
-	public static ResultSequence fs_div(Collection<ResultSequence> args) throws DynamicError {
+	public static ResultSequence fs_div(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		FsPlus.MathOp<MathDiv> op = new FsPlus.MathOp<MathDiv>() {
 			@Override
 			public Class<? extends MathDiv> getType() {
@@ -64,10 +64,10 @@ public class FsDiv extends Function {
 			}
 
 			@Override
-			public ResultSequence execute(MathDiv obj, ResultSequence arg) throws DynamicError {
-				return obj.div(arg);
+			public ResultSequence execute(MathDiv obj, ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+				return obj.div(arg, evaluationContext);
 			}
 		};
-		return FsPlus.do_math_op(args, op);
+		return FsPlus.do_math_op(args, op, evaluationContext);
 	}
 }

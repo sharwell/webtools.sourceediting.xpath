@@ -18,7 +18,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.CollationProvider;
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
@@ -51,8 +51,8 @@ public class FnStartsWith extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
-		return starts_with(args, ec.getDynamicContext());
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
+		return starts_with(args, ec);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class FnStartsWith extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:starts-with operation.
 	 */
-	public static ResultSequence starts_with(Collection<ResultSequence> args, DynamicContext dynamicContext)
+	public static ResultSequence starts_with(Collection<ResultSequence> args, EvaluationContext evaluationContext)
 			throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
@@ -85,7 +85,7 @@ public class FnStartsWith extends Function {
 			arg3 = argiter.next();
 		}
 
-		CollationProvider collationProvider = dynamicContext.getCollationProvider();
+		CollationProvider collationProvider = evaluationContext.getDynamicContext().getCollationProvider();
 		String collationName;
 		if (arg3 != null) {
 			if (arg3.empty() || !(arg3.first() instanceof XSString)) {

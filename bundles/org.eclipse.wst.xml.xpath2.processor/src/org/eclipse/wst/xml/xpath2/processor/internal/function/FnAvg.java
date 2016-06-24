@@ -60,8 +60,8 @@ public class FnAvg extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
-		return avg(args);
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
+		return avg(args, evaluationContext);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class FnAvg extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:avg operation.
 	 */
-	public static ResultSequence avg(Collection<ResultSequence> args) throws DynamicError {
+	public static ResultSequence avg(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 
 		ResultSequence arg = args.iterator().next();
 
@@ -98,7 +98,7 @@ public class FnAvg extends Function {
 				if (total == null) {
 					total = (MathPlus)conv; 
 				} else {
-					total = (MathPlus)total.plus(conv).first();
+					total = (MathPlus)total.plus(conv, evaluationContext).first();
 				}
 			}
 		}
@@ -106,7 +106,7 @@ public class FnAvg extends Function {
 		if (!(total instanceof MathDiv))
 			throw DynamicError.throw_type_error();
 
-		return ((MathDiv)total).div(new XSInteger(BigInteger.valueOf(elems)));
+		return ((MathDiv)total).div(new XSInteger(BigInteger.valueOf(elems)), evaluationContext);
 	}
 	
 	@Override

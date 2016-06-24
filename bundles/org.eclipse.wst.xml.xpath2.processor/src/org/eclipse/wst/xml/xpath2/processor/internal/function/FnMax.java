@@ -21,7 +21,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.CollationProvider;
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -62,7 +61,7 @@ public class FnMax extends Function {
 	 */
 	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
-		return max(args, ec.getDynamicContext());
+		return max(args, ec);
 	}
 
 	/**
@@ -70,15 +69,15 @@ public class FnMax extends Function {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param dynamicContext
-	 *            Relevant dynamic context
+	 * @param evaluationContext
+	 *            Relevant evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of fn:max operation.
 	 */
-	public static ResultSequence max(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
+	public static ResultSequence max(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence arg = get_arg(args, CmpGt.class);
-		Comparator<String> collation = getCollation(args, dynamicContext);
+		Comparator<String> collation = getCollation(args, evaluationContext);
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
@@ -106,7 +105,7 @@ public class FnMax extends Function {
 				if (conv instanceof XSString || conv instanceof XSAnyURI) {
 					gt = collation.compare(conv.getStringValue(), ((AnyType)max).getStringValue()) > 0;
 				} else {
-					gt = ((CmpGt)conv).gt((AnyType)max, dynamicContext);
+					gt = ((CmpGt)conv).gt((AnyType)max, evaluationContext);
 				}
 
 				if (gt) {
@@ -143,10 +142,10 @@ public class FnMax extends Function {
 		return arg;
 	}
 
-	public static Comparator<String> getCollation(Collection<ResultSequence> args, DynamicContext dynamicContext) {
+	public static Comparator<String> getCollation(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
 		assert args.size() == 1 || args.size() == 2;
 
-		CollationProvider collationProvider = dynamicContext.getCollationProvider();
+		CollationProvider collationProvider = evaluationContext.getDynamicContext().getCollationProvider();
 		if (args.size() == 2) {
 			Iterator<ResultSequence> iter = args.iterator();
 			iter.next();

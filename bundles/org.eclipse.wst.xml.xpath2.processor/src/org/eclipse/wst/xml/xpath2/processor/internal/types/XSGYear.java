@@ -18,7 +18,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
@@ -278,7 +278,7 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSGYear val = NumericType.get_single_type(arg, XSGYear.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());

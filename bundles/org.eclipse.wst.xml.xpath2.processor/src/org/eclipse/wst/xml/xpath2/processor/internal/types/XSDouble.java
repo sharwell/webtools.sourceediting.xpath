@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -259,7 +259,7 @@ public class XSDouble extends NumericType {
 	 * @since 1.1
 	 */
 	@Override
-	public boolean eq(AnyType aa, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType aa, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence crs = constructor(aa);
 		
 		if (crs.empty()) {
@@ -292,7 +292,7 @@ public class XSDouble extends NumericType {
 	 *         one stored. False otherwise
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
 		
 		XSDouble val = get_single_type(carg, XSDouble.class);
@@ -317,7 +317,7 @@ public class XSDouble extends NumericType {
 	 *         one stored. False otherwise
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
 
 		XSDouble val = get_single_type(carg, XSDouble.class);
@@ -334,7 +334,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble consisting of the result of the mathematical addition.
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
 		
@@ -371,7 +371,7 @@ public class XSDouble extends NumericType {
 	 *         subtraction.
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		
 		XSDouble val = get_single_type(carg, XSDouble.class);
@@ -390,7 +390,7 @@ public class XSDouble extends NumericType {
 	 *         multiplication.
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg) throws DynamicError {
+	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDouble val = get_single_type(carg, XSDouble.class);
@@ -406,7 +406,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble consisting of the result of the mathematical division.
 	 */
 	@Override
-	public ResultSequence div(ResultSequence arg) throws DynamicError {
+	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDouble val = get_single_type(carg, XSDouble.class);
@@ -423,7 +423,7 @@ public class XSDouble extends NumericType {
 	 *         division.
 	 */
 	@Override
-	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
+	public ResultSequence idiv(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDouble val = get_single_type(carg, XSDouble.class);
@@ -450,7 +450,7 @@ public class XSDouble extends NumericType {
 	 * @return A XSDouble consisting of the result of the mathematical modulus.
 	 */
 	@Override
-	public ResultSequence mod(ResultSequence arg) throws DynamicError {
+	public ResultSequence mod(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDouble val = get_single_type(carg, XSDouble.class);

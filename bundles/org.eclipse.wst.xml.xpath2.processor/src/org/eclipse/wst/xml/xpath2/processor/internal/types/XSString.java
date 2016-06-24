@@ -17,7 +17,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
 import java.math.BigInteger;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -118,14 +118,14 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	// comparisons
 
 	// 666 indicates death [compare returned empty seq]
-	private int do_compare(AnyType arg, DynamicContext dc) throws DynamicError {
+	private int do_compare(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 
 		// XXX: This can't happen, I guess
 		if (arg == null) return 666;
 
 		XSString comparand = arg instanceof XSString ? (XSString)arg : new XSString(arg.getStringValue());
 		
-		BigInteger result = FnCompare.compare_string(dc.getCollationProvider().getDefaultCollation(), this, comparand, dc);
+		BigInteger result = FnCompare.compare_string(evaluationContext.getDynamicContext().getCollationProvider().getDefaultCollation(), this, comparand, evaluationContext);
 
 		return result.intValue();
 	}
@@ -141,8 +141,8 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-		int cmp = do_compare(arg, dynamicContext);
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		int cmp = do_compare(arg, evaluationContext);
 
 		// XXX im not sure what to do here!!! because eq has to return
 		// something i fink....
@@ -163,8 +163,8 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
-		int cmp = do_compare(arg, context);
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		int cmp = do_compare(arg, evaluationContext);
 
 		assert cmp != 666;
 
@@ -182,8 +182,8 @@ public class XSString extends CtrType implements CmpEq, CmpGt, CmpLt {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
-		int cmp = do_compare(arg, context);
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		int cmp = do_compare(arg, evaluationContext);
 
 		assert cmp != 666;
 

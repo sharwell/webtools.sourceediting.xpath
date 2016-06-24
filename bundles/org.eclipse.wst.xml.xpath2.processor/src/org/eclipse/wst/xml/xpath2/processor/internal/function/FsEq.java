@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
@@ -58,10 +57,10 @@ public class FsEq extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_eq_value(args, ec.getDynamicContext());
+		return fs_eq_value(args, evaluationContext);
 	}
 
 	/**
@@ -108,7 +107,7 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of conversion.
 	 */
-	public static ResultSequence fs_eq_value(Collection<ResultSequence> args, DynamicContext context)
+	public static ResultSequence fs_eq_value(Collection<ResultSequence> args, EvaluationContext evaluationContext)
 			throws DynamicError {
 		CmpValueOp<CmpEq> op = new CmpValueOp<CmpEq>() {
 			@Override
@@ -117,11 +116,11 @@ public class FsEq extends Function {
 			}
 
 			@Override
-			public boolean execute(CmpEq obj, AnyType arg, DynamicContext context) throws DynamicError {
-				return obj.eq(arg, context);
+			public boolean execute(CmpEq obj, AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+				return obj.eq(arg, evaluationContext);
 			}
 		};
-		return do_cmp_value_op(args, op, context);
+		return do_cmp_value_op(args, op, evaluationContext);
 	}
 
 	/**
@@ -135,7 +134,7 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of Equality operation.
 	 */
-	public static boolean fs_eq_fast(AnyType one, AnyType two, DynamicContext context)
+	public static boolean fs_eq_fast(AnyType one, AnyType two, EvaluationContext evaluationContext)
 			throws DynamicError {
 
 		one = FnData.atomize((Item)one);
@@ -152,7 +151,7 @@ public class FsEq extends Function {
 
 		CmpEq cmpone = (CmpEq) one;
 
-		return cmpone.eq(two, context);
+		return cmpone.eq(two, evaluationContext);
 	}
 
 	/**
@@ -162,14 +161,14 @@ public class FsEq extends Function {
 	 *            input1 of any type.
 	 * @param b
 	 *            input2 of any type.
-	 * @param dc
-	 *              Dynamic Context
+	 * @param evaluationContext
+	 *              Evaluation Context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of Equality operation.
 	 */
 	private static boolean do_general_pair(AnyType a, AnyType b,
-			CmpGeneralOp op, DynamicContext ec) throws DynamicError {
+			CmpGeneralOp op, EvaluationContext evaluationContext) throws DynamicError {
 
 		// section 3.5.2
 
@@ -223,7 +222,7 @@ public class FsEq extends Function {
 		args.add(one);
 		args.add(two);
 
-		ResultSequence result = op.execute(args, ec);
+		ResultSequence result = op.execute(args, evaluationContext);
 
 		if (((XSBoolean) result.first()).value())
 			return true;
@@ -240,19 +239,18 @@ public class FsEq extends Function {
 	 *         Dynamic context 
 	 * @return Result of general equality operation.
 	 */
-	public static ResultSequence fs_eq_general(Collection<ResultSequence> args, DynamicContext dc)
-			{
+	public static ResultSequence fs_eq_general(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
 		CmpGeneralOp op = new CmpGeneralOp() {
 			@Override
-			public ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
-				return FsEq.fs_eq_value(args, dynamicContext);
+			public ResultSequence execute(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
+				return FsEq.fs_eq_value(args, evaluationContext);
 			}
 		};
-		return do_cmp_general_op(args, op, dc);
+		return do_cmp_general_op(args, op, evaluationContext);
 	}
 
 	public interface CmpGeneralOp {
-		ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError;
+		ResultSequence execute(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError;
 	}
 
 	// voodoo 3
@@ -269,8 +267,7 @@ public class FsEq extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence do_cmp_general_op(Collection<ResultSequence> args, CmpGeneralOp op,
-			DynamicContext dc) throws DynamicError {
+	public static ResultSequence do_cmp_general_op(Collection<ResultSequence> args, CmpGeneralOp op, EvaluationContext evaluationContext) throws DynamicError {
 
 		// sanity check args and get them
 		if (args.size() != 2)
@@ -295,7 +292,7 @@ public class FsEq extends Function {
 			for (Iterator<Item> j = two.iterator(); j.hasNext();) {
 				AnyType b = (AnyType) j.next();
 
-				if (do_general_pair(a, b, op, dc))
+				if (do_general_pair(a, b, op, evaluationContext))
 					return XSBoolean.TRUE;
 			}
 		}
@@ -306,7 +303,7 @@ public class FsEq extends Function {
 	public interface CmpValueOp<T> {
 		Class<? extends T> getType();
 
-		boolean execute(T obj, AnyType arg, DynamicContext dynamicContext) throws DynamicError;
+		boolean execute(T obj, AnyType arg, EvaluationContext evaluationContext) throws DynamicError;
 	}
 
 	// voodoo 2
@@ -319,14 +316,13 @@ public class FsEq extends Function {
 	 *            type of the arguments.
 	 * @param mname
 	 *            Method name for template simulation.
-	 * @param dynamicContext 
-	 *             Dynamic error.
+	 * @param evaluationContext
+	 *             Evaluation context.
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static <T> ResultSequence do_cmp_value_op(Collection<ResultSequence> args, CmpValueOp<T> op,
-			DynamicContext context) throws DynamicError {
+	public static <T> ResultSequence do_cmp_value_op(Collection<ResultSequence> args, CmpValueOp<T> op, EvaluationContext evaluationContext) throws DynamicError {
 
 		// sanity check args + convert em
 		if (args.size() != 2)
@@ -348,7 +344,7 @@ public class FsEq extends Function {
 		if (!(op.getType().isInstance(arg)))
 			throw DynamicError.throw_type_error();
 
-		boolean cmpres = op.execute(op.getType().cast(arg), (AnyType)arg2.first(), context);
+		boolean cmpres = op.execute(op.getType().cast(arg), (AnyType)arg2.first(), evaluationContext);
 		return XSBoolean.valueOf(cmpres);
 	}
 }

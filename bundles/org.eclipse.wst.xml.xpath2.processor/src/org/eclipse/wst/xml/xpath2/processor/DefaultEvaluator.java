@@ -649,40 +649,40 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 		switch (cmpex.type()) {
 		case CmpExpr.EQ:
-			return FsEq.fs_eq_value(args, _dc);
+			return FsEq.fs_eq_value(args, _ec);
 
 		case CmpExpr.NE:
-			return FsNe.fs_ne_value(args, _dc);
+			return FsNe.fs_ne_value(args, _ec);
 
 		case CmpExpr.GT:
-			return FsGt.fs_gt_value(args, _dc);
+			return FsGt.fs_gt_value(args, _ec);
 
 		case CmpExpr.LT:
-			return FsLt.fs_lt_value(args, _dc);
+			return FsLt.fs_lt_value(args, _ec);
 
 		case CmpExpr.GE:
-			return FsGe.fs_ge_value(args, _dc);
+			return FsGe.fs_ge_value(args, _ec);
 
 		case CmpExpr.LE:
-			return FsLe.fs_le_value(args, _dc);
+			return FsLe.fs_le_value(args, _ec);
 
 		case CmpExpr.EQUALS:
-			return FsEq.fs_eq_general(args, _dc);
+			return FsEq.fs_eq_general(args, _ec);
 
 		case CmpExpr.NOTEQUALS:
-			return FsNe.fs_ne_general(args, _dc);
+			return FsNe.fs_ne_general(args, _ec);
 
 		case CmpExpr.GREATER:
-			return FsGt.fs_gt_general(args, _dc);
+			return FsGt.fs_gt_general(args, _ec);
 
 		case CmpExpr.LESSTHAN:
-			return FsLt.fs_lt_general(args, _dc);
+			return FsLt.fs_lt_general(args, _ec);
 
 		case CmpExpr.GREATEREQUAL:
-			return FsGe.fs_ge_general(args, _dc);
+			return FsGe.fs_ge_general(args, _ec);
 
 		case CmpExpr.LESSEQUAL:
-			return FsLe.fs_le_general(args, _dc);
+			return FsLe.fs_le_general(args, _ec);
 
 		case CmpExpr.IS:
 		case CmpExpr.LESS_LESS:
@@ -729,7 +729,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	@Override
 	public ResultSequence visit(AddExpr addex) {
 		Collection<ResultSequence> args = do_bin_args(addex);
-		return FsPlus.fs_plus(args);
+		return FsPlus.fs_plus(args, _ec);
 	}
 
 	/**
@@ -742,7 +742,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	@Override
 	public ResultSequence visit(SubExpr subex) {
 		Collection<ResultSequence> args = do_bin_args(subex);
-		return FsMinus.fs_minus(args);
+		return FsMinus.fs_minus(args, _ec);
 	}
 
 	/**
@@ -755,7 +755,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	@Override
 	public ResultSequence visit(MulExpr mulex) {
 		Collection<ResultSequence> args = do_bin_args(mulex);
-		return FsTimes.fs_times(args);
+		return FsTimes.fs_times(args, _ec);
 	}
 
 	/**
@@ -768,7 +768,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	@Override
 	public ResultSequence visit(DivExpr mulex) {
 		Collection<ResultSequence> args = do_bin_args(mulex);
-		return FsDiv.fs_div(args);
+		return FsDiv.fs_div(args, _ec);
 	}
 
 	/**
@@ -781,7 +781,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	@Override
 	public ResultSequence visit(IDivExpr mulex) {
 		Collection<ResultSequence> args = do_bin_args(mulex);
-		return FsIDiv.fs_idiv(args);
+		return FsIDiv.fs_idiv(args, _ec);
 	}
 
 	/**
@@ -794,7 +794,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	@Override
 	public ResultSequence visit(ModExpr mulex) {
 		Collection<ResultSequence> args = do_bin_args(mulex);
-		return FsMod.fs_mod(args);
+		return FsMod.fs_mod(args, _ec);
 	}
 
 	private Collection<ResultSequence> do_bin_args(BinExpr e) {
@@ -1937,7 +1937,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			AnyType at = (AnyType) rs.item(0);
 
 			if (at instanceof NumericType) {
-				return FsEq.fs_eq_fast(at, new XSInteger(BigInteger.valueOf(focus().position())), _dc);
+				return FsEq.fs_eq_fast(at, new XSInteger(BigInteger.valueOf(focus().position())), _ec);
 			}
 		}
 

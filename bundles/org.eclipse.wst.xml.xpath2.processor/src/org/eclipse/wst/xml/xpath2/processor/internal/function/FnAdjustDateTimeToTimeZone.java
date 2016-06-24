@@ -61,7 +61,7 @@ public class FnAdjustDateTimeToTimeZone extends Function {
 	 */
 	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
-		return adjustdateTime(args, ec.getDynamicContext());
+		return adjustdateTime(args, ec);
 	}
 
 	/**
@@ -75,9 +75,7 @@ public class FnAdjustDateTimeToTimeZone extends Function {
 	 *             Dynamic error.
 	 * @return Result of the fn:dateTime operation.
 	 */
-	public static ResultSequence adjustdateTime(Collection<ResultSequence> args,
-			org.eclipse.wst.xml.xpath2.api.DynamicContext dynamicContext) throws DynamicError {
-
+	public static ResultSequence adjustdateTime(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expectedArgs());
 
 		// get args
@@ -106,7 +104,7 @@ public class FnAdjustDateTimeToTimeZone extends Function {
 		}
 
 		timezone = (XSDayTimeDuration) arg2.item(0);
-		if (timezone.lt(minDuration, dynamicContext) || timezone.gt(maxDuration, dynamicContext)) {
+		if (timezone.lt(minDuration, evaluationContext) || timezone.gt(maxDuration, evaluationContext)) {
 			throw DynamicError.invalidTimezone();
 		}
 		

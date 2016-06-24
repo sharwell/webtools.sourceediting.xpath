@@ -20,7 +20,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import org.eclipse.wst.xml.xpath2.api.CollationProvider;
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
@@ -53,8 +53,8 @@ public class FnSubstringBefore extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
-		return substring_before(args, ec.getDynamicContext());
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
+		return substring_before(args, ec);
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class FnSubstringBefore extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:substring-before operation.
 	 */
-	public static ResultSequence substring_before(Collection<ResultSequence> args, DynamicContext dynamicContext)
+	public static ResultSequence substring_before(Collection<ResultSequence> args, EvaluationContext evaluationContext)
 			throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
@@ -89,7 +89,7 @@ public class FnSubstringBefore extends Function {
 			arg3 = argiter.next();
 		}
 
-		CollationProvider collationProvider = dynamicContext.getCollationProvider();
+		CollationProvider collationProvider = evaluationContext.getDynamicContext().getCollationProvider();
 		String collationName;
 		if (arg3 != null) {
 			if (arg3.empty() || !(arg3.first() instanceof XSString)) {

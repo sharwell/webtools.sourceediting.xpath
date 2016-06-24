@@ -14,7 +14,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 import java.math.BigInteger;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -43,25 +43,25 @@ public abstract class AbstractCollationEqualFunction extends Function {
 	}
 
 
-	protected static boolean hasValue(AnyType itema, AnyType itemb, DynamicContext context, String collationURI) throws DynamicError {
+	protected static boolean hasValue(AnyType itema, AnyType itemb, EvaluationContext evaluationContext, String collationURI) throws DynamicError {
 		XSString itemStr = new XSString(itema.getStringValue());
 		if (isBoolean(itema, itemb)) {
 			XSBoolean boolat = (XSBoolean) itema;
-			if (boolat.eq(itemb, context)) {
+			if (boolat.eq(itemb, evaluationContext)) {
 				return true;
 			}
 		}
 
 		if (isNumeric(itema, itemb)) {
 			NumericType numericat = (NumericType) itema;
-			if (numericat.eq(itemb, context)) {
+			if (numericat.eq(itemb, evaluationContext)) {
 				return true;
 			}
 		}
 
 		if (isDuration(itema, itemb)) {
 			XSDuration durat = (XSDuration) itema;
-			if (durat.eq(itemb, context)) {
+			if (durat.eq(itemb, evaluationContext)) {
 				return true;
 			}
 		}
@@ -69,7 +69,7 @@ public abstract class AbstractCollationEqualFunction extends Function {
 		if (needsStringComparison(itema, itemb)) {
 			XSString xstr1 = new XSString(itema.getStringValue());
 			if (FnCompare.compare_string(collationURI, xstr1, itemStr,
-					context).equals(BigInteger.ZERO)) {
+					evaluationContext).equals(BigInteger.ZERO)) {
 				return true;
 			}
 		}
@@ -77,7 +77,7 @@ public abstract class AbstractCollationEqualFunction extends Function {
 	}
 	
 	protected static boolean hasValue(ResultBuffer rs, AnyAtomicType item,
-			DynamicContext context, String collationURI) throws DynamicError {
+			EvaluationContext evaluationContext, String collationURI) throws DynamicError {
 		XSString itemStr = new XSString(item.getStringValue());
 
 		for (Iterator<Item> i = rs.iterator(); i.hasNext();) {
@@ -88,21 +88,21 @@ public abstract class AbstractCollationEqualFunction extends Function {
 
 			if (isBoolean(item, at)) {
 				XSBoolean boolat = (XSBoolean) at;
-				if (boolat.eq(item, context)) {
+				if (boolat.eq(item, evaluationContext)) {
 					return true;
 				}
 			}
 
 			if (isNumeric(item, at)) {
 				NumericType numericat = (NumericType) at;
-				if (numericat.eq(item, context)) {
+				if (numericat.eq(item, evaluationContext)) {
 					return true;
 				}
 			}
 
 			if (isDuration(item, at)) {
 				XSDuration durat = (XSDuration) at;
-				if (durat.eq(item, context)) {
+				if (durat.eq(item, evaluationContext)) {
 					return true;
 				}
 			}
@@ -110,7 +110,7 @@ public abstract class AbstractCollationEqualFunction extends Function {
 			if (needsStringComparison(item, at)) {
 				XSString xstr1 = new XSString(at.getStringValue());
 				if (FnCompare.compare_string(collationURI, xstr1, itemStr,
-						context).equals(BigInteger.ZERO)) {
+						evaluationContext).equals(BigInteger.ZERO)) {
 					return true;
 				}
 			}

@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 
 import javax.xml.datatype.Duration;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -263,7 +264,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 		
 		double res = value() + val.value();
@@ -282,7 +283,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
 		double res = value() - val.value();
@@ -301,7 +302,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg) throws DynamicError {
+	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence convertedRS = arg;
 		
 		if (arg.size() == 1) {
@@ -332,7 +333,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence div(ResultSequence arg) throws DynamicError {
+	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg.size() != 1)
 			throw DynamicError.throw_type_error();
 

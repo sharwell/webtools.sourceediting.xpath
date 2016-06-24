@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -224,7 +224,7 @@ public class XSFloat extends NumericType {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType aa, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType aa, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(aa);
 		if (!(carg instanceof XSFloat))
 			throw DynamicError.throw_type_error();
@@ -254,7 +254,7 @@ public class XSFloat extends NumericType {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
 		XSFloat val = get_single_type(carg, XSFloat.class);
 		return float_value() > val.float_value();
@@ -270,7 +270,7 @@ public class XSFloat extends NumericType {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
 		XSFloat val = get_single_type(carg, XSFloat.class);
 		return float_value() < val.float_value();
@@ -285,7 +285,7 @@ public class XSFloat extends NumericType {
 	 * @return A XSFloat consisting of the result of the mathematical addition.
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSFloat))
@@ -305,7 +305,7 @@ public class XSFloat extends NumericType {
 	 *         subtraction.
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = constructor(arg);
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSFloat))
@@ -325,7 +325,7 @@ public class XSFloat extends NumericType {
 	 *         multiplication.
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg) throws DynamicError {
+	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = constructor(arg);
 		XSFloat val = get_single_type(carg, XSFloat.class);
 		return new XSFloat(float_value() * val.float_value());
@@ -340,7 +340,7 @@ public class XSFloat extends NumericType {
 	 * @return A XSFloat consisting of the result of the mathematical division.
 	 */
 	@Override
-	public ResultSequence div(ResultSequence arg) throws DynamicError {
+	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSFloat val = get_single_type(carg, XSFloat.class);
 		return new XSFloat(float_value() / val.float_value());
@@ -356,7 +356,7 @@ public class XSFloat extends NumericType {
 	 *         division.
 	 */
 	@Override
-	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
+	public ResultSequence idiv(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSFloat val = get_single_type(carg, XSFloat.class);
 
@@ -384,7 +384,7 @@ public class XSFloat extends NumericType {
 	 * @return A XSFloat consisting of the result of the mathematical modulus.
 	 */
 	@Override
-	public ResultSequence mod(ResultSequence arg) throws DynamicError {
+	public ResultSequence mod(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSFloat val = get_single_type(carg, XSFloat.class);
 		return new XSFloat(float_value() % val.float_value());

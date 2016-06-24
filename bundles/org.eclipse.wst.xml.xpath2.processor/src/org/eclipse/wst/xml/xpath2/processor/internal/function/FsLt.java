@@ -16,7 +16,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.Collection;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -42,10 +41,10 @@ public class FsLt extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_lt_value(args, ec.getDynamicContext());
+		return fs_lt_value(args, evaluationContext);
 	}
 
 	/**
@@ -59,7 +58,7 @@ public class FsLt extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_lt_value(Collection<ResultSequence> args, DynamicContext dc) {
+	public static ResultSequence fs_lt_value(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
 		FsEq.CmpValueOp<CmpLt> op = new FsEq.CmpValueOp<CmpLt>() {
 			@Override
 			public Class<? extends CmpLt> getType() {
@@ -67,11 +66,11 @@ public class FsLt extends Function {
 			}
 
 			@Override
-			public boolean execute(CmpLt obj, AnyType arg, DynamicContext dynamicContext) throws DynamicError {
-				return obj.lt(arg, dynamicContext);
+			public boolean execute(CmpLt obj, AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+				return obj.lt(arg, evaluationContext);
 			}
 		};
-		return FsEq.do_cmp_value_op(args, op, dc);
+		return FsEq.do_cmp_value_op(args, op, evaluationContext);
 	}
 
 	/**
@@ -85,14 +84,14 @@ public class FsLt extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_lt_general(Collection<ResultSequence> args, DynamicContext dc)
+	public static ResultSequence fs_lt_general(Collection<ResultSequence> args, EvaluationContext evaluationContext)
 			throws DynamicError {
 		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
 			@Override
-			public ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
-				return fs_lt_value(args, dynamicContext);
+			public ResultSequence execute(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
+				return fs_lt_value(args, evaluationContext);
 			}
 		};
-		return FsEq.do_cmp_general_op(args, op, dc);
+		return FsEq.do_cmp_general_op(args, op, evaluationContext);
 	}
 }

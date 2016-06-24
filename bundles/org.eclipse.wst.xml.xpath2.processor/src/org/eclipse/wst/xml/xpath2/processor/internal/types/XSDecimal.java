@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -231,7 +231,7 @@ public class XSDecimal extends NumericType {
 	 *         otherwise
 	 */
 	@Override
-	public boolean eq(AnyType at, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType at, EvaluationContext evaluationContext) throws DynamicError {
 		XSDecimal dt = null;
 		if (!(at instanceof XSDecimal)) { 
 			ResultSequence crs = constructor(at);
@@ -258,7 +258,7 @@ public class XSDecimal extends NumericType {
 	 *         one stored. False otherwise
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
 		
 		XSDecimal val = get_single_type(carg, XSDecimal.class);
@@ -281,7 +281,7 @@ public class XSDecimal extends NumericType {
 	 *         one stored. False otherwise
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
 		XSDecimal val = get_single_type(carg, XSDecimal.class);
 		return (_value.compareTo(val.getValue()) == -1);
@@ -299,7 +299,7 @@ public class XSDecimal extends NumericType {
 	 *         addition.
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		// get arg
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
@@ -336,7 +336,7 @@ public class XSDecimal extends NumericType {
 	 *         subtraction.
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		
 		ResultSequence carg = convertResultSequence(arg);
 
@@ -358,7 +358,7 @@ public class XSDecimal extends NumericType {
 	 *         multiplication.
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg) {
+	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDecimal val = get_single_type(carg, XSDecimal.class);
@@ -376,7 +376,7 @@ public class XSDecimal extends NumericType {
 	 *         division.
 	 */
 	@Override
-	public ResultSequence div(ResultSequence arg) throws DynamicError {
+	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 			
 		XSDecimal val = get_single_type(carg, XSDecimal.class);
@@ -398,7 +398,7 @@ public class XSDecimal extends NumericType {
 	 *         division.
 	 */
 	@Override
-	public ResultSequence idiv(ResultSequence arg) throws DynamicError {
+	public ResultSequence idiv(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDecimal val = get_single_type(carg, XSDecimal.class);
@@ -421,7 +421,7 @@ public class XSDecimal extends NumericType {
 	 * @return A XSDecimal consisting of the result of the mathematical modulus.
 	 */
 	@Override
-	public ResultSequence mod(ResultSequence arg) throws DynamicError {
+	public ResultSequence mod(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDecimal val = get_single_type(carg, XSDecimal.class);

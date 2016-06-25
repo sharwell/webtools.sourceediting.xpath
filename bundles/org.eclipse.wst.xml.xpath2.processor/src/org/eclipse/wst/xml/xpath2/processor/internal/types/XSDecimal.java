@@ -133,10 +133,6 @@ public class XSDecimal extends NumericType {
 			throw DynamicError.invalidType();
 		}
 		
-		if (aat.getStringValue().indexOf("-INF") != -1) {
-			throw DynamicError.cant_cast(null);
-		}
-		
 		if (!isLexicalValue(aat.getStringValue())) {
 			throw DynamicError.invalidLexicalValue(null);
 		}
@@ -156,13 +152,6 @@ public class XSDecimal extends NumericType {
 	}
 
 	protected boolean isLexicalValue(String value) {
-		if (value.equalsIgnoreCase("inf")) {
-			return false;
-		}
-		
-		if (value.equalsIgnoreCase("-inf")) {
-			return false;
-		}
 		return true;
 	}
 	
@@ -191,6 +180,15 @@ public class XSDecimal extends NumericType {
 				return new XSDecimal(new BigDecimal("0"));
 			}
 		}
+
+		if (aat instanceof XSFloat && (((XSFloat)aat).nan() || ((XSFloat)aat).infinite())) {
+			throw DynamicError.invalidLexicalValue(null);
+		}
+
+		if (aat instanceof XSDouble && (((XSDouble)aat).nan() || ((XSDouble)aat).infinite())) {
+			throw DynamicError.invalidLexicalValue(null);
+		}
+
 		return new XSDecimal(aat.getStringValue());
 	}
 	

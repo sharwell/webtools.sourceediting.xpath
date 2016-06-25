@@ -16,7 +16,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.Collection;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -44,10 +43,10 @@ public class FsLe extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_le_value(args, ec.getDynamicContext());
+		return fs_le_value(args, evaluationContext);
 	}
 
 	/**
@@ -55,20 +54,20 @@ public class FsLe extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param 
-     *         DynamicContext 
+	 * @param evaluationContext
+     *         evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_le_value(Collection<ResultSequence> args, DynamicContext dc)
+	public static ResultSequence fs_le_value(Collection<ResultSequence> args, EvaluationContext evaluationContext)
 			throws DynamicError {
-		ResultSequence less = FsLt.fs_lt_value(args, dc);
+		ResultSequence less = FsLt.fs_lt_value(args, evaluationContext);
 
 		if (((XSBoolean) less.first()).value())
 			return less;
 
-		ResultSequence equal = FsEq.fs_eq_value(args, dc);
+		ResultSequence equal = FsEq.fs_eq_value(args, evaluationContext);
 
 		if (((XSBoolean) equal.first()).value())
 			return equal;
@@ -81,19 +80,19 @@ public class FsLe extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dc 
-	 *             The dynamic context
+	 * @param evaluationContext
+	 *             The evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_le_general(Collection<ResultSequence> args, DynamicContext dc) {
+	public static ResultSequence fs_le_general(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
 		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
 			@Override
-			public ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
-				return fs_le_value(args, dynamicContext);
+			public ResultSequence execute(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
+				return fs_le_value(args, evaluationContext);
 			}
 		};
-		return FsEq.do_cmp_general_op(args, op, dc);
+		return FsEq.do_cmp_general_op(args, op, evaluationContext);
 	}
 }

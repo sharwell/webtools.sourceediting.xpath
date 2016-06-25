@@ -55,7 +55,7 @@ public class FnContains extends Function {
 	 */
 	@Override
 	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) throws DynamicError {
-		return contains(args, ec.getDynamicContext());
+		return contains(args, ec);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class FnContains extends Function {
 	 *             Dynamic error.
 	 * @return Result of fn:contains operation.
 	 */
-	public static ResultSequence contains(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
+	public static ResultSequence contains(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
 		// get args
@@ -87,7 +87,7 @@ public class FnContains extends Function {
 			arg3 = argiter.next();
 		}
 
-		CollationProvider collationProvider = dynamicContext.getCollationProvider();
+		CollationProvider collationProvider = evaluationContext.getDynamicContext().getCollationProvider();
 		String collationName;
 		if (arg3 != null) {
 			if (arg3.empty() || !(arg3.first() instanceof XSString)) {

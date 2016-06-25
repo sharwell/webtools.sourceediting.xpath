@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -251,7 +251,7 @@ public class XSInteger extends XSDecimal {
 	 *         addition.
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		Item at = get_single_arg(carg);
 		if (!(at instanceof XSInteger))
@@ -289,7 +289,7 @@ public class XSInteger extends XSDecimal {
 	 *         subtraction.
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		XSInteger val = get_single_type(carg, XSInteger.class);
 		
@@ -306,7 +306,7 @@ public class XSInteger extends XSDecimal {
 	 *         multiplication.
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg) throws DynamicError {
+	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSInteger val = get_single_type(carg, XSInteger.class);
@@ -323,7 +323,7 @@ public class XSInteger extends XSDecimal {
 	 * @return A XSInteger consisting of the result of the mathematical modulus.
 	 */
 	@Override
-	public ResultSequence mod(ResultSequence arg) throws DynamicError {
+	public ResultSequence mod(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSInteger val = get_single_type(carg, XSInteger.class);
@@ -357,7 +357,7 @@ public class XSInteger extends XSDecimal {
 	 * @see org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal#gt(org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType)
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
         XSInteger val = get_single_type(carg, XSInteger.class);
         
@@ -378,7 +378,7 @@ public class XSInteger extends XSDecimal {
 	 * @see org.eclipse.wst.xml.xpath2.processor.internal.types.XSDecimal#lt(org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType)
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		Item carg = convertArg(arg);
         XSInteger val = get_single_type(carg, XSInteger.class);
         
@@ -388,7 +388,7 @@ public class XSInteger extends XSDecimal {
 	}
 	
 	@Override
-	public ResultSequence div(ResultSequence arg) throws DynamicError {
+	public ResultSequence div(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 		
 		XSDecimal val = get_single_type(carg, XSDecimal.class);

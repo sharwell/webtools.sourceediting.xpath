@@ -12,7 +12,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.AnyType;
 
@@ -25,10 +25,10 @@ public interface CmpGt {
 	 * 
 	 * @param arg
 	 *            argument of any type.
-	 * @param context TODO
+	 * @param evaluationContext current evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of operation, true/false.
 	 */
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError;
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError;
 }

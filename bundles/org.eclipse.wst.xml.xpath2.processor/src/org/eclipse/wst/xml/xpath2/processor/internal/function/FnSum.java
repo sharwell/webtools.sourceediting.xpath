@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -60,7 +61,7 @@ public class FnSum extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		Iterator<ResultSequence> argIterator = args.iterator();
 		ResultSequence argSequence = argIterator.next();
 		AnyAtomicType zero = ZERO;
@@ -72,21 +73,19 @@ public class FnSum extends Function {
 				throw new DynamicError(TypeError.invalid_type(zeroSequence.first().getStringValue()));
 			zero = (AnyAtomicType)zeroSequence.first();
 		}
-		return sum(argSequence, zero);
+		return sum(argSequence, zero, evaluationContext);
 	}
 
 	/**
 	 * Sum operation.
 	 * 
-	 * @param args
+	 * @param arg
 	 *            Result from the expressions evaluation.
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of fn:sum operation.
 	 */
-	public static ResultSequence sum(ResultSequence arg, AnyAtomicType zero) throws DynamicError {
-
-
+	public static ResultSequence sum(ResultSequence arg, AnyAtomicType zero, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg.empty())
 			return zero;
 
@@ -108,7 +107,7 @@ public class FnSum extends Function {
 			if (total == null) {
 				total = (MathPlus)conv; 
 			} else {
-				total = (MathPlus)total.plus(conv).first();
+				total = (MathPlus)total.plus(conv, evaluationContext).first();
 			}
 		}
 		

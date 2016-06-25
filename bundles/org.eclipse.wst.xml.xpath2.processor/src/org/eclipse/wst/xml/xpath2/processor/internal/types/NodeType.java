@@ -71,8 +71,6 @@ public abstract class NodeType extends AnyType {
 	 * 
 	 * @param node
 	 *            The Node being represented
-	 * @param document_order
-	 *            The document order
 	 */
 	public NodeType(Node node, TypeModel tm) {
 		_node = node;

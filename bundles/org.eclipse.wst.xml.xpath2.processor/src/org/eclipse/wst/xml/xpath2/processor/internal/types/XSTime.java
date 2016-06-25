@@ -24,7 +24,7 @@ import java.util.TimeZone;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -322,7 +322,7 @@ Cloneable {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean eq(AnyType arg, DynamicContext dynamicContext) throws DynamicError {
+	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSTime val = NumericType.get_single_type(arg, XSTime.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
@@ -339,7 +339,7 @@ Cloneable {
 	 *         represented by the time stored. False otherwise
 	 */
 	@Override
-	public boolean lt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSTime val = NumericType.get_single_type(arg, XSTime.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
@@ -356,7 +356,7 @@ Cloneable {
 	 * @throws DynamicError
 	 */
 	@Override
-	public boolean gt(AnyType arg, DynamicContext context) throws DynamicError {
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSTime val = NumericType.get_single_type(arg, XSTime.class);
 		Calendar thiscal = normalizeCalendar(calendar(), tz());
 		Calendar thatcal = normalizeCalendar(val.calendar(), val.tz());
@@ -377,7 +377,7 @@ Cloneable {
 	 * @return A ResultSequence representing the result of the subtraction
 	 */
 	@Override
-	public ResultSequence minus(ResultSequence arg) throws DynamicError {
+	public ResultSequence minus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg.size() != 1)
 			throw DynamicError.throw_type_error();
 
@@ -436,7 +436,7 @@ Cloneable {
 	 * @throws DynamicError
 	 */
 	@Override
-	public ResultSequence plus(ResultSequence arg) throws DynamicError {
+	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
 		try {

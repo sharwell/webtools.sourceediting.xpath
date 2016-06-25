@@ -79,7 +79,7 @@ public class FnDocAvailable extends Function {
 	 * this guarantee is lost.</p>
 	 *
 	 * @param args Result from the expressions evaluation.
-	 * @param dc Result of dynamic context operation.
+	 * @param evaluationContext Current evaluation context.
 	 * @throws DynamicError Dynamic error.
 	 * @return Result of fn:doc-available operation.
 	 */

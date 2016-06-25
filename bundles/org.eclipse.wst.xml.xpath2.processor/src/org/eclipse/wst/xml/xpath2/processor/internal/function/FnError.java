@@ -91,8 +91,6 @@ public class FnError extends Function {
 	/**
 	 * Error operation.
 	 * 
-	 * @param args
-	 *            Result from the expressions evaluation.
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of fn:error operation.

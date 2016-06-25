@@ -16,7 +16,6 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.Collection;
 
-import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -44,10 +43,10 @@ public class FsGe extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext ec) {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_ge_value(args, ec.getDynamicContext());
+		return fs_ge_value(args, evaluationContext);
 	}
 
 	/**
@@ -55,19 +54,19 @@ public class FsGe extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dc 
+	 * @param evaluationContext current evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_ge_value(Collection<ResultSequence> args, DynamicContext dc)
+	public static ResultSequence fs_ge_value(Collection<ResultSequence> args, EvaluationContext evaluationContext)
 			throws DynamicError {
-		ResultSequence greater = FsGt.fs_gt_value(args, dc);
+		ResultSequence greater = FsGt.fs_gt_value(args, evaluationContext);
 
 		if (((XSBoolean) greater.first()).value())
 			return greater;
 
-		ResultSequence equal = FsEq.fs_eq_value(args, dc);
+		ResultSequence equal = FsEq.fs_eq_value(args, evaluationContext);
 
 		if (((XSBoolean) equal.first()).value())
 			return equal;
@@ -80,20 +79,20 @@ public class FsGe extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dc 
-	 *             The dynamic context
+	 * @param evaluationContext
+	 *             The evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_ge_general(Collection<ResultSequence> args, DynamicContext dc)
+	public static ResultSequence fs_ge_general(Collection<ResultSequence> args, EvaluationContext evaluationContext)
 			throws DynamicError {
 		FsEq.CmpGeneralOp op = new FsEq.CmpGeneralOp() {
 			@Override
-			public ResultSequence execute(Collection<ResultSequence> args, DynamicContext dynamicContext) throws DynamicError {
-				return fs_ge_value(args, dynamicContext);
+			public ResultSequence execute(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
+				return fs_ge_value(args, evaluationContext);
 			}
 		};
-		return FsEq.do_cmp_general_op(args, op, dc);
+		return FsEq.do_cmp_general_op(args, op, evaluationContext);
 	}
 }

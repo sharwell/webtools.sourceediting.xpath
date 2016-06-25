@@ -16,6 +16,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.Collection;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -43,10 +44,10 @@ public class FsMinus extends Function {
 	 * @return Result of evaluation.
 	 */
 	@Override
-	public ResultSequence evaluate(Collection<ResultSequence> args, org.eclipse.wst.xml.xpath2.api.EvaluationContext ec) throws DynamicError {
+	public ResultSequence evaluate(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		assert args.size() >= min_arity() && args.size() <= max_arity();
 
-		return fs_minus(args);
+		return fs_minus(args, evaluationContext);
 	}
 
 	/**
@@ -58,7 +59,7 @@ public class FsMinus extends Function {
 	 *             Dynamic error.
 	 * @return Result of the operation.
 	 */
-	public static ResultSequence fs_minus(Collection<ResultSequence> args) throws DynamicError {
+	public static ResultSequence fs_minus(Collection<ResultSequence> args, EvaluationContext evaluationContext) throws DynamicError {
 		FsPlus.MathOp<MathMinus> op = new FsPlus.MathOp<MathMinus>() {
 			@Override
 			public Class<? extends MathMinus> getType() {
@@ -66,11 +67,11 @@ public class FsMinus extends Function {
 			}
 
 			@Override
-			public ResultSequence execute(MathMinus obj, ResultSequence arg) throws DynamicError {
-				return obj.minus(arg);
+			public ResultSequence execute(MathMinus obj, ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+				return obj.minus(arg, evaluationContext);
 			}
 		};
-		return FsPlus.do_math_op(args, op);
+		return FsPlus.do_math_op(args, op, evaluationContext);
 	}
 
 	/**

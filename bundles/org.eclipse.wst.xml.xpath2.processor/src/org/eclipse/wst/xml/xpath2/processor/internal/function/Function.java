@@ -90,8 +90,8 @@ public abstract class Function implements org.eclipse.wst.xml.xpath2.api.Functio
 	 * 
 	 * @param name
 	 *            QName.
-	 * @param arity
-	 *            the arity of a specific function.
+	 * @param min_arity the minimum arity of a specific function
+	 * @param max_arity the maximum arity of a specific function
 	 */
 	public Function(QName name, int min_arity, int max_arity) {
 		_name = name;

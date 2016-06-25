@@ -24,6 +24,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -123,18 +124,11 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration ||
-			aat instanceof XSTime || isGDataType(aat) ||
-			aat instanceof XSBoolean || aat instanceof XSBase64Binary ||
-			aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
+		AnyType aat = FnData.atomize(arg.first());
+		if (!isCastable(aat)) {
 			throw DynamicError.invalidType();
 		}
 
-		if (!isCastable(aat)) {
-			throw DynamicError.cant_cast(null);
-		}
-		
 		XSGYearMonth val = castGYearMonth(aat); 
 
 		if (val == null)
@@ -142,45 +136,17 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 
 		return val;
 	}
-	
-	protected boolean isGDataType(AnyAtomicType aat) {
-		String type = aat.string_type();
-		if (type.equals("xs:gMonthDay") ||
-			type.equals("xs:gDay") ||
-			type.equals("xs:gMonth") ||
-			type.equals("xs:gYear")) {
-			return true;
-		}
-		return false;
+
+	private boolean isCastable(AnyType aat) {
+		// From 17.1.5 (Casting to date and time types)
+		return aat instanceof XSString
+				|| aat instanceof XSUntypedAtomic
+				|| aat instanceof XSDateTime
+				|| aat instanceof XSDate
+				|| aat instanceof XSGYearMonth;
 	}
-	
-	private boolean isCastable(AnyAtomicType aat) {
-		
-		if (aat instanceof XSString || aat instanceof XSUntypedAtomic) {
-			return true;
-		}
-		
-		if (aat instanceof XSGYearMonth) {
-			return true;
-		}
-		
-		if (aat instanceof XSDate) {
-			return true;
-		}
-		
-		if (aat instanceof XSTime) {
-			return false;
-		}
-		
-		if (aat instanceof XSDateTime) {
-			return true;
-		}
-		
-		return false;
-		
-	}
-	
-	private XSGYearMonth castGYearMonth(AnyAtomicType aat) {
+
+	private XSGYearMonth castGYearMonth(AnyType aat) {
 		if (aat instanceof XSGYearMonth) {
 			XSGYearMonth gym = (XSGYearMonth) aat;
 			return new XSGYearMonth(gym.calendar(), gym.tz());

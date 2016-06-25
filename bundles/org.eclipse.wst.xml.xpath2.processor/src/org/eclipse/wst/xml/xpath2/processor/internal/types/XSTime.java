@@ -33,6 +33,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathMinus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathPlus;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
@@ -135,11 +136,11 @@ Cloneable {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
+		AnyType aat = FnData.atomize(arg.first());
 		if (!isCastable(aat)) {
 			throw DynamicError.invalidType();
 		}
-		
+
 		CalendarType t = castTime(aat);
 
 		if (t == null)
@@ -148,22 +149,15 @@ Cloneable {
 		return t;
 	} 
 
-	private boolean isCastable(AnyAtomicType aat) {
-		if (aat instanceof XSString || aat instanceof XSUntypedAtomic) {
-			return true;
-		}
-		
-		if (aat instanceof XSDateTime) {
-			return true;
-		}
-		
-		if (aat instanceof XSTime) {
-			return true;
-		}
-		return false;
+	private boolean isCastable(AnyType aat) {
+		// From 17.1.5 (Casting to date and time types)
+		return aat instanceof XSString
+				|| aat instanceof XSUntypedAtomic
+				|| aat instanceof XSDateTime
+				|| aat instanceof XSTime;
 	}
-	
-	private CalendarType castTime(AnyAtomicType aat) {
+
+	private CalendarType castTime(AnyType aat) {
 		if (aat instanceof XSTime) {
 			XSTime time = (XSTime) aat;
 			return new XSTime(time.calendar(), time.tz());

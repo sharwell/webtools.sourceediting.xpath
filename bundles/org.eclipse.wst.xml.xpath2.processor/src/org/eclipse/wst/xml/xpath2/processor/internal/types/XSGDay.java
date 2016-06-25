@@ -25,6 +25,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -150,16 +151,9 @@ public class XSGDay extends CalendarType implements CmpEq {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration ||
-			aat instanceof XSTime || isGDataType(aat) ||
-			aat instanceof XSBoolean || aat instanceof XSBase64Binary ||
-			aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
-			throw DynamicError.invalidType();
-		}
-
+		AnyType aat = FnData.atomize(arg.first());
 		if (!isCastable(aat)) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.invalidType();
 		}
 		
 		XSGDay val = castGDay(aat);
@@ -169,37 +163,17 @@ public class XSGDay extends CalendarType implements CmpEq {
 
 		return val;
 	}
-	
-	private boolean isCastable(AnyAtomicType aat) {
-		if (aat instanceof XSString || aat instanceof XSUntypedAtomic) {
-			return true;
-		}
-		
-		if (aat instanceof XSTime) {
-			return false;
-		}
-		
-		if (aat instanceof XSDate || aat instanceof XSDateTime ||
-			aat instanceof XSGDay) {
-			return true;
-		}
-		
-		return false;
+
+	private boolean isCastable(AnyType aat) {
+		// From 17.1.5 (Casting to date and time types)
+		return aat instanceof XSString
+				|| aat instanceof XSUntypedAtomic
+				|| aat instanceof XSDateTime
+				|| aat instanceof XSDate
+				|| aat instanceof XSGDay;
 	}
-	
-	protected boolean isGDataType(AnyAtomicType aat) {
-		String type = aat.string_type();
-		if (type.equals("xs:gMonthDay") ||
-			type.equals("xs:gMonth") ||
-			type.equals("xs:gYear") ||
-			type.equals("xs:gYearMonth")) {
-			return true;
-		}
-		return false;
-	}
-	
-	
-	private XSGDay castGDay(AnyAtomicType aat) {
+
+	private XSGDay castGDay(AnyType aat) {
 		if (aat instanceof XSGDay) {
 			XSGDay gday = (XSGDay) aat;
 			return new XSGDay(gday.calendar(), gday.tz());

@@ -28,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -167,21 +168,10 @@ public class XSFloat extends NumericType {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyType aat = (AnyType) arg.first();
-		
-		if (aat instanceof XSDuration || aat instanceof CalendarType ||
-			aat instanceof XSBase64Binary || aat instanceof XSHexBinary ||
-			aat instanceof XSAnyURI) {
+		AnyType aat = FnData.atomize(arg.first());
+		if (!isCastable(aat)) {
 			throw DynamicError.invalidType();
 		}
-		
-		if (!(aat.string_type().equals("xs:string") || aat instanceof NodeType ||
-			aat.string_type().equals("xs:untypedAtomic") ||
-			aat.string_type().equals("xs:boolean") ||
-			aat instanceof NumericType)) {
-			throw DynamicError.cant_cast(null);
-		}
-		
 
 		try {
 			float f;
@@ -203,6 +193,16 @@ public class XSFloat extends NumericType {
 			throw DynamicError.cant_cast(null, e);
 		}
 
+	}
+
+	private boolean isCastable(AnyType aat) {
+		// From 17.1.3.1 (Casting to xs:float)
+		return aat instanceof XSString
+				|| aat instanceof XSUntypedAtomic
+				|| aat instanceof XSFloat
+				|| aat instanceof XSDouble
+				|| aat instanceof XSDecimal
+				|| aat instanceof XSBoolean;
 	}
 
 	/**

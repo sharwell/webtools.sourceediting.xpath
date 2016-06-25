@@ -23,6 +23,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -118,14 +119,17 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 		if (arg.empty())
 		  return ResultBuffer.EMPTY;
 		
-		Item anyType = arg.first();
-		
-		if (anyType instanceof XSDuration || anyType instanceof CalendarType ||
-			anyType instanceof XSBase64Binary || anyType instanceof XSHexBinary ||
-			anyType instanceof XSAnyURI) {
+		AnyType anyType = FnData.atomize(arg.first());
+		// From 17.1.6 (Casting to xs:boolean)
+		if (!(anyType instanceof XSString
+				|| anyType instanceof XSUntypedAtomic
+				|| anyType instanceof XSBoolean
+				|| anyType instanceof XSFloat
+				|| anyType instanceof XSDouble
+				|| anyType instanceof XSDecimal)) {
 			throw DynamicError.invalidType();
 		}
-		
+
 		String str_value = anyType.getStringValue();
 		
 		

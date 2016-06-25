@@ -28,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -115,16 +116,9 @@ public class XSDouble extends NumericType {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		Item aat = arg.first();
-
-		if (aat instanceof XSDuration || aat instanceof CalendarType ||
-			aat instanceof XSBase64Binary || aat instanceof XSHexBinary ||
-			aat instanceof XSAnyURI) {
-			throw DynamicError.invalidType();
-		}
-		
+		AnyType aat = FnData.atomize(arg.first());
 		if (!isCastable(aat)) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.invalidType();
 		}
 
 		XSDouble d = castDouble(aat);
@@ -134,18 +128,17 @@ public class XSDouble extends NumericType {
 
 		return d;
 	}
-	
-	private boolean isCastable(Item aat) {
-		if (aat instanceof XSString || aat instanceof XSUntypedAtomic ||
-			aat instanceof NodeType) {
-			return true;
-		}
-		if (aat instanceof XSBoolean || aat instanceof NumericType) {
-			return true;
-		}
-		return false;
+
+	private boolean isCastable(AnyType aat) {
+		// From 17.1.3.2 (Casting to xs:double)
+		return aat instanceof XSString
+				|| aat instanceof XSUntypedAtomic
+				|| aat instanceof XSFloat
+				|| aat instanceof XSDouble
+				|| aat instanceof XSDecimal
+				|| aat instanceof XSBoolean;
 	}
-	
+
 	private XSDouble castDouble(Item aat) {
 		if (aat instanceof XSBoolean) {
 			if (aat.getStringValue().equals("true")) {

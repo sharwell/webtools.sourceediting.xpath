@@ -33,7 +33,7 @@ public class FnNilled extends Function {
 	 * Constructor for FnNilled.
 	 */
 	public FnNilled() {
-		super(new QName("nilled"), 0, 1);
+		super(new QName("nilled"), 1);
 	}
 
 	/**
@@ -51,25 +51,28 @@ public class FnNilled extends Function {
 	}
 
 	/**
-	 * Nilled operation.
-	 * 
-	 * @param args
-	 *            Result from the expressions evaluation.
-	 * @throws DynamicError
-	 *             Dynamic error.
+	 * Returns an {@code xs:boolean} indicating whether the argument node is
+	 * "nilled". If the argument is not an element node, returns the empty
+	 * sequence. If the argument is the empty sequence, returns the empty
+	 * sequence.
+	 *
+	 * <pre>
+	 * fn:nilled($arg as node()?) as xs:boolean?
+	 * </pre>
+	 *
+	 * @param args Result from the expressions evaluation.
+	 * @throws DynamicError Dynamic error.
 	 * @return Result of fn:nilled operation.
 	 */
 	public static ResultSequence nilled(Collection<ResultSequence> args) throws DynamicError {
-		
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
 
-		
 		ResultSequence arg1 = cargs.iterator().next();
 		if (arg1.empty()) {
 			return arg1;
 		}
+
 		NodeType nt = (NodeType) arg1.first();
-		
 		return nt.nilled();
 	}
 

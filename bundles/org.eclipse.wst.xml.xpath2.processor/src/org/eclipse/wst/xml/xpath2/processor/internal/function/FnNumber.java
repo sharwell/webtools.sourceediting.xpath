@@ -73,8 +73,8 @@ public class FnNumber extends Function {
 	 * 
 	 * @param arg
 	 *            Result from the expressions evaluation.
-	 * @param dc
-	 *            Result of dynamic context operation.
+	 * @param ec
+	 *            Current evaluation context.
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of fn:number operation.

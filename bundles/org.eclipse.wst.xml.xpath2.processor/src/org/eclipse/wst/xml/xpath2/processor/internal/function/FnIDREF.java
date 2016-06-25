@@ -69,7 +69,7 @@ public class FnIDREF extends Function {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param dc 
+	 * @param ec current evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of fn:insert-before operation.

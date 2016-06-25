@@ -54,8 +54,8 @@ public class FsLe extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param 
-     *         DynamicContext 
+	 * @param evaluationContext
+     *         evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
@@ -80,8 +80,8 @@ public class FsLe extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dc 
-	 *             The dynamic context
+	 * @param evaluationContext
+	 *             The evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.

@@ -25,7 +25,7 @@ public interface CmpGt {
 	 * 
 	 * @param arg
 	 *            argument of any type.
-	 * @param context TODO
+	 * @param evaluationContext current evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of operation, true/false.

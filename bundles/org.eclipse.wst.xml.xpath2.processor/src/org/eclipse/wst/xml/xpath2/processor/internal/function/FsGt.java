@@ -54,8 +54,8 @@ public class FsGt extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dynamic
-	 *             Dynamic contexet
+	 * @param evaluationContext
+	 *             Evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
@@ -81,8 +81,8 @@ public class FsGt extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dc 
-	 *             The dynamic context
+	 * @param evaluationContext
+	 *             The evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.

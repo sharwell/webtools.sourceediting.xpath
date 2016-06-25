@@ -61,8 +61,8 @@ public class FnName extends Function {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param context
-	 *            Dynamic context.
+	 * @param ec
+	 *            Evaluation context.
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of fn:name operation.

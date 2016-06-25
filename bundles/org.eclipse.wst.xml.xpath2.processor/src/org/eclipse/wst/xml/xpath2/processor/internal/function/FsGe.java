@@ -54,7 +54,7 @@ public class FsGe extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dc 
+	 * @param evaluationContext current evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
@@ -79,8 +79,8 @@ public class FsGe extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dc 
-	 *             The dynamic context
+	 * @param evaluationContext
+	 *             The evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.

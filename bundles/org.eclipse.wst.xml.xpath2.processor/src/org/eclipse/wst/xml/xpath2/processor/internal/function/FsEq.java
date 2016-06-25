@@ -235,8 +235,8 @@ public class FsEq extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param dc
-	 *         Dynamic context 
+	 * @param evaluationContext
+	 *         Evaluation context
 	 * @return Result of general equality operation.
 	 */
 	public static ResultSequence fs_eq_general(Collection<ResultSequence> args, EvaluationContext evaluationContext) {
@@ -259,10 +259,6 @@ public class FsEq extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param type
-	 *            type of the arguments.
-	 * @param mname
-	 *            Method name for template simulation.
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of the operation.
@@ -312,10 +308,6 @@ public class FsEq extends Function {
 	 * 
 	 * @param args
 	 *            input arguments.
-	 * @param type
-	 *            type of the arguments.
-	 * @param mname
-	 *            Method name for template simulation.
 	 * @param evaluationContext
 	 *             Evaluation context.
 	 * @throws DynamicError

@@ -53,8 +53,8 @@ public class FnLast extends Function {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param dc
-	 *            Result of dynamic context operation.
+	 * @param ec
+	 *            Current evaluation context.
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of fn:last operation.

@@ -67,8 +67,8 @@ public class FnDeepEqual extends AbstractCollationEqualFunction {
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
-	 * @param context
-	 *            Dynamic context
+	 * @param evaluationContext
+	 *            Evaluation context
 	 * @throws DynamicError
 	 *             Dynamic error.
 	 * @return Result of fn:deep-equal operation.

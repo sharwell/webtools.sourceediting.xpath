@@ -90,7 +90,7 @@ public class OpUnion extends Function {
 		if (_expected_args == null) {
 			_expected_args = new ArrayList<SeqType>();
 
-			SeqType st = new SeqType(SeqType.OCC_STAR);
+			SeqType st = new SeqType(NodeType.class, SeqType.OCC_STAR);
 
 			_expected_args.add(st);
 			_expected_args.add(st);

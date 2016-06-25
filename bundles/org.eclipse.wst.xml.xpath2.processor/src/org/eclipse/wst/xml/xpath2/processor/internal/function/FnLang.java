@@ -161,7 +161,7 @@ public class FnLang extends Function {
 			_expected_args = new ArrayList<SeqType>();
 
 			_expected_args.add(new SeqType(new XSString(), SeqType.OCC_QMARK));
-			_expected_args.add(new SeqType(SeqType.OCC_NONE));
+			_expected_args.add(new SeqType(NodeType.class, SeqType.OCC_NONE));
 		}
 
 		return _expected_args;

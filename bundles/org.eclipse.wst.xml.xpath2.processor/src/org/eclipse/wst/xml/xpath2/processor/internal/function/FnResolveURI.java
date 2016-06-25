@@ -23,6 +23,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.SeqType;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 
@@ -128,8 +129,8 @@ public class FnResolveURI extends Function {
 	public synchronized static Collection<SeqType> expected_args() {
 		if (_expected_args == null) {
 			_expected_args = new ArrayList<SeqType>();
-			_expected_args.add(new SeqType(SeqType.OCC_QMARK));
-			_expected_args.add(new SeqType(SeqType.OCC_NONE));
+			_expected_args.add(new SeqType(NodeType.class, SeqType.OCC_QMARK));
+			_expected_args.add(new SeqType(NodeType.class, SeqType.OCC_NONE));
 		}
 
 		return _expected_args;

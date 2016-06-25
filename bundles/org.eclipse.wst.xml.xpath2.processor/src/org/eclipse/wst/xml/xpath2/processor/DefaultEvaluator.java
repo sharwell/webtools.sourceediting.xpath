@@ -156,16 +156,16 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	private static final QName ANY_ATOMIC_TYPE = new QName("xs",
 			"anyAtomicType", XML_SCHEMA_NS);
 
-	private org.eclipse.wst.xml.xpath2.api.DynamicContext _dc;
+	private final org.eclipse.wst.xml.xpath2.api.DynamicContext _dc;
 
 	// this is a parameter that may be set on a call...
 	// the parameter may become invalid on the next call... i.e. the
 	// previous parameter is not saved... so use with care! [remember...
 	// this thing is highly recursive]
 	private Pair<String, ResultSequence> _param;
-	private EvaluationContext _ec;
+	private final EvaluationContext _ec;
 
-	private StaticContext _sc;
+	private final StaticContext _sc;
 
 	private Focus _focus = new Focus(ResultBuffer.EMPTY);
 

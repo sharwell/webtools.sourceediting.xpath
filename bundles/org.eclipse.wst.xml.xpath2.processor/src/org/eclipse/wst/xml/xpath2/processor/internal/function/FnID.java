@@ -200,7 +200,7 @@ public class FnID extends Function {
 			_expected_args = new ArrayList<SeqType>();
 			SeqType arg = new SeqType(new XSString(), SeqType.OCC_STAR);
 			_expected_args.add(arg);
-			_expected_args.add(new SeqType(SeqType.OCC_NONE));
+			_expected_args.add(new SeqType(NodeType.class, SeqType.OCC_NONE));
 		}
 
 		return _expected_args;

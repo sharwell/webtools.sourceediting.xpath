@@ -76,17 +76,6 @@ public class SeqType {
 	}
 
 	/**
-	 * @param occ
-	 *            is an integer in the sequence.
-	 */
-	// XXX hack to represent AnyNode...
-	public SeqType(int occ) {
-		this((AnyType) null, occ);
-
-		typeClass = NodeType.class;
-	}
-
-	/**
 	 * @param type_class
 	 *            is a class which represents the expected type
 	 * @param occ

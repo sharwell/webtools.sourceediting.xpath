@@ -43,20 +43,6 @@ public abstract class CalendarType extends CtrType {
 		
 	}
 
-	protected boolean isGDataType(AnyType aat) {
-		if (! (aat instanceof AnyAtomicType)) return false;
-	
-		String type = aat.string_type();
-		if (type.equals("xs:gMonthDay") ||
-			type.equals("xs:gDay") ||
-			type.equals("xs:gMonth") ||
-			type.equals("xs:gYear") ||
-			type.equals("xs:gYearMonth")) {
-			return true;
-		}
-		return false;
-	}
-	
 	@Override
 	public Object getNativeValue() {
 		return _datatypeFactory.newXMLGregorianCalendar((GregorianCalendar)calendar());

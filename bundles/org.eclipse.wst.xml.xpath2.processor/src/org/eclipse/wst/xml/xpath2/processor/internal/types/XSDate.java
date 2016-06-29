@@ -34,6 +34,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathMinus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathPlus;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
@@ -159,8 +160,7 @@ Cloneable {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		Item aat = arg.first();
-
+		AnyType aat = FnData.atomize(arg.first());
 		if (!isCastable(aat)) {
 			throw DynamicError.invalidType();
 		}
@@ -174,27 +174,11 @@ Cloneable {
 	}
 
 	private boolean isCastable(Item aat) {
-
-		// We might be able to cast these.
-		if (aat instanceof XSString || aat instanceof XSUntypedAtomic
-				|| aat instanceof NodeType) {
-			return true;
-		}
-
-		if (aat instanceof XSTime) {
-			return false;
-		}
-
-		if (aat instanceof XSDateTime) {
-			return true;
-
-		}
-
-		if (aat instanceof XSDate) {
-			return true;
-		}
-
-		return false;
+		// From 17.1.5 (Casting to date and time types)
+		return aat instanceof XSString
+				|| aat instanceof XSUntypedAtomic
+				|| aat instanceof XSDateTime
+				|| aat instanceof XSDate;
 	}
 
 	private XSDate castDate(Item aat) {

@@ -20,6 +20,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -102,15 +103,9 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof XSDuration ||
-			aat instanceof CalendarType || aat instanceof XSBoolean ||
-			aat instanceof XSAnyURI) {
-			throw DynamicError.invalidType();
-		}
-
+		AnyType aat = FnData.atomize(arg.first());
 		if (!isCastable(aat)) {
-			throw DynamicError.cant_cast(null);
+			throw DynamicError.invalidType();
 		}
 		
 		String str_value = aat.getStringValue();
@@ -132,16 +127,12 @@ public class XSBase64Binary extends CtrType implements CmpEq {
 		}
 	}
 
-	private boolean isCastable(AnyAtomicType aat) {
-		if (aat instanceof XSString || aat instanceof XSUntypedAtomic) {
-			return true;
-		}
-		
-		if (aat instanceof XSBase64Binary || aat instanceof XSHexBinary) {
-			return true;
-		}
-		
-		return false;
+	private boolean isCastable(AnyType aat) {
+		// From 17.1.7 (Casting to xs:base64Binary and xs:hexBinary)
+		return aat instanceof XSString
+				|| aat instanceof XSUntypedAtomic
+				|| aat instanceof XSBase64Binary
+				|| aat instanceof XSHexBinary;
 	}
 
 	/**

@@ -28,6 +28,7 @@ import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
 /**
@@ -128,19 +129,21 @@ public class XSInteger extends XSDecimal {
 
 		// the function conversion rules apply here too. Get the argument
 		// and convert it's string value to an integer.
-		Item aat = arg.first();
-
-		if (aat instanceof XSDuration || aat instanceof CalendarType ||
-			aat instanceof XSBase64Binary || aat instanceof XSHexBinary ||
-			aat instanceof XSAnyURI) {
+		AnyType aat = FnData.atomize(arg.first());
+		// From 17.1.3.4 (Casting to xs:integer)
+		if (!(aat instanceof XSString
+				|| aat instanceof XSUntypedAtomic
+				|| aat instanceof XSFloat
+				|| aat instanceof XSDouble
+				|| aat instanceof XSDecimal
+				|| aat instanceof XSBoolean)) {
 			throw DynamicError.invalidType();
 		}
-		
+
 		if (!isCastable(aat)) {
 			throw DynamicError.cant_cast(null);
 		}
 
-		
 		try {
 			BigInteger bigInt = castInteger(aat);
 			if (getMinValue() != null && bigInt.compareTo(getMinValue()) < 0) {

@@ -29,6 +29,7 @@ import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
+import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathDiv;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathMinus;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.MathPlus;
@@ -108,10 +109,11 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 		if (arg.empty())
 			return ResultBuffer.EMPTY;
 	
-		AnyAtomicType aat = (AnyAtomicType) arg.first();
-		if (aat instanceof NumericType || aat instanceof CalendarType ||
-			aat instanceof XSBoolean || aat instanceof XSBase64Binary ||
-			aat instanceof XSHexBinary || aat instanceof XSAnyURI) {
+		AnyType aat = FnData.atomize(arg.first());
+		// From 17.1.4 (Casting to duration types)
+		if (!(aat instanceof XSString
+				|| aat instanceof XSUntypedAtomic
+				|| aat instanceof XSDuration)) {
 			throw DynamicError.invalidType();
 		}
 
@@ -127,7 +129,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 		return dtd;
 	}
 	
-	private XSDuration castDayTimeDuration(AnyAtomicType aat) {
+	private XSDuration castDayTimeDuration(AnyType aat) {
 		if (aat instanceof XSDuration) {
 			XSDuration duration = (XSDuration) aat;
 			return new XSDayTimeDuration(duration.days(), duration.hours(), duration.minutes(), duration.seconds(), duration.negative());

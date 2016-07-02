@@ -35,6 +35,7 @@ import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DOMLoader;
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.XercesLoader;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnCollection;
 import org.w3c.dom.Document;
@@ -144,6 +145,10 @@ public class DynamicContextBuilder implements DynamicContext {
 			URI realURI = URI.create(uri);
 			if (realURI.isAbsolute()) {
 				return realURI;
+			}
+
+			if (_staticContext.getBaseUri() == null) {
+				throw DynamicError.noBaseURI();
 			}
 
 			if (_staticContext.getBaseUri().isOpaque()) {

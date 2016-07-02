@@ -19,6 +19,7 @@ import java.util.Comparator;
 
 import javax.xml.XMLConstants;
 
+import org.apache.xerces.util.XMLChar;
 import org.eclipse.wst.xml.xpath2.api.CollationProvider;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -115,6 +116,11 @@ public class QName extends CtrType implements CmpEq {
 		}
 		
 		String[] tokens = str.split(":");
+		for (String token : tokens) {
+			if (!XMLChar.isValidNCName(token)) {
+				return null;
+			}
+		}
 
 		if (tokens.length == 1)
 			return new QName(tokens[0]);

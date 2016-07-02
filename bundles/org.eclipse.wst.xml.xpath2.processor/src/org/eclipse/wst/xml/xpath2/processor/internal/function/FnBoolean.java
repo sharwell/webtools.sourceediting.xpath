@@ -27,6 +27,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.CalendarType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NodeType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.NumericType;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
+import org.eclipse.wst.xml.xpath2.processor.internal.types.XSAnyURI;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSBoolean;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDouble;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.XSFloat;
@@ -76,50 +77,52 @@ public class FnBoolean extends Function {
 	 * @throws DynamicError 
 	 */
 	public static XSBoolean fn_boolean(ResultSequence arg) throws DynamicError {
-		if (arg.empty())
+		// 1. If $arg is the empty sequence, fn:boolean returns false.
+		if (arg.empty()) {
 			return XSBoolean.FALSE;
-
-		Item at = arg.item(0);
-		
-		if (at instanceof CalendarType) {
-			throw DynamicError.throw_type_error();
 		}
-		
-		if (at instanceof NodeType)
+
+		// 2. If $arg is a sequence whose first item is a node, fn:boolean returns true.
+		if (arg.item(0) instanceof NodeType) {
 			return XSBoolean.TRUE;
-		
-		if (arg.size() > 1)
-			throw DynamicError.throw_type_error();
+		}
 
-		// XXX ??
-		if (!(at instanceof AnyAtomicType))
+		// 3. If $arg is a singleton value of type xs:boolean or a derived from xs:boolean, fn:boolean returns $arg.
+		if (arg instanceof XSBoolean) {
+			return (XSBoolean) arg;
+		}
+
+		// 4. If $arg is a singleton value of type xs:string or a type derived from xs:string, xs:anyURI or a type
+		// derived from xs:anyURI or xs:untypedAtomic, fn:boolean returns false if the operand value has zero length;
+		// otherwise it returns true.
+		if (arg instanceof XSString
+				|| arg instanceof XSAnyURI
+				|| arg instanceof XSUntypedAtomic) {
+			return "".equals(((AnyType) arg).getStringValue()) ? XSBoolean.FALSE : XSBoolean.TRUE;
+		}
+
+		// 5. If $arg is a singleton value of any numeric type or a type derived from a numeric type, fn:boolean returns
+		// false if the operand value is NaN or is numerically equal to zero; otherwise it returns true.
+		if (arg instanceof NumericType) {
+			if (arg instanceof XSDouble) {
+				XSDouble value = (XSDouble) arg;
+				if (value.zero() || value.negativeZero() || value.nan()) {
+					return XSBoolean.FALSE;
+				}
+			} else if (arg instanceof XSFloat) {
+				XSFloat value = (XSFloat) arg;
+				if (value.zero() || value.negativeZero() || value.nan()) {
+					return XSBoolean.FALSE;
+				}
+			} else if (((NumericType) arg).zero()) {
+				return XSBoolean.FALSE;
+			}
+
 			return XSBoolean.TRUE;
-
-		// ok we got 1 single atomic type element
-
-		if (at instanceof XSBoolean) {
-			if (!((XSBoolean) at).value())
-				return XSBoolean.FALSE;
 		}
 
-		if ((at instanceof XSString) || (at instanceof XSUntypedAtomic)) {
-			if (((AnyType)at).getStringValue().equals(""))
-				return XSBoolean.FALSE;
-		}
-
-		if (at instanceof NumericType) {
-			if (((NumericType) at).zero())
-				return XSBoolean.FALSE;
-		}
-
-		if ((at instanceof XSFloat) && (((XSFloat) at).nan()))
-			return XSBoolean.FALSE;
-
-		if ((at instanceof XSDouble) && (((XSDouble) at).nan()))
-			return XSBoolean.FALSE;
-		
-
-		return XSBoolean.TRUE;
+		// 6. In all other cases, fn:boolean raises a type error [err:FORG0006].
+		throw DynamicError.argument_type_error(arg.getClass());
 	}
 
 }

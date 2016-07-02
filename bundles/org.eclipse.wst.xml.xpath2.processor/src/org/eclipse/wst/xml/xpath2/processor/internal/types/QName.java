@@ -154,8 +154,10 @@ public class QName extends CtrType implements CmpEq {
 		String sarg = aat.getStringValue();
 
 		QName qname = parse_QName(sarg);
-		if (qname == null)
-			return null;
+		if (qname == null) {
+			throw DynamicError.cant_cast(null);
+		}
+
 		return qname;
 	}
 

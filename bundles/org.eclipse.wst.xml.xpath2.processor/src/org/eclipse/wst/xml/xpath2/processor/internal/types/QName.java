@@ -103,35 +103,31 @@ public class QName extends CtrType implements CmpEq {
 	 */
 	public static QName parse_QName(String str) {
 		str = str.trim();
-
-		int occurs = 0;
-		
-		char[] strChrArr = str.toCharArray();		
-		for (int chrIndx = 0; chrIndx < strChrArr.length; chrIndx++) {
-		  if (strChrArr[chrIndx] == ':') {
-			 occurs += 1;  
-		  }
-		}
-		
-		if (occurs > 1) {
+		if (str.isEmpty()) {
 			return null;
 		}
-		
-		String[] tokens = str.split(":");
-		for (String token : tokens) {
-			if (!XMLChar.isValidNCName(token)) {
+
+		int colonIndex = str.indexOf(':');
+		if (colonIndex < 0) {
+			// not qualified
+			if (!XMLChar.isValidNCName(str)) {
 				return null;
 			}
-		}
 
-		if (tokens.length == 1)
-			return new QName(tokens[0]);
-		
-		if (tokens.length == 2) {
-				return new QName(tokens[0], tokens[1]);
-		}
+			return new QName(str);
+		} else {
+			String prefix = str.substring(0, colonIndex);
+			if (!XMLChar.isValidNCName(prefix)) {
+				return null;
+			}
 
-		return null;
+			String local = str.substring(colonIndex + 1);
+			if (!XMLChar.isValidNCName(local)) {
+				return null;
+			}
+
+			return new QName(prefix, local);
+		}
 	}
 
 	/**

@@ -102,6 +102,8 @@ public class QName extends CtrType implements CmpEq {
 	 * @return null
 	 */
 	public static QName parse_QName(String str) {
+		str = str.trim();
+
 		int occurs = 0;
 		
 		char[] strChrArr = str.toCharArray();		

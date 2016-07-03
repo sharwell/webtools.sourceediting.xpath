@@ -73,7 +73,7 @@ public class RangeResultSequence implements ResultSequence {
 
 			@Override
 			public Item next() {
-				if (_next == _end) {
+				if (_next == _end + 1) {
 					throw new IllegalStateException("Reached the end of the ResultSequence");
 				}
 
@@ -82,7 +82,7 @@ public class RangeResultSequence implements ResultSequence {
 
 			@Override
 			public boolean hasNext() {
-				return _next < _end;
+				return _next <= _end;
 			}
 		};
 	}

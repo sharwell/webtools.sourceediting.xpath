@@ -162,11 +162,11 @@ public class FnIDREF extends Function {
 		for (int atsub = 0; atsub < attributeList.getLength(); atsub++) {
 			Attr atNode = (Attr) attributeList.item(atsub);
 			NodeType atType = new AttrType(atNode, ec.getStaticContext().getTypeModel());
-			if (atType.isID()) {
+			if (atType.isIDREF()) {
 				if (hasID(idrefs, atNode)) {
-					if (!isDuplicate(node, rs)) {
-						ElementType element = new ElementType((Element)node, ec.getStaticContext().getTypeModel());
-						rs.add(element);
+					if (!isDuplicate(atNode, rs)) {
+						AttrType attr = new AttrType(atNode, ec.getStaticContext().getTypeModel());
+						rs.add(attr);
 					}
 				}
 			}

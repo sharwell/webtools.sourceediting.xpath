@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import org.eclipse.wst.xml.xpath2.api.DynamicContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.StaticContext;
 import org.eclipse.wst.xml.xpath2.processor.DOMLoader;
+import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.XercesLoader;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnCollection;
 import org.w3c.dom.Document;
@@ -144,8 +146,21 @@ public class DynamicContextBuilder implements DynamicContext {
 			if (realURI.isAbsolute()) {
 				return realURI;
 			}
+
+			if (_staticContext.getBaseUri() == null) {
+				throw DynamicError.noBaseURI();
+			}
+
+			if (_staticContext.getBaseUri().isOpaque()) {
+				if ("jar".equals(_staticContext.getBaseUri().getScheme())) {
+					return new URI("jar:" + new URI(_staticContext.getBaseUri().toString().substring(4)).resolve(uri).toString());
+				}
+			}
+
 			return _staticContext.getBaseUri().resolve(uri);
 		} catch (IllegalArgumentException iae) {
+			return null;
+		} catch (URISyntaxException ex) {
 			return null;
 		}
 	}

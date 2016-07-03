@@ -255,7 +255,7 @@
       <input-file role="principal-data" variable="input-context">fsx</input-file>
       <output-file role="principal" compare="Fragment">ForExpr028.xml</output-file>
    </test-case>
-   <test-case is-XPath2="true" name="ForExpr029" FilePath="Expressions/FLWORExpr/ForExpr/" scenario="standard" Creator="NIST">
+   <test-case is-XPath2="false" name="ForExpr029" FilePath="Expressions/FLWORExpr/ForExpr/" scenario="standard" Creator="NIST">
       <description>Embedded FLOWR expression that binds same variable on both expressions (two for clauses).</description>
       <spec-citation spec="XQuery" section-number="3.8.1" section-title="For and Let Clauses" section-pointer="id-for-let"/>
       <query name="ForExpr029" date="2006-01-24"/>

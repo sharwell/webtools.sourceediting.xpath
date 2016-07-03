@@ -86,6 +86,10 @@ public class FnLocalName extends Function {
 			return new XSString("");
 		}
 
+		if (!(arg1 instanceof NodeType)) {
+			throw DynamicError.invalidType();
+		}
+
 		NodeType an = (NodeType) arg1.first();
 		
 

@@ -114,7 +114,7 @@ public class FnCollection extends Function {
 		try {
 			new URI(uri);
 		} catch (URISyntaxException ex) {
-			throw DynamicError.doc_not_found(null, ex);
+			throw DynamicError.invalidCollectionArgument();
 		}
 		
 		if (uri.indexOf(":") < 0) {

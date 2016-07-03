@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -167,6 +168,10 @@ public class DynamicContextBuilder implements DynamicContext {
 
 	@Override
 	public Map<String, List<Document>> getCollections() {
+		if (_collections == null) {
+			return Collections.emptyMap();
+		}
+
 		return _collections;
 	}
 

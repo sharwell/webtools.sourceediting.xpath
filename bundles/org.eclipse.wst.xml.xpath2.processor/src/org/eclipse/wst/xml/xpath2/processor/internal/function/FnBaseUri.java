@@ -66,7 +66,20 @@ public class FnBaseUri extends Function {
 	}
 
 	/**
-	 * Base-Uri operation.
+	 * Returns the value of the base-uri URI property for {@code $arg} as defined by the accessor function
+	 * {@code dm:base-uri()} for that kind of node in Section 5.2 base-uri Accessor. If {@code $arg} is not specified,
+	 * the behavior is identical to calling the function with the context item ({@code .}) as argument. The following
+	 * errors may be raised: if the context item is undefined [err:XPDY0002]; if the context item is not a node
+	 * [err:XPTY0004].
+	 *
+	 * <p>If {@code $arg} is the empty sequence, the empty sequence is returned.</p>
+	 *
+	 * <p>Document, element and processing-instruction nodes have a base-uri property which may be empty. The base-uri
+	 * property of all other node types is the empty sequence. The value of the base-uri property is returned if it
+	 * exists and is not empty. Otherwise, if the node has a parent, the value of {@code dm:base-uri()} applied to its
+	 * parent is returned, recursively. If the node does not have a parent, or if the recursive ascent up the ancestor
+	 * chain encounters a node whose base-uri property is empty and it does not have a parent, the empty sequence is
+	 * returned.</p>
 	 * 
 	 * @param args
 	 *            Result from the expressions evaluation.
@@ -79,30 +92,31 @@ public class FnBaseUri extends Function {
 	public static ResultSequence base_uri(Collection<ResultSequence> args, EvaluationContext ec) 
 	                       throws DynamicError {
 		Collection<ResultSequence> cargs = Function.convert_arguments(args, expected_args());
-		
-		ResultSequence rs = null;
-		
-		if (cargs.size() == 0) {
-		  // support for arity 0
-		  // get base-uri from the context item.
-		  Item contextItem = ec.getContextItem();
-		  if (contextItem != null) {
-			rs = getBaseUri(contextItem);
-		  }
-		  else {
-		    throw DynamicError.contextUndefined();
-		  }
-		}
-		else if (cargs.size() == 1) {
-	      // support for arity 1
-		  ResultSequence arg1 = cargs.iterator().next();
-		  Item att = arg1.empty() ? null : arg1.first();
 
-		  rs = getBaseUri(att);
-		}
-		else {
-		  // arity other than 0 or 1 is not allowed
-		  throw DynamicError.throw_type_error();	
+		ResultSequence rs = null;
+
+		if (cargs.size() == 0) {
+			// support for arity 0
+			// get base-uri from the context item.
+			Item contextItem = ec.getContextItem();
+			if (contextItem != null) {
+				rs = getBaseUri(contextItem);
+			} else {
+				throw DynamicError.contextUndefined();
+			}
+		} else if (cargs.size() == 1) {
+			// support for arity 1
+			ResultSequence arg1 = cargs.iterator().next();
+			if (arg1.empty()) {
+				return ResultBuffer.EMPTY;
+			}
+
+			Item att = arg1.first();
+
+			rs = getBaseUri(att);
+		} else {
+			// arity other than 0 or 1 is not allowed
+			throw DynamicError.throw_type_error();
 		}
 
 		return rs;
@@ -113,27 +127,26 @@ public class FnBaseUri extends Function {
 	 */
 	public static ResultSequence getBaseUri(Item att) {
 		ResultBuffer rs = new ResultBuffer();
-		XSAnyURI baseUri = null;
-		  // depending on the node type, we get the base-uri for the node.
-		  // if base-uri property in DOM is null, we set the base-uri as string "null". This
-		  // avoids null pointer exception while comparing xs:anyURI values.
-		
-		  if (att instanceof NodeType) {
-			  NodeType node = (NodeType) att;
-			  Node domNode = node.node_value();
-			  String buri = domNode.getBaseURI();
-			  if (buri != null) {
-				  baseUri = new XSAnyURI(buri);
-			  } else {
-				  baseUri = new XSAnyURI("null");
-			  }
-		  }
-		  	        
-	      if (baseUri != null) {
-	        rs.add(baseUri);	
-	      }
-	      
-	      return rs.getSequence();
+		XSAnyURI baseUri;
+		// depending on the node type, we get the base-uri for the node.
+		// if base-uri property in DOM is null, we set the base-uri as string "null". This
+		// avoids null pointer exception while comparing xs:anyURI values.
+
+		if (!(att instanceof NodeType)) {
+			throw DynamicError.throw_type_error();
+		}
+
+		NodeType node = (NodeType) att;
+		Node domNode = node.node_value();
+		String buri = domNode.getBaseURI();
+		if (buri != null) {
+			baseUri = new XSAnyURI(buri);
+		} else {
+			baseUri = new XSAnyURI("null");
+		}
+
+		rs.add(baseUri);
+		return rs.getSequence();
 	}
 
 	/**

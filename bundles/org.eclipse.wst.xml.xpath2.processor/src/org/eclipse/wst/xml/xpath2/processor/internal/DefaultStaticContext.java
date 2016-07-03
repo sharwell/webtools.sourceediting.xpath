@@ -16,6 +16,7 @@
 package org.eclipse.wst.xml.xpath2.processor.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +70,10 @@ public class DefaultStaticContext implements org.eclipse.wst.xml.xpath2.processo
 
 	@Override
 	public Map<String, List<Document>> get_collections() {
+		if (_collections == null) {
+			return Collections.emptyMap();
+		}
+
 		return _collections;
 	}
 

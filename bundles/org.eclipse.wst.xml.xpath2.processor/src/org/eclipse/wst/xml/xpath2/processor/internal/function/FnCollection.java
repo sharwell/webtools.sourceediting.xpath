@@ -116,11 +116,6 @@ public class FnCollection extends Function {
 		} catch (URISyntaxException ex) {
 			throw DynamicError.invalidCollectionArgument();
 		}
-		
-		if (uri.indexOf(":") < 0) {
-			throw DynamicError.invalidCollectionArgument();
-		}
-		
 
 		URI resolved = ec.getDynamicContext().resolveUri(uri);
 		if (resolved == null)
@@ -152,6 +147,10 @@ public class FnCollection extends Function {
 		ResultBuffer rs = new ResultBuffer();
 		Map<String, List<Document>> collectionMap = ec.getDynamicContext().getCollections();
 		List<Document> docList = collectionMap.get(uri);
+		if (docList == null) {
+			throw DynamicError.invalidCollectionArgument();
+		}
+
 		for (Document doc : docList) {
 			rs.add(new DocType(doc, ec.getStaticContext().getTypeModel()));
 		}

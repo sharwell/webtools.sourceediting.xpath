@@ -82,6 +82,10 @@ public class FnNamespaceUri extends Function {
 			return new XSAnyURI("");
 		}
 
+		if (!(arg1 instanceof NodeType)) {
+			throw DynamicError.invalidType();
+		}
+
 		NodeType an = (NodeType) arg1.first();
 
 		QName name = an.node_name();

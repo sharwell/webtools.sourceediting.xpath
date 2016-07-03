@@ -15,8 +15,12 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.util.Comparator;
+
 import javax.xml.XMLConstants;
 
+import org.apache.xerces.util.XMLChar;
+import org.eclipse.wst.xml.xpath2.api.CollationProvider;
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
@@ -98,6 +102,8 @@ public class QName extends CtrType implements CmpEq {
 	 * @return null
 	 */
 	public static QName parse_QName(String str) {
+		str = str.trim();
+
 		int occurs = 0;
 		
 		char[] strChrArr = str.toCharArray();		
@@ -112,6 +118,11 @@ public class QName extends CtrType implements CmpEq {
 		}
 		
 		String[] tokens = str.split(":");
+		for (String token : tokens) {
+			if (!XMLChar.isValidNCName(token)) {
+				return null;
+			}
+		}
 
 		if (tokens.length == 1)
 			return new QName(tokens[0]);
@@ -145,8 +156,10 @@ public class QName extends CtrType implements CmpEq {
 		String sarg = aat.getStringValue();
 
 		QName qname = parse_QName(sarg);
-		if (qname == null)
-			return null;
+		if (qname == null) {
+			throw DynamicError.cant_cast(null);
+		}
+
 		return qname;
 	}
 
@@ -247,6 +260,18 @@ public class QName extends CtrType implements CmpEq {
 		return _namespace;
 	}
 
+	public String namespace(EvaluationContext evaluationContext) {
+		if (expanded()) {
+			return namespace();
+		}
+
+		if (prefix() == null || prefix().isEmpty()) {
+			return null;
+		}
+
+		return evaluationContext.getStaticContext().getNamespaceContext().getNamespaceURI(prefix());
+	}
+
 	/**
 	 * Retrieves the node's name
 	 * 
@@ -338,8 +363,14 @@ public class QName extends CtrType implements CmpEq {
 	}
 
 	/**
-	 * Equality comparison between this QName and the supplied QName
-	 * 
+	 * Returns {@code true} if the namespace URIs of {@code $arg1} and {@code $arg2} are equal and the local names of
+	 * {@code $arg1} and {@code $arg2} are identical based on the Unicode code point collation
+	 * ({@code http://www.w3.org/2005/xpath-functions/collation/codepoint}). Otherwise, returns {@code false}. Two
+	 * namespace URIs are considered equal if they are either both absent or both present and identical based on the
+	 * Unicode code point collation. The prefix parts of {@code $arg1} and {@code $arg2}, if any, are ignored.
+	 *
+	 * <p>Backs up the "eq" and "ne" operators on values of type {@code xs:QName}.</p>
+	 *
 	 * @param arg
 	 *            The QName to compare with
 	 * @return True if the two represent the same node. False otherwise
@@ -348,7 +379,24 @@ public class QName extends CtrType implements CmpEq {
 	@Override
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		QName val = NumericType.get_single_type(arg, QName.class);
-		return equals(val);
+
+		Comparator<String> collation = evaluationContext.getDynamicContext().getCollationProvider().getCollation(
+				CollationProvider.CODEPOINT_COLLATION);
+
+		// check local name first since it's readily available and efficient
+		if (collation.compare(local(), val.local()) != 0) {
+			return false;
+		}
+
+		String ns1 = namespace(evaluationContext);
+		String ns2 = val.namespace(evaluationContext);
+		if (ns1 != null) {
+			// if the first is null, the second must match
+			return ns2 != null && collation.compare(ns1, ns2) == 0;
+		} else {
+			// if the first is null, the second must also be null
+			return ns2 == null;
+		}
 	}
 	
 	@Override

@@ -330,7 +330,11 @@ public class XSInteger extends XSDecimal {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSInteger val = get_single_type(carg, XSInteger.class);
-		BigInteger result = int_value().remainder(val.int_value()); 
+		if (val.zero()) {
+			throw DynamicError.div_zero(null);
+		}
+
+		BigInteger result = int_value().remainder(val.int_value());
 		
 		return new XSInteger(result);
 	}

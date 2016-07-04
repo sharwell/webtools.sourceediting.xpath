@@ -435,6 +435,10 @@ public class XSDecimal extends NumericType {
 	}
 
 	public static BigDecimal remainder(BigDecimal value, BigDecimal divisor) {
+		if (divisor.compareTo(BigDecimal.ZERO) == 0) {
+			throw DynamicError.div_zero(null);
+		}
+
 		// return value.remainder(divisor);
 		
 		// appx as of now. JDK 1.4 doesn't support BigDecimal.remainder(..)

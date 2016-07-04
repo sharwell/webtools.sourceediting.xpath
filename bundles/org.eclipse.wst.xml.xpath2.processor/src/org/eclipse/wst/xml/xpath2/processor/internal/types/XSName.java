@@ -83,7 +83,7 @@ public class XSName extends XSToken {
 		
 		if (!XMLChar.isValidName(strValue)) {
 			// invalid input
-			throw DynamicError.throw_type_error();
+			throw DynamicError.cant_cast(null);
 		}
 
 		return new XSName(strValue);

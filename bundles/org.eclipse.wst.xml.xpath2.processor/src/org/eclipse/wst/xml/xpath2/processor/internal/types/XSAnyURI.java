@@ -17,6 +17,9 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
@@ -108,6 +111,15 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 		}
 
 		String uri = aat.string_value().trim().replaceAll("\\s+", " ");
+
+		try {
+			// The URI constructor does not allow raw spaces. Escape them to ensure they do not cause the xs:anyURI
+			// constructor to fail.
+			new URI(uri.replace(" ", "%20"));
+		} catch (URISyntaxException ex) {
+			throw DynamicError.cant_cast(uri, ex);
+		}
+
 		return new XSAnyURI(uri);
 	}
 

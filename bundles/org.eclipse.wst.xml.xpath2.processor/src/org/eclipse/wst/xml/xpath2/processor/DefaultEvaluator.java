@@ -910,7 +910,12 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 		SequenceType seqt = (SequenceType) taexp.right();
 		SeqType st = new SeqType(seqt, _sc, rs);
 
-		st.match(rs);
+		try {
+			st.match(rs);
+		} catch (DynamicError err) {
+			throw new DynamicError("XPDY0050", "XPDY0050", err);
+		}
+
 		return rs;
 	}
 

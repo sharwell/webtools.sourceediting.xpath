@@ -174,19 +174,20 @@ public class XSFloat extends NumericType {
 		}
 
 		try {
+			String stringValue = aat.getStringValue().trim();
 			float f;
-			if (aat.getStringValue().equals("INF")) {
+			if (stringValue.equals("INF")) {
 				f = Float.POSITIVE_INFINITY;
-			} else if (aat.getStringValue().equals("-INF")) {
+			} else if (stringValue.equals("-INF")) {
 				f = Float.NEGATIVE_INFINITY;
 			} else if (aat instanceof XSBoolean) {
-				if (aat.getStringValue().equals("true")) {
+				if (stringValue.equals("true")) {
 					f = 1.0f;
 				} else {
 					f = 0.0f;
 				}
 			} else {
-			    f = Float.valueOf(aat.getStringValue());
+			    f = Float.valueOf(stringValue);
 			}
 			return new XSFloat(f);
 		} catch (NumberFormatException e) {

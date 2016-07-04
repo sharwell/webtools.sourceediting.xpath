@@ -130,7 +130,7 @@ public class XSBoolean extends CtrType implements CmpEq, CmpGt, CmpLt {
 			throw DynamicError.invalidType();
 		}
 
-		String str_value = anyType.getStringValue();
+		String str_value = anyType.getStringValue().trim();
 		
 		
 		if (!(isCastable(anyType, str_value))) {

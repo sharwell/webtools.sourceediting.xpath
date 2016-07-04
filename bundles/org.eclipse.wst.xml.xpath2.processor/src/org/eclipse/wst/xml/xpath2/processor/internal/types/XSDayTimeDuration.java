@@ -135,7 +135,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 			return new XSDayTimeDuration(duration.days(), duration.hours(), duration.minutes(), duration.seconds(), duration.negative());
 		}
 		
-		return parseDTDuration(aat.getStringValue());
+		return parseDTDuration(aat.getStringValue().trim());
 	}
 
 	

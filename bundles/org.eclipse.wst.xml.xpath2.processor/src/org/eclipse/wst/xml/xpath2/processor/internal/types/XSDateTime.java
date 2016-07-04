@@ -268,6 +268,10 @@ Cloneable {
 					if (token.length() > 2)
 						return null;
 				} else if (x == '.') {
+					if (token.length() != 2) {
+						return null;
+					}
+
 					token += x;
 					state = 3;
 				} else
@@ -290,6 +294,11 @@ Cloneable {
 			return null;
 
 		// get seconds
+		if (token.length() < 2) {
+			// less than 2 digits for the number of seconds
+			return null;
+		}
+
 		// this is whole + dot + nothing else
 		if (token.length() == 3)
 			return null;

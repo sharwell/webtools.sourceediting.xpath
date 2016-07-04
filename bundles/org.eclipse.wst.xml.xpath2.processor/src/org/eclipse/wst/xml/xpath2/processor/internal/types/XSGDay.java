@@ -188,7 +188,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 			XSDateTime dateTime = (XSDateTime) aat;
 			return new XSGDay(dateTime.calendar(), dateTime.tz());
 		}
-		return parse_gDay(aat.getStringValue()); 
+		return parse_gDay(aat.getStringValue().trim());
 	}
 
 	/**

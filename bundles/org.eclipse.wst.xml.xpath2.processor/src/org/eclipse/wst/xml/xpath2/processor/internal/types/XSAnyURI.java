@@ -107,7 +107,8 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 			throw DynamicError.invalidType();
 		}
 
-		return new XSAnyURI(aat.string_value().trim());
+		String uri = aat.string_value().trim().replaceAll("\\s+", " ");
+		return new XSAnyURI(uri);
 	}
 
 	/**

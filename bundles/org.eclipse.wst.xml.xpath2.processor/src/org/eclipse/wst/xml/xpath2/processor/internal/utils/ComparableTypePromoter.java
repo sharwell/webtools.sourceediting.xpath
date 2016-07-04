@@ -25,6 +25,10 @@ public class ComparableTypePromoter extends ScalarTypePromoter {
 	protected boolean checkCombination(Class<? extends AnyType> newType) {
 
 		Class<? extends AnyType> targetType = getTargetType();
+		if (newType == targetType) {
+			return true;
+		}
+
 		if (newType == XSString.class || newType == XSTime.class || targetType == XSString.class || targetType == XSTime.class) {
 			return targetType == newType;	
 		}

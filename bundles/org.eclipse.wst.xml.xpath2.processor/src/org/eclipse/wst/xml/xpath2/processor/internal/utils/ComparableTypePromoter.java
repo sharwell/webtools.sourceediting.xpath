@@ -41,7 +41,7 @@ public class ComparableTypePromoter extends ScalarTypePromoter {
 	@Override
 	protected Class<? extends AnyType> substitute(Class<? extends AnyType> typeToConsider) {
 		if (typeToConsider == XSAnyURI.class || typeToConsider == XSString.class) {
-			return XSString.class;
+			return typeToConsider;
 		}
 		if (typeToConsider == XSDateTime.class || typeToConsider == XSDate.class || typeToConsider == XSTime.class) {
 			return typeToConsider;

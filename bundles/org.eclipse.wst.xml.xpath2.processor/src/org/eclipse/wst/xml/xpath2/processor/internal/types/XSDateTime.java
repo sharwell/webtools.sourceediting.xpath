@@ -319,6 +319,10 @@ Cloneable {
 	 *         displacement and element 3 is the minute displacement.
 	 */
 	public static int[] parse_timezone(String str) {
+		if (!str.matches("^Z|[+-][0-9]{2}:[0-9]{2}$")) {
+			return null;
+		}
+
 		int[] ret = new int[3];
 
 		for (int i = 0; i < ret.length; i++)

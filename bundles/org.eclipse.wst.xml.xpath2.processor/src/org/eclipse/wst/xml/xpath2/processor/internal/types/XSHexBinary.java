@@ -108,7 +108,7 @@ public class XSHexBinary extends CtrType implements CmpEq {
 			throw DynamicError.invalidType();
 		}
 
-		String str_value = aat.getStringValue();
+		String str_value = aat.getStringValue().trim();
 		if (aat instanceof XSUntypedAtomic || aat instanceof XSString) {
 			String[] nonHexValues = null;
 			try {

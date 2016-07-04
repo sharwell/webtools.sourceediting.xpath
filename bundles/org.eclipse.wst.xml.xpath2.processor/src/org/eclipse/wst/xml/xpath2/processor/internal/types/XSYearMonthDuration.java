@@ -218,7 +218,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 			return new XSYearMonthDuration(duration.year(), duration.month(), duration.negative());
 		}
 		
-		return parseYMDuration(aat.getStringValue());
+		return parseYMDuration(aat.getStringValue().trim());
 	}
 
 	/**

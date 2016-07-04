@@ -547,7 +547,7 @@ Cloneable {
 			return new XSDateTime(dateTime.calendar(), dateTime.tz());
 		}
 
-		return parseDateTime(aat.getStringValue());
+		return parseDateTime(aat.getStringValue().trim());
 	}
 
 	/**

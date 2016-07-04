@@ -194,13 +194,13 @@ public class XSInteger extends XSDecimal {
 				return bigDec.toBigInteger();
 		}
 		
-		return new BigInteger(aat.getStringValue());
+		return new BigInteger(aat.getStringValue().trim());
 	}
 	
 	private boolean isCastable(Item aat) throws DynamicError {
 		if (aat instanceof XSString || aat instanceof XSUntypedAtomic ||
 			aat instanceof NodeType) {
-			if (isLexicalValue(aat.getStringValue())) {
+			if (isLexicalValue(aat.getStringValue().trim())) {
 				return true;
 			} else {
 				return false;

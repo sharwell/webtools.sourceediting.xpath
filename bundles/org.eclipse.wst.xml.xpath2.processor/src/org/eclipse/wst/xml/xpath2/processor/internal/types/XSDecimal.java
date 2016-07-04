@@ -193,7 +193,7 @@ public class XSDecimal extends NumericType {
 			throw DynamicError.invalidLexicalValue(null);
 		}
 
-		return new XSDecimal(aat.getStringValue());
+		return new XSDecimal(aat.getStringValue().trim());
 	}
 	
 	/**

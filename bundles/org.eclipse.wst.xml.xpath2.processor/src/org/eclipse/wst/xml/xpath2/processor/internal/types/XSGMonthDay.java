@@ -192,7 +192,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 			return new XSGMonthDay(dateTime.calendar(), dateTime.tz());
 		}
 		
-		return parse_gMonthDay(aat.getStringValue());
+		return parse_gMonthDay(aat.getStringValue().trim());
 	}
 	
 	/**

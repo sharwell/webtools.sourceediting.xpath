@@ -357,7 +357,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 			return new XSDuration(duration.year(), duration.month(), duration.days(), duration.hours(), duration.minutes(), duration.seconds(), duration.negative());
 		}
 		
-		return parseDTDuration(aat.getStringValue());
+		return parseDTDuration(aat.getStringValue().trim());
 	}
 	/**
 	 * Creates a new XSDayTimeDuration by parsing the supplied String
@@ -492,10 +492,9 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	}
 
 	protected boolean isCastable(AnyType aat) {
-		String value = aat.getStringValue(); // get this once so we don't recreate everytime.
 		String type = aat.string_type();
 		if (type.equals("xs:string") || type.equals("xs:untypedAtomic")) {
-			if (isDurationValue(value)) {
+			if (isDurationValue(aat.getStringValue().trim())) {
 				return true;  // We might be able to cast this.
 			}
 		}

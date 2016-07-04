@@ -159,7 +159,7 @@ public class XSGYear extends CalendarType implements CmpEq {
 			return new XSGYear(dateTime.calendar(), dateTime.tz());
 		}
 		
-		return parse_gYear(aat.getStringValue());
+		return parse_gYear(aat.getStringValue().trim());
 	}
 
 	/**

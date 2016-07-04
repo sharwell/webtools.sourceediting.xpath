@@ -140,14 +140,15 @@ public class XSDouble extends NumericType {
 	}
 
 	private XSDouble castDouble(Item aat) {
+		String stringValue = aat.getStringValue().trim();
 		if (aat instanceof XSBoolean) {
-			if (aat.getStringValue().equals("true")) {
+			if (stringValue.equals("true")) {
 				return new XSDouble(1.0E0);
 			} else {
 				return new XSDouble(0.0E0);
 			}
 		}
-		return parse_double(aat.getStringValue());
+		return parse_double(stringValue);
 		
 	}
 

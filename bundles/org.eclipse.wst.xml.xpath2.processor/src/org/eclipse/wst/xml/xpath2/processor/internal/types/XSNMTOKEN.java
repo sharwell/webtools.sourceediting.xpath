@@ -79,7 +79,7 @@ public class XSNMTOKEN extends XSToken {
 			return ResultBuffer.EMPTY;
 
 		AnyType aat = FnData.atomize(arg.first());
-		String strValue = aat.getStringValue();
+		String strValue = aat.getStringValue().trim();
 		
 		if (!XMLChar.isValidNmtoken(strValue)) {
 			// invalid input

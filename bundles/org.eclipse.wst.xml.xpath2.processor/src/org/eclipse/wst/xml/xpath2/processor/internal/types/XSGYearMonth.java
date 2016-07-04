@@ -162,7 +162,7 @@ public class XSGYearMonth extends CalendarType implements CmpEq {
 			return new XSGYearMonth(dateTime.calendar(), dateTime.tz());
 		}
 		
-		return parse_gYearMonth(aat.getStringValue());
+		return parse_gYearMonth(aat.getStringValue().trim());
 	}
 
 	/**

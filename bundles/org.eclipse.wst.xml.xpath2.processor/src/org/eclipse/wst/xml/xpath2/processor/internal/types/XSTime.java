@@ -167,7 +167,7 @@ Cloneable {
 			return new XSTime(dateTime.calendar(), dateTime.tz());
 		}
 		
-		return parse_time(aat.getStringValue());
+		return parse_time(aat.getStringValue().trim());
 	}
 	/**
 	 * Retrieves the hour stored as an integer

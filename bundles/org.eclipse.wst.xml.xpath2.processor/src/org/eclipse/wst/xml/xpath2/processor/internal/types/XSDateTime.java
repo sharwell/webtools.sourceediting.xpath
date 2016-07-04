@@ -296,10 +296,6 @@ Cloneable {
 
 		ret[2] = Double.parseDouble(token);
 
-		if (ret[0] == 24.0) {
-			ret[0] = 00.0;
-		}
-
 		// XXX sanity check args...
 		return ret;
 	}
@@ -460,8 +456,17 @@ Cloneable {
 		if (t == null)
 			return null;
 
-		if (!set_item(cal, Calendar.HOUR_OF_DAY, (int) t[0]))
+		if (t[0] == 24) {
+			// '24' is permitted if the minutes and seconds represented are zero
+			if (t[1] != 0 || t[2] != 0) {
+				return null;
+			}
+
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.add(Calendar.HOUR_OF_DAY, 24);
+		} else if (!set_item(cal, Calendar.HOUR_OF_DAY, (int) t[0])) {
 			return null;
+		}
 
 		if (!set_item(cal, Calendar.MINUTE, (int) t[1]))
 			return null;

@@ -13,6 +13,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -69,8 +70,14 @@ public abstract class AbstractRegExFunction extends Function {
 				}
 			}
 		}
-		
-		Pattern p = Pattern.compile(pattern, flag);
+
+		Pattern p;
+		try {
+			p = Pattern.compile(pattern, flag);
+		} catch (PatternSyntaxException ex) {
+			throw DynamicError.regex_error(null, ex);
+		}
+
 		return p.matcher(src);
 	}
 

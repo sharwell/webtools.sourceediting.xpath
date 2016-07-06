@@ -86,13 +86,8 @@ public class FnMatches extends AbstractRegExFunction {
 			flags = flagRS.first().getStringValue();
 		}
 
-		try {
-			boolean result = false;
-			result = matches(pattern, flags, str1);
-			return XSBoolean.valueOf(result);
-		} catch (PatternSyntaxException pex) {
-			throw DynamicError.regex_error(pex.getMessage(), pex);
-		}
+		boolean result = matches(pattern, flags, str1);
+		return XSBoolean.valueOf(result);
 	}
 	
 

@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.regex.Matcher;
-import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -106,8 +105,6 @@ public class FnReplace extends AbstractRegExFunction {
 			}
 
 			return new XSString(matcher.replaceAll(replacement));
-		} catch (PatternSyntaxException err) {
-			throw DynamicError.regex_error(null, err);
 		} catch (IllegalArgumentException ex) {
 			throw new DynamicError("FORX0004", "Invalid replacement string.", ex);
 		}

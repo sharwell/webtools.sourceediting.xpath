@@ -85,20 +85,8 @@ public class FnReplace extends AbstractRegExFunction {
 		String replacement = ((XSString) arg3.first()).value();
 		
 		try {
-			Matcher matcher = null;
-			if (flags != null) {
-				if ("x".equals(flags)) {
-					pattern = removeWhitespace(pattern);
-				} else {
-					matcher = regex(pattern, flags, str1);
-				}
-			}
-
-			if (matcher == null) {
-				return new XSString(str1.replaceAll(pattern, replacement));
-			} else {
-				return new XSString(matcher.replaceAll(replacement));
-			}
+			Matcher matcher = regex(pattern, flags, str1);
+			return new XSString(matcher.replaceAll(replacement));
 		} catch (PatternSyntaxException err) {
 			throw DynamicError.regex_error(null, err);
 		} catch (IllegalArgumentException ex) {

@@ -86,7 +86,7 @@ public abstract class AbstractRegExFunction extends Function {
 	 * except for whitespace characters appearing within a character class
 	 * construct.
 	 */
-	protected static String removeWhitespace(String pattern) {
+	private static String removeWhitespace(String pattern) {
 		StringBuilder builder = new StringBuilder();
 		int index = 0;
 		while (index < pattern.length()) {

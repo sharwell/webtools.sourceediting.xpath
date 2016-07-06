@@ -109,6 +109,9 @@ public class FnReplace extends Function {
 				throw new DynamicError("FORX0004", "result out of bounds", ex);
 			}
 			throw new DynamicError("FORX0003", "invalid regex.", ex);
+		} catch (DynamicError ex) {
+			// Just rethrow this
+			throw ex;
 		} catch (Exception ex) {
 			throw new DynamicError("FORX0004", "invalid regex.", ex);
 		}

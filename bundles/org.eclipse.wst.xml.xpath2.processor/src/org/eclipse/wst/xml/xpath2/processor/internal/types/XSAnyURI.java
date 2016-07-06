@@ -17,6 +17,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -113,9 +114,54 @@ public class XSAnyURI extends CtrType implements CmpEq, CmpGt, CmpLt {
 		String uri = aat.string_value().trim().replaceAll("\\s+", " ");
 
 		try {
+			// Escape the input text prior to validation as a URI
+			byte[] encodedInput = uri.getBytes("UTF-8");
+			StringBuilder builder = new StringBuilder();
+			for (byte b : encodedInput) {
+				int i = (int)b & 0xFF;
+				// start by checking control and non-ASCII characters
+				boolean needEscape = i <= 0x1F || i >= 0x7F;
+				if (!needEscape) {
+					switch (i) {
+					// space
+					case ' ':
+					// delims
+					case '<':
+					case '>':
+					case '"':
+					// unwise
+					case '{':
+					case '}':
+					case '|':
+					case '\\':
+					case '^':
+					case '`':
+						needEscape = true;
+						break;
+
+					default:
+						break;
+					}
+				}
+
+				if (needEscape) {
+					builder.append('%');
+					if (i < 0x10) {
+						builder.append('0');
+					}
+
+					builder.append(Integer.toHexString(i));
+				} else {
+					builder.append((char)i);
+				}
+			}
+
 			// The URI constructor does not allow raw spaces. Escape them to ensure they do not cause the xs:anyURI
 			// constructor to fail.
-			new URI(uri.replace(" ", "%20"));
+			new URI(builder.toString());
+		} catch (UnsupportedEncodingException ex) {
+			// This shouldn't be reachable since all JREs support UTF-8
+			throw DynamicError.cant_cast(uri, ex);
 		} catch (URISyntaxException ex) {
 			throw DynamicError.cant_cast(uri, ex);
 		}

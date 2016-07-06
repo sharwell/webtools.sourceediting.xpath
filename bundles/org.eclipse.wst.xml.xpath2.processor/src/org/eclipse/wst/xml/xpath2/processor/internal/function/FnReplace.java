@@ -31,7 +31,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * non-overlapping substring of $input that matches the given $pattern with an
  * occurrence of the $replacement string.
  */
-public class FnReplace extends Function {
+public class FnReplace extends AbstractRegExFunction {
 	private static Collection<SeqType> _expected_args = null;
 
 	/**
@@ -88,9 +88,9 @@ public class FnReplace extends Function {
 			Matcher matcher = null;
 			if (flags != null) {
 				if ("x".equals(flags)) {
-					pattern = AbstractRegExFunction.removeWhitespace(pattern);
+					pattern = removeWhitespace(pattern);
 				} else {
-					matcher = AbstractRegExFunction.regex(pattern, flags, str1);
+					matcher = regex(pattern, flags, str1);
 				}
 			}
 

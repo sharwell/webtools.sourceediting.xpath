@@ -119,6 +119,9 @@ Cloneable {
 		if (dt == null)
 			return null;
 
+		// Adjust for 24:00 (xs:time only) by setting it back to 00:00 without rolling the date forward
+		dt.calendar().set(Calendar.DAY_OF_MONTH, 29);
+
 		return new XSTime(dt.calendar(), dt.tz());
 	}
 

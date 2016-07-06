@@ -22,6 +22,10 @@ public class ScalarTypePromoter extends NumericTypePromoter {
 	protected boolean checkCombination(Class<? extends AnyType> newType) {
 
 		Class<? extends AnyType> targetType = getTargetType();
+		if (newType == targetType) {
+			return true;
+		}
+
 		if (targetType == XSDayTimeDuration.class || targetType == XSYearMonthDuration.class) {
 			return targetType == newType;	
 		}

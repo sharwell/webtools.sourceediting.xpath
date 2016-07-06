@@ -26,6 +26,10 @@ public class NumericTypePromoter extends TypePromoter {
 
 	@Override
 	protected boolean checkCombination(Class<? extends AnyType> newType) {
+		if (newType == getTargetType()) {
+			return true;
+		}
+
 		// Note: Double or float will override everything
 		if (newType == XSDouble.class || getTargetType() == XSDouble.class) {
 			setTargetType(XSDouble.class);

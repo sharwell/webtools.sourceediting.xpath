@@ -20,6 +20,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.types;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -47,6 +48,9 @@ MathMinus, MathPlus,
 
 Cloneable {
 	private static final String XS_DATE_TIME = "xs:dateTime";
+
+	private static final Pattern TIMEZONE_SYNTAX = Pattern.compile("^Z|[+-][0-9]{2}:[0-9]{2}$");
+
 	private Calendar _calendar;
 	private boolean _timezoned;
 	private XSDuration _tz;
@@ -319,7 +323,7 @@ Cloneable {
 	 *         displacement and element 3 is the minute displacement.
 	 */
 	public static int[] parse_timezone(String str) {
-		if (!str.matches("^Z|[+-][0-9]{2}:[0-9]{2}$")) {
+		if (!TIMEZONE_SYNTAX.matcher(str).matches()) {
 			return null;
 		}
 

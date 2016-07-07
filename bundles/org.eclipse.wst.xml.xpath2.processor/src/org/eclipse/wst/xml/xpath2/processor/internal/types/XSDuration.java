@@ -37,13 +37,23 @@ import java.math.RoundingMode;
 public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneable {
 
 	private static final String XS_DURATION = "xs:duration";
-	protected int _year;
-	protected int _month;
-	protected int _days;
-	protected int _hours;
-	protected int _minutes;
-	protected BigDecimal _seconds;
-	protected boolean _negative;
+
+	private static final int SECONDS_PER_MINUTE = 60;
+	private static final int MINUTES_PER_HOUR = 60;
+	private static final int HOURS_PER_DAY = 24;
+
+	private static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
+	private static final int SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY;
+
+	private static final int MONTHS_PER_YEAR = 12;
+
+	private final int _year;
+	private final int _month;
+	private final int _days;
+	private final int _hours;
+	private final int _minutes;
+	private final BigDecimal _seconds;
+	private final boolean _negative;
 
 	/**
 	 * Initializes to the supplied parameters. If more than 24 hours is
@@ -68,36 +78,50 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 */
 	public XSDuration(int years, int months, int days, int hours, int minutes,
 			BigDecimal seconds, boolean negative) {
-		_year = years;
-		_month = months;
-		_days = days;
-		_hours = hours;
-		_minutes = minutes;
-		_seconds = seconds;
-		_negative = negative;
+		assert years >= 0;
+		assert months >= 0;
+		assert days >= 0;
+		assert hours >= 0;
+		assert minutes >= 0;
+		assert seconds != null && seconds.compareTo(BigDecimal.ZERO) >= 0;
 
-		if (_month >= 12) {
-			_year += _month / 12;
-			_month = _month % 12;
+		int adjustedYear = years;
+		int adjustedMonth = months;
+		int adjustedDays = days;
+		int adjustedHours = hours;
+		int adjustedMinutes = minutes;
+		BigDecimal adjustedSeconds = seconds;
+		boolean adjustedNegative = negative;
+
+		if (adjustedMonth >= MONTHS_PER_YEAR) {
+			adjustedYear += adjustedMonth / MONTHS_PER_YEAR;
+			adjustedMonth = adjustedMonth % MONTHS_PER_YEAR;
 		}
 
-		if (_seconds.compareTo(BigDecimal.valueOf(60)) >= 0) {
-			int isec = _seconds.intValue();
-			BigDecimal rem = _seconds.subtract(BigDecimal.valueOf(isec));
+		if (adjustedSeconds.compareTo(BigDecimal.valueOf(SECONDS_PER_MINUTE)) >= 0) {
+			int isec = adjustedSeconds.intValue();
+			BigDecimal rem = adjustedSeconds.subtract(BigDecimal.valueOf(isec));
 
-			_minutes += isec / 60;
-			_seconds = BigDecimal.valueOf(isec % 60);
-			_seconds = _seconds.add(rem);
+			adjustedMinutes += isec / SECONDS_PER_MINUTE;
+			adjustedSeconds = BigDecimal.valueOf(isec % SECONDS_PER_MINUTE);
+			adjustedSeconds = adjustedSeconds.add(rem);
 		}
-		if (_minutes >= 60) {
-			_hours += _minutes / 60;
-			_minutes = _minutes % 60;
+		if (adjustedMinutes >= MINUTES_PER_HOUR) {
+			adjustedHours += adjustedMinutes / MINUTES_PER_HOUR;
+			adjustedMinutes = adjustedMinutes % MINUTES_PER_HOUR;
 		}
-		if (_hours >= 24) {
-			_days += _hours / 24;
-			_hours = _hours % 24;
+		if (adjustedHours >= HOURS_PER_DAY) {
+			adjustedDays += adjustedHours / HOURS_PER_DAY;
+			adjustedHours = adjustedHours % HOURS_PER_DAY;
 		}
 
+		_year = adjustedYear;
+		_month = adjustedMonth;
+		_days = adjustedDays;
+		_hours = adjustedHours;
+		_minutes = adjustedMinutes;
+		_seconds = adjustedSeconds;
+		_negative = adjustedNegative;
 	}
 
 	/**
@@ -294,10 +318,10 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * @return Number of seconds making up this duration of time
 	 */
 	public BigDecimal value() {
-		BigDecimal ret = BigDecimal.valueOf(days() * 24 * 60 * 60);
+		BigDecimal ret = BigDecimal.valueOf(days() * SECONDS_PER_DAY);
 
-		ret = ret.add(BigDecimal.valueOf(hours() * 60 * 60));
-		ret = ret.add(BigDecimal.valueOf(minutes() * 60));
+		ret = ret.add(BigDecimal.valueOf(hours() * SECONDS_PER_HOUR));
+		ret = ret.add(BigDecimal.valueOf(minutes() * SECONDS_PER_MINUTE));
 		ret = ret.add(seconds());
 
 		if (negative())
@@ -310,8 +334,8 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	
 	public BigDecimal time_value() {
 		BigDecimal ret = BigDecimal.ZERO;
-		ret = ret.add(BigDecimal.valueOf(hours() * 60 * 60));
-		ret = ret.add(BigDecimal.valueOf(minutes() * 60));
+		ret = ret.add(BigDecimal.valueOf(hours() * SECONDS_PER_HOUR));
+		ret = ret.add(BigDecimal.valueOf(minutes() * SECONDS_PER_MINUTE));
 		ret = ret.add(seconds());
 
 		if (negative())

@@ -110,7 +110,7 @@ public class SchemaTypeValueFactory {
 		
 		// duration and it's subtypes
 		if (typeDef == XSConstants.DURATION_DT) {       
-			return XSDuration.parseDTDuration(strValue);
+			return XSDuration.parseDuration(strValue);
 		}
 		
 		if (typeDef == PsychoPathTypeHelper.DAYTIMEDURATION_DT) {       

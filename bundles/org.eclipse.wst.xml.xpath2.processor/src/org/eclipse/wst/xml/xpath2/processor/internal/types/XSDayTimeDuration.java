@@ -351,7 +351,7 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 				throw DynamicError.nan();
 			} else if (dt.infinite()) {
 				retval = BigDecimal.ZERO;
-			} else if (!dt.zero()) {
+			} else if (!dt.zero() && !dt.negativeZero()) {
 				retval = value().divide(new BigDecimal(dt.double_value()), 18, BigDecimal.ROUND_HALF_EVEN);
 			} else {
 				throw DynamicError.overflowUnderflow();

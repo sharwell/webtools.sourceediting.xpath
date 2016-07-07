@@ -86,22 +86,64 @@ public class FnReplace extends AbstractRegExFunction {
 		
 		try {
 			Matcher matcher = regex(pattern, flags, str1);
+
+			if (matcher.groupCount() < 10) {
+				for (int i = matcher.groupCount(); i < 9; i++) {
+					pattern = pattern + "()";
+				}
+
+				matcher = regex(pattern, flags, str1);
+			}
+
+			// Validate replacement
+			if (!isSyntacticallyValidReplacementString(replacement)) {
+				throw new DynamicError("FORX0004", "Invalid replacement string.", null);
+			}
+
 			return new XSString(matcher.replaceAll(replacement));
 		} catch (PatternSyntaxException err) {
 			throw DynamicError.regex_error(null, err);
 		} catch (IllegalArgumentException ex) {
-			throw new DynamicError("FORX0004", "invalid regex.", ex);
-		} catch (IndexOutOfBoundsException ex) {
-			String className = ex.getClass().getName();
-			if (className.endsWith("StringIndexOutOfBoundsException")) {
-				throw new DynamicError("FORX0004", "result out of bounds", ex);
+			throw new DynamicError("FORX0004", "Invalid replacement string.", ex);
+		}
+	}
+
+	private static boolean isSyntacticallyValidReplacementString(String replacement) {
+		for (int i = indexOfNextBackslashOrDollar(replacement, 0);
+			 i >= 0;
+			 i = indexOfNextBackslashOrDollar(replacement, i + 2)) {
+
+			if (i == replacement.length() - 1) {
+				// If the escape character is the last character, it can't be followed by anything to make it valid.
+				return false;
 			}
-			throw new DynamicError("FORX0003", "invalid regex.", ex);
-		} catch (DynamicError ex) {
-			// Just rethrow this
-			throw ex;
-		} catch (Exception ex) {
-			throw new DynamicError("FORX0004", "invalid regex.", ex);
+
+			char next = replacement.charAt(i + 1);
+			if (replacement.charAt(i) == '\\') {
+				// require \\ or \$
+				if (next != '\\' && next != '$') {
+					return false;
+				}
+			} else {
+				// require a digit
+				if (next < '0' || next > '9') {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private static int indexOfNextBackslashOrDollar(String str, int startIndex) {
+		int nextBackslash = str.indexOf('\\', startIndex);
+		int nextDollar = str.indexOf('$', startIndex);
+		if (nextBackslash == -1) {
+			return nextDollar;
+		} else if (nextDollar == -1) {
+			return nextBackslash;
+		} else {
+			return Math.min(nextBackslash, nextDollar);
 		}
 	}
 

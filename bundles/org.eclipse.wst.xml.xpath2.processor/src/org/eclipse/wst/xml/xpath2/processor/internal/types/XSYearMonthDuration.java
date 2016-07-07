@@ -409,12 +409,10 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 
 		if (val.nan()) {
 			throw DynamicError.nan();
+		} else if (val.infinite()) {
+			throw DynamicError.overflowUnderflow();
 		}
-		
-		if (val.infinite()) {
-			throw DynamicError.overflowDateTime();
-		}
-		
+
 		int res = (int) Math.round(monthValue() * val.double_value());
 
 		return new XSYearMonthDuration(res);

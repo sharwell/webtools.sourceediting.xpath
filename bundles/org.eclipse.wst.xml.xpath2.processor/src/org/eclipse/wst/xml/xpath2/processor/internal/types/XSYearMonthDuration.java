@@ -437,24 +437,27 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 
 		if (at instanceof XSDouble) {
 			XSDouble dt = (XSDouble) at;
+			if (dt.zero() || dt.negativeZero()) {
+				throw DynamicError.overflowUnderflow();
+			} else if (dt.nan()) {
+				throw DynamicError.nan();
+			}
 
-			int ret = 0;
-
-			if (!dt.zero())
-				ret = (int) Math.round(monthValue() / dt.double_value());
-
+			int ret = (int) Math.round(monthValue() / dt.double_value());
 			return new XSYearMonthDuration(ret);
 		} else if (at instanceof XSDecimal) {
 			XSDecimal dt = (XSDecimal) at;
-			
-			int ret = 0;
-			
-			if (!dt.zero())
-				ret = (int) Math.round(monthValue() / dt.getValue().doubleValue());
-			
-			return new XSYearMonthDuration(ret);	
+			if (dt.zero()) {
+				throw DynamicError.overflowUnderflow();
+			}
+
+			int ret = (int) Math.round(monthValue() / dt.getValue().doubleValue());
+			return new XSYearMonthDuration(ret);
 		} else if (at instanceof XSYearMonthDuration) {
 			XSYearMonthDuration md = (XSYearMonthDuration) at;
+			if (md.monthValue() == 0) {
+				throw DynamicError.overflowUnderflow();
+			}
 
 			double res = (double) monthValue() / md.monthValue();
 

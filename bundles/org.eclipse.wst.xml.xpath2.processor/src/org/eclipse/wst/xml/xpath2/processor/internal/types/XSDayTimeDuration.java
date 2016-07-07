@@ -136,10 +136,9 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 			return new XSDayTimeDuration(duration.days(), duration.hours(), duration.minutes(), duration.seconds(), duration.negative());
 		}
 		
-		return parseDTDuration(aat.getStringValue().trim());
+		return parseDTDuration(aat.getStringValue());
 	}
 
-	
 	/**
 	 * Creates a new XSDayTimeDuration by parsing the supplied String
 	 * represented duration of time
@@ -148,92 +147,28 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 *            String represented duration of time
 	 * @return New XSDayTimeDuration representing the duration of time supplied
 	 */
-	public static XSDuration parseDTDuration(String str) {
-		boolean negative = false;
-		int days = 0;
-		int hours = 0;
-		int minutes = 0;
-		BigDecimal seconds = BigDecimal.ZERO;
-
-		// string following the P
-		String pstr = null;
-		String tstr = null;
-
-		// get the negative and pstr
-		if (str.startsWith("-P")) {
-			negative = true;
-			pstr = str.substring(2, str.length());
-		} else if (str.startsWith("P")) {
-			negative = false;
-			pstr = str.substring(1, str.length());
-		} else
-			return null;
-
-		try {
-			// get the days
-			int index = pstr.indexOf('D');
-			boolean did_something = false;
-
-			// no D... must have T
-			if (index == -1) {
-				if (pstr.startsWith("T")) {
-					tstr = pstr.substring(1, pstr.length());
-				} else
-					return null;
-			} else {
-				String digit = pstr.substring(0, index);
-				days = Integer.parseInt(digit);
-				tstr = pstr.substring(index + 1, pstr.length());
-
-				if (tstr.startsWith("T")) {
-					tstr = tstr.substring(1, tstr.length());
-				} else {
-					if (tstr.length() > 0)
-						return null;
-					tstr = "";
-					did_something = true;
-				}
-			}
-
-			// do the T str
-
-			// hour
-			index = tstr.indexOf('H');
-			if (index != -1) {
-				String digit = tstr.substring(0, index);
-				hours = Integer.parseInt(digit);
-				tstr = tstr.substring(index + 1, tstr.length());
-				did_something = true;
-			}
-			// minute
-			index = tstr.indexOf('M');
-			if (index != -1) {
-				String digit = tstr.substring(0, index);
-				minutes = Integer.parseInt(digit);
-				tstr = tstr.substring(index + 1, tstr.length());
-				did_something = true;
-			}
-			// seconds
-			index = tstr.indexOf('S');
-			if (index != -1) {
-				String digit = tstr.substring(0, index);
-				seconds = new BigDecimal(digit);
-				tstr = tstr.substring(index + 1, tstr.length());
-				did_something = true;
-			}
-			if (did_something) {
-				// make sure we parsed it all
-				if (tstr.length() != 0)
-					return null;
-			} else {
-				return null;
-			}
-
-		} catch (NumberFormatException err) {
+	public static XSDayTimeDuration parseDTDuration(String str) {
+		// xs:dayTimeDuration is not allowed to have a 'Y' or 'M' in front of the 'T'
+		if (str.indexOf('Y') >= 0) {
+			// xs:dayTimeDuration cannot have a year
 			return null;
 		}
 
-		return new XSDayTimeDuration(days, hours, minutes, seconds, negative);
+		int firstM = str.indexOf('M');
+		if (firstM >= 0) {
+			int timeIndex = str.indexOf('T');
+			if (timeIndex < 0 || firstM < timeIndex) {
+				// xs:dayTimeDuration cannot have a month
+				return null;
+			}
+		}
+
+		XSDuration duration = XSDuration.parseDuration(str);
+		if (duration == null) {
+			return null;
+		}
+
+		return new XSDayTimeDuration(duration.days(), duration.hours(), duration.minutes(), duration.seconds(), duration.negative());
 	}
 
 	/**

@@ -270,7 +270,8 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDuration.class);
 
-		return value().compareTo(val.value()) == 0;
+		return value().compareTo(val.value()) == 0
+				&& monthValue() == val.monthValue();
 	}
 
 	/**
@@ -317,8 +318,26 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	}
 
 	/**
-	 * Retrieves the duration of time stored as the number of seconds within it
-	 * 
+	 * Retrieves the duration of time stored as the number of months within it.
+	 * This method only counts the {@link #month()} and {@link #year()}
+	 * components of the duration.
+	 *
+	 * @return Number of months making up this duration of time
+	 */
+	public final int monthValue() {
+		int value = year() * MONTHS_PER_YEAR + month();
+		if (negative()) {
+			value = -value;
+		}
+
+		return value;
+	}
+
+	/**
+	 * Retrieves the duration of time stored as the number of seconds within it.
+	 * This method does not count the {@link #month()} or {@link #year()}
+	 * components of the duration.
+	 *
 	 * @return Number of seconds making up this duration of time
 	 */
 	public BigDecimal value() {

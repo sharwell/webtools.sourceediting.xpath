@@ -198,41 +198,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	}
 
 	/**
-	 * Retrieves the duration of time stored as the number of months within it
-	 * 
-	 * @return Number of months making up this duration of time
-	 */
-	public int monthValue() {
-		int ret = year() * 12 + month();
-
-		if (negative())
-			ret *= -1;
-
-		return ret;
-	}
-
-	/**
-	 * Equality comparison between this and the supplied duration of time.
-	 * 
-	 * @param arg
-	 *            The duration of time to compare with
-	 * @return True if they both represent the duration of time. False otherwise
-	 * @throws DynamicError
-	 */
-	@Override
-	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
-		if (arg instanceof XSDayTimeDuration) {
-			XSDayTimeDuration dayTimeDuration = (XSDayTimeDuration)arg;
-			return monthValue() == 0 && dayTimeDuration.value().compareTo(BigDecimal.ZERO) == 0;
-		} else if (arg instanceof XSYearMonthDuration) {
-			XSYearMonthDuration yearMonthDuration = (XSYearMonthDuration)arg;
-			return monthValue() == yearMonthDuration.monthValue();
-		}
-		XSDuration val = NumericType.get_single_type(arg, XSDuration.class);
-		return super.eq(val, evaluationContext);
-	}
-
-	/**
 	 * Comparison between this and the supplied duration of time.
 	 * 
 	 * @param arg

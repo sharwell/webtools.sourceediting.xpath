@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.Item;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -139,4 +140,20 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 
 		return get_single_type(rs.first(), type);
 	}
+
+	@Override
+	public final ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		if (arg.size() == 1) {
+			Item first = arg.first();
+			if (first instanceof XSDuration && first instanceof MathTimes) {
+				// This is a special case for xs:dayTimeDuration and xs:yearMonthDuration
+				// https://www.w3.org/TR/xpath20/#mapping
+				return ((MathTimes)first).times(this, evaluationContext);
+			}
+		}
+
+		return timesImpl(arg, evaluationContext);
+	}
+
+	protected abstract ResultSequence timesImpl(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError;
 }

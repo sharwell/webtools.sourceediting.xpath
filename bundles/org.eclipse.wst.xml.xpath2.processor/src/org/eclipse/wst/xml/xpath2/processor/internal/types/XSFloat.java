@@ -326,7 +326,7 @@ public class XSFloat extends NumericType {
 	 *         multiplication.
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+	protected ResultSequence timesImpl(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = constructor(arg);
 		XSFloat val = get_single_type(carg, XSFloat.class);
 		return new XSFloat(float_value() * val.float_value());

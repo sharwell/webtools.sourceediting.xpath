@@ -360,7 +360,7 @@ public class XSDecimal extends NumericType {
 	 *         multiplication.
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) {
+	protected ResultSequence timesImpl(ResultSequence arg, EvaluationContext evaluationContext) {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDecimal val = get_single_type(carg, XSDecimal.class);

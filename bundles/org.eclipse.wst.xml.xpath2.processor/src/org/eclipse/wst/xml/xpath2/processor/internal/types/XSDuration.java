@@ -24,8 +24,6 @@ import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
-import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
-import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
@@ -36,7 +34,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLi
  * @since 1.1 This used to be an abstract class but was incorrectly implemented
  *        as such.
  */
-public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneable {
+public class XSDuration extends CtrType implements CmpEq, Cloneable {
 
 	private static final String XS_DURATION = "xs:duration";
 
@@ -272,38 +270,6 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 
 		return value().compareTo(val.value()) == 0
 				&& monthValue() == val.monthValue();
-	}
-
-	/**
-	 * Comparison between this and the supplied duration of time.
-	 * 
-	 * @param arg
-	 *            The duration of time to compare with
-	 * @return True if the supplied time represents a larger duration than that
-	 *         stored. False otherwise
-	 * @throws DynamicError
-	 */
-	@Override
-	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
-		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
-
-		return value().compareTo(val.value()) < 0;
-	}
-
-	/**
-	 * Comparison between this and the supplied duration of time.
-	 * 
-	 * @param arg
-	 *            The duration of time to compare with
-	 * @return True if the supplied time represents a smaller duration than that
-	 *         stored. False otherwise
-	 * @throws DynamicError
-	 */
-	@Override
-	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
-		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
-
-		return value().compareTo(val.value()) > 0;
 	}
 
 	/**

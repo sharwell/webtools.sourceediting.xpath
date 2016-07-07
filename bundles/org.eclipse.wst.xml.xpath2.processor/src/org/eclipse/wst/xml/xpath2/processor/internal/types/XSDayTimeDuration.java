@@ -192,6 +192,38 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	}
 
 	/**
+	 * Comparison between this and the supplied duration of time.
+	 *
+	 * @param arg
+	 *            The duration of time to compare with
+	 * @return True if the supplied time represents a larger duration than that
+	 *         stored. False otherwise
+	 * @throws DynamicError
+	 */
+	@Override
+	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
+
+		return value().compareTo(val.value()) < 0;
+	}
+
+	/**
+	 * Comparison between this and the supplied duration of time.
+	 *
+	 * @param arg
+	 *            The duration of time to compare with
+	 * @return True if the supplied time represents a smaller duration than that
+	 *         stored. False otherwise
+	 * @throws DynamicError
+	 */
+	@Override
+	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
+		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
+
+		return value().compareTo(val.value()) > 0;
+	}
+
+	/**
 	 * Mathematical addition between this duration stored and the supplied
 	 * duration of time (of type XSDayTimeDuration)
 	 * 

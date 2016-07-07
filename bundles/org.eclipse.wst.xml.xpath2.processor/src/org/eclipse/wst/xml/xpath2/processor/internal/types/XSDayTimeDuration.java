@@ -329,6 +329,8 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 		XSDouble val = NumericType.get_single_type(convertedRS, XSDouble.class);
 		if (val.nan()) {
 			throw DynamicError.nan();
+		} else if (val.infinite()) {
+			throw DynamicError.overflowUnderflow();
 		}
 
 		BigDecimal res = value().multiply(BigDecimal.valueOf(val.double_value()));

@@ -98,7 +98,7 @@ public class XSGMonth extends CalendarType implements CmpEq {
 			}
 			
 			String[] split = str.split("-");
-			startdate += split[2].replaceAll("Z", "") + "-01";
+			startdate += split[2].replace("Z", "") + "-01";
 			
 			if (str.indexOf('T') != -1) { 
 				if (split.length > 3) {

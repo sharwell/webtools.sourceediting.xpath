@@ -13,6 +13,7 @@ package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.QName;
@@ -30,9 +31,7 @@ public abstract class AbstractRegExFunction extends Function {
 	
 	protected static boolean matches(String pattern, String flags, String src) {
 		boolean fnd = false;
-		if (pattern.indexOf("-[") != -1) {
-			pattern = pattern.replaceAll("\\-\\[", "&&[^");
-		}
+		pattern = pattern.replace("-[", "&&[^");
 		Matcher m = compileAndExecute(pattern, flags, src);
 		while (m.find()) {
 			fnd = true;
@@ -71,8 +70,14 @@ public abstract class AbstractRegExFunction extends Function {
 				}
 			}
 		}
-		
-		Pattern p = Pattern.compile(pattern, flag);
+
+		Pattern p;
+		try {
+			p = Pattern.compile(pattern, flag);
+		} catch (PatternSyntaxException ex) {
+			throw DynamicError.regex_error(null, ex);
+		}
+
 		return p.matcher(src);
 	}
 
@@ -88,7 +93,7 @@ public abstract class AbstractRegExFunction extends Function {
 	 * except for whitespace characters appearing within a character class
 	 * construct.
 	 */
-	protected static String removeWhitespace(String pattern) {
+	private static String removeWhitespace(String pattern) {
 		StringBuilder builder = new StringBuilder();
 		int index = 0;
 		while (index < pattern.length()) {

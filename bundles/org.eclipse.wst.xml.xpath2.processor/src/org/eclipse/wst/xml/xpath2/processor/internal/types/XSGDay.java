@@ -101,7 +101,7 @@ public class XSGDay extends CalendarType implements CmpEq {
 			}
 			
 			String[] split = str.split("-");
-			startdate += split[3].replaceAll("Z", "");
+			startdate += split[3].replace("Z", "");
 			
 			if (str.indexOf('T') != -1) {
 				if (split.length > 4) {

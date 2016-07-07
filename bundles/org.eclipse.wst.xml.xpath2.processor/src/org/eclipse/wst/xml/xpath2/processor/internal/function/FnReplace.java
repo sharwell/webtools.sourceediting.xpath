@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.regex.Matcher;
-import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
@@ -31,7 +30,7 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSString;
  * non-overlapping substring of $input that matches the given $pattern with an
  * occurrence of the $replacement string.
  */
-public class FnReplace extends Function {
+public class FnReplace extends AbstractRegExFunction {
 	private static Collection<SeqType> _expected_args = null;
 
 	/**
@@ -85,32 +84,68 @@ public class FnReplace extends Function {
 		String replacement = ((XSString) arg3.first()).value();
 		
 		try {
-			Matcher matcher = null;
-			if (flags != null) {
-				if ("x".equals(flags)) {
-					pattern = AbstractRegExFunction.removeWhitespace(pattern);
-				} else {
-					matcher = AbstractRegExFunction.regex(pattern, flags, str1);
+			Matcher matcher = regex(pattern, flags, str1);
+
+			if (matcher.groupCount() < 10) {
+				for (int i = matcher.groupCount(); i < 9; i++) {
+					pattern = pattern + "()";
 				}
+
+				matcher = regex(pattern, flags, str1);
 			}
 
-			if (matcher == null) {
-				return new XSString(str1.replaceAll(pattern, replacement));
-			} else {
-				return new XSString(matcher.replaceAll(replacement));
+			// Validate non-empty match
+			if (matcher.find() && matcher.end() == 0) {
+				throw new DynamicError("FORX0003", "Regular expression matches zero-length string.", null);
 			}
-		} catch (PatternSyntaxException err) {
-			throw DynamicError.regex_error(null, err);
+
+			// Validate replacement
+			if (!isSyntacticallyValidReplacementString(replacement)) {
+				throw new DynamicError("FORX0004", "Invalid replacement string.", null);
+			}
+
+			return new XSString(matcher.replaceAll(replacement));
 		} catch (IllegalArgumentException ex) {
-			throw new DynamicError("FORX0004", "invalid regex.", ex);
-		} catch (IndexOutOfBoundsException ex) {
-			String className = ex.getClass().getName();
-			if (className.endsWith("StringIndexOutOfBoundsException")) {
-				throw new DynamicError("FORX0004", "result out of bounds", ex);
+			throw new DynamicError("FORX0004", "Invalid replacement string.", ex);
+		}
+	}
+
+	private static boolean isSyntacticallyValidReplacementString(String replacement) {
+		for (int i = indexOfNextBackslashOrDollar(replacement, 0);
+			 i >= 0;
+			 i = indexOfNextBackslashOrDollar(replacement, i + 2)) {
+
+			if (i == replacement.length() - 1) {
+				// If the escape character is the last character, it can't be followed by anything to make it valid.
+				return false;
 			}
-			throw new DynamicError("FORX0003", "invalid regex.", ex);
-		} catch (Exception ex) {
-			throw new DynamicError("FORX0004", "invalid regex.", ex);
+
+			char next = replacement.charAt(i + 1);
+			if (replacement.charAt(i) == '\\') {
+				// require \\ or \$
+				if (next != '\\' && next != '$') {
+					return false;
+				}
+			} else {
+				// require a digit
+				if (next < '0' || next > '9') {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private static int indexOfNextBackslashOrDollar(String str, int startIndex) {
+		int nextBackslash = str.indexOf('\\', startIndex);
+		int nextDollar = str.indexOf('$', startIndex);
+		if (nextBackslash == -1) {
+			return nextDollar;
+		} else if (nextDollar == -1) {
+			return nextBackslash;
+		} else {
+			return Math.min(nextBackslash, nextDollar);
 		}
 	}
 

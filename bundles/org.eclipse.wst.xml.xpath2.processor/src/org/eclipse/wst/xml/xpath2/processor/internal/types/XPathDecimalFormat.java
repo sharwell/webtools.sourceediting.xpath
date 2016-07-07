@@ -54,7 +54,7 @@ public class XPathDecimalFormat extends DecimalFormat {
 
 	private String formatXPath(Object obj) {
 		String curPattern = toPattern();
-		String newPattern = curPattern.replaceAll("E0", "");
+		String newPattern = curPattern.replace("E0", "");
 		if (obj instanceof Float) {
             return formatFloatValue((Float) obj, curPattern, newPattern);
 		}
@@ -84,7 +84,7 @@ public class XPathDecimalFormat extends DecimalFormat {
 		if (doubValue.compareTo(minValue) > 0 && doubValue.compareTo(maxValue) < 0) {
 			applyPattern(newPattern);
 		} else { //if (doubValue.compareTo(minValue) < 0) {
-			applyPattern(curPattern.replaceAll("0\\.#", "0.0"));
+			applyPattern(curPattern.replace("0.#", "0.0"));
 		}
 	}
 
@@ -122,7 +122,7 @@ public class XPathDecimalFormat extends DecimalFormat {
 			
 			applyPattern(newPattern);
 		} else if (floatValue <= -1E6f) {
-			applyPattern(curPattern.replaceAll("0\\.#", "0.0" ));
+			applyPattern(curPattern.replace("0.#", "0.0" ));
 		}
 	}
 	

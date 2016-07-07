@@ -88,15 +88,9 @@ public class FnTokenize extends AbstractRegExFunction {
 			flags = flagRS.first().getStringValue();
 		}
 
-		try {
-			ArrayList<String> ret = tokenize(pattern, flags, str1);
-
-			for (Iterator<String> retIter = ret.iterator(); retIter.hasNext();) {
-			   rs.add(new XSString(retIter.next()));	
-			}
-			
-		} catch (PatternSyntaxException err) {
-			throw DynamicError.regex_error(null, err);
+		ArrayList<String> ret = tokenize(pattern, flags, str1);
+		for (Iterator<String> retIter = ret.iterator(); retIter.hasNext();) {
+			rs.add(new XSString(retIter.next()));
 		}
 
 		return rs.getSequence();

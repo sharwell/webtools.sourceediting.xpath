@@ -105,7 +105,7 @@ public class XSGMonthDay extends CalendarType implements CmpEq {
 
 			
 			String[] split = str.split("-");
-			startdate += split[2].replaceAll("Z", "") + "-" + split[3].replaceAll("Z", "").substring(0, 2);
+			startdate += split[2].replace("Z", "") + "-" + split[3].replace("Z", "").substring(0, 2);
 			
 			if (split.length > 4) {
 				String[] timesplit = split[4].split(":");

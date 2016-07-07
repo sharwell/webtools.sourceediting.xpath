@@ -459,9 +459,13 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 				throw DynamicError.overflowUnderflow();
 			}
 
-			double res = (double) monthValue() / md.monthValue();
-
-			return new XSDecimal(new BigDecimal(res));
+			try {
+				BigDecimal res = BigDecimal.valueOf(monthValue()).divide(BigDecimal.valueOf(md.monthValue()));
+				return new XSDecimal(res);
+			} catch (ArithmeticException ex) {
+				double res = (double)monthValue() / md.monthValue();
+				return new XSDecimal(new BigDecimal(res));
+			}
 		} else {
 			throw DynamicError.throw_type_error();
 		}

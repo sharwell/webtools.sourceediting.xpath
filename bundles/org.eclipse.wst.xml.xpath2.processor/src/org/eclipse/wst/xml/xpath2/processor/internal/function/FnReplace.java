@@ -95,6 +95,11 @@ public class FnReplace extends AbstractRegExFunction {
 				matcher = regex(pattern, flags, str1);
 			}
 
+			// Validate non-empty match
+			if (matcher.find() && matcher.end() == 0) {
+				throw new DynamicError("FORX0003", "Regular expression matches zero-length string.", null);
+			}
+
 			// Validate replacement
 			if (!isSyntacticallyValidReplacementString(replacement)) {
 				throw new DynamicError("FORX0004", "Invalid replacement string.", null);

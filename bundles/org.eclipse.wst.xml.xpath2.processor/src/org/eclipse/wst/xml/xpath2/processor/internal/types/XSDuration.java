@@ -101,17 +101,17 @@ public class XSDuration extends CtrType implements CmpEq, Cloneable {
 		}
 
 		if (adjustedSeconds.compareTo(BigDecimal.valueOf(SECONDS_PER_MINUTE)) >= 0) {
-			int isec = adjustedSeconds.intValue();
-			BigDecimal rem = adjustedSeconds.subtract(BigDecimal.valueOf(isec));
+			BigDecimal[] normalized = adjustedSeconds.divideAndRemainder(BigDecimal.valueOf(SECONDS_PER_MINUTE));
 
-			adjustedMinutes += isec / SECONDS_PER_MINUTE;
-			adjustedSeconds = BigDecimal.valueOf(isec % SECONDS_PER_MINUTE);
-			adjustedSeconds = adjustedSeconds.add(rem);
+			adjustedMinutes += normalized[0].intValueExact();
+			adjustedSeconds = normalized[1];
 		}
+
 		if (adjustedMinutes >= MINUTES_PER_HOUR) {
 			adjustedHours += adjustedMinutes / MINUTES_PER_HOUR;
 			adjustedMinutes = adjustedMinutes % MINUTES_PER_HOUR;
 		}
+
 		if (adjustedHours >= HOURS_PER_DAY) {
 			adjustedDays += adjustedHours / HOURS_PER_DAY;
 			adjustedHours = adjustedHours % HOURS_PER_DAY;

@@ -268,6 +268,17 @@ public class XSDayTimeDuration extends XSDuration implements CmpEq, CmpLt,
 	 */
 	@Override
 	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		if (arg.size() == 1) {
+			Item first = arg.first();
+			if (first instanceof XSDate
+					|| first instanceof XSTime
+					|| first instanceof XSDateTime) {
+				// This is a special case for xs:date, xs:time, and xs:dateTime
+				// https://www.w3.org/TR/xpath20/#mapping
+				return ((MathPlus)first).plus(this, evaluationContext);
+			}
+		}
+
 		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 		
 		BigDecimal res = value().add(val.value());

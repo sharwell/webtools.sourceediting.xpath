@@ -222,18 +222,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	}
 
 	/**
-	 * Retrieves whether this duration represents a backward passage through
-	 * time
-	 * 
-	 * @return True if this duration represents a backward passage through time.
-	 *         False otherwise
-	 */
-	@Override
-	public boolean negative() {
-		return _negative;
-	}
-
-	/**
 	 * Retrieves a String representation of the duration of time stored
 	 * 
 	 * @return String representation of the duration of time stored

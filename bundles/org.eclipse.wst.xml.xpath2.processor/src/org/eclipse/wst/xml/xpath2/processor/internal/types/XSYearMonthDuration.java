@@ -350,6 +350,15 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 */
 	@Override
 	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		if (arg.size() == 1) {
+			Item first = arg.first();
+			if (first instanceof XSDate || first instanceof XSDateTime) {
+				// This is a special case for xs:date and xs:dateTime
+				// https://www.w3.org/TR/xpath20/#mapping
+				return ((MathPlus)first).plus(this, evaluationContext);
+			}
+		}
+
 		XSYearMonthDuration val = NumericType.get_single_type(arg, XSYearMonthDuration.class);
 
 		int res = monthValue() + val.monthValue();

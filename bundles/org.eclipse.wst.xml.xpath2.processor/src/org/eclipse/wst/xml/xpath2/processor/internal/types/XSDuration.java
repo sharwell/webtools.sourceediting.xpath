@@ -168,8 +168,9 @@ public class XSDuration extends CtrType implements CmpEq, Cloneable {
 		boolean did_something = false;
 		String tret = "";
 
-		if (negative() && !(days() == 0 && hours() == 0 && seconds().compareTo(BigDecimal.ZERO) == 0))
+		if (negative()) {
 			ret += "-";
+		}
 
 		ret += "P";
 

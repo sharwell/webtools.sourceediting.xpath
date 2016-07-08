@@ -293,4 +293,44 @@ public class SeqType {
 
 		return args;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+
+		if (type() != null) {
+			result.append(type().string_type());
+		} else {
+			if (typeClass == AnyType.class) {
+				result.append("item()");
+			} else if (typeClass == NodeType.class) {
+				result.append("node()");
+			} else {
+				result.append("{?unknown type?}");
+			}
+		}
+
+		switch (occ) {
+		case OCC_NONE:
+			break;
+
+		case OCC_PLUS:
+			result.append('+');
+			break;
+
+		case OCC_STAR:
+			result.append('*');
+			break;
+
+		case OCC_QMARK:
+			result.append('?');
+			break;
+
+		default:
+			assert false;
+		}
+
+		return result.toString();
+	}
+
 }

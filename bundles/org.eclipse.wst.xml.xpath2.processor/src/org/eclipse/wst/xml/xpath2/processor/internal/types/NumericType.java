@@ -156,4 +156,9 @@ MathPlus, MathMinus, MathTimes, MathDiv, MathIDiv, MathMod {
 	}
 
 	protected abstract ResultSequence timesImpl(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError;
+
+	@Override
+	public String toString() {
+		return string_type() + "(" + getStringValue() + ")";
+	}
 }

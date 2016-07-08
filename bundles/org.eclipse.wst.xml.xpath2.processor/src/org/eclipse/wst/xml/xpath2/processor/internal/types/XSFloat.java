@@ -512,4 +512,18 @@ public class XSFloat extends NumericType {
 	public Object getNativeValue() {
 		return float_value();
 	}
+
+	@Override
+	public String toString() {
+		String specialValue = null;
+		if (nan() || infinite()) {
+			specialValue = getStringValue();
+		}
+
+		if (specialValue != null) {
+			return string_type() + "(\"" + specialValue + "\")";
+		}
+
+		return super.toString();
+	}
 }

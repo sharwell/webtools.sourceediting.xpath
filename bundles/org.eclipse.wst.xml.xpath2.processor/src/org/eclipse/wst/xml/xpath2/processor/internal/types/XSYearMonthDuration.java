@@ -85,85 +85,23 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 * @return New XSYearMonthDuration representing the duration of time
 	 *         supplied
 	 */
-	public static XSDuration parseYMDuration(String str) {
-		boolean negative = false;
-		int year = 0;
-		int month = 0;
-
-		int state = 0; // 0 beginning
-		// 1 year
-		// 2 month
-		// 3 done
-		// 4 expecting P
-		// 5 expecting Y or M
-		// 6 expecting M or end
-		// 7 expecting end
-
-		String digits = "";
-		for (int i = 0; i < str.length(); i++) {
-			char x = str.charAt(i);
-
-			switch (state) {
-			// beginning
-			case 0:
-				if (x == '-') {
-					negative = true;
-					state = 4;
-				} else if (x == 'P')
-					state = 5;
-				else
-					return null;
-				break;
-
-			case 4:
-				if (x == 'P')
-					state = 5;
-				else
-					return null;
-				break;
-
-			case 5:
-				if ('0' <= x && x <= '9')
-					digits += x;
-				else if (x == 'Y') {
-					if (digits.length() == 0)
-						return null;
-					year = Integer.parseInt(digits);
-					digits = "";
-					state = 6;
-				} else if (x == 'M') {
-					if (digits.length() == 0)
-						return null;
-					month = Integer.parseInt(digits);
-					state = 7;
-				} else
-					return null;
-				break;
-
-			case 6:
-				if ('0' <= x && x <= '9')
-					digits += x;
-				else if (x == 'M') {
-					if (digits.length() == 0)
-						return null;
-					month = Integer.parseInt(digits);
-					state = 7;
-
-				} else
-					return null;
-				break;
-
-			case 7:
-				return null;
-
-			default:
-				assert false;
-				return null;
-
-			}
+	public static XSYearMonthDuration parseYMDuration(String str) {
+		if (str.indexOf('T') >= 0) {
+			// xs:yearMonthDuration cannot have a time
+			return null;
 		}
 
-		return new XSYearMonthDuration(year, month, negative);
+		if (str.indexOf('D') >= 0) {
+			// xs:yearMonthDuration cannot have a number of days
+			return null;
+		}
+
+		XSDuration duration = parseDuration(str);
+		if (duration == null) {
+			return null;
+		}
+
+		return new XSYearMonthDuration(duration.year(), duration.month(), duration.negative());
 	}
 
 	/**
@@ -212,25 +150,13 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 		return ymd;
 	}
 	
-	private XSDuration castYearMonthDuration(AnyType aat) {
+	private XSYearMonthDuration castYearMonthDuration(AnyType aat) {
 		if (aat instanceof XSDuration) {
 			XSDuration duration = (XSDuration) aat;
 			return new XSYearMonthDuration(duration.year(), duration.month(), duration.negative());
 		}
 		
-		return parseYMDuration(aat.getStringValue().trim());
-	}
-
-	/**
-	 * Retrieves whether this duration represents a backward passage through
-	 * time
-	 * 
-	 * @return True if this duration represents a backward passage through time.
-	 *         False otherwise
-	 */
-	@Override
-	public boolean negative() {
-		return _negative;
+		return parseYMDuration(aat.getStringValue());
 	}
 
 	/**
@@ -240,25 +166,11 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 */
 	@Override
 	public String getStringValue() {
-		String strval = "";
+		if (monthValue() == 0) {
+			return "P0M";
+		}
 
-		if (negative())
-			strval += "-";
-
-		strval += "P";
-
-		int years = year();
-		if (years != 0)
-			strval += years + "Y";
-
-		int months = month();
-		if (months == 0) {
-			if (years == 0)
-				strval += months + "M";
-		} else
-			strval += months + "M";
-
-		return strval;
+		return super.getStringValue();
 	}
 
 	/**
@@ -269,41 +181,6 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	@Override
 	public String string_type() {
 		return XS_YEAR_MONTH_DURATION;
-	}
-
-	/**
-	 * Retrieves the duration of time stored as the number of months within it
-	 * 
-	 * @return Number of months making up this duration of time
-	 */
-	public int monthValue() {
-		int ret = year() * 12 + month();
-
-		if (negative())
-			ret *= -1;
-
-		return ret;
-	}
-
-	/**
-	 * Equality comparison between this and the supplied duration of time.
-	 * 
-	 * @param arg
-	 *            The duration of time to compare with
-	 * @return True if they both represent the duration of time. False otherwise
-	 * @throws DynamicError
-	 */
-	@Override
-	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
-		if (arg instanceof XSDayTimeDuration) {
-			XSDayTimeDuration dayTimeDuration = (XSDayTimeDuration)arg;
-			return monthValue() == 0 && dayTimeDuration.value().compareTo(BigDecimal.ZERO) == 0;
-		} else if (arg instanceof XSYearMonthDuration) {
-			XSYearMonthDuration yearMonthDuration = (XSYearMonthDuration)arg;
-			return monthValue() == yearMonthDuration.monthValue();
-		}
-		XSDuration val = NumericType.get_single_type(arg, XSDuration.class);
-		return super.eq(val, evaluationContext);
 	}
 
 	/**

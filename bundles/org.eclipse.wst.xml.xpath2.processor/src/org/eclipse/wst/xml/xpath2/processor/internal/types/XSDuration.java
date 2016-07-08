@@ -13,19 +13,19 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.wst.xml.xpath2.api.EvaluationContext;
 import org.eclipse.wst.xml.xpath2.api.ResultBuffer;
 import org.eclipse.wst.xml.xpath2.api.ResultSequence;
 import org.eclipse.wst.xml.xpath2.api.typesystem.TypeDefinition;
 import org.eclipse.wst.xml.xpath2.processor.DynamicError;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpEq;
-import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpGt;
-import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * A representation of the xs:duration data type. Other duration implementations
@@ -34,16 +34,28 @@ import java.math.RoundingMode;
  * @since 1.1 This used to be an abstract class but was incorrectly implemented
  *        as such.
  */
-public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneable {
+public class XSDuration extends CtrType implements CmpEq, Cloneable {
 
 	private static final String XS_DURATION = "xs:duration";
-	protected int _year;
-	protected int _month;
-	protected int _days;
-	protected int _hours;
-	protected int _minutes;
-	protected BigDecimal _seconds;
-	protected boolean _negative;
+
+	private static final int SECONDS_PER_MINUTE = 60;
+	private static final int MINUTES_PER_HOUR = 60;
+	private static final int HOURS_PER_DAY = 24;
+
+	private static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
+	private static final int SECONDS_PER_DAY = SECONDS_PER_HOUR * HOURS_PER_DAY;
+
+	private static final int MONTHS_PER_YEAR = 12;
+
+	private static Pattern DURATION_PATTERN = Pattern.compile("-?P(?:([0-9]+)Y)?(?:([0-9]+)M)?(?:([0-9]+)D)?(?:T(?:([0-9]+)H)?(?:([0-9]+)M)?(?:([0-9]+(?:\\.[0-9]+)?)S)?)?");
+
+	private final int _year;
+	private final int _month;
+	private final int _days;
+	private final int _hours;
+	private final int _minutes;
+	private final BigDecimal _seconds;
+	private final boolean _negative;
 
 	/**
 	 * Initializes to the supplied parameters. If more than 24 hours is
@@ -68,36 +80,54 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 */
 	public XSDuration(int years, int months, int days, int hours, int minutes,
 			BigDecimal seconds, boolean negative) {
-		_year = years;
-		_month = months;
-		_days = days;
-		_hours = hours;
-		_minutes = minutes;
-		_seconds = seconds;
-		_negative = negative;
+		assert years >= 0;
+		assert months >= 0;
+		assert days >= 0;
+		assert hours >= 0;
+		assert minutes >= 0;
+		assert seconds != null && seconds.compareTo(BigDecimal.ZERO) >= 0;
 
-		if (_month >= 12) {
-			_year += _month / 12;
-			_month = _month % 12;
+		int adjustedYear = years;
+		int adjustedMonth = months;
+		int adjustedDays = days;
+		int adjustedHours = hours;
+		int adjustedMinutes = minutes;
+		BigDecimal adjustedSeconds = seconds;
+		boolean adjustedNegative = negative;
+
+		if (adjustedMonth >= MONTHS_PER_YEAR) {
+			adjustedYear += adjustedMonth / MONTHS_PER_YEAR;
+			adjustedMonth = adjustedMonth % MONTHS_PER_YEAR;
 		}
 
-		if (_seconds.compareTo(BigDecimal.valueOf(60)) >= 0) {
-			int isec = _seconds.intValue();
-			BigDecimal rem = _seconds.subtract(BigDecimal.valueOf(isec));
+		if (adjustedSeconds.compareTo(BigDecimal.valueOf(SECONDS_PER_MINUTE)) >= 0) {
+			BigDecimal[] normalized = adjustedSeconds.divideAndRemainder(BigDecimal.valueOf(SECONDS_PER_MINUTE));
 
-			_minutes += isec / 60;
-			_seconds = BigDecimal.valueOf(isec % 60);
-			_seconds = _seconds.add(rem);
-		}
-		if (_minutes >= 60) {
-			_hours += _minutes / 60;
-			_minutes = _minutes % 60;
-		}
-		if (_hours >= 24) {
-			_days += _hours / 24;
-			_hours = _hours % 24;
+			adjustedMinutes += normalized[0].intValueExact();
+			adjustedSeconds = normalized[1];
 		}
 
+		if (adjustedMinutes >= MINUTES_PER_HOUR) {
+			adjustedHours += adjustedMinutes / MINUTES_PER_HOUR;
+			adjustedMinutes = adjustedMinutes % MINUTES_PER_HOUR;
+		}
+
+		if (adjustedHours >= HOURS_PER_DAY) {
+			adjustedDays += adjustedHours / HOURS_PER_DAY;
+			adjustedHours = adjustedHours % HOURS_PER_DAY;
+		}
+
+		if (adjustedYear == 0 && adjustedMonth == 0 && adjustedDays == 0 && adjustedHours == 0 && adjustedMinutes == 0 && adjustedSeconds.compareTo(BigDecimal.ZERO) == 0) {
+			adjustedNegative = false;
+		}
+
+		_year = adjustedYear;
+		_month = adjustedMonth;
+		_days = adjustedDays;
+		_hours = adjustedHours;
+		_minutes = adjustedMinutes;
+		_seconds = adjustedSeconds;
+		_negative = adjustedNegative;
 	}
 
 	/**
@@ -134,62 +164,56 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 */
 	@Override
 	public String getStringValue() {
-		String ret = "";
-		boolean did_something = false;
-		String tret = "";
+		if (monthValue() == 0 && value().compareTo(BigDecimal.ZERO) == 0) {
+			return "PT0S";
+		}
 
-		if (negative() && !(days() == 0 && hours() == 0 && seconds().compareTo(BigDecimal.ZERO) == 0))
-			ret += "-";
+		StringBuilder result = new StringBuilder(20);
+		if (negative())
+			result.append('-');
 
-		ret += "P";
+		result.append('P');
 
-		int years = year();
-		if (years != 0)
-			ret += years + "Y";
+		if (year() != 0) {
+			result.append(year()).append('Y');
+		}
 
-		int months = month();
-		if (months != 0) {
-			ret += months + "M";
+		if (month() != 0) {
+			result.append(month()).append('M');
 		}
 
 		if (days() != 0) {
-			ret += days() + "D";
-			did_something = true;
+			result.append(days()).append('D');
 		}
 
-		// do the "time" bit
-		int hours = hours();
-		int minutes = minutes();
-		BigDecimal seconds = seconds();
-		
-		if (hours != 0) {
-			tret += hours + "H";
-			did_something = true;
-		}
-		if (minutes != 0) {
-			tret += minutes + "M";
-			did_something = true;
-		}
-		if (seconds.compareTo(BigDecimal.ZERO) != 0) {
-			boolean isInteger = seconds.scale() <= 0
-					|| seconds.stripTrailingZeros().scale() <= 0;
-			if (isInteger) {
-				seconds = seconds.setScale(0, RoundingMode.UNNECESSARY);
+		if (time_value().compareTo(BigDecimal.ZERO) != 0) {
+			result.append('T');
+
+			if (hours() != 0) {
+				result.append(hours()).append('H');
 			}
 
-			tret += seconds + "S";
-			did_something = true;
-		} else if (!did_something) {
-				tret += "0S";
-		}
-		
-		if ((year() == 0 && month() == 0) || (hours > 0 || minutes > 0 || seconds.compareTo(BigDecimal.ZERO) > 0)) {
-			if (tret.length() > 0) {
-				ret += "T" + tret;
+			if (minutes()!= 0) {
+				result.append(minutes()).append('M');
+			}
+
+			BigDecimal seconds = seconds();
+			if (seconds.compareTo(BigDecimal.ZERO) != 0) {
+				boolean isInteger = seconds.scale() <= 0;
+				if (!isInteger) {
+					BigDecimal trimmed = seconds.stripTrailingZeros();
+					isInteger = trimmed.scale() <= 0;
+				}
+
+				if (isInteger) {
+					seconds = seconds.setScale(0);
+				}
+
+				result.append(seconds).append('S');
 			}
 		}
 
-		return ret;
+		return result.toString();
 	}
 
 	/**
@@ -242,39 +266,8 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDuration.class);
 
-		return value().compareTo(val.value()) == 0;
-	}
-
-	/**
-	 * Comparison between this and the supplied duration of time.
-	 * 
-	 * @param arg
-	 *            The duration of time to compare with
-	 * @return True if the supplied time represents a larger duration than that
-	 *         stored. False otherwise
-	 * @throws DynamicError
-	 */
-	@Override
-	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
-		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
-
-		return value().compareTo(val.value()) < 0;
-	}
-
-	/**
-	 * Comparison between this and the supplied duration of time.
-	 * 
-	 * @param arg
-	 *            The duration of time to compare with
-	 * @return True if the supplied time represents a smaller duration than that
-	 *         stored. False otherwise
-	 * @throws DynamicError
-	 */
-	@Override
-	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
-		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
-
-		return value().compareTo(val.value()) > 0;
+		return value().compareTo(val.value()) == 0
+				&& monthValue() == val.monthValue();
 	}
 
 	/**
@@ -289,15 +282,33 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	}
 
 	/**
-	 * Retrieves the duration of time stored as the number of seconds within it
-	 * 
+	 * Retrieves the duration of time stored as the number of months within it.
+	 * This method only counts the {@link #month()} and {@link #year()}
+	 * components of the duration.
+	 *
+	 * @return Number of months making up this duration of time
+	 */
+	public final int monthValue() {
+		int value = year() * MONTHS_PER_YEAR + month();
+		if (negative()) {
+			value = -value;
+		}
+
+		return value;
+	}
+
+	/**
+	 * Retrieves the duration of time stored as the number of seconds within it.
+	 * This method does not count the {@link #month()} or {@link #year()}
+	 * components of the duration.
+	 *
 	 * @return Number of seconds making up this duration of time
 	 */
 	public BigDecimal value() {
-		BigDecimal ret = BigDecimal.valueOf(days() * 24 * 60 * 60);
+		BigDecimal ret = BigDecimal.valueOf(days() * SECONDS_PER_DAY);
 
-		ret = ret.add(BigDecimal.valueOf(hours() * 60 * 60));
-		ret = ret.add(BigDecimal.valueOf(minutes() * 60));
+		ret = ret.add(BigDecimal.valueOf(hours() * SECONDS_PER_HOUR));
+		ret = ret.add(BigDecimal.valueOf(minutes() * SECONDS_PER_MINUTE));
 		ret = ret.add(seconds());
 
 		if (negative())
@@ -310,8 +321,8 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	
 	public BigDecimal time_value() {
 		BigDecimal ret = BigDecimal.ZERO;
-		ret = ret.add(BigDecimal.valueOf(hours() * 60 * 60));
-		ret = ret.add(BigDecimal.valueOf(minutes() * 60));
+		ret = ret.add(BigDecimal.valueOf(hours() * SECONDS_PER_HOUR));
+		ret = ret.add(BigDecimal.valueOf(minutes() * SECONDS_PER_MINUTE));
 		ret = ret.add(seconds());
 
 		if (negative())
@@ -359,18 +370,33 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 			return new XSDuration(duration.year(), duration.month(), duration.days(), duration.hours(), duration.minutes(), duration.seconds(), duration.negative());
 		}
 		
-		return parseDTDuration(aat.getStringValue().trim());
+		return parseDuration(aat.getStringValue());
 	}
+
 	/**
-	 * Creates a new XSDayTimeDuration by parsing the supplied String
+	 * Creates a new XSDuration by parsing the supplied String
 	 * represented duration of time
 	 * 
 	 * @param str
 	 *            String represented duration of time
 	 * @return New XSDayTimeDuration representing the duration of time supplied
 	 */
-	public static XSDuration parseDTDuration(String str) {
-		boolean negative = false;
+	public static XSDuration parseDuration(String str) {
+		str = str.trim();
+
+		Matcher matcher = DURATION_PATTERN.matcher(str);
+		if (!matcher.matches()) {
+			return null;
+		}
+
+		boolean negative = str.startsWith("-");
+		String yearStr = matcher.group(1);
+		String monthStr = matcher.group(2);
+		String dayStr = matcher.group(3);
+		String hourStr = matcher.group(4);
+		String minuteStr = matcher.group(5);
+		String secondStr = matcher.group(6);
+
 		int years = 0;
 		int months = 0;
 		int days = 0;
@@ -378,91 +404,52 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 		int minutes = 0;
 		BigDecimal seconds = BigDecimal.ZERO;
 
-		// string following the P
-		String pstr = "";
-		String tstr = "";
+		boolean hasElement = false;
+		boolean hasTimeElement = false;
 
-		// get the negative and pstr
-		if (str.startsWith("-P")) {
-			negative = true;
-			pstr = str.substring(2, str.length());
-		} else if (str.startsWith("P")) {
-			negative = false;
-			pstr = str.substring(1, str.length());
-		} else
+		if (yearStr != null) {
+			hasElement = true;
+			years = Integer.parseInt(yearStr);
+		}
+
+		if (monthStr != null) {
+			hasElement = true;
+			months = Integer.parseInt(monthStr);
+		}
+
+		if (dayStr != null) {
+			hasElement = true;
+			days = Integer.parseInt(dayStr);
+		}
+
+		if (hourStr != null) {
+			hasElement = true;
+			hasTimeElement = true;
+			hours = Integer.parseInt(hourStr);
+		}
+
+		if (minuteStr != null) {
+			hasElement = true;
+			hasTimeElement = true;
+			minutes = Integer.parseInt(minuteStr);
+		}
+
+		if (secondStr != null) {
+			hasElement = true;
+			hasTimeElement = true;
+			seconds = new BigDecimal(secondStr);
+		}
+
+		if (!hasElement) {
+			// At least one number and its designator ·must· be present.
 			return null;
+		}
 
-		try {
-			int index = pstr.indexOf('Y');
-			boolean did_something = false;
-
-			if (index != -1) {
-				String digit = pstr.substring(0, index);
-				years = Integer.parseInt(digit);
-				pstr = pstr.substring(index + 1, pstr.length());
-				did_something = true;
-			}
-
-			index = pstr.indexOf('M');
-			if (index != -1) {
-				String digit = pstr.substring(0, index);
-				months = Integer.parseInt(digit);
-				pstr = pstr.substring(index + 1, pstr.length());
-				did_something = true;
-			}
-
-			// get the days
-			index = pstr.indexOf('D');
-
-			if (index == -1) {
-				if (pstr.startsWith("T")) {
-					tstr = pstr.substring(1, pstr.length());
-				}
-			} else {
-				String digit = pstr.substring(0, index);
-				days = Integer.parseInt(digit);
-				tstr = pstr.substring(index + 1, pstr.length());
-
-				if (tstr.startsWith("T")) {
-					tstr = tstr.substring(1, tstr.length());
-				} else {
-					tstr = "";
-					did_something = true;
-				}
-			}
-
-			// do the T str
-
-			// hour
-			index = tstr.indexOf('H');
-			if (index != -1) {
-				String digit = tstr.substring(0, index);
-				hours = Integer.parseInt(digit);
-				tstr = tstr.substring(index + 1, tstr.length());
-				did_something = true;
-			}
-			// minute
-			index = tstr.indexOf('M');
-			if (index != -1) {
-				String digit = tstr.substring(0, index);
-				minutes = Integer.parseInt(digit);
-				tstr = tstr.substring(index + 1, tstr.length());
-				did_something = true;
-			}
-			// seconds
-			index = tstr.indexOf('S');
-			if (index != -1) {
-				String digit = tstr.substring(0, index);
-				seconds = new BigDecimal(digit);
-				tstr = tstr.substring(index + 1, tstr.length());
-				did_something = true;
-			}
-			if (!did_something) {
+		if (!hasTimeElement) {
+			if (str.contains("T")) {
+				// The designator 'T' must be absent if and only if all of the time items are absent.
 				return null;
 			}
-
-		} catch (NumberFormatException err) {
-			return null;
 		}
 
 		return new XSDuration(years, months, days, hours, minutes, seconds,

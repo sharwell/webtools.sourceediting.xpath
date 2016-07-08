@@ -24,6 +24,9 @@ import org.eclipse.wst.xml.xpath2.processor.internal.function.CmpLt;
 import org.eclipse.wst.xml.xpath2.processor.internal.function.FnData;
 import org.eclipse.wst.xml.xpath2.processor.internal.types.builtin.BuiltinTypeLibrary;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * A representation of the xs:duration data type. Other duration implementations
  * should inherit from this implementation.
@@ -39,7 +42,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	protected int _days;
 	protected int _hours;
 	protected int _minutes;
-	protected double _seconds;
+	protected BigDecimal _seconds;
 	protected boolean _negative;
 
 	/**
@@ -64,7 +67,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 *            through time. False otherwise
 	 */
 	public XSDuration(int years, int months, int days, int hours, int minutes,
-			double seconds, boolean negative) {
+			BigDecimal seconds, boolean negative) {
 		_year = years;
 		_month = months;
 		_days = days;
@@ -78,13 +81,13 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 			_month = _month % 12;
 		}
 
-		if (_seconds >= 60) {
-			int isec = (int) _seconds;
-			double rem = _seconds - (isec);
+		if (_seconds.compareTo(BigDecimal.valueOf(60)) >= 0) {
+			int isec = _seconds.intValue();
+			BigDecimal rem = _seconds.subtract(BigDecimal.valueOf(isec));
 
 			_minutes += isec / 60;
-			_seconds = isec % 60;
-			_seconds += rem;
+			_seconds = BigDecimal.valueOf(isec % 60);
+			_seconds = _seconds.add(rem);
 		}
 		if (_minutes >= 60) {
 			_hours += _minutes / 60;
@@ -103,15 +106,15 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * @param secs
 	 *            Number of seconds in the duration of time
 	 */
-	public XSDuration(double secs) {
-		this(0, 0, 0, 0, 0, Math.abs(secs), secs < 0);
+	public XSDuration(BigDecimal secs) {
+		this(0, 0, 0, 0, 0, secs.abs(), secs.compareTo(BigDecimal.ZERO) < 0);
 	}
 
 	/**
 	 * Initialises to a duration of no time (0days, 0hours, 0minutes, 0seconds)
 	 */
 	public XSDuration() {
-		this(0, 0, 0, 0, 0, 0.0, false);
+		this(0, 0, 0, 0, 0, BigDecimal.ZERO, false);
 	}
 
 	@Override
@@ -135,7 +138,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 		boolean did_something = false;
 		String tret = "";
 
-		if (negative() && !(days() == 0 && hours() == 0 && seconds() == 0))
+		if (negative() && !(days() == 0 && hours() == 0 && seconds().compareTo(BigDecimal.ZERO) == 0))
 			ret += "-";
 
 		ret += "P";
@@ -157,7 +160,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 		// do the "time" bit
 		int hours = hours();
 		int minutes = minutes();
-		double seconds = seconds();
+		BigDecimal seconds = seconds();
 		
 		if (hours != 0) {
 			tret += hours + "H";
@@ -167,21 +170,20 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 			tret += minutes + "M";
 			did_something = true;
 		}
-		if (seconds != 0) {
-			String doubStr = (new Double(seconds).toString());
-			if (doubStr.endsWith(".0")) {
-				// string value of x.0 seconds is xS. e.g, 7.0S is converted to
-				// 7S.
-				tret += doubStr.substring(0, doubStr.indexOf(".0")) + "S";
-			} else {
-				tret += seconds + "S";
+		if (seconds.compareTo(BigDecimal.ZERO) != 0) {
+			boolean isInteger = seconds.scale() <= 0
+					|| seconds.stripTrailingZeros().scale() <= 0;
+			if (isInteger) {
+				seconds = seconds.setScale(0, RoundingMode.UNNECESSARY);
 			}
+
+			tret += seconds + "S";
 			did_something = true;
 		} else if (!did_something) {
 				tret += "0S";
 		}
 		
-		if ((year() == 0 && month() == 0) || (hours > 0 || minutes > 0 || seconds > 0)) {
+		if ((year() == 0 && month() == 0) || (hours > 0 || minutes > 0 || seconds.compareTo(BigDecimal.ZERO) > 0)) {
 			if (tret.length() > 0) {
 				ret += "T" + tret;
 			}
@@ -224,7 +226,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * 
 	 * @return Number of seconds within the duration of time stored
 	 */
-	public double seconds() {
+	public BigDecimal seconds() {
 		return _seconds;
 	}
 
@@ -240,7 +242,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDuration.class);
 
-		return value() == val.value();
+		return value().compareTo(val.value()) == 0;
 	}
 
 	/**
@@ -256,7 +258,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	public boolean lt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
-		return value() < val.value();
+		return value().compareTo(val.value()) < 0;
 	}
 
 	/**
@@ -272,7 +274,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	public boolean gt(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
-		return value() > val.value();
+		return value().compareTo(val.value()) > 0;
 	}
 
 	/**
@@ -291,29 +293,29 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 	 * 
 	 * @return Number of seconds making up this duration of time
 	 */
-	public double value() {
-		double ret = days() * 24 * 60 * 60;
+	public BigDecimal value() {
+		BigDecimal ret = BigDecimal.valueOf(days() * 24 * 60 * 60);
 
-		ret += hours() * 60 * 60;
-		ret += minutes() * 60;
-		ret += seconds();
+		ret = ret.add(BigDecimal.valueOf(hours() * 60 * 60));
+		ret = ret.add(BigDecimal.valueOf(minutes() * 60));
+		ret = ret.add(seconds());
 
 		if (negative())
-			ret *= -1;
+			ret = ret.negate();
 		
 		
 
 		return ret;
 	}
 	
-	public double time_value() {
-		double ret = 0;
-		ret += hours() * 60 * 60;
-		ret += minutes() * 60;
-		ret += seconds();
+	public BigDecimal time_value() {
+		BigDecimal ret = BigDecimal.ZERO;
+		ret = ret.add(BigDecimal.valueOf(hours() * 60 * 60));
+		ret = ret.add(BigDecimal.valueOf(minutes() * 60));
+		ret = ret.add(seconds());
 
 		if (negative())
-			ret *= -1;
+			ret = ret.negate();
 		return ret;
 	}
 
@@ -374,7 +376,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 		int days = 0;
 		int hours = 0;
 		int minutes = 0;
-		double seconds = 0;
+		BigDecimal seconds = BigDecimal.ZERO;
 
 		// string following the P
 		String pstr = "";
@@ -451,7 +453,7 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 			index = tstr.indexOf('S');
 			if (index != -1) {
 				String digit = tstr.substring(0, index);
-				seconds = Double.parseDouble(digit);
+				seconds = new BigDecimal(digit);
 				tstr = tstr.substring(index + 1, tstr.length());
 				did_something = true;
 			}
@@ -519,6 +521,6 @@ public class XSDuration extends CtrType implements CmpEq, CmpLt, CmpGt, Cloneabl
 
 	@Override
 	public Object getNativeValue() {
-		return _datatypeFactory.newDuration(! negative(), year(), month(), days(), hours(), minutes(), (int)seconds());
+		return _datatypeFactory.newDuration(! negative(), year(), month(), days(), hours(), minutes(), seconds().intValue());
 	}
 }

@@ -78,12 +78,12 @@ public class FnSecondsFromDuration extends Function {
 
 		XSDuration dtd = (XSDuration) arg1.first();
 
-		double res = dtd.seconds();
+		BigDecimal res = dtd.seconds();
 
 		if (dtd.negative())
-			res *= -1;
+			res = res.negate();
 
-		return new XSDecimal(new BigDecimal(res));
+		return new XSDecimal(res);
 	}
 
 	/**

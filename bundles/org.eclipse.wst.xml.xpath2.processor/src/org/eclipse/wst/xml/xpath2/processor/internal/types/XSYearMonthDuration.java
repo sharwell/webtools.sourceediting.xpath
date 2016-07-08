@@ -56,7 +56,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 *            through time. False otherwise
 	 */
 	public XSYearMonthDuration(int year, int month, boolean negative) {
-		super(year, month, 0, 0, 0, 0, negative);
+		super(year, month, 0, 0, 0, BigDecimal.ZERO, negative);
 	}
 
 	/**
@@ -297,7 +297,7 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	public boolean eq(AnyType arg, EvaluationContext evaluationContext) throws DynamicError {
 		if (arg instanceof XSDayTimeDuration) {
 			XSDayTimeDuration dayTimeDuration = (XSDayTimeDuration)arg;
-			return (monthValue() == 0 && dayTimeDuration.value() == 0.0);
+			return monthValue() == 0 && dayTimeDuration.value().compareTo(BigDecimal.ZERO) == 0;
 		} else if (arg instanceof XSYearMonthDuration) {
 			XSYearMonthDuration yearMonthDuration = (XSYearMonthDuration)arg;
 			return monthValue() == yearMonthDuration.monthValue();
@@ -350,6 +350,15 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 */
 	@Override
 	public ResultSequence plus(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+		if (arg.size() == 1) {
+			Item first = arg.first();
+			if (first instanceof XSDate || first instanceof XSDateTime) {
+				// This is a special case for xs:date and xs:dateTime
+				// https://www.w3.org/TR/xpath20/#mapping
+				return ((MathPlus)first).plus(this, evaluationContext);
+			}
+		}
+
 		XSYearMonthDuration val = NumericType.get_single_type(arg, XSYearMonthDuration.class);
 
 		int res = monthValue() + val.monthValue();
@@ -400,12 +409,10 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 
 		if (val.nan()) {
 			throw DynamicError.nan();
+		} else if (val.infinite()) {
+			throw DynamicError.overflowUnderflow();
 		}
-		
-		if (val.infinite()) {
-			throw DynamicError.overflowDateTime();
-		}
-		
+
 		int res = (int) Math.round(monthValue() * val.double_value());
 
 		return new XSYearMonthDuration(res);
@@ -430,28 +437,35 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 
 		if (at instanceof XSDouble) {
 			XSDouble dt = (XSDouble) at;
+			if (dt.zero() || dt.negativeZero()) {
+				throw DynamicError.overflowUnderflow();
+			} else if (dt.nan()) {
+				throw DynamicError.nan();
+			}
 
-			int ret = 0;
-
-			if (!dt.zero())
-				ret = (int) Math.round(monthValue() / dt.double_value());
-
+			int ret = (int) Math.round(monthValue() / dt.double_value());
 			return new XSYearMonthDuration(ret);
 		} else if (at instanceof XSDecimal) {
 			XSDecimal dt = (XSDecimal) at;
-			
-			int ret = 0;
-			
-			if (!dt.zero())
-				ret = (int) Math.round(monthValue() / dt.getValue().doubleValue());
-			
-			return new XSYearMonthDuration(ret);	
+			if (dt.zero()) {
+				throw DynamicError.overflowUnderflow();
+			}
+
+			int ret = (int) Math.round(monthValue() / dt.getValue().doubleValue());
+			return new XSYearMonthDuration(ret);
 		} else if (at instanceof XSYearMonthDuration) {
 			XSYearMonthDuration md = (XSYearMonthDuration) at;
+			if (md.monthValue() == 0) {
+				throw DynamicError.overflowUnderflow();
+			}
 
-			double res = (double) monthValue() / md.monthValue();
-
-			return new XSDecimal(new BigDecimal(res));
+			try {
+				BigDecimal res = BigDecimal.valueOf(monthValue()).divide(BigDecimal.valueOf(md.monthValue()));
+				return new XSDecimal(res);
+			} catch (ArithmeticException ex) {
+				double res = (double)monthValue() / md.monthValue();
+				return new XSDecimal(new BigDecimal(res));
+			}
 		} else {
 			throw DynamicError.throw_type_error();
 		}

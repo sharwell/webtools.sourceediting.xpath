@@ -12,6 +12,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.function;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -38,9 +39,9 @@ import org.eclipse.wst.xml.xpath2.processor.internal.types.XSDayTimeDuration;
 public class FnAdjustDateToTimeZone extends Function {
 	private static Collection<SeqType> _expected_args = null;
 	private static final XSDayTimeDuration minDuration = new XSDayTimeDuration(
-			0, 14, 0, 0, true);
+			0, 14, 0, BigDecimal.ZERO, true);
 	private static final XSDayTimeDuration maxDuration = new XSDayTimeDuration(
-			0, 14, 0, 0, false);
+			0, 14, 0, BigDecimal.ZERO, false);
 
 	/**
 	 * Constructor for FnDateTime.

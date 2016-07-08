@@ -384,7 +384,7 @@ public class XSDouble extends NumericType {
 	 *         multiplication.
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+	protected ResultSequence timesImpl(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSDouble val = get_single_type(carg, XSDouble.class);

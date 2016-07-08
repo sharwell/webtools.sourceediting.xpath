@@ -17,6 +17,7 @@
 
 package org.eclipse.wst.xml.xpath2.processor.internal.types;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -195,14 +196,14 @@ Cloneable {
 	 * 
 	 * @return The second stored
 	 */
-	public double second() {
-		double s = _calendar.get(Calendar.SECOND);
+	public BigDecimal second() {
+		BigDecimal s = BigDecimal.valueOf(_calendar.get(Calendar.SECOND));
 
-		double ms = _calendar.get(Calendar.MILLISECOND);
+		BigDecimal ms = BigDecimal.valueOf(_calendar.get(Calendar.MILLISECOND));
 
-		ms /= 1000;
+		ms = ms.divide(BigDecimal.valueOf(1000));
 
-		s += ms;
+		s = s.add(ms);
 		return s;
 	}
 
@@ -232,13 +233,13 @@ Cloneable {
 		
 
 		ret += ":";
-		int isecond = (int) second();
-		double sec = second();
+		int isecond = second().intValue();
+		BigDecimal sec = second();
 
-		if ((sec - (isecond)) == 0.0)
+		if (sec.subtract(BigDecimal.valueOf(isecond)).compareTo(BigDecimal.ZERO) == 0)
 			ret += XSDateTime.pad_int(isecond, 2);
 		else {
-			if (sec < 10.0)
+			if (sec.compareTo(BigDecimal.valueOf(10)) < 0)
 				ret += "0" + sec;
 			else
 				ret += sec;
@@ -247,8 +248,8 @@ Cloneable {
 		if (timezoned()) {
 			int hrs = _tz.hours();
 			int min = _tz.minutes();
-			double secs = _tz.seconds();
-			if (hrs == 0 && min == 0 && secs == 0) {
+			BigDecimal secs = _tz.seconds();
+			if (hrs == 0 && min == 0 && secs.compareTo(BigDecimal.ZERO) == 0) {
 			  ret += "Z";
 			}
 			else {
@@ -306,8 +307,8 @@ Cloneable {
 	 * 
 	 * @return time stored in milliseconds since the epoch
 	 */
-	public double value() {
-		return calendar().getTimeInMillis() / 1000.0;
+	public BigDecimal value() {
+		return BigDecimal.valueOf(calendar().getTimeInMillis()).divide(BigDecimal.valueOf(1000));
 	}
 
 	/**
@@ -437,11 +438,11 @@ Cloneable {
 		XSDuration val = NumericType.get_single_type(arg, XSDayTimeDuration.class);
 
 		try {
-			double ms = val.time_value() * 1000.0;
+			BigDecimal ms = val.time_value().multiply(BigDecimal.valueOf(1000));
 
 			XSTime res = (XSTime) clone();
 
-			res.calendar().add(Calendar.MILLISECOND, (int) ms);
+			res.calendar().add(Calendar.MILLISECOND, ms.intValue());
 
 			return res;
 		} catch (CloneNotSupportedException err) {

@@ -309,7 +309,7 @@ public class XSInteger extends XSDecimal {
 	 *         multiplication.
 	 */
 	@Override
-	public ResultSequence times(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
+	protected ResultSequence timesImpl(ResultSequence arg, EvaluationContext evaluationContext) throws DynamicError {
 		ResultSequence carg = convertResultSequence(arg);
 
 		XSInteger val = get_single_type(carg, XSInteger.class);

@@ -202,8 +202,9 @@ Cloneable {
 	 */
 	public int year() {
 		int y = _calendar.get(Calendar.YEAR);
-		if (_calendar.get(Calendar.ERA) == GregorianCalendar.BC)
-			y *= -1;
+		if (_calendar.get(Calendar.ERA) == GregorianCalendar.BC) {
+			y = 1 - y;
+		}
 
 		return y;
 	}
@@ -247,11 +248,15 @@ Cloneable {
 
 		Calendar adjustFortimezone = calendar();
 
+		int year = adjustFortimezone.get(Calendar.YEAR);
 		if (adjustFortimezone.get(Calendar.ERA) == GregorianCalendar.BC) {
-			ret += "-";
+			year--;
+			if (year > 0) {
+				ret += "-";
+			}
 		}
 
-		ret += XSDateTime.pad_int(adjustFortimezone.get(Calendar.YEAR), 4);
+		ret += XSDateTime.pad_int(year, 4);
 
 		ret += "-";
 		ret += XSDateTime.pad_int(month(), 2);

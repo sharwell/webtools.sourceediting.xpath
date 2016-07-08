@@ -445,8 +445,8 @@ Cloneable {
 
 		// year
 		int year = d[0];
-		if (year < 0) {
-			year *= -1;
+		if (year <= 0) {
+			year = 1 - year;
 			cal.set(Calendar.ERA, GregorianCalendar.BC);
 		} else {
 			cal.set(Calendar.ERA, GregorianCalendar.AD);
@@ -570,8 +570,9 @@ Cloneable {
 	 */
 	public int year() {
 		int y = _calendar.get(Calendar.YEAR);
-		if (_calendar.get(Calendar.ERA) == GregorianCalendar.BC)
-			y *= -1;
+		if (_calendar.get(Calendar.ERA) == GregorianCalendar.BC) {
+			y = 1 - y;
+		}
 
 		return y;
 	}
@@ -675,11 +676,15 @@ Cloneable {
 
 		Calendar adjustFortimezone = calendar();
 
+		int year = adjustFortimezone.get(Calendar.YEAR);
 		if (adjustFortimezone.get(Calendar.ERA) == GregorianCalendar.BC) {
-			ret += "-";
+			year--;
+			if (year > 0) {
+				ret += "-";
+			}
 		}
 
-		ret += pad_int(adjustFortimezone.get(Calendar.YEAR), 4);
+		ret += pad_int(year, 4);
 
 		ret += "-";
 		ret += pad_int(month(), 2);

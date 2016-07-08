@@ -928,18 +928,46 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 	 */
 	@Override
 	public ResultSequence visit(CastableExpr cexp) {
-		boolean castable;
-		try {
-			CastExpr ce = new CastExpr((Expr) cexp.left(), (SingleType) cexp
-					.right());
 
-			visit(ce);
-			castable = true;
-		} catch (Throwable t) {
-			castable = false;
+		ResultSequence rs = cexp.left().accept(this);
+		SingleType st = (SingleType) cexp.right();
+
+		rs = FnData.atomize(rs);
+		if (rs.size() > 1) {
+			return XSBoolean.FALSE;
 		}
 
-		return XSBoolean.valueOf(castable);
+		if (rs.empty()) {
+			if (st.qmark()) {
+				return XSBoolean.TRUE;
+			} else {
+				return XSBoolean.FALSE;
+			}
+		}
+
+		AnyType at = (AnyType) rs.item(0);
+		if (!(at instanceof AnyAtomicType)) {
+			return XSBoolean.FALSE;
+		}
+
+		AnyAtomicType aat = (AnyAtomicType) at;
+		QName type = st.type();
+
+		// prepare args from function
+		Collection<ResultSequence> args = new ArrayList<ResultSequence>();
+		args.add(aat);
+
+		Function function = _sc.resolveFunction(type.asQName(), args.size());
+		if (function == null) {
+			throw new StaticTypeNameError(type.getStringValue(), null);
+		}
+
+		try {
+			function.evaluate(args, _ec);
+			return XSBoolean.TRUE;
+		} catch (DynamicError err) {
+			return XSBoolean.FALSE;
+		}
 	}
 
 	/**
@@ -984,8 +1012,11 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			function = _sc.resolveFunction(type.asQName(), args.size());
 			cexp.set_function(function);
 		}
-		if (function == null)
-			throw new DynamicError(TypeError.invalid_type(null));
+
+		if (function == null) {
+			throw new StaticTypeNameError(type.getStringValue(), null);
+		}
+
 		return function.evaluate(args, _ec);
 	}
 

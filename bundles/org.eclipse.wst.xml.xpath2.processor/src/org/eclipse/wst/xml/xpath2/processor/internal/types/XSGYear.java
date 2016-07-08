@@ -170,8 +170,9 @@ public class XSGYear extends CalendarType implements CmpEq {
 	 */
 	public int year() {
 		int y = _calendar.get(Calendar.YEAR);
-		if (_calendar.get(Calendar.ERA) == GregorianCalendar.BC)
-			y *= -1;
+		if (_calendar.get(Calendar.ERA) == GregorianCalendar.BC) {
+			y = 1 - y;
+		}
 
 		return y;
 	}

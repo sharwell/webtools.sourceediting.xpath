@@ -164,63 +164,56 @@ public class XSDuration extends CtrType implements CmpEq, Cloneable {
 	 */
 	@Override
 	public String getStringValue() {
-		String ret = "";
-		boolean did_something = false;
-		String tret = "";
-
-		if (negative()) {
-			ret += "-";
+		if (monthValue() == 0 && value().compareTo(BigDecimal.ZERO) == 0) {
+			return "PT0S";
 		}
 
-		ret += "P";
+		StringBuilder result = new StringBuilder(20);
+		if (negative())
+			result.append('-');
 
-		int years = year();
-		if (years != 0)
-			ret += years + "Y";
+		result.append('P');
 
-		int months = month();
-		if (months != 0) {
-			ret += months + "M";
+		if (year() != 0) {
+			result.append(year()).append('Y');
+		}
+
+		if (month() != 0) {
+			result.append(month()).append('M');
 		}
 
 		if (days() != 0) {
-			ret += days() + "D";
-			did_something = true;
+			result.append(days()).append('D');
 		}
 
-		// do the "time" bit
-		int hours = hours();
-		int minutes = minutes();
-		BigDecimal seconds = seconds();
-		
-		if (hours != 0) {
-			tret += hours + "H";
-			did_something = true;
-		}
-		if (minutes != 0) {
-			tret += minutes + "M";
-			did_something = true;
-		}
-		if (seconds.compareTo(BigDecimal.ZERO) != 0) {
-			boolean isInteger = seconds.scale() <= 0
-					|| seconds.stripTrailingZeros().scale() <= 0;
-			if (isInteger) {
-				seconds = seconds.setScale(0, RoundingMode.UNNECESSARY);
+		if (time_value().compareTo(BigDecimal.ZERO) != 0) {
+			result.append('T');
+
+			if (hours() != 0) {
+				result.append(hours()).append('H');
 			}
 
-			tret += seconds + "S";
-			did_something = true;
-		} else if (!did_something) {
-				tret += "0S";
-		}
-		
-		if ((year() == 0 && month() == 0) || (hours > 0 || minutes > 0 || seconds.compareTo(BigDecimal.ZERO) > 0)) {
-			if (tret.length() > 0) {
-				ret += "T" + tret;
+			if (minutes()!= 0) {
+				result.append(minutes()).append('M');
+			}
+
+			BigDecimal seconds = seconds();
+			if (seconds.compareTo(BigDecimal.ZERO) != 0) {
+				boolean isInteger = seconds.scale() <= 0;
+				if (!isInteger) {
+					BigDecimal trimmed = seconds.stripTrailingZeros();
+					isInteger = trimmed.scale() <= 0;
+				}
+
+				if (isInteger) {
+					seconds = seconds.setScale(0);
+				}
+
+				result.append(seconds).append('S');
 			}
 		}
 
-		return ret;
+		return result.toString();
 	}
 
 	/**

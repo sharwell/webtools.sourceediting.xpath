@@ -166,25 +166,11 @@ public class XSYearMonthDuration extends XSDuration implements CmpEq, CmpLt,
 	 */
 	@Override
 	public String getStringValue() {
-		String strval = "";
+		if (monthValue() == 0) {
+			return "P0M";
+		}
 
-		if (negative())
-			strval += "-";
-
-		strval += "P";
-
-		int years = year();
-		if (years != 0)
-			strval += years + "Y";
-
-		int months = month();
-		if (months == 0) {
-			if (years == 0)
-				strval += months + "M";
-		} else
-			strval += months + "M";
-
-		return strval;
+		return super.getStringValue();
 	}
 
 	/**

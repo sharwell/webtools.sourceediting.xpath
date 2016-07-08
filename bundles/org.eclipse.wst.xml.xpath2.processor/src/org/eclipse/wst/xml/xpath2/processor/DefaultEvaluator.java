@@ -959,7 +959,7 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 
 		Function function = _sc.resolveFunction(type.asQName(), args.size());
 		if (function == null) {
-			throw new DynamicError(TypeError.invalid_type(null));
+			throw new StaticTypeNameError(type.getStringValue(), null);
 		}
 
 		try {
@@ -1012,8 +1012,11 @@ public class DefaultEvaluator implements XPathVisitor<ResultSequence>, Evaluator
 			function = _sc.resolveFunction(type.asQName(), args.size());
 			cexp.set_function(function);
 		}
-		if (function == null)
-			throw new DynamicError(TypeError.invalid_type(null));
+
+		if (function == null) {
+			throw new StaticTypeNameError(type.getStringValue(), null);
+		}
+
 		return function.evaluate(args, _ec);
 	}
 

@@ -161,7 +161,11 @@ public class FsPlus extends Function {
 		// make sure we got only one arg
 		if (args.size() != 1)
 			throw DynamicError.throw_type_error();
+
 		ResultSequence arg = args.iterator().next();
+		if (arg.empty()) {
+			return ResultBuffer.EMPTY;
+		}
 
 		// make sure we got only one numeric atom
 		if (arg.size() != 1)
